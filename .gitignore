@@ -7,10 +7,18 @@ out/
 
 # misc
 .DS_Store
-*.pem
 .env
 .env.local
 .env*.local
+
+# secrets — never commit private keys or credentials
+Laptop Key.txt
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
 
 # debug
 npm-debug.log*
