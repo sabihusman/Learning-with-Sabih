@@ -23,53 +23,73 @@ const f = (x) => 0.08 * (x * x - 4) ** 2 + 0.15 * x
 const df = (x) => 0.32 * x * (x * x - 4) + 0.15
 
 const STARTS = { right: 2.4, left: -2.4 }
-const LR = 0.12
-const MAX_STEPS = 60
-// STEP_MS doubles as the per-step glide duration AND the stepping cadence:
-// the next optimizer step is dispatched when the current glide completes.
-// At ~140ms/step the descent settles (right: 20 steps, left: 17) in ~2.4-2.8s.
-const STEP_MS = 140
+const DEFAULT_LR = 0.12 // the rate that settles the right start in the local minimum
+const LR_MIN = 0.02
+const LR_MAX = 2 // low end: smooth; mid: overshoot/oscillate; top: blows up fast
+const MAX_STEPS = 80
+// STEP_MS is the per-step glide duration AND the stepping cadence: the next
+// optimizer step is dispatched when the current glide completes. Steps shrink as
+// f'(x) -> 0, so at a fixed time per step the dot decelerates on its own.
+const STEP_MS = 150
 const SETTLE_SLOPE = 1e-3 // |f'(x)| below this counts as settled
+const DIVERGE_BOUND = 4.2 // |x| past this means the steps blew up (flew off the chart)
+// Steps whose on-screen movement is below this collapse instantly, so the run
+// eases to a gentle stop instead of crawling through a long sub-pixel tail.
+const MIN_STEP_PX = 0.6
 
 // known extrema, for markers and the settled-state label
 const GLOBAL_MIN = -2.0562
 const LOCAL_MIN = 1.9386
 
-const advance = (x) => x - LR * df(x)
+const advance = (x, lr) => x - lr * df(x)
 const isSettled = (x) => Math.abs(df(x)) < SETTLE_SLOPE
 
 // ─── reducer ─────────────────────────────────────────────────────────────────
 const DEFAULT_SIDE = 'right'
 // Tolerate an unknown side (e.g. 'custom' after a drag) so RESET always lands on
-// a valid default start rather than STARTS[undefined].
-const initial = (side) => {
+// a valid default start rather than STARTS[undefined]. lr is carried across
+// resets so the user can re-run from a start without re-setting the slider.
+const initial = (side, lr) => {
   const key = side in STARTS ? side : DEFAULT_SIDE
-  return { history: [STARTS[key]], running: false, side: key }
+  return { history: [STARTS[key]], running: false, side: key, lr, diverged: false }
+}
+
+const isDone = (state) =>
+  state.diverged || state.history.length >= MAX_STEPS || isSettled(state.history[state.history.length - 1])
+
+// one optimizer step, with a divergence guard for large learning rates
+const stepOnce = (state) => {
+  const last = state.history[state.history.length - 1]
+  const nx = advance(last, state.lr)
+  if (!Number.isFinite(nx) || Math.abs(nx) > DIVERGE_BOUND) {
+    const clamped = Math.max(-DIVERGE_BOUND, Math.min(DIVERGE_BOUND, nx || DIVERGE_BOUND))
+    return { ...state, running: false, diverged: true, history: [...state.history, clamped] }
+  }
+  return { ...state, history: [...state.history, nx] }
 }
 
 function reducer(state, action) {
-  const last = state.history[state.history.length - 1]
-  const done = state.history.length >= MAX_STEPS || isSettled(last)
-
   switch (action.type) {
     case 'PLAY':
-      return done ? state : { ...state, running: true }
+      return isDone(state) ? state : { ...state, running: true }
     case 'PAUSE':
       return { ...state, running: false }
     case 'STEP':
-      if (done) return { ...state, running: false }
-      return { ...state, running: false, history: [...state.history, advance(last)] }
+      return isDone(state) ? { ...state, running: false } : { ...stepOnce(state), running: false }
     case 'AUTO_STEP':
-      if (done) return { ...state, running: false }
-      return { ...state, history: [...state.history, advance(last)] }
+      return isDone(state) ? { ...state, running: false } : stepOnce(state)
     case 'RESET':
-      return initial(state.side)
+      return initial(state.side, state.lr)
     case 'SET_START':
-      return initial(action.side)
+      return initial(action.side, state.lr)
     case 'SET_X':
       // drag-to-place: start a fresh run from an arbitrary x (already clamped).
       // 'custom' side means no preset button is active and RESET falls back to default.
-      return { history: [action.x], running: false, side: 'custom' }
+      return { ...state, history: [action.x], running: false, side: 'custom', diverged: false }
+    case 'SET_LR':
+      // the learning-rate control: changing it returns the dot to the current
+      // start so each rate can be compared from the same place.
+      return { ...state, lr: action.lr, history: [state.history[0]], running: false, diverged: false }
     default:
       return state
   }
@@ -105,7 +125,7 @@ const CURVE_D = (() => {
 
 // ─── component ───────────────────────────────────────────────────────────────
 export default function GradientDescentViz() {
-  const [state, dispatch] = useReducer(reducer, undefined, () => initial('right'))
+  const [state, dispatch] = useReducer(reducer, undefined, () => initial('right', DEFAULT_LR))
 
   // renderX is the *displayed* dot position, smoothly tweened by anime.js
   // between discrete optimizer steps. The optimizer math (state.history) is
@@ -189,15 +209,20 @@ export default function GradientDescentViz() {
   useEffect(() => {
     if (animRef.current) animRef.current.cancel()
 
-    // anime.js drives every transition. On a fresh step it glides over STEP_MS;
-    // on reset / start-switch (history back to one point) it animates from the
-    // current dot position to the new start. All setState happens inside anime's
-    // callbacks, never synchronously in this effect body.
+    // anime.js glides the dot from where it is to the newly committed step. The
+    // ease is LINEAR so each step plays at constant speed; because the optimizer
+    // steps shrink as f'(x) -> 0, the dot decelerates on its own (no per-step
+    // ease-out lurch). Steps whose on-screen movement is sub-pixel collapse to
+    // duration 0, so the run eases to a gentle stop instead of crawling through a
+    // long invisible tail. A single-point history (reset / drag / lr change)
+    // also snaps with duration 0. All setState happens in anime's callbacks.
     const proxy = { x: displayRef.current }
+    const stepPx = Math.abs((targetX - displayRef.current) / (X_MAX - X_MIN)) * (PLOT_R - PLOT_L)
+    const duration = state.history.length <= 1 || stepPx < MIN_STEP_PX ? 0 : STEP_MS
     animRef.current = animate(proxy, {
       x: targetX,
-      duration: state.history.length <= 1 ? 0 : STEP_MS,
-      ease: 'out(2)', // anime.js v4 power ease-out (the engine default)
+      duration,
+      ease: 'linear', // constant speed per step; deceleration comes from shrinking steps
       onUpdate: () => {
         displayRef.current = proxy.x
         setRenderX(proxy.x)
@@ -214,33 +239,59 @@ export default function GradientDescentViz() {
     }
   }, [state.history, targetX])
 
-  // Discrete current step — drives readouts, settling, and status (unchanged).
+  // Discrete current step — drives readouts, settling, and status.
   const x = state.history[state.history.length - 1]
   const slope = df(x)
-  const done = state.history.length >= MAX_STEPS || isSettled(x)
+  const done = isDone(state)
 
-  // Animated visual position — drives the dot, arrow, and trail tip.
-  const vSlope = df(renderX)
-  const cx = sx(renderX)
-  const cy = sy(f(renderX))
+  // Animated visual position. Clamp the displayed x to the chart so a diverged
+  // run parks the dot at the edge rather than rendering off-screen. y is derived
+  // from f(x) every frame, so the dot always rides the curve.
+  const dispX = Math.max(X_MIN, Math.min(X_MAX, renderX))
+  const vSlope = df(dispX)
+  const cx = sx(dispX)
+  const cy = sy(f(dispX))
 
   // descent direction along x is the sign of the negative gradient
   const dir = vSlope > 0 ? -1 : 1
   const ARROW = 26
   const arrowX2 = cx + dir * ARROW
 
-  // Trail follows the gliding dot: committed points, with the live dot as the tip.
-  const trailD = [...state.history.slice(0, -1), renderX]
-    .map((xi, i) => `${i === 0 ? 'M' : 'L'}${sx(xi).toFixed(1)},${sy(f(xi)).toFixed(1)}`)
-    .join(' ')
+  // Trail rides the curve: sample f(x) between consecutive points (and out to the
+  // live dot) so each segment hugs the curve instead of cutting a straight chord.
+  const trailNodes = [...state.history.slice(0, -1), dispX]
+  const trailD = (() => {
+    if (trailNodes.length < 2) return ''
+    const pts = []
+    const K = 8
+    for (let i = 0; i < trailNodes.length - 1; i++) {
+      const a = trailNodes[i]
+      const b = trailNodes[i + 1]
+      for (let k = 0; k < K; k++) {
+        const xi = a + ((b - a) * k) / K
+        pts.push([sx(xi), sy(f(xi))])
+      }
+    }
+    const tip = trailNodes[trailNodes.length - 1]
+    pts.push([sx(tip), sy(f(tip))])
+    return pts.map(([px, py], i) => `${i === 0 ? 'M' : 'L'}${px.toFixed(1)},${py.toFixed(1)}`).join(' ')
+  })()
 
-  // which basin did it settle in?
+  // status label
   let settledLabel = null
-  if (done) {
+  if (done && !state.diverged) {
     if (Math.abs(x - GLOBAL_MIN) < 0.05) settledLabel = 'Settled in the global minimum'
     else if (Math.abs(x - LOCAL_MIN) < 0.05) settledLabel = 'Settled in the local minimum'
-    else settledLabel = 'Settled'
   }
+  const status = state.diverged
+    ? 'Diverged: the steps blew up and left the chart'
+    : settledLabel
+      ? settledLabel
+      : done
+        ? 'Stopped without converging'
+        : state.running
+          ? 'Running'
+          : 'Paused'
 
   const controls = [
     {
@@ -265,12 +316,11 @@ export default function GradientDescentViz() {
 
   const readouts = [
     { label: 'step', value: `${state.history.length - 1} / ${MAX_STEPS - 1}` },
+    { label: 'lr', value: state.lr.toFixed(2) },
     { label: 'x', value: x.toFixed(3) },
     { label: 'f(x)', value: f(x).toFixed(4) },
     { label: "f'(x)", value: slope.toFixed(4) },
   ]
-
-  const status = done ? settledLabel : state.running ? 'Running' : 'Paused'
 
   return (
     <Figure
@@ -279,7 +329,7 @@ export default function GradientDescentViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="While paused, drag the red point anywhere along the curve to set the starting position, then press Play. Where you let go decides which valley it falls into: release it on the right slope and it settles in the local minimum, release it left of the central ridge and it reaches the deeper global minimum. Reset returns to the default start."
+      tryThis="While paused, drag the red point anywhere along the curve to set the start, then press Play. Where you release it decides the outcome: on the right slope it settles in the local minimum, left of the central ridge it reaches the deeper global minimum. Then raise the learning rate. A small rate takes slow, careful steps; a large one overshoots the valley, bounces, and eventually blows up and leaves the chart entirely."
     >
       <svg
         ref={svgRef}
@@ -340,6 +390,51 @@ export default function GradientDescentViz() {
           onPointerCancel={onPointerUp}
         />
       </svg>
+
+      {/* learning-rate slider — the key teaching control. Changing it returns the
+          dot to the current start so each rate is compared from the same place. */}
+      <div style={{ maxWidth: 600, margin: '14px auto 4px', padding: '0 4px' }}>
+        <label
+          htmlFor="gd-lr"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+            fontSize: 11,
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            color: '#9b9892',
+            marginBottom: 6,
+          }}
+        >
+          <span>Learning rate</span>
+          <span style={{ color: '#1a1a1a' }}>{state.lr.toFixed(2)}</span>
+        </label>
+        <input
+          id="gd-lr"
+          type="range"
+          min={LR_MIN}
+          max={LR_MAX}
+          step={0.01}
+          value={state.lr}
+          onChange={(e) => dispatch({ type: 'SET_LR', lr: Number(e.target.value) })}
+          style={{ width: '100%', accentColor: '#c0392b', cursor: 'pointer' }}
+          aria-label="Learning rate"
+        />
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+            fontSize: 9,
+            color: '#9b9892',
+            marginTop: 2,
+          }}
+        >
+          <span>small, careful steps</span>
+          <span>overshoot, then diverge</span>
+        </div>
+      </div>
     </Figure>
   )
 }
