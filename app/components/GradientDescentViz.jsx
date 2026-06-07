@@ -30,7 +30,7 @@ const MAX_STEPS = 80
 // STEP_MS is the per-step glide duration AND the stepping cadence: the next
 // optimizer step is dispatched when the current glide completes. Steps shrink as
 // f'(x) -> 0, so at a fixed time per step the dot decelerates on its own.
-const STEP_MS = 300
+const STEP_MS = 600
 const SETTLE_SLOPE = 1e-3 // |f'(x)| below this counts as settled
 const DIVERGE_BOUND = 4.2 // |x| past this means the steps blew up (flew off the chart)
 // Steps whose on-screen movement is below this collapse instantly, so the run
