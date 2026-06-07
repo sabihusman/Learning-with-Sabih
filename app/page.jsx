@@ -23,6 +23,13 @@ const TOPICS = [
     href: '/topics/embeddings/',
     part: 'Machine Learning',
   },
+  {
+    num: '04',
+    title: 'Attention',
+    subtitle: 'How a transformer decides which words to focus on, like "it" reaching back to "animal"',
+    href: '/topics/attention/',
+    part: 'Machine Learning',
+  },
 ]
 
 export const metadata = {
