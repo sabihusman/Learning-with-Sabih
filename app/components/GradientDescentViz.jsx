@@ -1,6 +1,7 @@
 'use client'
 
-import { useReducer, useEffect, useRef } from 'react'
+import { useReducer, useEffect, useRef, useState } from 'react'
+import { animate } from 'animejs'
 import Figure from './Figure'
 
 // ─── math ────────────────────────────────────────────────────────────────────
@@ -24,7 +25,10 @@ const df = (x) => 0.32 * x * (x * x - 4) + 0.15
 const STARTS = { right: 2.4, left: -2.4 }
 const LR = 0.12
 const MAX_STEPS = 60
-const STEP_MS = 360
+// STEP_MS doubles as the per-step glide duration AND the stepping cadence:
+// the next optimizer step is dispatched when the current glide completes.
+// At ~140ms/step the descent settles (right: 20 steps, left: 17) in ~2.4-2.8s.
+const STEP_MS = 140
 const SETTLE_SLOPE = 1e-3 // |f'(x)| below this counts as settled
 
 // known extrema, for markers and the settled-state label
@@ -92,42 +96,75 @@ const CURVE_D = (() => {
 // ─── component ───────────────────────────────────────────────────────────────
 export default function GradientDescentViz() {
   const [state, dispatch] = useReducer(reducer, undefined, () => initial('right'))
-  const cancelledRef = useRef(false)
 
+  // renderX is the *displayed* dot position, smoothly tweened by anime.js
+  // between discrete optimizer steps. The optimizer math (state.history) is
+  // unchanged and still advances in exact discrete steps; only the pixels glide.
+  const [renderX, setRenderX] = useState(() => STARTS.right)
+  const displayRef = useRef(STARTS.right) // where the dot currently is (glide start)
+  const animRef = useRef(null) // current anime.js instance, so we can cancel it
+  const runningRef = useRef(false) // latest running flag for the onComplete chain
+
+  // Keep runningRef in sync after each commit so the anime.js onComplete chain
+  // reads the current Play/Pause state (refs must not be written during render).
   useEffect(() => {
-    if (!state.running) return
-    cancelledRef.current = false
-    let lastStepTime = performance.now()
-    let rafId
+    runningRef.current = state.running
+  })
 
-    const tick = (now) => {
-      if (cancelledRef.current) return
-      if (now - lastStepTime >= STEP_MS) {
-        lastStepTime = now
-        dispatch({ type: 'AUTO_STEP' })
-      }
-      rafId = requestAnimationFrame(tick)
-    }
-
-    rafId = requestAnimationFrame(tick)
-    return () => {
-      cancelledRef.current = true
-      cancelAnimationFrame(rafId)
-    }
+  // Kick the first step when Play starts; the glide's onComplete chains the rest.
+  useEffect(() => {
+    if (state.running) dispatch({ type: 'AUTO_STEP' })
   }, [state.running])
 
+  // Glide the dot to each newly committed step using anime.js. When the glide
+  // finishes, advance the optimizer (if still running), which appends the next
+  // step and re-runs this effect — that chain is the stepping loop.
+  const targetX = state.history[state.history.length - 1]
+  useEffect(() => {
+    if (animRef.current) animRef.current.cancel()
+
+    // anime.js drives every transition. On a fresh step it glides over STEP_MS;
+    // on reset / start-switch (history back to one point) it animates from the
+    // current dot position to the new start. All setState happens inside anime's
+    // callbacks, never synchronously in this effect body.
+    const proxy = { x: displayRef.current }
+    animRef.current = animate(proxy, {
+      x: targetX,
+      duration: state.history.length <= 1 ? 0 : STEP_MS,
+      ease: 'out(2)', // anime.js v4 power ease-out (the engine default)
+      onUpdate: () => {
+        displayRef.current = proxy.x
+        setRenderX(proxy.x)
+      },
+      onComplete: () => {
+        displayRef.current = targetX
+        setRenderX(targetX)
+        if (runningRef.current) dispatch({ type: 'AUTO_STEP' })
+      },
+    })
+
+    return () => {
+      if (animRef.current) animRef.current.cancel()
+    }
+  }, [state.history, targetX])
+
+  // Discrete current step — drives readouts, settling, and status (unchanged).
   const x = state.history[state.history.length - 1]
   const slope = df(x)
   const done = state.history.length >= MAX_STEPS || isSettled(x)
-  const cx = sx(x)
-  const cy = sy(f(x))
+
+  // Animated visual position — drives the dot, arrow, and trail tip.
+  const vSlope = df(renderX)
+  const cx = sx(renderX)
+  const cy = sy(f(renderX))
 
   // descent direction along x is the sign of the negative gradient
-  const dir = slope > 0 ? -1 : 1
+  const dir = vSlope > 0 ? -1 : 1
   const ARROW = 26
   const arrowX2 = cx + dir * ARROW
 
-  const trailD = state.history
+  // Trail follows the gliding dot: committed points, with the live dot as the tip.
+  const trailD = [...state.history.slice(0, -1), renderX]
     .map((xi, i) => `${i === 0 ? 'M' : 'L'}${sx(xi).toFixed(1)},${sy(f(xi)).toFixed(1)}`)
     .join(' ')
 
@@ -214,8 +251,8 @@ export default function GradientDescentViz() {
           <path d={trailD} fill="none" stroke="#9b9892" strokeWidth={1.4} strokeDasharray="3 2" strokeLinejoin="round" />
         )}
 
-        {/* descent-direction arrow */}
-        {!done && Math.abs(slope) > SETTLE_SLOPE && (
+        {/* descent-direction arrow (uses the animated slope so it fades on arrival) */}
+        {!done && Math.abs(vSlope) > SETTLE_SLOPE && (
           <line x1={cx.toFixed(1)} y1={cy.toFixed(1)} x2={arrowX2.toFixed(1)} y2={cy.toFixed(1)} stroke="#c0392b" strokeWidth={1.6} markerEnd="url(#gdArrow)" />
         )}
 
