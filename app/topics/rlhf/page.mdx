@@ -4,58 +4,14 @@ export const metadata = {
   title: 'RLHF - Learning with Sabih',
 }
 
-# RLHF
+A base language model can produce fluent text, but fluency alone does not tell it which answers people actually find helpful, honest, or safe. It imitates patterns from its training data, yet it has no direct signal for human preferences. To align its behavior with what people want, you need feedback that reflects human taste.
 
-A language model trained only to predict the next word is good at sounding
-fluent, but not at being helpful, honest, or safe. It has no notion of which of
-two reasonable answers a person would actually prefer. Reinforcement learning
-from human feedback, or RLHF, is the main way that gap is closed: it teaches the
-model to favor the kinds of answers people choose.
+RLHF, reinforcement learning from human feedback, adds that signal through a simple loop. Given a prompt, the model generates several candidate responses. Humans compare them and choose which is better. Those comparisons become training data that pushes the model toward responses people prefer.
 
-## The loop
+The preference has to become something a model can optimize. First, the human comparisons train a separate reward model: it takes a prompt and a response and outputs a score predicting how a human would rank it. Then the language model is fine-tuned to produce responses that score well under that reward model. The reward model stands in for the human during training, so a person does not have to judge every new output.
 
-The core idea is to let human preferences, not just raw text, shape the model.
-It works in three stages. First, the model produces several candidate answers to
-the same prompt. Second, people compare those answers and say which they prefer.
-Third, those preferences are turned into a signal the model can train against, so
-it produces more of what people picked and less of what they passed over.
+Over many rounds, behavior shifts. The model produces more of the traits that win comparisons, like being clearer, more on topic, and more careful, and less of the traits that lose, like being evasive, unsafe, or misleading.
 
-Do this across many prompts and many comparisons, and the model's behavior shifts
-toward the qualities the raters kept rewarding: clearer help, more honesty about
-what it does not know, fewer evasive or padded answers.
+The figure below is a simplified stand-in. It uses a few hidden trait scores (helpful, honest, concise, and enthusiastic) and a small preference rule, not a real language model, but the loop is the real idea: generate, compare, learn the preference, shift behavior. Pick the better response each round and watch the model's preference move.
 
 <RlhfViz />
-
-## What the figure is really doing
-
-The figure above is a simplified stand-in, not a real language model. There is no
-text generation happening. Each candidate response is drawn from a small fixed
-set of templates, and every template carries hidden trait scores, such as how
-helpful, honest, concise, or enthusiastic it is. When you pick one, a tiny
-preference model nudges its weights toward the traits of the response you chose
-and away from the ones you passed over, using a fixed, seeded rule. As those
-weights grow, later rounds are steered to offer more responses with the traits
-you favor. That is why your choices visibly reshape both the meters and the menu.
-
-## How the real thing works
-
-A real system is heavier in two ways. The comparisons are not turned into rules
-by hand; they train a separate reward model, a network that learns to predict
-which answer a human would prefer for any prompt. Then the language model itself
-is fine-tuned to maximize that predicted reward, usually with a reinforcement
-learning algorithm such as PPO, while a penalty keeps it from drifting too far
-from the original model and producing gibberish that games the reward.
-
-The catch is that the model learns exactly what the reward captures. If the
-feedback rewards confident-sounding answers, it becomes more confident, whether
-or not it is more correct. Good RLHF depends on careful, representative human
-feedback, which is why so much effort goes into how those comparisons are
-collected.
-
-## What the demo shows
-
-Pick the response you prefer in each round. The meters show the current learned
-preference weight for each trait: bars grow to the right for traits you favor and
-to the left for ones you avoid. Keep favoring the same trait and watch its meter
-climb while the candidate responses start trending toward it. Skip prompt moves
-on without giving feedback, and Reset clears the learned preferences.
