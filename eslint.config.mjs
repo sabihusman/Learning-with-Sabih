@@ -10,6 +10,11 @@ const eslintConfig = defineConfig([
     'next-env.d.ts',
     // reference / scratch files at repo root that are not part of the app
     'study-guide-demo.jsx',
+    // Playwright e2e tests + reports are linted by Playwright/tsc, not next lint
+    'e2e/**',
+    'playwright.config.ts',
+    'playwright-report/**',
+    'test-results/**',
   ]),
   {
     // These two react rules are noise for a React Three Fiber + plain-JS project,

@@ -23,6 +23,11 @@ id_ed25519.pub
 # debug
 npm-debug.log*
 
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
 # local build scratch
 .buildtmp/
 .npmcache/
