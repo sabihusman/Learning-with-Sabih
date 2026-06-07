@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  # ── 1. Build ────────────────────────────────────────────────────────────────
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+        # emits ./out (Next.js static export)
+
+      # Share ./out with the link-check job
+      - uses: actions/upload-artifact@v4
+        with:
+          name: out
+          path: ./out
+          retention-days: 1
+
+  # ── 2. Lint ─────────────────────────────────────────────────────────────────
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+  # ── 3. Link check ───────────────────────────────────────────────────────────
+  # Runs lychee in --offline mode: checks that every internal href in the
+  # generated HTML resolves to a real file in ./out.  No external HTTP calls
+  # are made, so the check never flakes due to network or third-party uptime.
+  #
+  # Tool choice: lycheeverse/lychee-action@v2 (latest stable v2.8.0, Feb 2025)
+  # Reasons: actively maintained (41 contributors, Dependabot-managed),
+  # supports --offline for pure local-file checking, supports --root-dir to
+  # resolve absolute paths like /topics/gradient-descent/ against ./out/,
+  # and has a stable GitHub Action wrapper.
+  # htmltest-action was evaluated and rejected: only at v0.13.0-rc1, no stable
+  # release, unclear maintenance.
+  link-check:
+    name: link-check
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: out
+          path: ./out
+
+      - name: Check internal links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # --offline  : only check local file links, block all network requests
+          # --root-dir : resolve absolute hrefs (e.g. /topics/…) against ./out
+          # --verbose  : show each checked link in the log
+          # --no-progress : cleaner CI output
+          args: >-
+            --offline
+            --root-dir ./out
+            --verbose
+            --no-progress
+            './out/**/*.html'
+          fail: true
