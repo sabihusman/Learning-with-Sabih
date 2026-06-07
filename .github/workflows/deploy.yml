@@ -1,44 +1,59 @@
-name: Deploy to GitHub Pages
+name: Deploy to Hetzner
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+# Only contents: read needed — no GitHub Pages permissions required
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Cancel any in-flight deploy when a new push lands
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: deploy
+  cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
           cache: npm
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-      - run: npm run build
+      - name: Build static export
+        run: npm run build
+        # emits ./out
 
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./out
+      - name: Write SSH private key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Trust the server host key
+        run: ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: rsync ./out to server
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes" \
+            ./out/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/study-guide/"
+
+      - name: Verify deployment (expect HTTP 200)
+        run: |
+          status=$(curl -o /dev/null -s -w "%{http_code}" "http://${{ secrets.SITE_DOMAIN }}/")
+          echo "HTTP status: $status"
+          if [ "$status" != "200" ]; then
+            echo "ERROR: expected 200, got $status"
+            exit 1
+          fi
