@@ -1,0 +1,57 @@
+import AttentionViz from '@/app/components/AttentionViz'
+
+export const metadata = {
+  title: 'Attention - Learning with Sabih',
+}
+
+# Attention
+
+To understand a sentence, a model has to figure out how the words relate. Read
+the sentence "the animal didn't cross the street because it was tired." What does
+"it" refer to? Almost certainly the animal, not the street, because streets do
+not get tired. You resolved that by letting "it" look back at the other words and
+deciding which one matters. Attention is how a transformer does the same thing.
+
+## Every word looks at every other word
+
+For each word, attention asks a simple question: to understand this word, how much
+should I focus on each of the other words? The answer is a set of weights, one per
+word, that add up to a full unit of focus. A high weight means "this other word is
+important for me right now," a low weight means "I can mostly ignore it."
+
+Crucially, every word does this for every other word, in both directions and all
+at once. That is what lets a model link "it" to "animal" even though several words
+sit between them. Distance in the sentence does not matter; only the learned
+relationship does.
+
+<AttentionViz />
+
+## Reading the figure
+
+Click a word to see its attention as links to the rest of the sentence. Thicker,
+brighter links mean stronger attention. Click "it" and the strongest link snaps
+back to "animal," with only a faint link to "street." That is the model resolving
+what "it" stands for. Try "cross" and you will see it lean on "street" and
+"animal," the words that say what is being crossed and who is crossing.
+
+The weights here are hand-set to make the lesson clear. A real model is not told
+that "it" means "animal." It learns weights like these from data, and it computes
+them on the fly from each word using learned query, key, and value vectors,
+usually across many attention heads at once, each head watching for a different
+kind of relationship.
+
+## Why it matters
+
+Attention is the core mechanism of the transformer, the architecture behind modern
+language models. Before attention, models read text strictly in order and tended
+to forget what came far earlier. Attention removed that limit: any word can draw
+on any other word directly, no matter how far apart, which is what let these
+models handle long passages and capture the relationships that make language mean
+something.
+
+## What the demo shows
+
+Each point is a word of the example sentence. Drag to orbit, scroll to zoom, and
+click a word to draw its attention links to the others, weighted by strength. The
+"it" to "animal" link is the headline case, hand-set so the idea of attention
+resolving a reference is easy to see.
