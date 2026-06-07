@@ -1,13 +1,15 @@
 name: CI
 
-# Run once per PR. pull_request covers the PR lifecycle; push is scoped to main
-# only (post-merge), so a push to a feature branch with an open PR does NOT also
-# fire. That double-trigger was producing duplicate "(push)/(pull_request)"
-# status contexts that deadlocked the required-checks merge gate.
+# Single trigger ON PURPOSE. GitHub appends the event name to a check's context
+# (e.g. "CI / build (pull_request)") whenever a workflow declares more than one
+# event in `on:`, even if only one actually fires. Branch protection requires
+# the unsuffixed "CI / build", so a two-event `on:` left it forever "Expected,
+# waiting for status to be reported". With a single `pull_request` event the
+# context is exactly "CI / build" / "CI / lint" / "CI / link-check", matching the
+# required checks. pull_request also re-runs on every push to an open PR
+# (the `synchronize` activity), so PR commits stay covered.
 on:
   pull_request:
-    branches: [main]
-  push:
     branches: [main]
 
 permissions:
