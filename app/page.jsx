@@ -30,6 +30,13 @@ const TOPICS = [
     href: '/topics/attention/',
     part: 'Machine Learning',
   },
+  {
+    num: '05',
+    title: 'Neural Networks',
+    subtitle: 'Watch a tiny network train live: loss drops, weights shift, the boundary sharpens',
+    href: '/topics/neural-networks/',
+    part: 'Machine Learning',
+  },
 ]
 
 export const metadata = {
