@@ -1,0 +1,97 @@
+import GradientDescentViz from '@/app/components/GradientDescentViz'
+
+export const metadata = {
+  title: 'Gradient Descent — Learning with Sabih',
+}
+
+# Gradient Descent
+
+Machine learning models learn by adjusting their parameters to reduce error.
+The mechanism behind most of this adjustment is gradient descent: a way of
+finding the minimum of a function by repeatedly stepping downhill, in the
+direction of steepest descent.
+
+## The loss curve
+
+Picture a single parameter x and a loss function f(x) that measures how much
+error the model makes for that value of x. The goal is to find the value of x
+where the loss is lowest.
+
+The function used here is a one-dimensional asymmetric double well:
+
+```
+f(x) = 0.08 * (x^2 - 4)^2 + 0.15 * x
+```
+
+It has two valleys rather than one. The small tilt from the 0.15 * x term
+makes the left valley slightly deeper than the right one, so the two minima
+are not equal. This shape is deliberate: a single bowl can only show one
+minimum, but a double well can show the difference between a local minimum and
+the global minimum.
+
+<GradientDescentViz />
+
+## The gradient
+
+In one dimension the gradient is just the derivative f'(x), the slope of the
+curve. To descend you step in the opposite direction of the slope:
+
+```
+f'(x) = 0.32 * x * (x^2 - 4) + 0.15
+```
+
+The parameter update at each step:
+
+```
+x  <-  x - alpha * f'(x)
+```
+
+where alpha (the learning rate) is a small positive number that controls how
+large each step is. When the slope is positive the point moves left; when it
+is negative the point moves right. Either way it moves toward lower loss.
+
+## Local versus global minima
+
+Setting f'(x) to zero gives three points where the slope is flat:
+
+```
+x ≈ -2.056   global minimum   f ≈ -0.304   the deeper, left valley
+x ≈ +0.118   local maximum    f ≈ +1.289   the ridge between the valleys
+x ≈ +1.939   local minimum    f ≈ +0.296   the shallower, right valley
+```
+
+A minimum is global if no other point has a lower loss, and local if it is
+the lowest only within its immediate neighborhood. Here the left valley is the
+global minimum and the right valley is a local minimum that is higher than the
+global one.
+
+## Why the starting point matters
+
+Plain gradient descent only ever moves downhill, so it cannot climb over the
+ridge at x ≈ 0.118 that separates the two valleys. Whichever side of that ridge
+you start on is the valley you end up in.
+
+Start the demo on the right, at x = 2.4, and run it. The point rolls left and
+down until the slope flattens at x ≈ 1.939, then stops. That is the local
+minimum. It settles there even though a deeper, better minimum exists in the
+left valley, because reaching the left valley would require going uphill first
+and gradient descent never does that.
+
+Now switch to Start left, at x = -2.4, and run again. This time the point
+settles at x ≈ -2.056, the global minimum.
+
+This is the central limitation the demo is built to show: gradient descent
+finds a minimum near where it begins, not necessarily the best minimum overall.
+It is why where you initialize the parameters matters, and why techniques such
+as random restarts, momentum, and stochastic noise exist. Each is a way to
+give the optimizer a chance to escape a local minimum and find a deeper one.
+
+## What the demo shows
+
+The grey curve is the loss f(x). The red dot is the current value of x. The
+red arrow shows the descent direction, which is the sign of the negative slope.
+The dashed grey trail records every previous position. The filled black dot
+marks the global minimum and the hollow black ring marks the local minimum.
+Use **Play** to run the optimization, **Step** to advance one iteration at a
+time and watch the readouts, and **Start left** or **Start right** to choose
+which valley the point begins in.

@@ -1,0 +1,110 @@
+.main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 4rem 2rem 6rem;
+}
+
+.header {
+  margin-bottom: 4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 0.75rem;
+}
+
+.siteName {
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  font-size: 0.9375rem;
+  color: var(--fade);
+  font-style: italic;
+}
+
+.contentsLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fade);
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.item {
+  margin-bottom: 1.75rem;
+}
+
+.link {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0.2rem 0;
+}
+
+.link:hover .topicTitle {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--fade);
+  min-width: 2.5rem;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.topicTitle {
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: var(--ink);
+  transition: color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* dotted leader between title and number */
+.leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--fade);
+  margin: 0 0.75rem 0.25em;
+  opacity: 0.45;
+  min-width: 1.5rem;
+}
+
+.topicNum {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--fade);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.subtitle {
+  font-size: 0.8125rem;
+  color: var(--fade);
+  padding-left: 2.5rem;
+  margin-top: 0.2rem;
+  font-style: italic;
+}

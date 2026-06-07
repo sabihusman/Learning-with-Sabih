@@ -1,0 +1,113 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 2rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.back {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fade);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.back:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.brand {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+}
+
+/* MDX prose typography */
+.prose h1 {
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.prose h2 {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  margin-top: 2.5rem;
+  margin-bottom: 0.625rem;
+  color: var(--ink);
+}
+
+.prose h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose p {
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-bottom: 1.25rem;
+  color: var(--ink);
+}
+
+.prose pre {
+  background: #f0ede6;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rule);
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.prose code {
+  background: #f0ede6;
+  padding: 0.1em 0.3em;
+  font-size: 0.875em;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.25rem 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.375rem;
+  line-height: 1.7;
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 2.5rem 0;
+}
