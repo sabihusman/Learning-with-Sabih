@@ -16,6 +16,13 @@ const TOPICS = [
     href: '/topics/confusion-matrix/',
     part: 'Machine Learning',
   },
+  {
+    num: '03',
+    title: 'Embeddings',
+    subtitle: 'Words as points in space, where closeness means similar meaning',
+    href: '/topics/embeddings/',
+    part: 'Machine Learning',
+  },
 ]
 
 export const metadata = {

@@ -1,0 +1,56 @@
+import EmbeddingsViz from '@/app/components/EmbeddingsViz'
+
+export const metadata = {
+  title: 'Embeddings - Learning with Sabih',
+}
+
+# Embeddings
+
+Computers do not understand words, they understand numbers. An embedding is the
+bridge: it turns each word into a list of numbers, a vector, chosen so that words
+with similar meanings end up with similar vectors. Once meaning is a position in
+space, the machine can compare words by measuring how far apart they are.
+
+## Meaning becomes distance
+
+The core trick is that distance carries meaning. Words that appear in similar
+contexts are placed close together; words that have nothing to do with each other
+are placed far apart. The model is never told that a king and a queen are related.
+It learns it from seeing them used in similar sentences, and it records that
+relationship by putting their vectors near each other.
+
+In the scene below, each word is a point. Related words form tight clusters and
+the clusters sit far apart. Click any word to draw lines to its three nearest
+neighbors, and you will see the neighbors are always its own group.
+
+<EmbeddingsViz />
+
+## Why this looks too clean
+
+Real embeddings do not live in three dimensions. A typical model represents each
+word with a vector of hundreds or even thousands of numbers. Each of those numbers
+is a separate axis, and no one can picture a 300 dimensional space.
+
+So to look at embeddings we cheat: we squash the hundreds of dimensions down to
+two or three using a projection technique such as PCA, t-SNE, or UMAP. Something
+is always lost in that squashing, which is why real projections look messier than
+this one. The coordinates here are placed by hand to show the idea cleanly. The
+lesson holds either way: near means similar, far means different.
+
+## Why it matters
+
+This one idea powers a lot of modern software. Search engines embed your query and
+your documents into the same space and return the documents whose vectors sit
+closest to the query, which is how you find a relevant result that does not share
+a single keyword. Recommendation systems embed items and users and look for near
+neighbors. Retrieval-augmented generation embeds chunks of text so a language
+model can pull in the passages most related to a question. In every case the
+machinery underneath is the same: turn things into vectors, then measure distance.
+
+## What the demo shows
+
+Each point is one word, placed by hand so that meaning maps to distance. Drag to
+orbit the cloud, scroll to zoom, and click a word to highlight its nearest
+neighbors. The four clusters are royalty, animals, vehicles, and fruit. They sit
+far apart because their meanings are unrelated, and each word's closest points are
+always the other members of its own cluster.
