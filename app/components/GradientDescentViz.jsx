@@ -39,7 +39,13 @@ const advance = (x) => x - LR * df(x)
 const isSettled = (x) => Math.abs(df(x)) < SETTLE_SLOPE
 
 // ─── reducer ─────────────────────────────────────────────────────────────────
-const initial = (side) => ({ history: [STARTS[side]], running: false, side })
+const DEFAULT_SIDE = 'right'
+// Tolerate an unknown side (e.g. 'custom' after a drag) so RESET always lands on
+// a valid default start rather than STARTS[undefined].
+const initial = (side) => {
+  const key = side in STARTS ? side : DEFAULT_SIDE
+  return { history: [STARTS[key]], running: false, side: key }
+}
 
 function reducer(state, action) {
   const last = state.history[state.history.length - 1]
@@ -60,6 +66,10 @@ function reducer(state, action) {
       return initial(state.side)
     case 'SET_START':
       return initial(action.side)
+    case 'SET_X':
+      // drag-to-place: start a fresh run from an arbitrary x (already clamped).
+      // 'custom' side means no preset button is active and RESET falls back to default.
+      return { history: [action.x], running: false, side: 'custom' }
     default:
       return state
   }
@@ -104,6 +114,62 @@ export default function GradientDescentViz() {
   const displayRef = useRef(STARTS.right) // where the dot currently is (glide start)
   const animRef = useRef(null) // current anime.js instance, so we can cancel it
   const runningRef = useRef(false) // latest running flag for the onComplete chain
+
+  // ── drag-to-place ──────────────────────────────────────────────────────────
+  // While paused, the dot can be dragged along the curve to set the start x.
+  // svgRef converts a pointer position into a viewBox coordinate; draggingRef is
+  // the synchronous flag the pointer handlers read; isDragging is render-only
+  // (for the cursor), kept separate because refs must not be read during render.
+  const svgRef = useRef(null)
+  const draggingRef = useRef(false)
+  const [isDragging, setIsDragging] = useState(false)
+
+  // pointer clientX -> world x (clamped to the plotted domain)
+  const pointerToX = (clientX) => {
+    const rect = svgRef.current.getBoundingClientRect()
+    const viewX = ((clientX - rect.left) / rect.width) * VB_W
+    const wx = X_MIN + ((viewX - PLOT_L) / (PLOT_R - PLOT_L)) * (X_MAX - X_MIN)
+    return Math.max(X_MIN, Math.min(X_MAX, wx))
+  }
+
+  // Move the dot to the pointer immediately. Cancelling the in-flight glide and
+  // writing renderX/displayRef here is what stops the animation from fighting
+  // the drag: the reducer's single-point history makes the glide effect a no-op
+  // (duration 0), and the dot tracks the pointer with no lag.
+  const dragTo = (clientX) => {
+    const wx = pointerToX(clientX)
+    if (animRef.current) animRef.current.cancel()
+    displayRef.current = wx
+    setRenderX(wx)
+    dispatch({ type: 'SET_X', x: wx })
+  }
+
+  const onPointerDown = (e) => {
+    if (state.running) return // only draggable while paused
+    draggingRef.current = true
+    setIsDragging(true)
+    // capture so move/up keep firing if the pointer leaves the handle
+    try {
+      e.currentTarget.setPointerCapture?.(e.pointerId)
+    } catch {
+      // ignore: capture is a nicety, drag still works without it
+    }
+    dragTo(e.clientX)
+  }
+  const onPointerMove = (e) => {
+    if (!draggingRef.current) return
+    dragTo(e.clientX)
+  }
+  const onPointerUp = (e) => {
+    if (!draggingRef.current) return
+    draggingRef.current = false
+    setIsDragging(false)
+    try {
+      e.currentTarget.releasePointerCapture?.(e.pointerId)
+    } catch {
+      // ignore
+    }
+  }
 
   // Keep runningRef in sync after each commit so the anime.js onComplete chain
   // reads the current Play/Pause state (refs must not be written during render).
@@ -213,12 +279,13 @@ export default function GradientDescentViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Start on the right and run it: the point rolls into the nearer local minimum and stops, even though a deeper global minimum sits in the left well. Now switch to Start left and run again to reach the global minimum. Plain gradient descent only goes downhill, so where you begin decides which minimum you get."
+      tryThis="While paused, drag the red point anywhere along the curve to set the starting position, then press Play. Where you let go decides which valley it falls into: release it on the right slope and it settles in the local minimum, release it left of the central ridge and it reaches the deeper global minimum. Reset returns to the default start."
     >
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '0 auto' }}
-        aria-label="Loss curve of a 1D double-well function with the gradient descent path settling in one of its two minima"
+        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '0 auto', touchAction: 'none' }}
+        aria-label="Loss curve of a 1D double-well function. Drag the red point along the curve while paused to set the starting position, then run gradient descent."
       >
         <defs>
           <marker id="gdArrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
@@ -256,8 +323,22 @@ export default function GradientDescentViz() {
           <line x1={cx.toFixed(1)} y1={cy.toFixed(1)} x2={arrowX2.toFixed(1)} y2={cy.toFixed(1)} stroke="#c0392b" strokeWidth={1.6} markerEnd="url(#gdArrow)" />
         )}
 
-        {/* current point */}
-        <circle cx={cx.toFixed(1)} cy={cy.toFixed(1)} r={5} fill="#c0392b" stroke="#ffffff" strokeWidth={1.5} />
+        {/* current point (visual only; the grab handle below receives pointer events) */}
+        <circle cx={cx.toFixed(1)} cy={cy.toFixed(1)} r={5} fill="#c0392b" stroke="#ffffff" strokeWidth={1.5} pointerEvents="none" />
+
+        {/* drag handle: a generous transparent hit area over the dot. Draggable
+            only while paused; sets the start x and tracks the pointer instantly. */}
+        <circle
+          cx={cx.toFixed(1)}
+          cy={cy.toFixed(1)}
+          r={16}
+          fill="transparent"
+          style={{ cursor: state.running ? 'default' : isDragging ? 'grabbing' : 'grab' }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+        />
       </svg>
     </Figure>
   )
