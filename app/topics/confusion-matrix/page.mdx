@@ -1,0 +1,24 @@
+import ConfusionMatrixViz from '@/app/components/ConfusionMatrixViz'
+
+export const metadata = {
+  title: 'Confusion Matrix — Learning with Sabih',
+}
+
+A confusion matrix is a simple way to count what a classifier got right and wrong. For a spam filter, each email is either actually spam or actually not spam, and the filter predicts spam or not spam. That gives four outcomes:
+
+- True positive (TP): the email is spam, and the filter flags it as spam.
+- False positive (FP): the email is not spam, but the filter flags it. A good email sent to the junk folder.
+- True negative (TN): the email is not spam, and the filter leaves it in the inbox.
+- False negative (FN): the email is spam, but the filter lets it through.
+
+From these counts you get two useful measures.
+
+Precision asks: when the filter says "spam," how often is it right? Precision = TP / (TP + FP). High precision means few false alarms, so you rarely lose real email to the junk folder.
+
+Recall asks: out of all the spam that exists, how much did the filter catch? Recall = TP / (TP + FN). High recall means little spam slips through.
+
+Most filters output a score, say 0 to 1, and you pick a threshold above which an email is marked spam. Raise the threshold and you flag fewer emails: false positives drop, so precision rises, but false negatives climb, so recall falls. Lower it and the reverse happens.
+
+There is no setting that makes both perfect when spam and real mail overlap in score. Choosing the threshold means choosing which mistake you can live with. A spam filter would rather let some spam through than bury your real mail. A cancer screen makes the opposite choice: catch every real case, even at the cost of false alarms.
+
+<ConfusionMatrixViz />

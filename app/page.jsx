@@ -9,6 +9,13 @@ const TOPICS = [
     href: '/topics/gradient-descent/',
     part: 'Machine Learning',
   },
+  {
+    num: '02',
+    title: 'Confusion Matrix',
+    subtitle: 'Precision, recall, and the threshold that trades one for the other',
+    href: '/topics/confusion-matrix/',
+    part: 'Machine Learning',
+  },
 ]
 
 export const metadata = {
