@@ -1,0 +1,17 @@
+import NeuralNetViz from '@/app/components/NeuralNetViz'
+
+export const metadata = {
+  title: 'Neural Networks - Learning with Sabih',
+}
+
+A single artificial neuron does one small calculation. It takes a set of inputs, multiplies each by a weight, adds them into a weighted sum, then passes that sum through an activation function, which decides how strongly the neuron "fires." On its own this is simple: a way to combine several signals into one output.
+
+The power comes from wiring many neurons together in layers. The first layer reads the raw inputs, like pixel values or numeric features. Its outputs feed the next layer, which combines them into more useful signals. With enough layers, later neurons represent higher-level patterns built from earlier ones.
+
+At the start, the network's weights are random, so its first predictions are close to chance. Training is how it improves. You show one example, the signal flows forward through the layers to a prediction, and you compare that prediction to the correct answer. The difference is the loss, a single number saying how wrong the network was.
+
+Backpropagation then works backward from the loss to compute how much each weight contributed to the error. Those contributions are gradients: they say which direction would make the loss larger or smaller. Gradient descent uses them to nudge each weight a little toward less error. This is the same gradient-descent idea from the separate topic, now applied across thousands or millions of weights at once.
+
+Repeat this over many examples and the loss falls, with the weights settling into values that capture the pattern in the data. In the figure below, you can watch a small network train in real time: the loss drops, connection strengths shift, and the boundary between two groups sharpens.
+
+<NeuralNetViz />
