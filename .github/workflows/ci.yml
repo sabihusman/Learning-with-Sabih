@@ -1,9 +1,13 @@
 name: CI
 
+# Run once per PR. pull_request covers the PR lifecycle; push is scoped to main
+# only (post-merge), so a push to a feature branch with an open PR does NOT also
+# fire. That double-trigger was producing duplicate "(push)/(pull_request)"
+# status contexts that deadlocked the required-checks merge gate.
 on:
-  push:
-    branches: ['**']
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
 
 permissions:
