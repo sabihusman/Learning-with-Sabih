@@ -4,81 +4,21 @@ export const metadata = {
   title: 'Confusion Matrix — Learning with Sabih',
 }
 
-# Confusion Matrix
+A confusion matrix is a simple way to count what a classifier got right and wrong. For a spam filter, each email is either actually spam or actually not spam, and the filter predicts spam or not spam. That gives four outcomes:
 
-A classifier does not output a yes or no. It outputs a score, usually between 0
-and 1, that expresses how confident it is that an item is positive. To turn that
-score into a decision you pick a threshold: items scoring at or above it are
-predicted positive, the rest are predicted negative. Where you put that
-threshold changes everything downstream.
+- True positive (TP): the email is spam, and the filter flags it as spam.
+- False positive (FP): the email is not spam, but the filter flags it. A good email sent to the junk folder.
+- True negative (TN): the email is not spam, and the filter leaves it in the inbox.
+- False negative (FN): the email is spam, but the filter lets it through.
 
-## Four outcomes
+From these counts you get two useful measures.
 
-Once you have predictions and you know the true labels, every item falls into
-one of four boxes. These four counts are the confusion matrix:
+Precision asks: when the filter says "spam," how often is it right? Precision = TP / (TP + FP). High precision means few false alarms, so you rarely lose real email to the junk folder.
 
-```
-                 predicted +        predicted -
-   actual +      true positive      false negative
-   actual -      false positive     true negative
-```
+Recall asks: out of all the spam that exists, how much did the filter catch? Recall = TP / (TP + FN). High recall means little spam slips through.
 
-A true positive (TP) is a real positive the model caught. A false negative (FN)
-is a real positive it missed. A false positive (FP) is a negative the model
-wrongly flagged. A true negative (TN) is a negative it correctly left alone. The
-diagonal is where the model is right; the off-diagonal is where it is wrong.
+Most filters output a score, say 0 to 1, and you pick a threshold above which an email is marked spam. Raise the threshold and you flag fewer emails: false positives drop, so precision rises, but false negatives climb, so recall falls. Lower it and the reverse happens.
+
+There is no setting that makes both perfect when spam and real mail overlap in score. Choosing the threshold means choosing which mistake you can live with. A spam filter would rather let some spam through than bury your real mail. A cancer screen makes the opposite choice: catch every real case, even at the cost of false alarms.
 
 <ConfusionMatrixViz />
-
-## Precision and recall
-
-The raw counts are hard to compare across datasets, so we summarize them with
-two ratios.
-
-```
-precision = TP / (TP + FP)
-recall    = TP / (TP + FN)
-```
-
-Precision answers: of everything the model flagged as positive, how much really
-was positive? It is the quality of the positive predictions. Recall answers: of
-everything that was actually positive, how much did the model find? It is the
-coverage of the real positives.
-
-They measure different failures. Precision is hurt by false positives. Recall is
-hurt by false negatives. A spam filter that blocks one obviously bad email and
-nothing else has near-perfect precision and terrible recall. A filter that
-blocks every email has perfect recall and dismal precision.
-
-## The threshold tradeoff
-
-Move the threshold in the demo and watch the two ratios pull against each other.
-
-Lower the threshold and the model predicts positive more readily. It catches
-more of the real positives, so recall rises, but it also sweeps in more
-negatives, so precision falls. Raise the threshold and the opposite happens:
-the model only commits to its most confident calls, so precision rises while
-recall falls.
-
-This is the central tension of classification. The two classes overlap, so no
-threshold separates them cleanly. You cannot maximize both at once; you choose
-where on the curve to sit based on which mistake costs more. Screening for a
-serious disease favors recall, because a missed case is worse than a false
-alarm. Flagging accounts for a permanent ban favors precision, because wrongly
-punishing a real user is worse than missing one bad actor.
-
-## Divide by zero
-
-The formulas have edge cases. Push the threshold above every score and the model
-predicts no positives at all: TP and FP are both zero, so precision is zero over
-zero, which is undefined. The demo shows precision as "n/a" there rather than a
-misleading number. Recall keeps a denominator as long as the dataset contains
-any real positives, so it stays defined and simply falls toward zero.
-
-## What the demo shows
-
-Each dot is one example placed along its model score. The top row holds the
-actual positives, the bottom row the actual negatives. Dark dots are classified
-correctly at the current threshold; red dots are mistakes. The vertical red line
-is the threshold, and the shaded band to its right is the predicted-positive
-region. The matrix and the precision and recall readouts update live as you drag.
