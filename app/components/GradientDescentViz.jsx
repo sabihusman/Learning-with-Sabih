@@ -123,6 +123,49 @@ const CURVE_D = (() => {
   return d
 })()
 
+// ─── presentational helpers ──────────────────────────────────────────────────
+// Pure, behavior-preserving helpers pulled out of the component so its body stays
+// simple to read (and under the cognitive-complexity limit).
+
+// Trail path: sample f(x) between consecutive nodes so each segment hugs the
+// curve instead of cutting a straight chord.
+function buildTrailPath(nodes) {
+  if (nodes.length < 2) return ''
+  const pts = []
+  const K = 8
+  for (let i = 0; i < nodes.length - 1; i++) {
+    const a = nodes[i]
+    const b = nodes[i + 1]
+    for (let k = 0; k < K; k++) {
+      const xi = a + ((b - a) * k) / K
+      pts.push([sx(xi), sy(f(xi))])
+    }
+  }
+  const tip = nodes[nodes.length - 1]
+  pts.push([sx(tip), sy(f(tip))])
+  return pts.map(([px, py], i) => `${i === 0 ? 'M' : 'L'}${px.toFixed(1)},${py.toFixed(1)}`).join(' ')
+}
+
+// Which basin a settled run landed in, or null if not near a known minimum.
+function basinLabel(x) {
+  if (Math.abs(x - GLOBAL_MIN) < 0.05) return 'Settled in the global minimum'
+  if (Math.abs(x - LOCAL_MIN) < 0.05) return 'Settled in the local minimum'
+  return null
+}
+
+// One-line status shown in the figure header.
+function statusLabel(state, done) {
+  if (state.diverged) return 'Diverged: the steps blew up and left the chart'
+  if (done) return basinLabel(state.history[state.history.length - 1]) ?? 'Stopped without converging'
+  return state.running ? 'Running' : 'Paused'
+}
+
+// Cursor for the drag handle (grab when idle, grabbing while dragging).
+function cursorFor(running, dragging) {
+  if (running) return 'default'
+  return dragging ? 'grabbing' : 'grab'
+}
+
 // ─── component ───────────────────────────────────────────────────────────────
 export default function GradientDescentViz() {
   const [state, dispatch] = useReducer(reducer, undefined, () => initial('right', DEFAULT_LR))
@@ -260,38 +303,9 @@ export default function GradientDescentViz() {
   // Trail rides the curve: sample f(x) between consecutive points (and out to the
   // live dot) so each segment hugs the curve instead of cutting a straight chord.
   const trailNodes = [...state.history.slice(0, -1), dispX]
-  const trailD = (() => {
-    if (trailNodes.length < 2) return ''
-    const pts = []
-    const K = 8
-    for (let i = 0; i < trailNodes.length - 1; i++) {
-      const a = trailNodes[i]
-      const b = trailNodes[i + 1]
-      for (let k = 0; k < K; k++) {
-        const xi = a + ((b - a) * k) / K
-        pts.push([sx(xi), sy(f(xi))])
-      }
-    }
-    const tip = trailNodes[trailNodes.length - 1]
-    pts.push([sx(tip), sy(f(tip))])
-    return pts.map(([px, py], i) => `${i === 0 ? 'M' : 'L'}${px.toFixed(1)},${py.toFixed(1)}`).join(' ')
-  })()
+  const trailD = buildTrailPath(trailNodes)
 
-  // status label
-  let settledLabel = null
-  if (done && !state.diverged) {
-    if (Math.abs(x - GLOBAL_MIN) < 0.05) settledLabel = 'Settled in the global minimum'
-    else if (Math.abs(x - LOCAL_MIN) < 0.05) settledLabel = 'Settled in the local minimum'
-  }
-  const status = state.diverged
-    ? 'Diverged: the steps blew up and left the chart'
-    : settledLabel
-      ? settledLabel
-      : done
-        ? 'Stopped without converging'
-        : state.running
-          ? 'Running'
-          : 'Paused'
+  const status = statusLabel(state, done)
 
   const controls = [
     {
@@ -383,7 +397,7 @@ export default function GradientDescentViz() {
           cy={cy.toFixed(1)}
           r={16}
           fill="transparent"
-          style={{ cursor: state.running ? 'default' : isDragging ? 'grabbing' : 'grab' }}
+          style={{ cursor: cursorFor(state.running, isDragging) }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}

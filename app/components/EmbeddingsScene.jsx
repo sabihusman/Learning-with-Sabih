@@ -12,13 +12,28 @@ import { WORDS, ACCENT, INK, FADE, PAPER } from './embeddingsData'
 
 const byId = (id) => WORDS.find((w) => w.id === id)
 
+// Sizing/coloring by selection state, pulled out of WordPoint so the styling is
+// readable if/else instead of nested ternaries. state: 'selected' | 'neighbor' |
+// 'dim' | 'normal'.
+function pointRadius(state) {
+  if (state === 'selected') return 0.3
+  if (state === 'neighbor') return 0.22
+  return 0.16
+}
+
+function labelColorFor(state) {
+  if (state === 'dim') return FADE
+  if (state === 'selected' || state === 'neighbor') return ACCENT
+  return INK
+}
+
 function WordPoint({ word, state, onSelect }) {
   const [hovered, setHovered] = useState(false)
   // state: 'selected' | 'neighbor' | 'dim' | 'normal'
-  const radius = state === 'selected' ? 0.3 : state === 'neighbor' ? 0.22 : 0.16
+  const radius = pointRadius(state)
   const color = state === 'selected' || state === 'neighbor' ? ACCENT : INK
   const opacity = state === 'dim' ? 0.25 : 1
-  const labelColor = state === 'dim' ? FADE : state === 'selected' || state === 'neighbor' ? ACCENT : INK
+  const labelColor = labelColorFor(state)
 
   return (
     <group position={word.pos}>

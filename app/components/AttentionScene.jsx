@@ -21,13 +21,28 @@ const lerpColor = (t) => {
   return `rgb(${c[0]},${c[1]},${c[2]})`
 }
 
+// Sizing/coloring by selection state, pulled out of WordPoint so the styling is
+// readable if/else instead of nested ternaries. The selected word is largest and
+// accent; with a selection active, the others scale and tint by their weight.
+function nodeRadius(selected, anySelected, weight) {
+  if (selected) return 0.32
+  if (anySelected) return 0.14 + weight * 0.16
+  return 0.18
+}
+
+function nodeColor(selected, anySelected, weight) {
+  if (selected) return ACCENT
+  if (anySelected) return lerpColor(weight)
+  return INK
+}
+
 function WordPoint({ word, selected, weight, anySelected, onSelect }) {
   const [hovered, setHovered] = useState(false)
   // when a word is selected, every other word is styled by how strongly the
   // selected word attends to it (weight). With nothing selected, all are neutral.
-  const radius = selected ? 0.32 : anySelected ? 0.14 + weight * 0.16 : 0.18
-  const color = selected ? ACCENT : anySelected ? lerpColor(weight) : INK
-  const labelColor = selected ? ACCENT : anySelected ? lerpColor(weight) : INK
+  const radius = nodeRadius(selected, anySelected, weight)
+  const color = nodeColor(selected, anySelected, weight)
+  const labelColor = nodeColor(selected, anySelected, weight)
   const labelOpacity = selected || !anySelected ? 1 : 0.35 + weight * 0.65
 
   return (
