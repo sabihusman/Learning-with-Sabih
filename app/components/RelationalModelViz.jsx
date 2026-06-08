@@ -115,7 +115,6 @@ export default function RelationalModelViz() {
           matchingSessionIdx.map((si) => (
             <line
               key={`link-${active}-${si}`}
-              className={styles.link}
               x1={X_U + USER_W}
               y1={rowCenter(activeUserIndex)}
               x2={X_S}
@@ -139,7 +138,7 @@ export default function RelationalModelViz() {
         </span>
       </div>
 
-      <p className={styles.note}>
+      <p style={{ fontFamily: MONO, fontSize: 11, lineHeight: 1.5, color: FADE, margin: '12px 0 0' }}>
         The data is not one giant table. It is split into focused tables connected by keys, which is what
         &quot;relational&quot; means, and why combining them needs a join.
       </p>
