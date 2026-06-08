@@ -1,0 +1,55 @@
+/* The running-sum bars grow from the left in a downward stagger, so the running
+   total visibly "builds" as your eye moves down the rows. Bars are rendered from
+   state at full width by default; this animation is purely additive, so a bar is
+   never left invisible even if the animation does not run (e.g. a backgrounded
+   tab). The bar key includes the partition state, so React remounts the bars and
+   the build replays whenever PARTITION BY is toggled. */
+.bar {
+  animation: grow 420ms ease-out both;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.partitionToggle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.partitionToggle:hover {
+  background: #ece9e1;
+}
+
+.partitionToggleOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.partitionToggleOn:hover {
+  background: #1a1a1a;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 10px 0 0;
+}
