@@ -1,0 +1,21 @@
+import FunnelViz from '@/app/components/FunnelViz'
+
+export const metadata = {
+  title: 'Funnel analysis - Learning with Sabih',
+}
+
+# Funnel analysis
+
+A funnel measures progress through a sequence of steps where some users drop off along the way. In a learning app, you might expect a session to open a topic, then use an interactive, then complete the topic. A funnel counts how many sessions reach each step, so you can see where people fall away.
+
+In SQL, a funnel is built from an events table. Each row is an event with fields like `session_id`, `event`, and `occurred_at`. For each step, you count the distinct sessions that fired that event. Distinct matters because one session can fire the same event more than once, and you want to count sessions, not raw events. So you compute the sessions that fired `topic_opened`, then `interactive_used`, then `topic_completed`.
+
+Then you calculate conversion rates. The step-to-step conversion is each step divided by the one before it: `interactive_used / topic_opened`, then `topic_completed / interactive_used`. The overall completion rate is the last step divided by the total sessions. These percentages show whether the funnel leaks early or late.
+
+This is useful because the biggest drop between two steps is usually the best place to investigate. If many sessions open a topic but few use the interactive, the interactive might be hard to find or slow to load. If usage is high but completion is low, the content might be too long or confusing.
+
+In practice this is often written with a CTE per step, combined into one output row. That keeps the logic readable and makes it easy to add filters like date ranges or user cohorts.
+
+In the figure below, you see the three funnel steps sized by their distinct session counts, the conversion percentage between each, and the SQL that produces them.
+
+<FunnelViz />
