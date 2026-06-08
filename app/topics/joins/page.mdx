@@ -1,0 +1,55 @@
+import JoinsViz from '@/app/components/JoinsViz'
+
+export const metadata = {
+  title: 'Joins - Learning with Sabih',
+}
+
+# Joins
+
+Relational data is split across tables on purpose. Facts about people live in a
+users table, and facts about what they did live in a sessions table, linked by a
+shared key like user_id. A join is how you put them back together: it matches rows
+from one table to rows in another using that key, so you can ask questions that
+span both, like "show each user alongside their sessions."
+
+## Matching on a key
+
+A join compares a key column in the left table to a key column in the right table
+and pairs up the rows where they are equal. In the figure, users and sessions are
+joined on user_id. Each red line is a match: a user whose id appears in a session.
+The result table below stitches each matched pair into a single wider row.
+
+The interesting part is what happens to rows that do not match, and that is exactly
+what the join type controls.
+
+<JoinsViz />
+
+## The four join types
+
+An INNER JOIN keeps only rows that match on both sides. A user with no session
+disappears, and so does a session whose user is missing. It is the strictest join
+and returns the fewest rows.
+
+The outer joins keep unmatched rows instead of dropping them, filling the missing
+side with NULL, which is SQL's marker for "no value here." A LEFT JOIN keeps every
+row from the left table, so every user appears even if they have no session. A
+RIGHT JOIN keeps every row from the right table, so every session appears even if
+its user is missing. A FULL JOIN keeps unmatched rows from both sides at once.
+
+## Reading the row count
+
+Switch the join type and watch the count. With one unmatched user and one
+unmatched session, INNER returns the fewest rows, LEFT and RIGHT each add back the
+unmatched rows from their side, and FULL adds back both. That is the practical
+lesson: the join type decides whether unmatched rows are dropped or kept as NULLs,
+and that directly changes how many rows you get. Picking the wrong one is a common
+way to silently lose or duplicate data.
+
+## What the demo shows
+
+The two tables at the top are a small slice of the shared dataset: a few users and
+a few sessions, joined on user_id. Red lines connect the matching rows. The toggle
+chooses the join type, the result table below rebuilds to match, NULLs fill the
+columns from the missing side on outer joins, and the SQL for the current join is
+shown underneath. The readouts give the row count for all four join types so you
+can compare them at a glance.
