@@ -16,8 +16,8 @@ AI and ML|06|RLHF|Pick the answers you prefer and watch your feedback reshape th
 Databases and SQL|07|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
 Databases and SQL|08|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
 Databases and SQL|09|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
-Databases and SQL|10|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
-Databases and SQL|11|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
+Databases and SQL|10|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
+Databases and SQL|11|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
 Databases and SQL|12|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
 `
 
@@ -60,7 +60,6 @@ export default function ContentsPage() {
                     <span className={styles.num}>{topic.num}</span>
                     <span className={styles.topicTitle}>{topic.title}</span>
                     <span className={styles.leader} aria-hidden="true" />
-                    <span className={styles.topicNum}>{topic.num}</span>
                   </Link>
                   <p className={styles.subtitle}>{topic.subtitle}</p>
                 </li>
