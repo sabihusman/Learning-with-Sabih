@@ -34,6 +34,11 @@ function keyColor(role) {
   return FADE
 }
 
+function rowFill(activeRow, ri) {
+  if (activeRow) return ACTIVE_BG
+  return ri % 2 ? '#faf9f6' : '#ffffff'
+}
+
 // Interactive table: highlights any row whose user_id equals `active`, and reports
 // hover/click of a row back through onHover/onPin.
 function Table({ x, cols, rows, title, active, onHover, onPin, getCell }) {
@@ -70,7 +75,7 @@ function Table({ x, cols, rows, title, active, onHover, onPin, getCell }) {
         const activeRow = row.user_id === active
         return (
           <g
-            key={ri}
+            key={row[cols[0].key]}
             className={styles.row}
             style={{ cursor: 'pointer' }}
             onMouseEnter={() => onHover(row.user_id)}
@@ -82,7 +87,7 @@ function Table({ x, cols, rows, title, active, onHover, onPin, getCell }) {
               y={rowTop(ri)}
               width={totalW}
               height={ROW_H}
-              fill={activeRow ? ACTIVE_BG : ri % 2 ? '#faf9f6' : '#ffffff'}
+              fill={rowFill(activeRow, ri)}
               stroke={activeRow ? ACCENT : '#eceae3'}
               strokeWidth={activeRow ? 1.2 : 0.5}
             />

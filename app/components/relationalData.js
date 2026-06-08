@@ -7,15 +7,16 @@ import { users, sessions } from './sqlData'
 const USER_IDS = [5, 14, 20, 31]
 const SESSION_IDS = [1, 2, 3, 4, 14]
 
+const findById = (rows, key, id) => rows.find((r) => r[key] === id)
+
 export const USERS = USER_IDS.map((id) => {
-  const u = users.find((x) => x.user_id === id)
-  return { user_id: u.user_id, country: u.country, plan: u.plan }
+  const { user_id, country, plan } = findById(users, 'user_id', id)
+  return { user_id, country, plan }
 })
 
 export const SESSIONS = SESSION_IDS.map((id) => {
-  const s = sessions.find((x) => x.session_id === id)
-  // date only keeps the cell narrow and readable
-  return { session_id: s.session_id, user_id: s.user_id, started_at: s.started_at.split(' ')[0] }
+  const { session_id, user_id, started_at } = findById(sessions, 'session_id', id)
+  return { session_id, user_id, started_at: started_at.slice(0, 10) } // date only keeps the cell narrow
 })
 
 // Column definitions, including which column is the primary key (PK) and which is
