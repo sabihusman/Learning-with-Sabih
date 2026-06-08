@@ -64,6 +64,12 @@ const SECTIONS = [
         subtitle: 'Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave',
         href: '/topics/group-by/',
       },
+      {
+        num: '10',
+        title: 'Funnel Analysis',
+        subtitle: 'Count distinct sessions through each step and watch where users drop off',
+        href: '/topics/funnel-analysis/',
+      },
     ],
   },
 ]

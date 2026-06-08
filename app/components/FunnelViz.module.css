@@ -1,0 +1,41 @@
+/* Funnel bars grow out from their centre on mount, in a downward stagger. Bars are
+   rendered at their true width from state; this scaleX animation is purely additive
+   (it ends at scaleX(1) = the real width), so a bar is never left collapsed even if
+   the animation does not run, e.g. in a backgrounded tab. */
+.bar {
+  animation: growBar 520ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes growBar {
+  from {
+    transform: scaleX(0.04);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Drop-off wings and labels fade in when the toggle turns them on (their React key
+   includes the toggle state, so they remount). */
+.dropoff {
+  animation: fadeIn 300ms ease-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 12px 0 0;
+}
