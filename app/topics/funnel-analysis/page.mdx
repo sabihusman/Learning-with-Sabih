@@ -6,22 +6,16 @@ export const metadata = {
 
 # Funnel analysis
 
-A funnel measures how many people make it through a sequence of steps. In this learning app the steps are three events in order: a session opens a topic, uses the interactive figure, and finally completes the topic. Each step has fewer sessions than the one before, so the shape narrows like a funnel, and the interesting question is where people drop off.
+A funnel measures progress through a sequence of steps where some users drop off along the way. In a learning app, you might expect a session to open a topic, then use an interactive, then complete the topic. A funnel counts how many sessions reach each step, so you can see where people fall away.
 
-## Counting distinct sessions per step
+In SQL, a funnel is built from an events table. Each row is an event with fields like `session_id`, `event`, and `occurred_at`. For each step, you count the distinct sessions that fired that event. Distinct matters because one session can fire the same event more than once, and you want to count sessions, not raw events. So you compute the sessions that fired `topic_opened`, then `interactive_used`, then `topic_completed`.
 
-The size of each step is the number of distinct sessions that reached it. A session counts at a step if it ever fired that event, no matter how many times, so the right tool is `COUNT(DISTINCT session_id)` filtered to that event. Counting raw event rows instead would overstate the funnel, because one session can fire the same event more than once.
+Then you calculate conversion rates. The step-to-step conversion is each step divided by the one before it: `interactive_used / topic_opened`, then `topic_completed / interactive_used`. The overall completion rate is the last step divided by the total sessions. These percentages show whether the funnel leaks early or late.
 
-In the data, 143 distinct sessions opened a topic, 77 used the interactive figure, and 45 completed the topic. The figure draws each step as a bar sized to its count.
+This is useful because the biggest drop between two steps is usually the best place to investigate. If many sessions open a topic but few use the interactive, the interactive might be hard to find or slow to load. If usage is high but completion is low, the content might be too long or confusing.
+
+In practice this is often written with a CTE per step, combined into one output row. That keeps the logic readable and makes it easy to add filters like date ranges or user cohorts.
+
+In the figure below, you see the three funnel steps sized by their distinct session counts, the conversion percentage between each, and the SQL that produces them.
 
 <FunnelViz />
-
-## Reading the conversion rates
-
-Two kinds of rate matter. Step-to-step conversion is each step divided by the one before it: 77 of 143 is 53.8% from opened to used, and 45 of 77 is 58.4% from used to completed. The overall completion rate is the final step divided by all sessions: 45 of 146 total sessions, or 30.8%. Step-to-step rates tell you which transition is weakest, while the overall rate tells you the end-to-end yield.
-
-Drop-off is the same information stated as a loss. Between opening and using, 66 sessions fall away; between using and completing, another 32. Turn on drop-off in the figure to see those losses next to each step.
-
-## The query behind it
-
-The figure computes each step as its own set of distinct sessions, one common table expression per step, then counts each set in a single result row. Writing it as separate CTEs keeps each step's filter explicit and makes the funnel easy to extend with another event. Because every step counts distinct sessions, the numbers line up exactly with the bars: 143, 77, and 45.
