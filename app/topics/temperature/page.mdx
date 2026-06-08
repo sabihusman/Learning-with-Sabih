@@ -1,0 +1,19 @@
+import TemperatureViz from '@/app/components/TemperatureViz'
+
+export const metadata = {
+  title: 'Temperature and sampling - Learning with Sabih',
+}
+
+# Temperature and sampling
+
+At each step, a language model does not output one definite next word. It outputs a probability for every possible next token in its vocabulary, a whole distribution of options. For "The cat sat on the ___", the model might give "mat" a high probability, "chair" a lower one, and "moon" a very low one. The model is telling you what it thinks is likely next, not making the choice yet.
+
+To actually produce text, you pick from that distribution. This is sampling. One extreme is to always take the single most likely token. That stays reliable and on track, but it can become repetitive and flat, because the model keeps choosing the safest continuation. Allowing occasional lower-probability choices makes the output feel more varied and natural.
+
+Temperature is a single knob applied before sampling that reshapes the distribution. Low temperature sharpens it: the top option dominates and the model becomes predictable and focused. Near zero it is almost deterministic, the best token wins nearly every time. High temperature flattens the distribution, so unlikely tokens get a real chance. That can make output more creative and surprising, but also more error-prone and sometimes incoherent.
+
+There is no one correct setting. For factual answers, careful reasoning, or code, you usually want a low temperature for reliability. For brainstorming, story writing, or generating alternatives, a higher temperature helps.
+
+The figure below uses a small fixed set of candidate words with hand-authored probabilities to show the idea, not a real model predicting. The temperature math reshaping the distribution is the real formula models use.
+
+<TemperatureViz />
