@@ -1,4 +1,5 @@
 import AttentionViz from '@/app/components/AttentionViz'
+import QkvViz from '@/app/components/QkvViz'
 
 export const metadata = {
   title: 'Attention - Learning with Sabih',
@@ -55,3 +56,11 @@ Each point is a word of the example sentence. Drag to orbit, scroll to zoom, and
 click a word to draw its attention links to the others, weighted by strength. The
 "it" to "animal" link is the headline case, hand-set so the idea of attention
 resolving a reference is easy to see.
+
+## Query, key, and value
+
+So far you have seen that words attend to each other with different strengths, but not where those strengths come from. The mechanism is query, key, and value. Each word starts with its embedding and produces three vectors from it: a Query, representing what this word is looking for, a Key, representing what it offers to other words, and a Value, the information it passes along if another word attends to it.
+
+To decide how much one word attends to another, you compare the first word's Query against the second word's Key. A closer match produces a higher attention weight. Once a word has weights for all the words, it pulls in a blend of their Values, with strong matches contributing more and weak ones less. The query, key, and value vectors shown here are hand-authored to illustrate the idea; a real model learns them from data.
+
+<QkvViz />
