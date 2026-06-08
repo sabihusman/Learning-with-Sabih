@@ -38,7 +38,8 @@ export default function TemperatureViz() {
   const rngRef = useRef(mulberry32(1))
 
   const probs = probsAt(t)
-  const top = probs.reduce((a, b) => (a.p >= b.p ? a : b))
+  // initial value satisfies eslint/sonar (reduce on a possibly-empty array)
+  const top = probs.reduce((a, b) => (a.p >= b.p ? a : b), { word: '—', p: 0 })
   const ent = entropy(probs)
 
   const sample = () => {
