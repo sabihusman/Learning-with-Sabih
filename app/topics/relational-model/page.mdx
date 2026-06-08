@@ -1,0 +1,17 @@
+import RelationalModelViz from '@/app/components/RelationalModelViz'
+
+export const metadata = {
+  title: 'Tables and the relational model - Learning with Sabih',
+}
+
+# Tables and the relational model
+
+A database table stores data in rows and columns, like a spreadsheet. Each row is one record, such as one user or one session. Each column is a field on that record, such as `country` or `plan`. A table is useful because you can add many rows of the same shape and reliably refer to the same column across all of them.
+
+The relational model is the idea that you should not cram everything into one giant table. Instead, you split data into focused tables that each describe one kind of thing. A `users` table holds one row per user. A `sessions` table holds one row per session. This avoids repeating a user's details on every session row. If a user's `country` changes, you update it once in `users`, not across all their session records.
+
+Keys are how tables connect. A primary key uniquely identifies each row in a table. For example, `user_id` is the primary key of `users`, and `session_id` is the primary key of `sessions`. A foreign key is a column in one table that points to a primary key in another. Here, `sessions.user_id` is a foreign key pointing to `users.user_id`. That link is what makes the data relational: it encodes "this session belongs to this user."
+
+The payoff is that splitting data keeps it clean and free of repetition, but it also means the information you need is spread across tables. To answer a question like "show each session with the user's country," you have to recombine rows using the keys. That recombination is exactly what a join does, and it is why joins exist.
+
+<RelationalModelViz />
