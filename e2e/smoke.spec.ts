@@ -7,6 +7,14 @@ const TOPICS = [
   { slug: 'confusion-matrix', name: 'Confusion Matrix' },
   { slug: 'embeddings', name: 'Embeddings' },
   { slug: 'attention', name: 'Attention' },
+  { slug: 'neural-networks', name: 'Neural Networks' },
+  { slug: 'rlhf', name: 'RLHF' },
+  { slug: 'relational-model', name: 'Tables and the Relational Model' },
+  { slug: 'select-where-case', name: 'SELECT, WHERE and CASE' },
+  { slug: 'joins', name: 'Joins' },
+  { slug: 'group-by', name: 'GROUP BY and Aggregation' },
+  { slug: 'window-functions', name: 'Window Functions' },
+  { slug: 'funnel-analysis', name: 'Funnel Analysis' },
 ]
 
 test('home page loads with the contents list and no console errors', async ({ page }) => {

@@ -76,3 +76,71 @@ test('embeddings: clicking a word updates the nearest readout', async ({ page })
 
   expect(updated, 'clicking a word should populate the "nearest" readout').toBeTruthy()
 })
+
+test('neural-networks: clicking Step advances the epoch readout', async ({ page }) => {
+  await page.goto('/topics/neural-networks/')
+  const epoch = readoutValue(page, 'epoch')
+  await expect(epoch).toBeVisible()
+  const before = (await epoch.textContent())?.trim() ?? ''
+
+  // Step runs one synchronous training step and bumps the discrete epoch readout,
+  // so this does not depend on the background rAF training loop advancing.
+  await page.getByRole('button', { name: 'Step', exact: true }).click()
+  await expect(epoch).not.toHaveText(before)
+})
+
+test('rlhf: picking a response updates the feedback readout', async ({ page }) => {
+  await page.goto('/topics/rlhf/')
+  const feedback = readoutValue(page, 'feedback given')
+  await expect(feedback).toBeVisible()
+  const before = (await feedback.textContent())?.trim() ?? ''
+
+  // The candidate responses are buttons labelled "mostly <trait>"; picking one
+  // records feedback and updates the readout.
+  await page.getByRole('button', { name: /mostly/ }).first().click()
+  await expect(feedback).not.toHaveText(before)
+})
+
+test('joins: switching the join type changes the result row-count status', async ({ page }) => {
+  await page.goto('/topics/joins/')
+  const status = page.getByText(/JOIN returns/)
+  await expect(status).toBeVisible()
+  const before = (await status.textContent())?.trim() ?? ''
+
+  // Default is INNER; FULL keeps the unmatched rows, so the row-count status changes.
+  await page.getByRole('button', { name: 'FULL', exact: true }).click()
+  await expect(status).not.toHaveText(before)
+})
+
+test('group-by: switching the grouping column and aggregate updates the result', async ({ page }) => {
+  await page.goto('/topics/group-by/')
+  const groupBy = readoutValue(page, 'group by')
+  await expect(groupBy).toBeVisible()
+  const groupBefore = (await groupBy.textContent())?.trim() ?? ''
+
+  // Default groups by country; switching to plan reclusters and updates the readout.
+  await page.getByRole('button', { name: 'plan', exact: true }).click()
+  await expect(groupBy).not.toHaveText(groupBefore)
+
+  // Changing the aggregate rewrites the SQL shown beneath the figure.
+  const sql = page.locator('figure pre')
+  const sqlBefore = (await sql.textContent())?.trim() ?? ''
+  await page.getByRole('button', { name: 'SUM', exact: true }).click()
+  await expect(sql).not.toHaveText(sqlBefore)
+})
+
+test('window-functions: switching the ranking function updates the view and SQL', async ({ page }) => {
+  await page.goto('/topics/window-functions/')
+  // The table shows row_number, rank, and dense_rank side by side; the controls
+  // choose the active function, which updates the "view" readout and the SQL rather
+  // than the values themselves.
+  const view = readoutValue(page, 'view')
+  const sql = page.locator('figure pre')
+  await expect(view).toBeVisible()
+  const viewBefore = (await view.textContent())?.trim() ?? ''
+  const sqlBefore = (await sql.textContent())?.trim() ?? ''
+
+  await page.getByRole('button', { name: 'RANK', exact: true }).click()
+  await expect(view).not.toHaveText(viewBefore)
+  await expect(sql).not.toHaveText(sqlBefore)
+})
