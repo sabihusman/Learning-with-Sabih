@@ -1,0 +1,19 @@
+import OverfittingViz from '@/app/components/OverfittingViz'
+
+export const metadata = {
+  title: 'Overfitting and generalization - Learning with Sabih',
+}
+
+# Overfitting and generalization
+
+The goal in machine learning is not to match the training data perfectly. It is to learn the underlying pattern and then work well on NEW data the model has not seen. That ability to perform on fresh examples is called generalization. Real data usually contains a true trend plus random noise, and a good model captures the trend while mostly ignoring the noise.
+
+Underfitting happens when a model is too simple for the pattern. If the real relationship is curved but you fit a straight line, the model cannot represent what is going on. It does poorly even on the training data, because it is missing the basic structure.
+
+Overfitting is the opposite. If a model is too complex, it can bend itself to match every training point, including the noise. It can look perfect on the training set, but that "success" is really memorization. Give it new data, where the noise is different, and its overly specific curve fails. The classic picture is a wildly wiggly curve that hits every dot.
+
+The key signal is how error changes as complexity increases. Training error usually keeps dropping, because a more flexible model fits the training data better and better. But error on held-out data, often called test or validation error, drops at first and then starts rising. That rise is the sign of overfitting. The best model is usually in the middle: complex enough to capture the trend, simple enough to ignore the noise.
+
+This is why more complexity or longer training is not always better, and why techniques exist to hold a model back from memorizing.
+
+<OverfittingViz />
