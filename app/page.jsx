@@ -37,6 +37,13 @@ const TOPICS = [
     href: '/topics/neural-networks/',
     part: 'Machine Learning',
   },
+  {
+    num: '06',
+    title: 'RLHF',
+    subtitle: 'Pick the answers you prefer and watch your feedback reshape the model',
+    href: '/topics/rlhf/',
+    part: 'Machine Learning',
+  },
 ]
 
 export const metadata = {

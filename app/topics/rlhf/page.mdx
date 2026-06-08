@@ -1,0 +1,17 @@
+import RlhfViz from '@/app/components/RlhfViz'
+
+export const metadata = {
+  title: 'RLHF - Learning with Sabih',
+}
+
+A base language model can produce fluent text, but fluency alone does not tell it which answers people actually find helpful, honest, or safe. It imitates patterns from its training data, yet it has no direct signal for human preferences. To align its behavior with what people want, you need feedback that reflects human taste.
+
+RLHF, reinforcement learning from human feedback, adds that signal through a simple loop. Given a prompt, the model generates several candidate responses. Humans compare them and choose which is better. Those comparisons become training data that pushes the model toward responses people prefer.
+
+The preference has to become something a model can optimize. First, the human comparisons train a separate reward model: it takes a prompt and a response and outputs a score predicting how a human would rank it. Then the language model is fine-tuned to produce responses that score well under that reward model. The reward model stands in for the human during training, so a person does not have to judge every new output.
+
+Over many rounds, behavior shifts. The model produces more of the traits that win comparisons, like being clearer, more on topic, and more careful, and less of the traits that lose, like being evasive, unsafe, or misleading.
+
+The figure below is a simplified stand-in. It uses a few hidden trait scores (helpful, honest, concise, and enthusiastic) and a small preference rule, not a real language model, but the loop is the real idea: generate, compare, learn the preference, shift behavior. Pick the better response each round and watch the model's preference move.
+
+<RlhfViz />
