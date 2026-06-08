@@ -1,0 +1,91 @@
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #ffffff;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #1a1a1a;
+}
+
+.tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 8px;
+  margin-top: 18px;
+  min-height: 56px;
+}
+
+.group {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pieces {
+  display: flex;
+  gap: 3px;
+}
+
+/* each subword/whole-word piece is one token block */
+.chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 7px;
+  border-radius: 5px;
+  min-width: 14px;
+  transition: transform 0.12s ease;
+}
+
+.chip:hover {
+  transform: translateY(-2px);
+}
+
+.chipText {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.chipId {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 9px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+/* the original word under its token(s), so a 1-token word and a split word read clearly */
+.word {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 9.5px;
+  color: #9b9892;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+.split {
+  color: #c0392b;
+}
+
+.empty {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  color: #9b9892;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
