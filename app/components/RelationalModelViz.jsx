@@ -41,81 +41,47 @@ function rowFill(activeRow, ri) {
 
 // Interactive table: highlights any row whose user_id equals `active`, and reports
 // hover/click of a row back through onHover/onPin.
-function Table({ x, cols, rows, title, active, onHover, onPin, getCell }) {
-  const totalW = cols.reduce((s, c) => s + c.w, 0)
+// A header cell: the column label, plus a PK/FK badge when the column has a role.
+function HeaderCell({ col, left }) {
+  const color = keyColor(col.role)
   return (
     <g>
-      <text x={x} y={SRC_TOP - 18} fontSize={12} fill={INK} fontFamily={MONO} fontWeight="bold">
-        {title}
-      </text>
+      <text x={left} y={SRC_TOP + 12} fontSize={9.5} fill={col.role ? color : FADE} fontFamily={MONO} fontWeight={col.role ? 700 : 400} letterSpacing="0.03em">{col.label}</text>
+      {col.role ? <rect x={left} y={SRC_TOP + 17} width={17} height={11} rx={2} fill={color} /> : null}
+      {col.role ? <text x={left + 8.5} y={SRC_TOP + 25.5} fontSize={8} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">{col.role}</text> : null}
+    </g>
+  )
+}
 
-      {/* headers with PK/FK badges */}
-      {cols.map((c, ci) => {
-        const cx = colX(x, cols, ci)
-        return (
-          <g key={`h-${c.key}`}>
-            <text x={cx + 8} y={SRC_TOP + 12} fontSize={9.5} fill={c.role ? keyColor(c.role) : FADE} fontFamily={MONO} fontWeight={c.role ? 700 : 400} letterSpacing="0.03em">
-              {c.label}
-            </text>
-            {c.role && (
-              <>
-                <rect x={cx + 8} y={SRC_TOP + 17} width={17} height={11} rx={2} fill={keyColor(c.role)} />
-                <text x={cx + 16.5} y={SRC_TOP + 25.5} fontSize={8} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">
-                  {c.role}
-                </text>
-              </>
-            )}
-          </g>
-        )
-      })}
+function Table({ x, cols, rows, title, active, onHover, onPin }) {
+  const totalW = cols.reduce((s, c) => s + c.w, 0)
+  const left = (ci) => colX(x, cols, ci) + 8
+  return (
+    <g>
+      <text x={x} y={SRC_TOP - 18} fontSize={12} fill={INK} fontFamily={MONO} fontWeight="bold">{title}</text>
+      {cols.map((c, ci) => (
+        <HeaderCell key={`h-${c.key}`} col={c} left={left(ci)} />
+      ))}
       <line x1={x} y1={SRC_TOP + HEAD_H} x2={x + totalW} y2={SRC_TOP + HEAD_H} stroke="#d4d0c8" strokeWidth={1} />
-
-      {/* rows */}
       {rows.map((row, ri) => {
-        const activeRow = row.user_id === active
+        const on = row.user_id === active
+        const handlers = {
+          onMouseEnter: () => onHover(row.user_id),
+          onMouseLeave: () => onHover(null),
+          onClick: () => onPin(row.user_id),
+        }
         return (
-          <g
-            key={row[cols[0].key]}
-            className={styles.row}
-            style={{ cursor: 'pointer' }}
-            onMouseEnter={() => onHover(row.user_id)}
-            onMouseLeave={() => onHover(null)}
-            onClick={() => onPin(row.user_id)}
-          >
-            <rect
-              x={x}
-              y={rowTop(ri)}
-              width={totalW}
-              height={ROW_H}
-              fill={rowFill(activeRow, ri)}
-              stroke={activeRow ? ACCENT : '#eceae3'}
-              strokeWidth={activeRow ? 1.2 : 0.5}
-            />
-            {cols.map((c, ci) => {
-              const cx = colX(x, cols, ci)
-              const isKey = !!c.role
-              return (
-                <text
-                  key={c.key}
-                  x={cx + 8}
-                  y={rowTop(ri) + ROW_H / 2 + 3.5}
-                  fontSize={10.5}
-                  fill={isKey ? keyColor(c.role) : INK}
-                  fontFamily={MONO}
-                  fontWeight={isKey ? 700 : 400}
-                >
-                  {getCell(row, c.key)}
-                </text>
-              )
-            })}
+          <g key={row[cols[0].key]} className={styles.row} style={{ cursor: 'pointer' }} {...handlers}>
+            <rect x={x} y={rowTop(ri)} width={totalW} height={ROW_H} fill={rowFill(on, ri)} stroke={on ? ACCENT : '#eceae3'} strokeWidth={on ? 1.2 : 0.5} />
+            {cols.map((c, ci) => (
+              <text key={c.key} x={left(ci)} y={rowTop(ri) + ROW_H / 2 + 3.5} fontSize={10.5} fill={c.role ? keyColor(c.role) : INK} fontFamily={MONO} fontWeight={c.role ? 700 : 400}>{row[c.key]}</text>
+            ))}
           </g>
         )
       })}
     </g>
   )
 }
-
-const getCell = (row, k) => row[k]
 
 export default function RelationalModelViz() {
   // active = the user_id whose relationship is shown. Hover previews; click pins.
@@ -160,8 +126,8 @@ export default function RelationalModelViz() {
             />
           ))}
 
-        <Table x={X_U} cols={USER_COLS} rows={USERS} title="users" active={active} onHover={setHover} onPin={setPinned} getCell={getCell} />
-        <Table x={X_S} cols={SESSION_COLS} rows={SESSIONS} title="sessions" active={active} onHover={setHover} onPin={setPinned} getCell={getCell} />
+        <Table x={X_U} cols={USER_COLS} rows={USERS} title="users" active={active} onHover={setHover} onPin={setPinned} />
+        <Table x={X_S} cols={SESSION_COLS} rows={SESSIONS} title="sessions" active={active} onHover={setHover} onPin={setPinned} />
       </svg>
 
       <div className={styles.legend}>
