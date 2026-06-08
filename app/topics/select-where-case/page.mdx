@@ -1,0 +1,19 @@
+import SelectWhereCaseViz from '@/app/components/SelectWhereCaseViz'
+
+export const metadata = {
+  title: 'SELECT, WHERE and CASE - Learning with Sabih',
+}
+
+# SELECT, WHERE and CASE
+
+`SELECT`, `WHERE`, and `CASE` are the basic tools for asking a database a question and shaping the answer.
+
+`SELECT` chooses which columns you get back. Write `SELECT *` and you get every column; name columns, like `SELECT country, plan`, and you get only those. `SELECT` controls the shape of the result, not which rows are included.
+
+`WHERE` filters which rows you get back. It keeps only rows that meet a condition and drops the rest. For example, `WHERE plan = 'pro'` keeps only paid users, and `WHERE country = 'US'` keeps only users in the US. This is the key split: `SELECT` picks columns, `WHERE` picks rows.
+
+`CASE` creates a new derived column by labeling or bucketing rows with conditions. The pattern is `CASE WHEN ... THEN ... ELSE ... END`. For example, you can compute a label called `tier`: return `'paid'` when `plan = 'pro'`, otherwise `'free'`. Or you can bucket a number into `'low'`, `'medium'`, or `'high'`. `CASE` does not change the stored data; it computes a value on the fly for the result.
+
+These three show up in everyday SQL. Most queries start by choosing columns with `SELECT`, filtering rows with `WHERE`, and sometimes adding a `CASE` label, before any joining or grouping happens.
+
+<SelectWhereCaseViz />

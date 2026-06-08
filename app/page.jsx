@@ -14,10 +14,11 @@ AI and ML|04|Attention|How a transformer decides which words to focus on, like "
 AI and ML|05|Neural Networks|Watch a tiny network train live: loss drops, weights shift, the boundary sharpens|neural-networks
 AI and ML|06|RLHF|Pick the answers you prefer and watch your feedback reshape the model|rlhf
 Databases and SQL|07|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
-Databases and SQL|08|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
-Databases and SQL|09|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
-Databases and SQL|10|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
-Databases and SQL|11|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
+Databases and SQL|08|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
+Databases and SQL|09|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
+Databases and SQL|10|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
+Databases and SQL|11|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
+Databases and SQL|12|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
 `
 
 const SECTION_ORDER = ['AI and ML', 'Databases and SQL']
