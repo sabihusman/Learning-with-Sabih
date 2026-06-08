@@ -1,0 +1,19 @@
+import WindowFunctionsViz from '@/app/components/WindowFunctionsViz'
+
+export const metadata = {
+  title: 'Window functions - Learning with Sabih',
+}
+
+# Window functions
+
+A window function does a calculation over a window of rows while keeping the original rows visible. With `GROUP BY`, you collapse many rows into one summary per group, like one row per session with a total. A window function computes across multiple rows but does not collapse anything. It adds a new column to each row, so you keep every row, now with a calculated value alongside it.
+
+A common use is ranking. `ROW_NUMBER()`, `RANK()`, and `DENSE_RANK()` number rows in an order you choose, such as events ordered by time. They differ on ties. If two rows are tied for second place, `ROW_NUMBER()` still assigns distinct numbers, giving them 2 and 3. `RANK()` gives both 2, and the next row becomes 4, leaving a gap after the tie. `DENSE_RANK()` gives both 2, and the next becomes 3, with no gap. Many mistakes come from using the wrong one when ties exist.
+
+Another use is running totals. `SUM(...) OVER (ORDER BY occurred_at)` adds values as you go down the rows, so each row shows the cumulative total up to that point. You still see every row, plus a "so far" total next to it.
+
+`PARTITION BY` splits the rows into groups and restarts the calculation within each group. `SUM(...) OVER (PARTITION BY session_id ORDER BY occurred_at)` gives each session its own running total instead of one total across the whole table. The same applies to ranking: you can number rows within each session, user, or any grouping key.
+
+In the figure below, toggle between `ROW_NUMBER`, `RANK`, and `DENSE_RANK` to see how they differ on a tied pair, watch a running total accumulate, and turn on `PARTITION BY` to see the calculation restart per group.
+
+<WindowFunctionsViz />

@@ -52,6 +52,12 @@ const SECTIONS = [
         subtitle: 'Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result',
         href: '/topics/joins/',
       },
+      {
+        num: '08',
+        title: 'Window Functions',
+        subtitle: 'Rank, number, and total across rows without collapsing them, and see how ties split the ranks',
+        href: '/topics/window-functions/',
+      },
     ],
   },
 ]
