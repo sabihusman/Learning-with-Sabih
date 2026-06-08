@@ -1,0 +1,27 @@
+import TransformersViz from '@/app/components/TransformersViz'
+
+export const metadata = {
+  title: 'Transformers and multi-head attention - Learning with Sabih',
+}
+
+# Transformers and multi-head attention
+
+The attention topic showed a single attention pattern: each word looking at the other words and deciding which ones matter. A transformer does not run just one of these. It runs many attention patterns at the same time, called heads, and each head learns to watch a different kind of relationship.
+
+## Many heads, one sentence
+
+A single head produces one set of links over the sentence. With several heads, the same sentence gets several overlays at once. One head might track coreference, linking a pronoun to the noun it stands for, so "it" reaches back to "animal". Another might track position, with each word mostly looking at the word just before it. Another might track grammar, linking a verb to its subject and object. Each head sees the same words but draws a different map.
+
+This matters because language has many kinds of structure at the same time. No single attention pattern can capture coreference, word order, and grammar together, so the model splits the work across heads and lets each specialize.
+
+<TransformersViz />
+
+## Heads run in parallel, then layers stack
+
+Within one layer, the heads run in parallel and their results are combined, so the model can use several relationships for the same word at once. Then transformers stack many such layers, and later layers attend over the outputs of earlier ones. Early layers tend to capture local and surface patterns, while later layers capture longer-range and more abstract structure built from what came before.
+
+The attention topic is one head in one layer. A transformer is many heads in parallel, repeated across many layers. That combination, simple attention multiplied out and stacked, is what lets these models handle the structure of real language.
+
+## What the demo shows
+
+The figure reuses the attention sentence and shows three illustrative heads. Switch heads to see the link pattern change over the same words, and click a word to draw the current head's links from it, with a readout naming the head and its strongest links. The weights are hand-set to make each head's job legible; a real transformer learns them from data, and uses far more than three heads across many layers.
