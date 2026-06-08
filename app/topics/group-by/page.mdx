@@ -1,0 +1,19 @@
+import GroupByViz from '@/app/components/GroupByViz'
+
+export const metadata = {
+  title: 'GROUP BY and aggregation - Learning with Sabih',
+}
+
+# GROUP BY and aggregation
+
+`GROUP BY` is how SQL turns detailed rows into summaries. It collapses many rows into one summary row per group. You choose a grouping column, like `country` or `plan`, and every row with the same value is treated as one group. The result shows one row per group, not the original rows. This is the opposite of window functions, which compute across related rows but keep every original row. `GROUP BY` reduces the number of rows; window functions do not.
+
+The summary numbers per group come from aggregate functions. `COUNT` counts how many rows are in each group. `SUM` adds up a numeric column inside the group. `AVG` computes the average. You typically select the group key plus one or more aggregates.
+
+A common source of mistakes is `COUNT(*)` versus `COUNT(DISTINCT col)`. `COUNT(*)` counts all rows in the group, including several sessions from the same user. `COUNT(DISTINCT user_id)` counts unique users. If you ask "how many users" but write `COUNT(*)`, you may accidentally count sessions instead of people.
+
+Filtering happens in two stages, which SQL splits into `WHERE` and `HAVING`. `WHERE` filters individual rows before grouping, like keeping only events from one week. `HAVING` filters whole groups after aggregation, like keeping only groups with `COUNT(*) > 10`. Putting an aggregate like `COUNT(*) > 10` in `WHERE` is an error, because the count does not exist until after grouping.
+
+In the figure below, choose a `GROUP BY` column to watch rows collapse into groups, switch between `COUNT`, `SUM`, and `AVG`, compare `COUNT(*)` with `COUNT(DISTINCT)`, and adjust a `HAVING` threshold to drop whole groups.
+
+<GroupByViz />
