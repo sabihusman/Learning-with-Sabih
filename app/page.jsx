@@ -58,6 +58,12 @@ const SECTIONS = [
         subtitle: 'Rank, number, and total across rows without collapsing them, and see how ties split the ranks',
         href: '/topics/window-functions/',
       },
+      {
+        num: '09',
+        title: 'GROUP BY and Aggregation',
+        subtitle: 'Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave',
+        href: '/topics/group-by/',
+      },
     ],
   },
 ]

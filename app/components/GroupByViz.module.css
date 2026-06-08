@@ -1,0 +1,80 @@
+/* Summary rows fade in when the grouping column changes (their React key includes
+   the grouping column, so they remount). Purely additive: a card is fully visible
+   from state by default, so it is never left blank if the animation does not run. */
+.summaryCard,
+.funnel {
+  animation: fadeIn 420ms ease-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.controlLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.toggle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.toggle:hover {
+  background: #ece9e1;
+}
+
+.toggleOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.toggleOn:hover {
+  background: #1a1a1a;
+}
+
+.slider {
+  accent-color: #c0392b;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.havingValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  color: #1a1a1a;
+  min-width: 8.5rem;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 12px 0 0;
+}
