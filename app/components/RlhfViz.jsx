@@ -14,6 +14,17 @@ const CX = (TRACK_L + TRACK_R) / 2
 const HALF = TRACK_R - CX
 const MH = TOP + TRAITS.length * ROW_H + 22
 
+const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
+// shared style for the small uppercase section headers (used in a couple of places)
+const sectionLabelStyle = {
+  fontFamily: MONO,
+  fontSize: 10,
+  letterSpacing: '0.14em',
+  textTransform: 'uppercase',
+  color: FADE,
+  marginBottom: 4,
+}
+
 export default function RlhfViz() {
   const [round, setRound] = useState(0)
   const [picks, setPicks] = useState(0)
@@ -72,18 +83,7 @@ export default function RlhfViz() {
     >
       <div style={{ maxWidth: 620, margin: '0 auto' }}>
         {/* prompt */}
-        <div
-          style={{
-            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-            fontSize: 10,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: FADE,
-            marginBottom: 4,
-          }}
-        >
-          Prompt
-        </div>
+        <div style={sectionLabelStyle}>Prompt</div>
         <div style={{ fontSize: 16, color: INK, marginBottom: 14, lineHeight: 1.4 }}>{roundData.prompt}</div>
 
         {/* candidate responses */}
@@ -114,7 +114,7 @@ export default function RlhfViz() {
                   style={{
                     display: 'inline-block',
                     marginTop: 7,
-                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                    fontFamily: MONO,
                     fontSize: 9.5,
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
@@ -131,18 +131,7 @@ export default function RlhfViz() {
         {/* learned preference meters: rendered straight from the true weights, with
             a CSS transition for a smooth shift. No animation-frame dependency, so
             the displayed value can never desync from the learned weight. */}
-        <div
-          style={{
-            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-            fontSize: 10,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: FADE,
-            marginBottom: 4,
-          }}
-        >
-          Learned preference weights
-        </div>
+        <div style={sectionLabelStyle}>Learned preference weights</div>
         <svg
           viewBox={`0 0 ${MW} ${MH}`}
           style={{ width: '100%', height: 'auto', display: 'block' }}
