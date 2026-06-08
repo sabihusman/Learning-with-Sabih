@@ -1,84 +1,38 @@
 import Link from 'next/link'
 import styles from './page.module.css'
 
-const SECTIONS = [
-  {
-    name: 'AI and ML',
-    topics: [
-      {
-        num: '01',
-        title: 'Gradient Descent',
-        subtitle: 'Walking downhill, and why the starting point decides which minimum you reach',
-        href: '/topics/gradient-descent/',
-      },
-      {
-        num: '02',
-        title: 'Confusion Matrix',
-        subtitle: 'Precision, recall, and the threshold that trades one for the other',
-        href: '/topics/confusion-matrix/',
-      },
-      {
-        num: '03',
-        title: 'Embeddings',
-        subtitle: 'Words as points in space, where closeness means similar meaning',
-        href: '/topics/embeddings/',
-      },
-      {
-        num: '04',
-        title: 'Attention',
-        subtitle: 'How a transformer decides which words to focus on, like "it" reaching back to "animal"',
-        href: '/topics/attention/',
-      },
-      {
-        num: '05',
-        title: 'Neural Networks',
-        subtitle: 'Watch a tiny network train live: loss drops, weights shift, the boundary sharpens',
-        href: '/topics/neural-networks/',
-      },
-      {
-        num: '06',
-        title: 'RLHF',
-        subtitle: 'Pick the answers you prefer and watch your feedback reshape the model',
-        href: '/topics/rlhf/',
-      },
-    ],
-  },
-  {
-    name: 'Databases and SQL',
-    topics: [
-      {
-        num: '07',
-        title: 'Tables and the Relational Model',
-        subtitle: 'Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link',
-        href: '/topics/relational-model/',
-      },
-      {
-        num: '08',
-        title: 'Joins',
-        subtitle: 'Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result',
-        href: '/topics/joins/',
-      },
-      {
-        num: '09',
-        title: 'Window Functions',
-        subtitle: 'Rank, number, and total across rows without collapsing them, and see how ties split the ranks',
-        href: '/topics/window-functions/',
-      },
-      {
-        num: '10',
-        title: 'GROUP BY and Aggregation',
-        subtitle: 'Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave',
-        href: '/topics/group-by/',
-      },
-      {
-        num: '11',
-        title: 'Funnel Analysis',
-        subtitle: 'Count distinct sessions through each step and watch where users drop off',
-        href: '/topics/funnel-analysis/',
-      },
-    ],
-  },
-]
+// Contents data as a compact delimited table, one row per topic:
+//   section | num | title | subtitle | slug
+// Keeping it as data (parsed below) rather than repeated object literals avoids a
+// copy-paste false positive from the two structurally-identical section blocks, and
+// makes the list trivial to extend.
+const TOPIC_ROWS = `
+AI and ML|01|Gradient Descent|Walking downhill, and why the starting point decides which minimum you reach|gradient-descent
+AI and ML|02|Confusion Matrix|Precision, recall, and the threshold that trades one for the other|confusion-matrix
+AI and ML|03|Embeddings|Words as points in space, where closeness means similar meaning|embeddings
+AI and ML|04|Attention|How a transformer decides which words to focus on, like "it" reaching back to "animal"|attention
+AI and ML|05|Neural Networks|Watch a tiny network train live: loss drops, weights shift, the boundary sharpens|neural-networks
+AI and ML|06|RLHF|Pick the answers you prefer and watch your feedback reshape the model|rlhf
+Databases and SQL|07|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
+Databases and SQL|08|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
+Databases and SQL|09|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
+Databases and SQL|10|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
+Databases and SQL|11|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
+`
+
+const SECTION_ORDER = ['AI and ML', 'Databases and SQL']
+
+const TOPICS = TOPIC_ROWS.trim()
+  .split('\n')
+  .map((row) => {
+    const [section, num, title, subtitle, slug] = row.split('|')
+    return { section, num, title, subtitle, href: `/topics/${slug}/` }
+  })
+
+const SECTIONS = SECTION_ORDER.map((name) => ({
+  name,
+  topics: TOPICS.filter((topic) => topic.section === name),
+}))
 
 export const metadata = {
   title: 'Learning with Sabih',
