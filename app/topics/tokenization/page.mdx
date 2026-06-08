@@ -6,20 +6,14 @@ export const metadata = {
 
 # Tokenization
 
-Before a language model can do anything with text, the text has to be turned into numbers. That first step is tokenization: the input is chopped into pieces called tokens, and each token is mapped to an integer ID. The model only ever sees those IDs. It does not read words, and it does not read letters. It reads tokens.
+Before a language model can do anything with text, it has to chop the text into pieces called tokens. A token is often a whole common word, but longer or rarer words get split into smaller subword pieces. For example, "apple" might be a single token, while "unbreakable" might split into "un", "break", "able". This gives the model a manageable vocabulary that can still represent new words by combining pieces.
 
-## Tokens are not words
+Each token is mapped to an integer ID. The model never sees letters or words directly. It sees a sequence like `[314, 9271, 18, 502]`, where each number stands for one token. This sets up the next step, embeddings: each token ID becomes a vector of numbers the model can compute with.
 
-A token is not the same as a word. Some common words are a single token, but longer or rarer words get split into smaller subword pieces. A word like "apple" might be one token, while "unbreakable" is split into "un", "break", and "able", three separate tokens. Splitting this way lets a fixed vocabulary cover almost any word, including ones it has never seen, by assembling them from familiar pieces.
+This matters because tokenization changes what the model can directly see. Since the model operates on tokens, not characters, it can struggle with tasks that need letter-level detail. Spelling a word backwards, counting the letters in a word, or making rhymes can be harder than you expect. If a whole word is swallowed into a single token, the model has no direct view of the letters inside it.
 
-Because of this, the number of tokens rarely matches the number of words. In the figure below, edit the sentence and watch the token count change independently of the word count.
+Tokens are also why text length is measured in tokens, not words. Usage limits and context windows are counted in tokens, because that is the unit the model processes.
+
+The figure below uses a simplified, illustrative tokenizer. Real models use a learned vocabulary of tens of thousands of tokens, often built with byte-pair encoding. The behavior is the real point: common words stay whole, rare words split, and each piece becomes an ID.
 
 <TokenizerViz />
-
-## Why this matters
-
-Since the model reads tokens, not letters, it has no direct view of the characters inside a token. When a whole word like "strawberry" becomes a single token, the model sees one opaque unit, not s-t-r-a-w-b-e-r-r-y. This is a big part of why models can struggle with spelling, rhyming, or counting the letters in a word: the letters were swallowed into a token the model treats as indivisible. Words that split into several tokens expose more of their structure, which is one reason behavior can differ between a word the model sees whole and one it sees in pieces.
-
-## What the demo shows
-
-Each colored block is one token, labeled with its integer ID. Common words stay whole, while longer words break into subword pieces, with the original word shown beneath. The readout compares tokens to words and characters so you can see they are not the same. The tokenizer here is a simplified, rule-based illustration with a tiny fixed vocabulary, not a real model's learned tokenizer, but the idea is exactly what real models do: read text as a sequence of token IDs.
