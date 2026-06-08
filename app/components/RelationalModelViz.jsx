@@ -3,14 +3,11 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { USERS, SESSIONS, USER_COLS, SESSION_COLS } from './relationalData'
+import { INK, FADE, ACCENT, MONO } from './vizPalette'
 import styles from './RelationalModelViz.module.css'
 
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
 const PK_GREEN = '#1f6f5c'
 const ACTIVE_BG = '#fbeeec'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 const VB_W = 600
@@ -24,9 +21,14 @@ const X_S = 336
 
 const VB_H = SRC_TOP + HEAD_H + Math.max(USERS.length, SESSIONS.length) * ROW_H + 16
 
-const colX = (x, cols, ci) => x + cols.slice(0, ci).reduce((s, c) => s + c.w, 0)
+// left edge of column `ci`: start at x and accumulate the widths before it
+const colX = (x, cols, ci) => cols.slice(0, ci).reduce((sum, c) => sum + c.w, x)
 const rowTop = (i) => SRC_TOP + HEAD_H + i * ROW_H
 const rowCenter = (i) => rowTop(i) + ROW_H / 2
+
+// viewBox and layout style for the figure svg (kept as values so the markup stays terse)
+const SVG_VIEWBOX = `0 0 ${VB_W} ${VB_H}`
+const SVG_STYLE = { display: 'block', margin: '0 auto', width: '100%', height: 'auto', maxWidth: 600 }
 
 function keyColor(role) {
   if (role === 'PK') return PK_GREEN
@@ -106,8 +108,8 @@ export default function RelationalModelViz() {
       tryThis="A relational database splits data into focused tables. The users table has one row per user, and the sessions table has one row per session. Each table has a primary key (PK) that uniquely identifies its rows: user_id for users, session_id for sessions. The sessions table also has a foreign key (FK), user_id, that points back to users.user_id, recording who the session belongs to. Hover or click a row to light up its related rows: a session links to its one user, and a user links to all of its sessions (user 31 has two). Because the data lives in separate tables, putting it back together needs a join."
     >
       <svg
-        viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '0 auto' }}
+        viewBox={SVG_VIEWBOX}
+        style={SVG_STYLE}
         aria-label="A users table and a sessions table side by side. Each session's user_id foreign key links to a user's user_id primary key; hovering or clicking a row highlights the related rows and draws connecting lines."
       >
         {/* connector lines from the active user to each of its sessions */}
