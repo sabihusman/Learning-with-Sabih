@@ -1,48 +1,58 @@
 import Link from 'next/link'
 import styles from './page.module.css'
 
-const TOPICS = [
+const SECTIONS = [
   {
-    num: '01',
-    title: 'Gradient Descent',
-    subtitle: 'Walking downhill, and why the starting point decides which minimum you reach',
-    href: '/topics/gradient-descent/',
-    part: 'Machine Learning',
+    name: 'AI and ML',
+    topics: [
+      {
+        num: '01',
+        title: 'Gradient Descent',
+        subtitle: 'Walking downhill, and why the starting point decides which minimum you reach',
+        href: '/topics/gradient-descent/',
+      },
+      {
+        num: '02',
+        title: 'Confusion Matrix',
+        subtitle: 'Precision, recall, and the threshold that trades one for the other',
+        href: '/topics/confusion-matrix/',
+      },
+      {
+        num: '03',
+        title: 'Embeddings',
+        subtitle: 'Words as points in space, where closeness means similar meaning',
+        href: '/topics/embeddings/',
+      },
+      {
+        num: '04',
+        title: 'Attention',
+        subtitle: 'How a transformer decides which words to focus on, like "it" reaching back to "animal"',
+        href: '/topics/attention/',
+      },
+      {
+        num: '05',
+        title: 'Neural Networks',
+        subtitle: 'Watch a tiny network train live: loss drops, weights shift, the boundary sharpens',
+        href: '/topics/neural-networks/',
+      },
+      {
+        num: '06',
+        title: 'RLHF',
+        subtitle: 'Pick the answers you prefer and watch your feedback reshape the model',
+        href: '/topics/rlhf/',
+      },
+    ],
   },
   {
-    num: '02',
-    title: 'Confusion Matrix',
-    subtitle: 'Precision, recall, and the threshold that trades one for the other',
-    href: '/topics/confusion-matrix/',
-    part: 'Machine Learning',
-  },
-  {
-    num: '03',
-    title: 'Embeddings',
-    subtitle: 'Words as points in space, where closeness means similar meaning',
-    href: '/topics/embeddings/',
-    part: 'Machine Learning',
-  },
-  {
-    num: '04',
-    title: 'Attention',
-    subtitle: 'How a transformer decides which words to focus on, like "it" reaching back to "animal"',
-    href: '/topics/attention/',
-    part: 'Machine Learning',
-  },
-  {
-    num: '05',
-    title: 'Neural Networks',
-    subtitle: 'Watch a tiny network train live: loss drops, weights shift, the boundary sharpens',
-    href: '/topics/neural-networks/',
-    part: 'Machine Learning',
-  },
-  {
-    num: '06',
-    title: 'RLHF',
-    subtitle: 'Pick the answers you prefer and watch your feedback reshape the model',
-    href: '/topics/rlhf/',
-    part: 'Machine Learning',
+    name: 'Databases and SQL',
+    topics: [
+      {
+        num: '07',
+        title: 'Joins',
+        subtitle: 'Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result',
+        href: '/topics/joins/',
+      },
+    ],
   },
 ]
 
@@ -61,19 +71,24 @@ export default function ContentsPage() {
 
       <nav className={styles.contents} aria-label="Table of contents">
         <h2 className={styles.contentsLabel}>Contents</h2>
-        <ol className={styles.list}>
-          {TOPICS.map((topic) => (
-            <li key={topic.num} className={styles.item}>
-              <Link href={topic.href} className={styles.link}>
-                <span className={styles.num}>{topic.num}</span>
-                <span className={styles.topicTitle}>{topic.title}</span>
-                <span className={styles.leader} aria-hidden="true" />
-                <span className={styles.topicNum}>{topic.num}</span>
-              </Link>
-              <p className={styles.subtitle}>{topic.subtitle}</p>
-            </li>
-          ))}
-        </ol>
+        {SECTIONS.map((section) => (
+          <section key={section.name} className={styles.section}>
+            <h3 className={styles.sectionHeader}>{section.name}</h3>
+            <ol className={styles.list}>
+              {section.topics.map((topic) => (
+                <li key={topic.num} className={styles.item}>
+                  <Link href={topic.href} className={styles.link}>
+                    <span className={styles.num}>{topic.num}</span>
+                    <span className={styles.topicTitle}>{topic.title}</span>
+                    <span className={styles.leader} aria-hidden="true" />
+                    <span className={styles.topicNum}>{topic.num}</span>
+                  </Link>
+                  <p className={styles.subtitle}>{topic.subtitle}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
       </nav>
     </main>
   )

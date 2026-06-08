@@ -43,6 +43,22 @@
   margin-bottom: 1.5rem;
 }
 
+.section {
+  margin-bottom: 2.75rem;
+}
+
+.sectionHeader {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--rule);
+}
+
 .list {
   list-style: none;
   padding: 0;

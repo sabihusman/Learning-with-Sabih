@@ -1,0 +1,20 @@
+/* Result rows assemble in (fade + slide). Rows are rendered from state at full
+   opacity by default; this animation is purely additive, so a row is never left
+   invisible even if the animation does not run (e.g. a backgrounded tab). The
+   row's key changes with the join type, so React remounts it and the animation
+   replays on every toggle. */
+.resultRow {
+  animation: assemble 360ms ease-out both;
+  transform-box: fill-box;
+}
+
+@keyframes assemble {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
