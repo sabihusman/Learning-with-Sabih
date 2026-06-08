@@ -6,22 +6,14 @@ export const metadata = {
 
 # SELECT, WHERE and CASE
 
-A query reads a table and returns a result shaped by what you ask for. Three pieces do most of that shaping: `SELECT` decides which columns come back, `WHERE` decides which rows come back, and `CASE` derives a new column from each row. None of them change the stored table; they only describe the result.
+`SELECT`, `WHERE`, and `CASE` are the basic tools for asking a database a question and shaping the answer.
 
-## SELECT chooses columns
+`SELECT` chooses which columns you get back. Write `SELECT *` and you get every column; name columns, like `SELECT country, plan`, and you get only those. `SELECT` controls the shape of the result, not which rows are included.
 
-`SELECT` lists the columns you want. `SELECT user_id, country` returns just those two columns, even though the table has more. `SELECT *` is shorthand for every column. Choosing only the columns you need keeps results small and clear. In the figure, ticking and unticking columns changes the `SELECT` list and the columns shown.
+`WHERE` filters which rows you get back. It keeps only rows that meet a condition and drops the rest. For example, `WHERE plan = 'pro'` keeps only paid users, and `WHERE country = 'US'` keeps only users in the US. This is the key split: `SELECT` picks columns, `WHERE` picks rows.
 
-## WHERE chooses rows
+`CASE` creates a new derived column by labeling or bucketing rows with conditions. The pattern is `CASE WHEN ... THEN ... ELSE ... END`. For example, you can compute a label called `tier`: return `'paid'` when `plan = 'pro'`, otherwise `'free'`. Or you can bucket a number into `'low'`, `'medium'`, or `'high'`. `CASE` does not change the stored data; it computes a value on the fly for the result.
 
-`WHERE` keeps only the rows that match a condition and drops the rest. `WHERE plan = 'pro'` returns only rows whose plan is pro; `WHERE country = 'GB'` returns only users in Great Britain. The condition is tested against each row independently, so the result is the subset that passes. In the figure, choosing a condition fades out the rows that fail it, leaving the matches.
+These three show up in everyday SQL. Most queries start by choosing columns with `SELECT`, filtering rows with `WHERE`, and sometimes adding a `CASE` label, before any joining or grouping happens.
 
 <SelectWhereCaseViz />
-
-## CASE derives a new column
-
-`CASE` builds a value per row from a series of conditions, like an if-else inside the query. `CASE WHEN plan = 'pro' THEN 'paid' ELSE 'free' END AS tier` adds a `tier` column that reads "paid" for pro users and "free" for everyone else. This is how you bucket rows into categories, or turn a raw value into a label, without storing the label in the table. Turning on the tier column in the figure groups the rows into paid and free by colour.
-
-## Putting it together
-
-A typical query combines all three: `SELECT user_id, plan, CASE WHEN plan = 'pro' THEN 'paid' ELSE 'free' END AS tier FROM users WHERE country = 'GB'`. Read it as: from the users table, keep the GB rows, return their id and plan, and add a derived tier label. SELECT shapes the columns, WHERE shapes the rows, and CASE adds a computed column, and the SQL under the figure shows exactly that query change as you adjust the controls.
