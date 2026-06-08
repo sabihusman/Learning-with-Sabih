@@ -20,15 +20,10 @@ export const SESSIONS = SESSION_IDS.map((id) => {
 })
 
 // Column definitions, including which column is the primary key (PK) and which is
-// the foreign key (FK) pointing back to users.user_id.
-export const USER_COLS = [
-  { key: 'user_id', label: 'user_id', role: 'PK', w: 62 },
-  { key: 'country', label: 'country', w: 64 },
-  { key: 'plan', label: 'plan', w: 54 },
-]
+// the foreign key (FK) pointing back to users.user_id. Built via a helper so the
+// label mirrors the key without repeating it. (role is left undefined for plain
+// columns, which the figure treats as "no key badge".)
+const col = (key, w, role) => ({ key, label: key, role, w })
 
-export const SESSION_COLS = [
-  { key: 'session_id', label: 'session_id', role: 'PK', w: 82 },
-  { key: 'user_id', label: 'user_id', role: 'FK', w: 62 },
-  { key: 'started_at', label: 'started_at', w: 96 },
-]
+export const USER_COLS = [col('user_id', 62, 'PK'), col('country', 64), col('plan', 54)]
+export const SESSION_COLS = [col('session_id', 82, 'PK'), col('user_id', 62, 'FK'), col('started_at', 96)]
