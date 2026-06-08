@@ -6,24 +6,14 @@ export const metadata = {
 
 # GROUP BY and aggregation
 
-`GROUP BY` answers questions about groups rather than individual rows. Instead of one row per session, you ask for one row per country, or one row per plan, and a number that summarizes each group. To do that, the database takes all the rows that share a grouping value, folds them together, and returns a single summary row for each group. The detail rows disappear into their totals.
+`GROUP BY` is how SQL turns detailed rows into summaries. It collapses many rows into one summary row per group. You choose a grouping column, like `country` or `plan`, and every row with the same value is treated as one group. The result shows one row per group, not the original rows. This is the opposite of window functions, which compute across related rows but keep every original row. `GROUP BY` reduces the number of rows; window functions do not.
 
-This is the opposite of a window function. A window function computes across rows but keeps every row visible. `GROUP BY` collapses them: many rows in, one row per group out.
+The summary numbers per group come from aggregate functions. `COUNT` counts how many rows are in each group. `SUM` adds up a numeric column inside the group. `AVG` computes the average. You typically select the group key plus one or more aggregates.
 
-## Choosing the aggregate
+A common source of mistakes is `COUNT(*)` versus `COUNT(DISTINCT col)`. `COUNT(*)` counts all rows in the group, including several sessions from the same user. `COUNT(DISTINCT user_id)` counts unique users. If you ask "how many users" but write `COUNT(*)`, you may accidentally count sessions instead of people.
 
-The summary value comes from an aggregate function applied to each group. `COUNT(*)` counts the rows in the group. `SUM(events)` adds up a column across the group, and `AVG(events)` averages it. The figure groups a slice of sessions, where each row carries the user's country and plan and the number of events recorded in that session, so the aggregate has something real to add up.
+Filtering happens in two stages, which SQL splits into `WHERE` and `HAVING`. `WHERE` filters individual rows before grouping, like keeping only events from one week. `HAVING` filters whole groups after aggregation, like keeping only groups with `COUNT(*) > 10`. Putting an aggregate like `COUNT(*) > 10` in `WHERE` is an error, because the count does not exist until after grouping.
+
+In the figure below, choose a `GROUP BY` column to watch rows collapse into groups, switch between `COUNT`, `SUM`, and `AVG`, compare `COUNT(*)` with `COUNT(DISTINCT)`, and adjust a `HAVING` threshold to drop whole groups.
 
 <GroupByViz />
-
-## COUNT(\*) versus COUNT(DISTINCT)
-
-`COUNT(*)` and `COUNT(DISTINCT user_id)` look similar and often disagree. `COUNT(*)` counts every row. `COUNT(DISTINCT user_id)` counts how many different users appear, so if one user has several sessions in a group, those extra rows fold into one. In the figure, the repeat rows fade out when you pick the distinct count, and the group's number drops to the number of unique users. Reaching for the wrong one is a common way to over- or under-count.
-
-## WHERE versus HAVING
-
-Filtering happens at two different moments. `WHERE` filters rows before grouping, deciding which rows are even eligible. `HAVING` filters groups after aggregating, deciding which summary rows survive based on their aggregate value. The slider in the figure is a `HAVING COUNT(*) > N` filter: raise it and whole groups drop out once they are too small, while the rows inside the surviving groups are untouched. You cannot do that with `WHERE`, because the group counts do not exist until after grouping.
-
-## What the demo shows
-
-The rows on the left are one slice of sessions, each tagged with its country, plan, and event count. Pick a grouping column and the rows recluster; pick an aggregate and each cluster collapses into the summary row on the right, with the funnel showing many rows becoming one. The distinct count fades the repeat users, the HAVING slider removes whole groups, and the SQL underneath updates to match exactly what the figure is computing.
