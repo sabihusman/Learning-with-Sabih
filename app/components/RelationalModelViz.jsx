@@ -1,0 +1,177 @@
+'use client'
+
+import { useState } from 'react'
+import Figure from './Figure'
+import { USERS, SESSIONS, USER_COLS, SESSION_COLS } from './relationalData'
+import styles from './RelationalModelViz.module.css'
+
+const INK = '#1a1a1a'
+const FADE = '#9b9892'
+const ACCENT = '#c0392b'
+const PK_GREEN = '#1f6f5c'
+const ACTIVE_BG = '#fbeeec'
+const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
+
+// ── SVG geometry ──────────────────────────────────────────────────────────────
+const VB_W = 600
+const SRC_TOP = 50
+const HEAD_H = 32
+const ROW_H = 28
+
+const X_U = 14
+const USER_W = USER_COLS.reduce((s, c) => s + c.w, 0)
+const X_S = 336
+
+const VB_H = SRC_TOP + HEAD_H + Math.max(USERS.length, SESSIONS.length) * ROW_H + 16
+
+const colX = (x, cols, ci) => x + cols.slice(0, ci).reduce((s, c) => s + c.w, 0)
+const rowTop = (i) => SRC_TOP + HEAD_H + i * ROW_H
+const rowCenter = (i) => rowTop(i) + ROW_H / 2
+
+function keyColor(role) {
+  if (role === 'PK') return PK_GREEN
+  if (role === 'FK') return ACCENT
+  return FADE
+}
+
+// Interactive table: highlights any row whose user_id equals `active`, and reports
+// hover/click of a row back through onHover/onPin.
+function Table({ x, cols, rows, title, active, onHover, onPin, getCell }) {
+  const totalW = cols.reduce((s, c) => s + c.w, 0)
+  return (
+    <g>
+      <text x={x} y={SRC_TOP - 18} fontSize={12} fill={INK} fontFamily={MONO} fontWeight="bold">
+        {title}
+      </text>
+
+      {/* headers with PK/FK badges */}
+      {cols.map((c, ci) => {
+        const cx = colX(x, cols, ci)
+        return (
+          <g key={`h-${c.key}`}>
+            <text x={cx + 8} y={SRC_TOP + 12} fontSize={9.5} fill={c.role ? keyColor(c.role) : FADE} fontFamily={MONO} fontWeight={c.role ? 700 : 400} letterSpacing="0.03em">
+              {c.label}
+            </text>
+            {c.role && (
+              <>
+                <rect x={cx + 8} y={SRC_TOP + 17} width={17} height={11} rx={2} fill={keyColor(c.role)} />
+                <text x={cx + 16.5} y={SRC_TOP + 25.5} fontSize={8} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">
+                  {c.role}
+                </text>
+              </>
+            )}
+          </g>
+        )
+      })}
+      <line x1={x} y1={SRC_TOP + HEAD_H} x2={x + totalW} y2={SRC_TOP + HEAD_H} stroke="#d4d0c8" strokeWidth={1} />
+
+      {/* rows */}
+      {rows.map((row, ri) => {
+        const activeRow = row.user_id === active
+        return (
+          <g
+            key={ri}
+            className={styles.row}
+            style={{ cursor: 'pointer' }}
+            onMouseEnter={() => onHover(row.user_id)}
+            onMouseLeave={() => onHover(null)}
+            onClick={() => onPin(row.user_id)}
+          >
+            <rect
+              x={x}
+              y={rowTop(ri)}
+              width={totalW}
+              height={ROW_H}
+              fill={activeRow ? ACTIVE_BG : ri % 2 ? '#faf9f6' : '#ffffff'}
+              stroke={activeRow ? ACCENT : '#eceae3'}
+              strokeWidth={activeRow ? 1.2 : 0.5}
+            />
+            {cols.map((c, ci) => {
+              const cx = colX(x, cols, ci)
+              const isKey = !!c.role
+              return (
+                <text
+                  key={c.key}
+                  x={cx + 8}
+                  y={rowTop(ri) + ROW_H / 2 + 3.5}
+                  fontSize={10.5}
+                  fill={isKey ? keyColor(c.role) : INK}
+                  fontFamily={MONO}
+                  fontWeight={isKey ? 700 : 400}
+                >
+                  {getCell(row, c.key)}
+                </text>
+              )
+            })}
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+const getCell = (row, k) => row[k]
+
+export default function RelationalModelViz() {
+  // active = the user_id whose relationship is shown. Hover previews; click pins.
+  const [pinned, setPinned] = useState(31)
+  const [hover, setHover] = useState(null)
+  const active = hover ?? pinned
+
+  const activeUserIndex = USERS.findIndex((u) => u.user_id === active)
+  const matchingSessionIdx = SESSIONS.map((s, i) => (s.user_id === active ? i : -1)).filter((i) => i >= 0)
+
+  const readouts = [
+    { label: 'selected', value: `users.user_id = ${active}` },
+    { label: 'linked sessions', value: matchingSessionIdx.length },
+    { label: 'foreign key', value: 'sessions.user_id' },
+  ]
+
+  return (
+    <Figure
+      eyebrow="Databases and SQL"
+      title="Two tables linked by a key"
+      readouts={readouts}
+      tryThis="A relational database splits data into focused tables. The users table has one row per user, and the sessions table has one row per session. Each table has a primary key (PK) that uniquely identifies its rows: user_id for users, session_id for sessions. The sessions table also has a foreign key (FK), user_id, that points back to users.user_id, recording who the session belongs to. Hover or click a row to light up its related rows: a session links to its one user, and a user links to all of its sessions (user 31 has two). Because the data lives in separate tables, putting it back together needs a join."
+    >
+      <svg
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '0 auto' }}
+        aria-label="A users table and a sessions table side by side. Each session's user_id foreign key links to a user's user_id primary key; hovering or clicking a row highlights the related rows and draws connecting lines."
+      >
+        {/* connector lines from the active user to each of its sessions */}
+        {activeUserIndex >= 0 &&
+          matchingSessionIdx.map((si) => (
+            <line
+              key={`link-${active}-${si}`}
+              className={styles.link}
+              x1={X_U + USER_W}
+              y1={rowCenter(activeUserIndex)}
+              x2={X_S}
+              y2={rowCenter(si)}
+              stroke={ACCENT}
+              strokeWidth={1.6}
+              strokeOpacity={0.75}
+            />
+          ))}
+
+        <Table x={X_U} cols={USER_COLS} rows={USERS} title="users" active={active} onHover={setHover} onPin={setPinned} getCell={getCell} />
+        <Table x={X_S} cols={SESSION_COLS} rows={SESSIONS} title="sessions" active={active} onHover={setHover} onPin={setPinned} getCell={getCell} />
+      </svg>
+
+      <div className={styles.legend}>
+        <span>
+          <span className={`${styles.badge} ${styles.pk}`}>PK</span>primary key: uniquely identifies a row
+        </span>
+        <span>
+          <span className={`${styles.badge} ${styles.fk}`}>FK</span>foreign key: points to a primary key in another table
+        </span>
+      </div>
+
+      <p className={styles.note}>
+        The data is not one giant table. It is split into focused tables connected by keys, which is what
+        &quot;relational&quot; means, and why combining them needs a join.
+      </p>
+    </Figure>
+  )
+}

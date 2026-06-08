@@ -48,24 +48,30 @@ const SECTIONS = [
     topics: [
       {
         num: '07',
+        title: 'Tables and the Relational Model',
+        subtitle: 'Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link',
+        href: '/topics/relational-model/',
+      },
+      {
+        num: '08',
         title: 'Joins',
         subtitle: 'Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result',
         href: '/topics/joins/',
       },
       {
-        num: '08',
+        num: '09',
         title: 'Window Functions',
         subtitle: 'Rank, number, and total across rows without collapsing them, and see how ties split the ranks',
         href: '/topics/window-functions/',
       },
       {
-        num: '09',
+        num: '10',
         title: 'GROUP BY and Aggregation',
         subtitle: 'Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave',
         href: '/topics/group-by/',
       },
       {
-        num: '10',
+        num: '11',
         title: 'Funnel Analysis',
         subtitle: 'Count distinct sessions through each step and watch where users drop off',
         href: '/topics/funnel-analysis/',
