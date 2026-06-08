@@ -6,22 +6,12 @@ export const metadata = {
 
 # Tables and the relational model
 
-A relational database does not keep everything in one giant table. It splits data into focused tables, each describing one kind of thing, and links them together with keys. That splitting, and the linking, is what the word "relational" refers to.
+A database table stores data in rows and columns, like a spreadsheet. Each row is one record, such as one user or one session. Each column is a field on that record, such as `country` or `plan`. A table is useful because you can add many rows of the same shape and reliably refer to the same column across all of them.
 
-## Tables and primary keys
+The relational model is the idea that you should not cram everything into one giant table. Instead, you split data into focused tables that each describe one kind of thing. A `users` table holds one row per user. A `sessions` table holds one row per session. This avoids repeating a user's details on every session row. If a user's `country` changes, you update it once in `users`, not across all their session records.
 
-Each table holds one kind of record, one per row. A users table has a row for each user; a sessions table has a row for each session. To refer to a specific row without ambiguity, every table has a primary key: a column whose value is unique for each row. In the figure, `user_id` is the primary key of users, and `session_id` is the primary key of sessions. No two users share a `user_id`, and no two sessions share a `session_id`.
+Keys are how tables connect. A primary key uniquely identifies each row in a table. For example, `user_id` is the primary key of `users`, and `session_id` is the primary key of `sessions`. A foreign key is a column in one table that points to a primary key in another. Here, `sessions.user_id` is a foreign key pointing to `users.user_id`. That link is what makes the data relational: it encodes "this session belongs to this user."
 
-## Foreign keys link the tables
-
-The tables are connected by foreign keys. A foreign key is a column that holds the primary key value of a row in another table. The sessions table has a `user_id` column that is not its own identity but a pointer: it holds the `user_id` of the user the session belongs to. That single column is what records the relationship between a session and a user.
+The payoff is that splitting data keeps it clean and free of repetition, but it also means the information you need is spread across tables. To answer a question like "show each session with the user's country," you have to recombine rows using the keys. That recombination is exactly what a join does, and it is why joins exist.
 
 <RelationalModelViz />
-
-## One user, many sessions
-
-Following the foreign key in both directions shows the shape of the relationship. From a session, the `user_id` points to exactly one user. From a user, the same value can match many sessions, because one person can start the app more than once. In the figure, user 31 owns two sessions, so selecting that user lights up both. This one-to-many pattern is the most common relationship in a relational database.
-
-## Why this matters
-
-Keeping users and sessions in separate tables avoids repeating every user's details on every session row, and it keeps each fact in one place. The cost is that answering a question that spans both tables, like listing each session next to its user's country, means putting the tables back together by matching the foreign key to the primary key. That operation is a join, and it is the natural next step once you see how tables are linked.
