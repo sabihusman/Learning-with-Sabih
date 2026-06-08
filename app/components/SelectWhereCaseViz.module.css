@@ -1,0 +1,87 @@
+/* Rows ease their opacity as the WHERE condition changes, so filtered-out rows fade
+   rather than blink. Rows are rendered from state at their correct opacity, so the
+   transition is purely cosmetic. */
+.row {
+  transition: opacity 280ms ease;
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+  min-width: 3.4rem;
+}
+
+.check {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  color: #1a1a1a;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.check input {
+  accent-color: #1f6f5c;
+  cursor: pointer;
+}
+
+.check input:disabled {
+  cursor: default;
+}
+
+.select {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 5px 9px;
+  cursor: pointer;
+}
+
+.toggle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.toggle:hover {
+  background: #ece9e1;
+}
+
+.toggleOn {
+  background: #1f6f5c;
+  border-color: #1f6f5c;
+  color: #f7f5f0;
+}
+
+.toggleOn:hover {
+  background: #1f6f5c;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 12px 0 0;
+}
