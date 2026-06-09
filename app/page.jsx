@@ -15,12 +15,13 @@ AI and ML|05|Attention|How a transformer decides which words to focus on, like "
 AI and ML|06|Transformers and Multi-Head Attention|Many attention heads in parallel, each head watching a different relationship over the same sentence|transformers
 AI and ML|07|Neural Networks|Watch a tiny network train live: loss drops, weights shift, the boundary sharpens|neural-networks
 AI and ML|08|RLHF|Pick the answers you prefer and watch your feedback reshape the model|rlhf
-Databases and SQL|09|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
-Databases and SQL|10|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
-Databases and SQL|11|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
-Databases and SQL|12|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
-Databases and SQL|13|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
-Databases and SQL|14|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
+AI and ML|09|Temperature and Sampling|Move a temperature slider and watch the next-word distribution sharpen or flatten|temperature
+Databases and SQL|10|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
+Databases and SQL|11|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
+Databases and SQL|12|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
+Databases and SQL|13|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
+Databases and SQL|14|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
+Databases and SQL|15|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
 `
 
 const SECTION_ORDER = ['AI and ML', 'Databases and SQL']
