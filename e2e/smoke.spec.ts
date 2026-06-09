@@ -31,10 +31,11 @@ for (const topic of TOPICS) {
   test(`topic "${topic.slug}" loads its figure with no console errors`, async ({ page }) => {
     const errors = trackConsoleErrors(page)
     await page.goto(`/topics/${topic.slug}/`)
-    // every topic renders exactly one interaction inside the Figure shell
-    await expect(page.locator('figure')).toBeVisible()
+    // every topic renders at least one interaction inside the Figure shell (a few
+    // topics, like Attention, embed more than one figure)
+    await expect(page.locator('figure').first()).toBeVisible()
     // the figure title is rendered inside the shell
-    await expect(page.locator('figure h3')).toBeVisible()
+    await expect(page.locator('figure h3').first()).toBeVisible()
     // allow the lazily-imported 3D scenes to mount, then assert no errors surfaced
     await page.waitForTimeout(800)
     expect(errors, `console errors on ${topic.slug}: ${errors.join(' | ')}`).toEqual([])
@@ -56,6 +57,6 @@ test('contents page links to every topic and navigation works', async ({ page })
     await page.goto('/')
     await page.locator(`main a[href="${href}"]`).first().click()
     await expect(page).toHaveURL(new RegExp(`${href.replace(/[/]/g, '\\/')}$`))
-    await expect(page.locator('figure')).toBeVisible()
+    await expect(page.locator('figure').first()).toBeVisible()
   }
 })

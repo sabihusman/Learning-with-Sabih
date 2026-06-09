@@ -1,0 +1,40 @@
+/* Match bars sweep out from the left when a word is picked, one after another, so the
+   "compare the Query against each Key" step reads as a sequence. Bars are rendered at
+   their true width from state; the scaleX animation is purely additive (ends at
+   scaleX(1) = the real width), so a bar is never left collapsed if the animation does
+   not run, e.g. in a backgrounded tab. The bar key includes the picked word, so React
+   remounts the bars and the sweep replays on each pick. */
+.matchBar {
+  animation: sweep 460ms ease-out both;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+@keyframes sweep {
+  from {
+    transform: scaleX(0.02);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.formula {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #e2e0d8;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-top: 14px;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 10px 0 0;
+}
