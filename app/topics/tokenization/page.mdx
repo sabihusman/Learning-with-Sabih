@@ -1,0 +1,19 @@
+import TokenizerViz from '@/app/components/TokenizerViz'
+
+export const metadata = {
+  title: 'Tokenization - Learning with Sabih',
+}
+
+# Tokenization
+
+Before a language model can do anything with text, it has to chop the text into pieces called tokens. A token is often a whole common word, but longer or rarer words get split into smaller subword pieces. For example, "apple" might be a single token, while "unbreakable" might split into "un", "break", "able". This gives the model a manageable vocabulary that can still represent new words by combining pieces.
+
+Each token is mapped to an integer ID. The model never sees letters or words directly. It sees a sequence like `[314, 9271, 18, 502]`, where each number stands for one token. This sets up the next step, embeddings: each token ID becomes a vector of numbers the model can compute with.
+
+This matters because tokenization changes what the model can directly see. Since the model operates on tokens, not characters, it can struggle with tasks that need letter-level detail. Spelling a word backwards, counting the letters in a word, or making rhymes can be harder than you expect. If a whole word is swallowed into a single token, the model has no direct view of the letters inside it.
+
+Tokens are also why text length is measured in tokens, not words. Usage limits and context windows are counted in tokens, because that is the unit the model processes.
+
+The figure below uses a simplified, illustrative tokenizer. Real models use a learned vocabulary of tens of thousands of tokens, often built with byte-pair encoding. The behavior is the real point: common words stay whole, rare words split, and each piece becomes an ID.
+
+<TokenizerViz />
