@@ -1,0 +1,32 @@
+import CompositionViz from '@/app/components/CompositionViz'
+
+export const metadata = {
+  title: 'Composition vs inheritance - Learning with Sabih',
+}
+
+# Composition vs inheritance
+
+There are two common ways to build capability. **Inheritance** is an is-a relationship: a `GuardBot` IS A `Robot`. **Composition** is a has-a relationship: a robot HAS A flight module. With composition, a class holds other objects as fields and delegates work to them.
+
+Inheritance strains when capabilities need mixing. If you need a robot that flies, one that swims, and one that does both, subclassing pushes you toward awkward trees and duplicated code: `FlyingRobot`, `SwimmingRobot`, `FlyingSwimmingRobot`, and so on. Each new combination needs a new class. Changes in a base class can also ripple down and break subclasses in surprising ways, sometimes called the fragile base class problem.
+
+Composition shines because you can snap capabilities together. A `Robot` can hold a list of modules like `FlightModule` and `SwimModule`. Any robot can have any mix, modules can be added or swapped at runtime, and no new class is needed per combination. Changing one module usually does not force changes in unrelated modules.
+
+```java
+interface Module { void activate(Robot r); }
+
+class FlightModule implements Module { public void activate(Robot r) { /* fly */ } }
+class SwimModule implements Module { public void activate(Robot r) { /* swim */ } }
+
+class Robot {
+  private final List<Module> modules = new ArrayList<>();
+  void addModule(Module m) { modules.add(m); }
+  void activateAll() { for (Module m : modules) m.activate(this); }
+}
+```
+
+"Favor composition over inheritance" is common advice and a good default, but inheritance is still right when there is a true is-a relationship and shared core behavior. The skill is choosing, not always avoiding inheritance.
+
+In the figure below, grow an inheritance tree on one side and watch combinations multiply and a base-class change ripple, then build the same robot on the other side by snapping modules in and out cleanly.
+
+<CompositionViz />

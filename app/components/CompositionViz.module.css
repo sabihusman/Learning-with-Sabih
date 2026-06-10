@@ -1,0 +1,285 @@
+/* Composition vs inheritance: the conclusion of the OOP section. Two side-by-side
+   panels reuse the class-box look and robot avatars. Left multiplies classes;
+   right snaps modules into one robot. */
+
+.columns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.side {
+  flex: 1 1 300px;
+  min-width: 270px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: #faf9f6;
+  padding: 0.85rem;
+}
+
+.sideHead {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.sideTitle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sideTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  color: var(--fade);
+}
+
+/* ── class boxes (shared look) ───────────────────────────────────────────── */
+.classBox {
+  position: relative;
+  border: 1.5px solid var(--ink);
+  border-radius: 7px;
+  background: #ffffff;
+  padding: 0.45rem 0.55rem;
+  box-shadow: 2px 2px 0 var(--rule);
+}
+
+.boxTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fade);
+  display: block;
+}
+
+.boxName {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.base {
+  width: max-content;
+  margin: 0 auto 0.4rem;
+}
+
+.treeArea {
+  flex: 1;
+  min-height: 150px;
+}
+
+.leaves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.leaf {
+  flex: 0 1 auto;
+  max-width: 150px;
+}
+
+.ext {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  color: var(--fade);
+  display: block;
+  margin-top: 0.1rem;
+}
+
+.methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.method,
+.dupMethod {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+}
+
+.method {
+  color: #2c6e7f;
+}
+
+.dupMethod {
+  color: #b07a2e;
+  background: #f6ecda;
+  padding: 0 0.2rem;
+  border-radius: 2px;
+}
+
+.changed {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.18);
+}
+
+.changedBadge,
+.brokenBadge {
+  position: absolute;
+  top: -0.6rem;
+  right: 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  background: var(--paper);
+  color: var(--accent);
+}
+
+.brokenBox {
+  border-color: var(--accent);
+  background: #fbeeec;
+}
+
+.affectedBox {
+  border-color: #d8b58a;
+}
+
+/* ── composition side ────────────────────────────────────────────────────── */
+.composeArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.composedRobot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.7rem 1rem;
+  box-shadow: 2px 2px 0 var(--rule);
+  margin-bottom: 0.8rem;
+}
+
+.composedName {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 0.25rem;
+}
+
+.composedCaps {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  color: var(--fade);
+  margin-top: 0.15rem;
+  text-align: center;
+}
+
+.modules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 220px;
+  margin-bottom: 0.7rem;
+}
+
+.module {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  padding: 0.4rem 0.55rem;
+  border: 1.5px dashed var(--rule);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--fade);
+  cursor: pointer;
+  text-align: left;
+}
+
+.moduleOn {
+  border-style: solid;
+  font-weight: 700;
+  box-shadow: 2px 2px 0 var(--rule);
+}
+
+.moduleDot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--fade);
+  flex-shrink: 0;
+}
+
+.moduleState {
+  margin-left: auto;
+  font-size: 0.5625rem;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  line-height: 1.4;
+  color: #2c6e7f;
+  text-align: center;
+  margin: 0;
+  max-width: 240px;
+}
+
+/* ── buttons ─────────────────────────────────────────────────────────────── */
+.btnRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.addBtn,
+.dangerBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--rule);
+  background: #ffffff;
+  border-radius: 4px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.addBtn:hover:not(:disabled),
+.dangerBtn:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.addBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.dangerBtn {
+  color: var(--accent);
+  border-color: #e6c9c4;
+}
+
+.dangerBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
