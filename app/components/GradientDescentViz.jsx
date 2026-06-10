@@ -175,8 +175,7 @@ export default function GradientDescentViz() {
   // unchanged and still advances in exact discrete steps; only the pixels glide.
   const [renderX, setRenderX] = useState(() => STARTS.right)
   const displayRef = useRef(STARTS.right) // where the dot currently is (glide start)
-  const animRef = useRef(null) // current anime.js instance, so we can cancel it
-  const runningRef = useRef(false) // latest running flag for the onComplete chain
+  const animRef = useRef(null) // current anime.js glide instance, so we can cancel it
 
   // ── drag-to-place ──────────────────────────────────────────────────────────
   // While paused, the dot can be dragged along the curve to set the start x.
@@ -234,38 +233,62 @@ export default function GradientDescentViz() {
     }
   }
 
-  // Keep runningRef in sync after each commit so the anime.js onComplete chain
-  // reads the current Play/Pause state (refs must not be written during render).
+  // Optimizer cadence. The run advances on a timer, NOT on anime's rAF callbacks,
+  // so the optimization keeps progressing even when rAF is paused or throttled
+  // (a backgrounded or hidden tab). The first step fires immediately; the rest
+  // follow every STEP_MS. The reducer stops appending once the run has settled or
+  // diverged, which flips `running` off and tears this timer down.
   useEffect(() => {
-    runningRef.current = state.running
-  })
-
-  // Kick the first step when Play starts; the glide's onComplete chains the rest.
-  useEffect(() => {
-    if (state.running) dispatch({ type: 'AUTO_STEP' })
+    if (!state.running) return undefined
+    let id = 0
+    const tick = () => {
+      dispatch({ type: 'AUTO_STEP' })
+      id = window.setTimeout(tick, STEP_MS)
+    }
+    id = window.setTimeout(tick, 0)
+    return () => window.clearTimeout(id)
   }, [state.running])
 
-  // Glide the dot to each newly committed step using anime.js. When the glide
-  // finishes, advance the optimizer (if still running), which appends the next
-  // step and re-runs this effect — that chain is the stepping loop.
+  // Visual glide. anime.js v4 interpolates the dot's x from the previous committed
+  // step to the new one over STEP_MS; the dot's y is recomputed from f(x) every
+  // frame in render (see cy below), so the motion rides the curve instead of cutting
+  // a straight chord across it. The ease is LINEAR per step; because the optimizer's
+  // steps shrink as f'(x) -> 0, the dot decelerates on its own and settles rather
+  // than slamming to a halt.
+  //
+  // Each glide starts from the PREVIOUS committed step, not the live mid-glide
+  // position, so it covers exactly one step. Snapping renderX to that start also
+  // means that if anime cannot run (paused rAF), the dot still advances one step
+  // per commit instead of freezing in place.
   const targetX = state.history[state.history.length - 1]
+  const prevTarget = state.history.length >= 2 ? state.history[state.history.length - 2] : targetX
   useEffect(() => {
     if (animRef.current) animRef.current.cancel()
+    const startX = prevTarget
+    const stepPx = Math.abs((targetX - startX) / (X_MAX - X_MIN)) * (PLOT_R - PLOT_L)
 
-    // anime.js glides the dot from where it is to the newly committed step. The
-    // ease is LINEAR so each step plays at constant speed; because the optimizer
-    // steps shrink as f'(x) -> 0, the dot decelerates on its own (no per-step
-    // ease-out lurch). Steps whose on-screen movement is sub-pixel collapse to
-    // duration 0, so the run eases to a gentle stop instead of crawling through a
-    // long invisible tail. A single-point history (reset / drag / lr change)
-    // also snaps with duration 0. All setState happens in anime's callbacks.
-    const proxy = { x: displayRef.current }
-    const stepPx = Math.abs((targetX - displayRef.current) / (X_MAX - X_MIN)) * (PLOT_R - PLOT_L)
-    const duration = state.history.length <= 1 || stepPx < MIN_STEP_PX ? 0 : STEP_MS
+    // single-point history (reset / drag / lr change) or a sub-pixel step: snap with
+    // no glide. The snap is deferred to a 0ms timer so it is not a synchronous
+    // setState in the effect body, and because a timer (unlike rAF) still fires when
+    // the tab is hidden.
+    if (state.history.length <= 1 || stepPx < MIN_STEP_PX) {
+      const snap = window.setTimeout(() => {
+        displayRef.current = targetX
+        setRenderX(targetX)
+      }, 0)
+      return () => window.clearTimeout(snap)
+    }
+
+    // anime.js v4 glides the dot across exactly one optimizer step (prevTarget ->
+    // targetX). The dot's y is recomputed from f(x) every frame in render, so the
+    // motion rides the curve. The previous glide ended at prevTarget, so starting the
+    // proxy there continues smoothly with no jump. The ease is LINEAR; deceleration
+    // (and the settle) come from the optimizer steps shrinking as f'(x) -> 0.
+    const proxy = { x: startX }
     animRef.current = animate(proxy, {
       x: targetX,
-      duration,
-      ease: 'linear', // constant speed per step; deceleration comes from shrinking steps
+      duration: STEP_MS,
+      ease: 'linear',
       onUpdate: () => {
         displayRef.current = proxy.x
         setRenderX(proxy.x)
@@ -273,14 +296,25 @@ export default function GradientDescentViz() {
       onComplete: () => {
         displayRef.current = targetX
         setRenderX(targetX)
-        if (runningRef.current) dispatch({ type: 'AUTO_STEP' })
       },
     })
 
+    // Robustness floor: rAF-driven animations are paused in a hidden/backgrounded
+    // tab, so if the glide has not arrived by the time the step is over, snap the dot
+    // to the step's target. On a visible tab anime has already arrived, so this is a
+    // no-op; it just guarantees the dot keeps advancing instead of freezing.
+    const floor = window.setTimeout(() => {
+      if (displayRef.current !== targetX) {
+        displayRef.current = targetX
+        setRenderX(targetX)
+      }
+    }, STEP_MS + 60)
+
     return () => {
       if (animRef.current) animRef.current.cancel()
+      window.clearTimeout(floor)
     }
-  }, [state.history, targetX])
+  }, [state.history, targetX, prevTarget])
 
   // Discrete current step — drives readouts, settling, and status.
   const x = state.history[state.history.length - 1]
