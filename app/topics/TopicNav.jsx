@@ -11,7 +11,9 @@ import styles from './TopicNav.module.css'
 // buttons automatically. The sequence crosses section boundaries.
 export default function TopicNav() {
   const pathname = usePathname() || ''
-  const slug = pathname.replace(/\/+$/, '').split('/').pop()
+  // last non-empty path segment, e.g. "/topics/embeddings/" -> "embeddings"
+  const parts = pathname.split('/').filter(Boolean)
+  const slug = parts[parts.length - 1]
   const { prev, next } = neighbors(slug)
 
   if (!prev && !next) return null
