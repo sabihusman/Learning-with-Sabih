@@ -1,0 +1,55 @@
+.topicNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 1rem;
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 48%;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.prev {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.next {
+  align-items: flex-end;
+  text-align: right;
+  margin-left: auto;
+}
+
+/* direction label: mono eyebrow, matching the site's section labels */
+.dir {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+/* destination title: serif, inherits the body face */
+.name {
+  font-size: 1rem;
+  line-height: 1.3;
+  color: var(--ink);
+  transition: color 0.15s;
+}
+
+.btn:hover .name {
+  color: var(--accent);
+}
+
+.spacer {
+  flex: 1;
+}

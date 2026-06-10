@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import styles from './layout.module.css'
+import TopicNav from './TopicNav'
 
 export default function TopicsLayout({ children }) {
   return (
@@ -12,6 +13,7 @@ export default function TopicsLayout({ children }) {
       </nav>
       <div className={styles.container}>
         <article className={styles.prose}>{children}</article>
+        <TopicNav />
       </div>
     </>
   )
