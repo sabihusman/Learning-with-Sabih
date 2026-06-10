@@ -1,0 +1,36 @@
+import InheritanceViz from '@/app/components/InheritanceViz'
+
+export const metadata = {
+  title: 'Inheritance - Learning with Sabih',
+}
+
+# Inheritance
+
+A class can extend another class, which means it inherits the parent's fields and methods. The subclass starts with everything the parent has, then adds its own features or changes some behavior. In Java:
+
+```java
+class CleaningBot extends Robot { }
+```
+
+This is useful because shared behavior lives in one place instead of being copied into every class. A `Robot` parent can hold common fields like `name` and `batteryLevel`, plus a shared method like `reportStatus()`. Specialized robots can then extend it. A `CleaningBot` might add a `dustBinLevel` field and a `clean()` method. A `GuardBot` might add an `alarmEnabled` field and a `patrol()` method. The common parts stay in `Robot`; each subclass defines only what makes it different.
+
+A subclass can also override a parent method by defining a method with the same name and signature, replacing the parent's version for that subclass's objects. If `CleaningBot` overrides `reportStatus()`, then calling it on a `CleaningBot` runs the `CleaningBot` version.
+
+```java
+class Robot {
+  void reportStatus() { System.out.println("Robot status"); }
+}
+
+class CleaningBot extends Robot {
+  @Override
+  void reportStatus() { System.out.println("CleaningBot status"); }
+}
+```
+
+Method lookup is the mechanism behind this. When you call a method on an object, Java first looks in the object's actual class. If it is not there, Java searches the parent, then the grandparent, and keeps climbing until it finds a match. That climb is how inherited methods are found and why overrides win.
+
+Deep inheritance chains can get fragile and hard to reason about, which a later topic on composition addresses.
+
+In the figure below, click classes in a small robot family tree to see own vs inherited vs overridden members, and call a method to watch the lookup climb the chain until it finds an implementation.
+
+<InheritanceViz />
