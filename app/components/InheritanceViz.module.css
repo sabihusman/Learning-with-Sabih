@@ -1,0 +1,270 @@
+/* Inheritance topic. Reuses the class-box look from the classes-and-objects topic
+   (rule borders, mono members, tag chip) over a small family tree, with a lookup
+   probe that climbs the chain. */
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--ink);
+}
+
+.swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+}
+
+.wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stageScroll {
+  flex: 1 1 460px;
+  overflow-x: auto;
+}
+
+.stage {
+  position: relative;
+  margin: 0 auto;
+}
+
+.lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* ── class box ───────────────────────────────────────────────────────────── */
+.box {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.5rem 0.6rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--rule);
+  transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.box:hover {
+  box-shadow: 3px 3px 0 var(--rule);
+}
+
+.boxTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.boxHead {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.05rem;
+}
+
+.boxName {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.extends,
+.base {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  color: var(--fade);
+  margin-top: 0.1rem;
+}
+
+.boxMembers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.chipField,
+.chipMethod {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  line-height: 1.1;
+}
+
+.chipField {
+  color: var(--ink);
+}
+
+/* box states */
+.selected {
+  border-color: #2c6e7f;
+  box-shadow: 2px 2px 0 #bcd6da;
+}
+
+.checking {
+  border-color: #b07a2e;
+  box-shadow: 0 0 0 3px rgba(176, 122, 46, 0.25);
+  animation: pulse 0.9s ease-in-out infinite;
+}
+
+.found {
+  border-color: #1f6f5c;
+  box-shadow: 0 0 0 3px rgba(31, 111, 92, 0.28);
+}
+
+.passed {
+  opacity: 0.55;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(176, 122, 46, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(176, 122, 46, 0.32);
+  }
+}
+
+.badgeChecking,
+.badgeFound,
+.badgePassed {
+  position: absolute;
+  top: -0.7rem;
+  right: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  background: var(--paper);
+}
+
+.badgeChecking {
+  color: #b07a2e;
+}
+
+.badgeFound {
+  color: #1f6f5c;
+}
+
+.badgePassed {
+  color: var(--fade);
+  font-weight: 400;
+}
+
+/* ── lookup probe ────────────────────────────────────────────────────────── */
+.probe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding: 0 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--accent);
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  will-change: transform;
+  z-index: 3;
+}
+
+/* ── member detail panel ─────────────────────────────────────────────────── */
+.detail {
+  flex: 1 1 210px;
+  min-width: 200px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: #faf9f6;
+  padding: 0.75rem 0.85rem;
+}
+
+.detailHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.detailName {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.detailParent {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  color: var(--fade);
+}
+
+.detailSection {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin: 0.55rem 0 0.3rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.2rem;
+}
+
+.memberList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.memberItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.18rem 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.memberName {
+  color: var(--ink);
+}
+
+.memberTag {
+  margin-left: auto;
+  font-size: 0.625rem;
+}

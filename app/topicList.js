@@ -22,6 +22,7 @@ Databases and SQL|14|GROUP BY and Aggregation|Collapse rows into one summary per
 Databases and SQL|15|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
 Databases and SQL|16|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
 Object-Oriented Programming|17|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
+Object-Oriented Programming|18|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Databases and SQL', 'Object-Oriented Programming']

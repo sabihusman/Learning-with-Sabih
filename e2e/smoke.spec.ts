@@ -20,6 +20,7 @@ const TOPICS = [
   { slug: 'window-functions', name: 'Window Functions' },
   { slug: 'funnel-analysis', name: 'Funnel Analysis' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
+  { slug: 'inheritance', name: 'Inheritance' },
 ]
 
 test('home page loads with the contents list and no console errors', async ({ page }) => {
