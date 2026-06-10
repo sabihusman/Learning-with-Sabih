@@ -22,6 +22,7 @@ const TOPICS = [
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
   { slug: 'inheritance', name: 'Inheritance' },
   { slug: 'polymorphism', name: 'Polymorphism' },
+  { slug: 'composition-vs-inheritance', name: 'Composition vs Inheritance' },
 ]
 
 test('home page loads with the contents list and no console errors', async ({ page }) => {
