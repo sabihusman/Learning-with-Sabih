@@ -1,0 +1,47 @@
+import PolymorphismViz from '@/app/components/PolymorphismViz'
+
+export const metadata = {
+  title: 'Polymorphism - Learning with Sabih',
+}
+
+# Polymorphism
+
+Different objects can respond to the same method call in their own way. If `CleaningBot`, `GuardBot`, and `ChefBot` all extend `Robot` and each overrides `activate()`, then calling `activate()` does something different depending on which robot it is.
+
+```java
+class Robot {
+  void activate() { System.out.println("Generic activation"); }
+}
+
+class CleaningBot extends Robot {
+  @Override void activate() { System.out.println("Starting vacuum and mop"); }
+}
+
+class GuardBot extends Robot {
+  @Override void activate() { System.out.println("Arming sensors and patrol route"); }
+}
+
+class ChefBot extends Robot {
+  @Override void activate() { System.out.println("Preheating oven and checking recipes"); }
+}
+```
+
+The power move is that you can treat them all as their shared parent type. A variable of type `Robot` can hold any subclass instance, and code that uses it does not need to know which specific robot it has.
+
+```java
+Robot r = new GuardBot();   // declared Robot, actual GuardBot
+r.activate();               // calls GuardBot.activate()
+
+List<Robot> bots = List.of(new CleaningBot(), new GuardBot(), new ChefBot());
+for (Robot bot : bots) {
+  bot.activate();
+}
+```
+
+This works because of dynamic dispatch. Which version of `activate()` runs is decided at runtime by the object's actual type, not the variable's declared type. The behavior travels with the object, even when you store it in a `Robot` variable.
+
+Why it matters: you can write one loop that works across many robot types, and later add a `DeliveryBot` that overrides `activate()` without changing the loop. The new behavior appears automatically when the new object is in the list.
+
+In the figure below, send one `activate()` call to a row of different robots all typed as `Robot` and watch each respond in its own way, then shuffle them to see the behavior follow the object, not the variable type.
+
+<PolymorphismViz />

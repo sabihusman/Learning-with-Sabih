@@ -23,6 +23,7 @@ Databases and SQL|15|Window Functions|Rank, number, and total across rows withou
 Databases and SQL|16|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
 Object-Oriented Programming|17|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
 Object-Oriented Programming|18|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
+Object-Oriented Programming|19|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Databases and SQL', 'Object-Oriented Programming']

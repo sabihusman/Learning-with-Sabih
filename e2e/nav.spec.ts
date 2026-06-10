@@ -32,9 +32,9 @@ test('first topic has no previous', async ({ page }) => {
 })
 
 test('last topic has no next', async ({ page }) => {
-  await page.goto('/topics/inheritance/')
+  await page.goto('/topics/polymorphism/')
   const nav = topicNav(page)
   await expect(nav).toBeVisible()
-  await expect(nav).toContainText('Classes and Objects') // previous still present
+  await expect(nav).toContainText('Inheritance') // previous still present
   await expect(nav).not.toContainText('Next')
 })
