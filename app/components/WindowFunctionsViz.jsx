@@ -91,7 +91,7 @@ export default function WindowFunctionsViz() {
 
   return (
     <Figure
-      eyebrow="Databases and SQL"
+      eyebrow="Ranking"
       title="Window functions over a stream of events"
       controls={controls}
       status={status}

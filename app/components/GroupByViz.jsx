@@ -85,7 +85,7 @@ export default function GroupByViz() {
 
   return (
     <Figure
-      eyebrow="Databases and SQL"
+      eyebrow="Aggregation"
       title="Grouping sessions and aggregating them"
       controls={aggControls}
       status={status}

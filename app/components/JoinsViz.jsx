@@ -159,7 +159,7 @@ export default function JoinsViz() {
 
   return (
     <Figure
-      eyebrow="Databases and SQL"
+      eyebrow="Joining"
       title="Joining users and their sessions"
       controls={controls}
       status={status}

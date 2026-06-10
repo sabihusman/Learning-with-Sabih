@@ -43,7 +43,7 @@ export default function FunnelViz() {
 
   return (
     <Figure
-      eyebrow="Databases and SQL"
+      eyebrow="Analytics"
       title="A learning-app conversion funnel"
       controls={controls}
       status={status}

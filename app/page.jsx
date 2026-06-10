@@ -8,13 +8,13 @@ import styles from './page.module.css'
 // makes the list trivial to extend.
 const TOPIC_ROWS = `
 AI and ML|01|Gradient Descent|Walking downhill, and why the starting point decides which minimum you reach|gradient-descent
-AI and ML|02|Confusion Matrix|Precision, recall, and the threshold that trades one for the other|confusion-matrix
-AI and ML|03|Tokenization|How text is split into tokens, each with an integer ID, before a model ever sees it|tokenization
-AI and ML|04|Embeddings|Words as points in space, where closeness means similar meaning|embeddings
-AI and ML|05|Attention|How a transformer decides which words to focus on, like "it" reaching back to "animal"|attention
-AI and ML|06|Transformers and Multi-Head Attention|Many attention heads in parallel, each head watching a different relationship over the same sentence|transformers
-AI and ML|07|Neural Networks|Watch a tiny network train live: loss drops, weights shift, the boundary sharpens|neural-networks
-AI and ML|08|Overfitting and Generalization|Slide model complexity from underfit to good fit to overfit, and watch test error trace a U|overfitting
+AI and ML|02|Neural Networks|Watch a tiny network train live: loss drops, weights shift, the boundary sharpens|neural-networks
+AI and ML|03|Overfitting and Generalization|Slide model complexity from underfit to good fit to overfit, and watch test error trace a U|overfitting
+AI and ML|04|Confusion Matrix|Precision, recall, and the threshold that trades one for the other|confusion-matrix
+AI and ML|05|Tokenization|How text is split into tokens, each with an integer ID, before a model ever sees it|tokenization
+AI and ML|06|Embeddings|Words as points in space, where closeness means similar meaning|embeddings
+AI and ML|07|Attention|How a transformer decides which words to focus on, like "it" reaching back to "animal"|attention
+AI and ML|08|Transformers and Multi-Head Attention|Many attention heads in parallel, each head watching a different relationship over the same sentence|transformers
 AI and ML|09|RLHF|Pick the answers you prefer and watch your feedback reshape the model|rlhf
 AI and ML|10|Temperature and Sampling|Move a temperature slider and watch the next-word distribution sharpen or flatten|temperature
 Databases and SQL|11|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
