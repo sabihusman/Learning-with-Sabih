@@ -56,7 +56,7 @@ export default function SelectWhereCaseViz() {
 
   return (
     <Figure
-      eyebrow="Databases and SQL"
+      eyebrow="Filtering"
       title="Selecting columns, filtering rows, bucketing with CASE"
       status={status}
       readouts={readouts}

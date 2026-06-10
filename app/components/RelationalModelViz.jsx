@@ -102,7 +102,7 @@ export default function RelationalModelViz() {
 
   return (
     <Figure
-      eyebrow="Databases and SQL"
+      eyebrow="Data model"
       title="Two tables linked by a key"
       readouts={readouts}
       tryThis="A relational database splits data into focused tables. The users table has one row per user, and the sessions table has one row per session. Each table has a primary key (PK) that uniquely identifies its rows: user_id for users, session_id for sessions. The sessions table also has a foreign key (FK), user_id, that points back to users.user_id, recording who the session belongs to. Hover or click a row to light up its related rows: a session links to its one user, and a user links to all of its sessions (user 31 has two). Because the data lives in separate tables, putting it back together needs a join."
