@@ -32,9 +32,9 @@ test('first topic has no previous', async ({ page }) => {
 })
 
 test('last topic has no next', async ({ page }) => {
-  await page.goto('/topics/funnel-analysis/')
+  await page.goto('/topics/classes-and-objects/')
   const nav = topicNav(page)
   await expect(nav).toBeVisible()
-  await expect(nav).toContainText('Window Functions') // previous still present
+  await expect(nav).toContainText('Funnel Analysis') // previous still present (crosses into the OOP section)
   await expect(nav).not.toContainText('Next')
 })

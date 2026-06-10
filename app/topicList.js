@@ -21,9 +21,10 @@ Databases and SQL|13|Joins|Match rows across tables, and watch INNER, LEFT, RIGH
 Databases and SQL|14|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
 Databases and SQL|15|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
 Databases and SQL|16|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
+Object-Oriented Programming|17|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
 `
 
-export const SECTION_ORDER = ['AI and ML', 'Databases and SQL']
+export const SECTION_ORDER = ['AI and ML', 'Databases and SQL', 'Object-Oriented Programming']
 
 // Flat ordered list (the canonical sequence used for prev/next, spanning sections).
 export const TOPICS = TOPIC_ROWS.trim()
