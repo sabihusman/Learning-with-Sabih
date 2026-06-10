@@ -1,0 +1,37 @@
+import ClassesObjectsViz from '@/app/components/ClassesObjectsViz'
+
+export const metadata = {
+  title: 'Classes and objects - Learning with Sabih',
+}
+
+# Classes and objects
+
+A class is a blueprint for a kind of thing. It defines what data that thing has, stored in fields, and what it can do, defined by methods. For a robot, a class might include fields like a `name` and a `batteryLevel`, plus methods like `reportStatus()` or `move()`. The class itself is not a robot; it is the plan for making robots.
+
+An object is a real instance created from a class, usually with `new` in Java. Each object gets its own copy of the fields. If you create three robots from one `Robot` class, you get three independent objects. Lowering one robot's battery does not change the others, because their fields live in separate objects.
+
+```java
+class Robot {
+  String name;
+  int batteryLevel;
+
+  Robot(String name, int batteryLevel) {
+    this.name = name;
+    this.batteryLevel = batteryLevel;
+  }
+
+  void reportStatus() {
+    System.out.println(name + " battery: " + batteryLevel + "%");
+  }
+}
+
+Robot r1 = new Robot("Bolt", 80);
+Robot r2 = new Robot("Nova", 80);
+r1.batteryLevel -= 30;  // only r1 changes
+```
+
+Encapsulation is the idea that an object should control its own state. In Java, you can make fields `private` so outside code cannot change them directly. Access goes through methods like a getter or a setter, which can enforce rules ("`batteryLevel` cannot go below 0 or above 100"). This prevents invalid states.
+
+In the figure below, edit the class blueprint, stamp out robot objects, change one robot's battery to see the others unchanged, then mark a field private to see direct access blocked while the method still works.
+
+<ClassesObjectsViz />

@@ -1,0 +1,374 @@
+/* Classes-and-objects "factory". The class-box look defined here (mono members,
+   rule borders, tag chip) is the visual vocabulary the rest of the OOP section
+   reuses. Robot avatars come from the shared RobotAvatar component. */
+
+.stage {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ── class blueprint ─────────────────────────────────────────────────────── */
+.blueprint {
+  position: relative;
+  flex: 0 0 200px;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 1.25rem 0.9rem 0.9rem;
+  box-shadow: 3px 3px 0 var(--rule);
+}
+
+.blueprintTag,
+.memoryLabel,
+.cardTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.blueprintTag {
+  position: absolute;
+  top: -0.55rem;
+  left: 0.75rem;
+  background: var(--paper);
+  padding: 0 0.4rem;
+}
+
+.className {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.85rem;
+}
+
+.sectionLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin: 0.6rem 0 0.3rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.2rem;
+}
+
+.members {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.22rem 0.1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.memberName {
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.memberType,
+.methodName {
+  color: var(--fade);
+  font-size: 0.6875rem;
+}
+
+.methodName {
+  color: #2c6e7f;
+}
+
+.privateMember .memberName {
+  color: var(--accent);
+}
+
+.lock {
+  font-size: 0.6875rem;
+  line-height: 1;
+}
+
+.defaultRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.1rem 0;
+}
+
+.defaultLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  color: var(--fade);
+  letter-spacing: 0.05em;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.stepper button {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid var(--rule);
+  background: #faf9f6;
+  border-radius: 3px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepper button:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.stepper button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.stepperValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 2.6rem;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* ── stamping arrow ──────────────────────────────────────────────────────── */
+.arrow {
+  flex: 0 0 auto;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--fade);
+  padding-top: 1.5rem;
+}
+
+.arrowGlyph {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.arrowLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  margin-top: 0.15rem;
+}
+
+/* ── object memory ───────────────────────────────────────────────────────── */
+.memory {
+  flex: 1 1 320px;
+  min-width: 280px;
+  border: 1px dashed var(--rule);
+  border-radius: 8px;
+  padding: 0.85rem;
+  background: #faf9f6;
+}
+
+.memoryLabel {
+  margin-bottom: 0.6rem;
+}
+
+.empty {
+  font-style: italic;
+  color: var(--fade);
+  font-size: 0.875rem;
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.card {
+  flex: 1 1 150px;
+  max-width: 200px;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.7rem;
+  transform-origin: center top;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.cardId {
+  display: flex;
+  flex-direction: column;
+}
+
+.objName {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.objType {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.batteryRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.batteryLabel {
+  font-size: 0.6875rem;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.batteryValue {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.batteryBar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--rule);
+  overflow: hidden;
+  margin: 0.3rem 0 0.5rem;
+}
+
+.batteryFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease-out;
+}
+
+.blockedFlash {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  animation: blockedFade 1.3s ease-out forwards;
+}
+
+@keyframes blockedFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.actionGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.actionLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+  min-width: 3rem;
+}
+
+.actBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--rule);
+  background: #ffffff;
+  border-radius: 3px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.actBtn:hover {
+  border-color: var(--ink);
+}
+
+.direct {
+  color: var(--accent);
+  border-color: #e6c9c4;
+}
+
+.blockedBtn {
+  border-style: dashed;
+  opacity: 0.75;
+}
+
+.console {
+  margin-top: 0.7rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--ink);
+  min-height: 1.2rem;
+}
+
+.consoleHint {
+  color: var(--fade);
+  font-style: italic;
+}
