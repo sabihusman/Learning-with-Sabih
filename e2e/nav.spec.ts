@@ -27,7 +27,7 @@ test('first topic has no previous', async ({ page }) => {
   await page.goto('/topics/gradient-descent/')
   const nav = topicNav(page)
   await expect(nav).toBeVisible()
-  await expect(nav).toContainText('Confusion Matrix') // next still present
+  await expect(nav).toContainText('Neural Networks') // next still present
   await expect(nav).not.toContainText('Previous')
 })
 
