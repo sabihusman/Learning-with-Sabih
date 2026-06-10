@@ -4,6 +4,10 @@
   --fade: #9b9892;
   --accent: #c0392b;
   --rule: #e2e0d8;
+  /* Reading-text size multiplier set by the font-size control. Applied pre-paint
+     by an inline script in the root layout and persisted in localStorage. Only
+     prose and contents text scale off this; figures and layout are unaffected. */
+  --read-scale: 1;
 }
 
 *,

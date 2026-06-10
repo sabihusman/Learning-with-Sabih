@@ -25,6 +25,12 @@
   text-decoration: none;
 }
 
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
 .brand {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.625rem;
@@ -39,9 +45,21 @@
   padding: 3rem 2rem 6rem;
 }
 
-/* MDX prose typography */
+/* MDX prose typography.
+   The prose base font-size carries the reading-size multiplier, and the text
+   elements below size in em so they all scale proportionally off that one value.
+   Figures opt out: .prose figure resets the base to a fixed 1rem, so figure text
+   (which sizes in rem/px or via SVG units) is never touched by the control. */
+.prose {
+  font-size: calc(1rem * var(--read-scale, 1));
+}
+
+.prose figure {
+  font-size: 1rem;
+}
+
 .prose h1 {
-  font-size: 2rem;
+  font-size: 2em;
   font-weight: 400;
   margin-bottom: 0.5rem;
   line-height: 1.2;
@@ -49,7 +67,7 @@
 }
 
 .prose h2 {
-  font-size: 1.1875rem;
+  font-size: 1.1875em;
   font-weight: 600;
   margin-top: 2.5rem;
   margin-bottom: 0.625rem;
@@ -57,14 +75,14 @@
 }
 
 .prose h3 {
-  font-size: 1rem;
+  font-size: 1em;
   font-weight: 600;
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
 }
 
 .prose p {
-  font-size: 1rem;
+  font-size: 1em;
   line-height: 1.75;
   margin-bottom: 1.25rem;
   color: var(--ink);
@@ -76,7 +94,7 @@
   border: 1px solid var(--rule);
   overflow-x: auto;
   margin: 1.5rem 0;
-  font-size: 0.8125rem;
+  font-size: 0.8125em;
   line-height: 1.6;
 }
 

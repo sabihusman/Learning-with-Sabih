@@ -2,6 +2,16 @@
   max-width: 680px;
   margin: 0 auto;
   padding: 3rem 2rem 3.5rem;
+  /* Reading-size base: the text below sizes in em so the whole contents list
+     scales off this one value. Padding/widths stay in rem/px, so only the
+     readable text resizes; the layout box does not move. */
+  font-size: calc(1rem * var(--read-scale, 1));
+}
+
+.topBar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
 }
 
 .header {
@@ -12,7 +22,7 @@
 
 .eyebrow {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.625rem;
+  font-size: 0.625em;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--fade);
@@ -20,7 +30,7 @@
 }
 
 .siteName {
-  font-size: 2.5rem;
+  font-size: 2.5em;
   font-weight: 400;
   line-height: 1.1;
   color: var(--ink);
@@ -28,14 +38,14 @@
 }
 
 .tagline {
-  font-size: 0.9375rem;
+  font-size: 0.9375em;
   color: var(--fade);
   font-style: italic;
 }
 
 .contentsLabel {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.625rem;
+  font-size: 0.625em;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--fade);
@@ -53,7 +63,7 @@
 
 .sectionHeader {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
+  font-size: 0.6875em;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink);
@@ -93,7 +103,7 @@
 
 .num {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
+  font-size: 0.6875em;
   color: var(--fade);
   min-width: 2.5rem;
   letter-spacing: 0.05em;
@@ -101,7 +111,7 @@
 }
 
 .topicTitle {
-  font-size: 1.125rem;
+  font-size: 1.125em;
   font-weight: 400;
   color: var(--ink);
   transition: color 0.15s;
@@ -120,14 +130,14 @@
 
 .topicNum {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
+  font-size: 0.6875em;
   color: var(--fade);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .subtitle {
-  font-size: 0.8125rem;
+  font-size: 0.8125em;
   line-height: 1.3;
   color: var(--fade);
   padding-left: 2.5rem;

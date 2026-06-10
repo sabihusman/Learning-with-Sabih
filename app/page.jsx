@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import styles from './page.module.css'
 import { SECTIONS } from './topicList'
+import FontSizeControl from './components/FontSizeControl'
 
 export const metadata = {
   title: 'Learning with Sabih',
@@ -9,6 +10,9 @@ export const metadata = {
 export default function ContentsPage() {
   return (
     <main className={styles.main}>
+      <div className={styles.topBar}>
+        <FontSizeControl />
+      </div>
       <header className={styles.header}>
         <p className={styles.eyebrow}>Learning with Sabih</p>
         <h1 className={styles.siteName}>Computer Science</h1>
