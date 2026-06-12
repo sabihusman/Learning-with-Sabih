@@ -50,7 +50,7 @@ for (const topic of TOPICS) {
   })
 }
 
-test('contents page links to every topic and navigation works', async ({ page }) => {
+test('contents page links to every topic', async ({ page }) => {
   await page.goto('/')
   const hrefs = await page.locator('main a[href^="/topics/"]').evaluateAll((els) =>
     els.map((e) => (e as HTMLAnchorElement).getAttribute('href') as string)
@@ -60,11 +60,18 @@ test('contents page links to every topic and navigation works', async ({ page })
   for (const topic of TOPICS) {
     expect(hrefs.some((h) => h.includes(`/topics/${topic.slug}/`))).toBeTruthy()
   }
-  // clicking a topic link navigates to that page and renders its figure
-  for (const href of hrefs) {
+})
+
+// Clicking each contents link must navigate to that topic and render its figure.
+// Split per-topic (rather than one 20-iteration loop) so every navigation gets its
+// own test timeout instead of sharing a single budget that overflows under parallel
+// load as the topic count grows.
+for (const topic of TOPICS) {
+  test(`clicking the "${topic.slug}" contents link navigates and renders its figure`, async ({ page }) => {
     await page.goto('/')
+    const href = `/topics/${topic.slug}/`
     await page.locator(`main a[href="${href}"]`).first().click()
     await expect(page).toHaveURL(new RegExp(`${href.replace(/[/]/g, '\\/')}$`))
     await expect(page.locator('figure').first()).toBeVisible()
-  }
-})
+  })
+}
