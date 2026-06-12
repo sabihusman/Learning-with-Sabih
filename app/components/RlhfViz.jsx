@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Figure from './Figure'
 import { TRAITS, INK, FADE, ACCENT, POS, NEG, initWeights, makeRound, updateWeights, topTrait } from './rlhfData'
 
@@ -31,19 +31,35 @@ export default function RlhfViz() {
   const [weights, setWeights] = useState(() => initWeights())
   const [roundData, setRoundData] = useState(() => makeRound(0, initWeights()))
   const [chosenId, setChosenId] = useState(null)
+  // brief post-pick acknowledgement: keep the chosen card highlighted (and the
+  // meters shifting) for a beat before swapping in the next prompt, so the user
+  // actually sees which response they picked. Timer-driven, not rAF.
+  const [acking, setAcking] = useState(false)
+  const ackTimer = useRef(null)
+
+  useEffect(() => () => clearTimeout(ackTimer.current), [])
 
   const pick = (candidate) => {
+    if (acking) return // ignore extra clicks during the acknowledgement beat
     const rejected = roundData.candidates.filter((c) => c.id !== candidate.id)
     const next = updateWeights(weights, candidate, rejected)
-    setWeights(next)
-    setChosenId(candidate.id)
-    const r = round + 1
-    setRound(r)
+    setWeights(next) // meters animate now, while the pick is still shown
+    setChosenId(candidate.id) // highlight the chosen card in the CURRENT round
     setPicks((p) => p + 1)
-    setRoundData(makeRound(r, next)) // next prompt + candidates, biased by the updated weights
+    setAcking(true)
+    const r = round + 1
+    clearTimeout(ackTimer.current)
+    ackTimer.current = setTimeout(() => {
+      setRound(r)
+      setRoundData(makeRound(r, next)) // next prompt + candidates, biased by the updated weights
+      setChosenId(null)
+      setAcking(false)
+    }, 750)
   }
 
   const skip = () => {
+    clearTimeout(ackTimer.current)
+    setAcking(false)
     const r = round + 1
     setRound(r)
     setChosenId(null)
@@ -51,6 +67,8 @@ export default function RlhfViz() {
   }
 
   const reset = () => {
+    clearTimeout(ackTimer.current)
+    setAcking(false)
     const w = initWeights()
     setWeights(w)
     setRound(0)
