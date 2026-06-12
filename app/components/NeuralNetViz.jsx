@@ -79,14 +79,18 @@ export default function NeuralNetViz() {
 
   const epochRef = useRef(0)
   const lastFieldRef = useRef(0)
-  const rafRef = useRef(0)
+  const timerRef = useRef(null)
 
-  // training loop: rAF, not setInterval. Cancelled on pause and on unmount, so no
-  // loop leaks. Runs a few epochs per frame; the decision field (the costliest
-  // redraw) refreshes on a throttle while loss/epoch/weights update every frame.
+  // training loop: timer-driven, NOT requestAnimationFrame. Browsers suspend rAF in
+  // a hidden/backgrounded tab, which would freeze training mid-run; setTimeout keeps
+  // firing (just throttled), so the network keeps converging. ~60 ticks/sec in the
+  // foreground matches the old rAF pacing. Cleared on pause and on unmount, so no
+  // loop leaks. Runs a few epochs per tick; the decision field (the costliest redraw)
+  // refreshes on a throttle while loss/epoch/weights update every tick.
   useEffect(() => {
     if (!running) return undefined
     let active = true
+    const FRAME_MS = 16
     const FIELD_MS = 70
 
     const loop = () => {
@@ -111,13 +115,13 @@ export default function NeuralNetViz() {
         setRunning(false)
         return
       }
-      rafRef.current = requestAnimationFrame(loop)
+      timerRef.current = setTimeout(loop, FRAME_MS)
     }
 
-    rafRef.current = requestAnimationFrame(loop)
+    timerRef.current = setTimeout(loop, FRAME_MS)
     return () => {
       active = false
-      cancelAnimationFrame(rafRef.current)
+      clearTimeout(timerRef.current)
     }
   }, [running])
 
@@ -135,7 +139,7 @@ export default function NeuralNetViz() {
   }
 
   const onReset = () => {
-    cancelAnimationFrame(rafRef.current)
+    clearTimeout(timerRef.current)
     setRunning(false)
     setConverged(false)
     netRef.current = makeNet()
