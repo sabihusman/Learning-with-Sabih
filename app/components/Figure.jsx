@@ -44,21 +44,25 @@ export default function Figure({
 
       <div className={styles.card}>{children}</div>
 
-      {controls && controls.length > 0 && (
+      {/* Render the bar when there are controls OR a status line. Some figures pass
+          a status but no controls (e.g. overfitting, temperature, select-where-case);
+          without this the status was silently dropped. */}
+      {((controls && controls.length > 0) || status) && (
         <div className={styles.controlsBar}>
-          {controls.map((c) => (
-            <button
-              key={c.label}
-              type="button"
-              onClick={c.onClick}
-              disabled={!!c.disabled}
-              data-active={c.active ? 'true' : undefined}
-              data-variant={c.variant ?? undefined}
-              className={styles.button}
-            >
-              {c.label}
-            </button>
-          ))}
+          {controls &&
+            controls.map((c) => (
+              <button
+                key={c.label}
+                type="button"
+                onClick={c.onClick}
+                disabled={!!c.disabled}
+                data-active={c.active ? 'true' : undefined}
+                data-variant={c.variant ?? undefined}
+                className={styles.button}
+              >
+                {c.label}
+              </button>
+            ))}
           {status && <span className={styles.status}>{status}</span>}
         </div>
       )}
