@@ -103,14 +103,16 @@ export default function OverfittingViz() {
         {/* fitted polynomial */}
         <path d={fitPath(coef)} fill="none" stroke={ACCENT} strokeWidth={2.2} />
 
-        {/* training points (blue) */}
+        {/* training points (blue). Coords are rounded so the server-prerendered and
+            client-hydrated values match exactly: p.y comes from Math.sin/sqrt/log
+            noise, whose last float digit can differ between Node and the browser. */}
         {TRAIN.map((p, i) => (
-          <circle key={`tr-${i}`} cx={xPx(p.x)} cy={yPx(p.y)} r={4} fill={TEAL} stroke="#fff" strokeWidth={1} />
+          <circle key={`tr-${i}`} cx={xPx(p.x).toFixed(2)} cy={yPx(p.y).toFixed(2)} r={4} fill={TEAL} stroke="#fff" strokeWidth={1} />
         ))}
 
-        {/* test points (green, larger) */}
+        {/* test points (green, larger). Coords rounded for the same hydration reason. */}
         {TEST.map((p, i) => (
-          <circle key={`te-${i}`} cx={xPx(p.x)} cy={yPx(p.y)} r={5.5} fill="none" stroke={GREEN} strokeWidth={2} />
+          <circle key={`te-${i}`} cx={xPx(p.x).toFixed(2)} cy={yPx(p.y).toFixed(2)} r={5.5} fill="none" stroke={GREEN} strokeWidth={2} />
         ))}
 
         {/* legend */}
