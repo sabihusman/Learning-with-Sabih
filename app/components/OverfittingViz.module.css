@@ -72,3 +72,21 @@
   color: #9b9892;
   margin: 14px 0 0;
 }
+
+/* On narrow/touch viewports the fixed-width label, value, and regime badge crowd the
+   slider down to a few pixels, making it impossible to drag. Let the row wrap and give
+   the slider its own full-width line with a taller touch target. */
+@media (max-width: 480px) {
+  .sliderRow {
+    flex-wrap: wrap;
+  }
+
+  .sliderLabel {
+    min-width: 0;
+  }
+
+  .slider {
+    flex-basis: 100%;
+    height: 28px;
+  }
+}
