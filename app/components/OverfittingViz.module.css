@@ -74,9 +74,11 @@
 }
 
 /* On narrow/touch viewports the fixed-width label, value, and regime badge crowd the
-   slider down to a few pixels, making it impossible to drag. Let the row wrap and give
-   the slider its own full-width line with a taller touch target. */
-@media (max-width: 480px) {
+   slider down to a sliver, making it hard or impossible to drag. The breakpoint covers
+   the full phone range: even at ~540px the inline slider is only ~150px wide and 16px
+   tall. Let the row wrap and give the slider its own full-width line with a taller
+   touch target. */
+@media (max-width: 600px) {
   .sliderRow {
     flex-wrap: wrap;
   }
