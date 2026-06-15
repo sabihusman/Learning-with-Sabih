@@ -6,16 +6,16 @@ export const metadata = {
 
 # Why models struggle with math
 
-A language model does one thing: given the text so far, it predicts the next token. It learned this by reading enormous amounts of text and noticing which tokens tend to follow which, so it is a very good pattern matcher. What it is not is a calculator. When you ask it "27 x 14", it does not multiply. It predicts a sequence of answer tokens that looks like the kind of thing that follows that question, based on patterns from training.
+It can feel surprising: language models write fluent essays and code, yet they often fail at arithmetic a calculator handles instantly, or miscount the letters in a word. Why does something that sounds so capable stumble on exact tasks?
 
-Most of the time that is close, because plausible answers and correct answers usually overlap. But close is not correct. Prediction has no carrying, no place value, no counting loop underneath it. So the model often lands on an answer that looks right and is slightly off, like saying 27 x 14 is 368 when it is 378.
+The core reason is that a model generates an answer by predicting the next token, one step at a time, based on patterns in its training data. It is not running a calculation. Asked "27 x 14", it does not multiply 27 by 14 the way a calculator does. It predicts a sequence of digits that looks like a plausible answer. That guess may be close, and it may even be right, but it is frequently wrong, because the process is pattern prediction, not arithmetic.
 
-This is the real difference from a calculator. A calculator runs an algorithm: it breaks the problem into exact steps. 27 x 4 is 108, 27 x 10 is 270, and 108 plus 270 is 378, every time, with no probability involved. The model instead picks each answer token from a distribution over likely next tokens. When two tokens are nearly equally likely, it is essentially guessing, and it can guess wrong.
+Tokenization adds friction. Because numbers and words are chopped into tokens, the model does not reliably see individual digits or letters the way we do. Exact, position-sensitive work like carrying digits in multiplication or counting letters in a word gets harder when the pieces the model sees do not line up cleanly with the characters we care about.
 
-Counting has the same shape, made worse by tokenization. To count the letter "s" in "mississippi" you have to look at each letter and keep a tally. A model usually does not see individual letters: the word arrives as a few tokens, not eleven characters, so there are no separate letters there to count. Asked for the total, it predicts a plausible number instead of counting, and it tends to undercount.
+The deeper point is that prediction is not computation. A calculator follows an exact algorithm and gives the right answer every time. A model produces what is statistically likely to come next. That is a different kind of process, and it has no guarantee of being exact.
 
-None of this means models are broken. Predicting the next token is exactly what makes them fluent and flexible; it just is not arithmetic. It is also why tools matter. When a model is allowed to call a real calculator or run code, it can hand the computation to something that actually computes, and only the decision to reach for the tool is left to prediction.
+Models can still seem good at math sometimes, because many common problems appeared often in training, so the likely next tokens happen to match the correct answer. The weakness shows up with larger numbers, unusual examples, or problems the model has not effectively memorized.
 
-In the figure below, run the same problem two ways. The left side does the real computation in plain JavaScript and is always correct. The right side imitates a model: it predicts the answer one token at a time from hand-authored, illustrative probabilities and lands on a plausible but wrong result. Those probabilities are made up to show the behavior, so the model side is not a real model, but the contrast is the real lesson.
+This is why models are paired with real tools, like a calculator or a code interpreter, for exact work, instead of being trusted to compute on their own.
 
 <ModelsAndMathViz />
