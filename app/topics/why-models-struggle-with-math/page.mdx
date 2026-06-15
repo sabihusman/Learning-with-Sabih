@@ -1,0 +1,21 @@
+import ModelsAndMathViz from '@/app/components/ModelsAndMathViz'
+
+export const metadata = {
+  title: 'Why models struggle with math - Learning with Sabih',
+}
+
+# Why models struggle with math
+
+A language model does one thing: given the text so far, it predicts the next token. It learned this by reading enormous amounts of text and noticing which tokens tend to follow which, so it is a very good pattern matcher. What it is not is a calculator. When you ask it "27 x 14", it does not multiply. It predicts a sequence of answer tokens that looks like the kind of thing that follows that question, based on patterns from training.
+
+Most of the time that is close, because plausible answers and correct answers usually overlap. But close is not correct. Prediction has no carrying, no place value, no counting loop underneath it. So the model often lands on an answer that looks right and is slightly off, like saying 27 x 14 is 368 when it is 378.
+
+This is the real difference from a calculator. A calculator runs an algorithm: it breaks the problem into exact steps. 27 x 4 is 108, 27 x 10 is 270, and 108 plus 270 is 378, every time, with no probability involved. The model instead picks each answer token from a distribution over likely next tokens. When two tokens are nearly equally likely, it is essentially guessing, and it can guess wrong.
+
+Counting has the same shape, made worse by tokenization. To count the letter "s" in "mississippi" you have to look at each letter and keep a tally. A model usually does not see individual letters: the word arrives as a few tokens, not eleven characters, so there are no separate letters there to count. Asked for the total, it predicts a plausible number instead of counting, and it tends to undercount.
+
+None of this means models are broken. Predicting the next token is exactly what makes them fluent and flexible; it just is not arithmetic. It is also why tools matter. When a model is allowed to call a real calculator or run code, it can hand the computation to something that actually computes, and only the decision to reach for the tool is left to prediction.
+
+In the figure below, run the same problem two ways. The left side does the real computation in plain JavaScript and is always correct. The right side imitates a model: it predicts the answer one token at a time from hand-authored, illustrative probabilities and lands on a plausible but wrong result. Those probabilities are made up to show the behavior, so the model side is not a real model, but the contrast is the real lesson.
+
+<ModelsAndMathViz />
