@@ -1,0 +1,21 @@
+import ModelsAndMathViz from '@/app/components/ModelsAndMathViz'
+
+export const metadata = {
+  title: 'Why models struggle with math - Learning with Sabih',
+}
+
+# Why models struggle with math
+
+It can feel surprising: language models write fluent essays and code, yet they often fail at arithmetic a calculator handles instantly, or miscount the letters in a word. Why does something that sounds so capable stumble on exact tasks?
+
+The core reason is that a model generates an answer by predicting the next token, one step at a time, based on patterns in its training data. It is not running a calculation. Asked "27 x 14", it does not multiply 27 by 14 the way a calculator does. It predicts a sequence of digits that looks like a plausible answer. That guess may be close, and it may even be right, but it is frequently wrong, because the process is pattern prediction, not arithmetic.
+
+Tokenization adds friction. Because numbers and words are chopped into tokens, the model does not reliably see individual digits or letters the way we do. Exact, position-sensitive work like carrying digits in multiplication or counting letters in a word gets harder when the pieces the model sees do not line up cleanly with the characters we care about.
+
+The deeper point is that prediction is not computation. A calculator follows an exact algorithm and gives the right answer every time. A model produces what is statistically likely to come next. That is a different kind of process, and it has no guarantee of being exact.
+
+Models can still seem good at math sometimes, because many common problems appeared often in training, so the likely next tokens happen to match the correct answer. The weakness shows up with larger numbers, unusual examples, or problems the model has not effectively memorized.
+
+This is why models are paired with real tools, like a calculator or a code interpreter, for exact work, instead of being trusted to compute on their own.
+
+<ModelsAndMathViz />

@@ -1,0 +1,232 @@
+/* "Why models struggle with math": a compute side (correct) beside a predict side
+   (plausibly wrong). Plain HTML panels in the project's paper/ink palette, with an
+   inline SVG bar chart for the next-token probabilities. */
+
+.prompt {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.columns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.panel {
+  flex: 1 1 260px;
+  min-width: 240px;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.compute {
+  box-shadow: 2px 2px 0 #cfe0d8;
+}
+
+.predict {
+  box-shadow: 2px 2px 0 #e8d2cc;
+}
+
+.panelHead {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.panelTitle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.panelSub {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+/* ── compute side ─────────────────────────────────────────────────────────── */
+.word {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 0.6rem;
+}
+
+.letter {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  width: 1.25rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  color: var(--fade);
+  background: #faf9f6;
+}
+
+.letterHit {
+  color: #ffffff;
+  background: #1f6f5c;
+  border-color: #1f6f5c;
+  font-weight: 700;
+}
+
+.computeList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.computeStep {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  padding: 0.22rem 0;
+  border-bottom: 1px dotted var(--rule);
+}
+
+.running {
+  font-size: 0.6875rem;
+  color: var(--fade);
+  white-space: nowrap;
+}
+
+.hint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--fade);
+}
+
+/* ── predict side ─────────────────────────────────────────────────────────── */
+.answerRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.tokenChip {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--accent);
+  border-radius: 5px;
+  padding: 0.1rem 0.5rem;
+  min-width: 1.4rem;
+  text-align: center;
+}
+
+.tokenSlot {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--fade);
+  border: 1px dashed var(--fade);
+  border-radius: 5px;
+  padding: 0.1rem 0.5rem;
+  min-width: 1.4rem;
+  text-align: center;
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.distWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.distLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.dist {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  display: block;
+}
+
+/* ── result chips ─────────────────────────────────────────────────────────── */
+.result {
+  margin-top: 0.6rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+}
+
+.correct {
+  color: #1f6f5c;
+}
+
+.correct .badge {
+  background: #d8e6d8;
+  color: #1f6f5c;
+}
+
+.wrong {
+  color: var(--accent);
+}
+
+.wrong .badge {
+  background: #fbeeec;
+  color: var(--accent);
+}
+
+/* ── caption ──────────────────────────────────────────────────────────────── */
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 0.9rem 0 0;
+}

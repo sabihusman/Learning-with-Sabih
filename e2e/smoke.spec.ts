@@ -6,6 +6,7 @@ const TOPICS = [
   { slug: 'gradient-descent', name: 'Gradient Descent' },
   { slug: 'confusion-matrix', name: 'Confusion Matrix' },
   { slug: 'tokenization', name: 'Tokenization' },
+  { slug: 'why-models-struggle-with-math', name: 'Why Models Struggle with Math' },
   { slug: 'embeddings', name: 'Embeddings' },
   { slug: 'attention', name: 'Attention' },
   { slug: 'transformers', name: 'Transformers and Multi-Head Attention' },
