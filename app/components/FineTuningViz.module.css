@@ -1,0 +1,158 @@
+/* Fine-tuning figure on the RLHF page. Reuses the page's calm style: mono labels,
+   serif answer text, the shared paper/ink/accent palette. */
+
+.flow {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+/* ── fine-tuning dataset ──────────────────────────────────────────────────── */
+.dataset {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: #faf9f6;
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.datasetLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.dataList {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.dataPair {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+}
+
+.dataIn {
+  color: var(--fade);
+}
+
+.dataArrow {
+  color: var(--fade);
+}
+
+.dataOut {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ── test prompts ─────────────────────────────────────────────────────────── */
+.prompts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.promptRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.promptRow:last-child {
+  border-bottom: none;
+}
+
+.tag {
+  flex: 0 0 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.15rem 0.35rem;
+  border-radius: 3px;
+  margin-top: 0.15rem;
+}
+
+.tagDomain {
+  background: #fbeeec;
+  color: var(--accent);
+}
+
+.tagGeneral {
+  background: #e7ecea;
+  color: #1f6f5c;
+}
+
+.qa {
+  flex: 1;
+  min-width: 0;
+}
+
+.q {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--fade);
+  margin-bottom: 0.2rem;
+}
+
+.answer {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.answerTuned {
+  color: #1a1a1a;
+}
+
+.badgeSpecialized,
+.badgeRetained {
+  flex: 0 0 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.15rem 0.35rem;
+  border-radius: 3px;
+  margin-top: 0.15rem;
+  white-space: nowrap;
+}
+
+.badgeSpecialized {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.badgeRetained {
+  background: #d8e6d8;
+  color: #1f6f5c;
+}
+
+/* ── caption ──────────────────────────────────────────────────────────────── */
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 1rem 0 0;
+}
