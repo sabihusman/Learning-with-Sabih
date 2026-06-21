@@ -25,6 +25,7 @@ const TOPICS = [
   { slug: 'overfitting', name: 'Overfitting and Generalization' },
   { slug: 'rlhf', name: 'RLHF' },
   { slug: 'temperature', name: 'Temperature and Sampling' },
+  { slug: 'rag', name: 'RAG (Retrieval-Augmented Generation)' },
   { slug: 'relational-model', name: 'Tables and the Relational Model' },
   { slug: 'select-where-case', name: 'SELECT, WHERE and CASE' },
   { slug: 'joins', name: 'Joins' },

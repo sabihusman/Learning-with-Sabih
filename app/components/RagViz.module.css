@@ -1,0 +1,283 @@
+/* RAG topic: retrieve -> augment -> generate, stepped. Mono labels, serif answers,
+   shared paper/ink/accent palette. */
+
+.queries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.qBtn {
+  position: relative;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.8125rem;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.qBtn:hover {
+  border-color: var(--fade);
+}
+
+.qActive {
+  border-color: var(--accent);
+  background: #fcf3f1;
+}
+
+.payoff {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--accent);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.pipeline {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+/* ── panels ───────────────────────────────────────────────────────────────── */
+.panel {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: #faf9f6;
+  padding: 0.75rem 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.panelHead {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.55rem;
+}
+
+.panelTitle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.panelSub {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  color: var(--fade);
+}
+
+/* ── retrieve: chunk rows ─────────────────────────────────────────────────── */
+.chunks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.chunk {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #ffffff;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.retrieved {
+  border-color: var(--accent);
+  background: #fdf6f4;
+}
+
+.dimmed {
+  opacity: 0.5;
+}
+
+.chunkText {
+  flex: 1;
+  min-width: 160px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.scoreWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.scoreBar {
+  width: 70px;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.scoreFill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease-out;
+}
+
+.scoreNum {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--fade);
+  min-width: 2.2rem;
+  text-align: right;
+}
+
+.retrievedBadge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--accent);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+}
+
+/* ── augment: prompt ──────────────────────────────────────────────────────── */
+.promptPanel {
+  background: #f0ede6;
+}
+
+.prompt {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.promptLabel {
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin: 0.3rem 0 0.2rem;
+}
+
+.contextLine {
+  color: var(--ink);
+  padding: 0.2rem 0.5rem;
+  border-left: 2px solid var(--accent);
+  background: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.questionLine {
+  color: var(--ink);
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-left: 2px solid var(--ink);
+  background: #ffffff;
+}
+
+/* ── generate: bare vs grounded ───────────────────────────────────────────── */
+.answers {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.answerCard {
+  flex: 1 1 240px;
+  min-width: 220px;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.bare {
+  border-color: #d8b58a;
+  box-shadow: 2px 2px 0 #efe2c7;
+}
+
+.grounded {
+  border-color: #1f6f5c;
+  box-shadow: 2px 2px 0 #d8e6d8;
+}
+
+.answerHead {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.answerSub {
+  font-weight: 400;
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-left: 0.3rem;
+}
+
+.answerText {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink);
+  margin: 0;
+  flex: 1;
+}
+
+.bareBadge,
+.groundedBadge {
+  align-self: flex-start;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+}
+
+.bareBadge {
+  background: #f6ecda;
+  color: #9a6a1e;
+}
+
+.groundedBadge {
+  background: #d8e6d8;
+  color: #1f6f5c;
+}
+
+/* ── caption ──────────────────────────────────────────────────────────────── */
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 1rem 0 0;
+}
