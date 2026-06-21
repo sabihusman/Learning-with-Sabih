@@ -1,0 +1,21 @@
+import RagViz from '@/app/components/RagViz'
+
+export const metadata = {
+  title: 'RAG (retrieval-augmented generation) - Learning with Sabih',
+}
+
+# RAG (retrieval-augmented generation)
+
+A language model only knows patterns from its training data. It does not automatically know your private documents, fresh information after its training cutoff, or niche details that were not well covered during training. When asked about something outside what it knows, it may still produce a fluent answer that sounds confident while being wrong. This is called hallucination.
+
+RAG, retrieval-augmented generation, adds a retrieval step before the model answers. Instead of answering from memory alone, the system first retrieves relevant documents and gives them to the model as context. The model can then answer from real, specific, current sources rather than guessing from training patterns.
+
+The pipeline has three steps. First, Retrieve: find the document chunks most relevant to the question. Second, Augment: insert those chunks into the prompt alongside the question. Third, Generate: the model writes an answer grounded in the provided chunks.
+
+Retrieval usually uses embeddings. The question is turned into an embedding, and each document chunk has one too. The system finds the chunks whose embeddings are closest to the question's. Closeness means relevance, the same similarity idea from the embeddings topic: nearby vectors usually mean related meaning.
+
+RAG matters because it lets a model answer about things it was never trained on, like private data or recent information. It also reduces hallucination, because the answer is grounded in retrieved text rather than guessed from memory. And you can update what the system knows by changing the documents, with no retraining.
+
+The figure below uses a small hand-authored knowledge base and illustrative similarity scores, not real embeddings or a real model, but the retrieve, augment, generate pipeline is the real architecture.
+
+<RagViz />
