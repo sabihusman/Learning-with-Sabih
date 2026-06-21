@@ -1,0 +1,21 @@
+import RagViz from '@/app/components/RagViz'
+
+export const metadata = {
+  title: 'RAG (retrieval-augmented generation) - Learning with Sabih',
+}
+
+# RAG (retrieval-augmented generation)
+
+A language model only knows what was in its training data. It cannot know your company's internal documents, events that happened after it was trained, or any private or niche detail it never saw. Worse, when asked about something it does not know, it often does not say so. It produces a fluent, confident answer that may be wrong, which is called hallucination.
+
+Retrieval-augmented generation, or RAG, addresses this by changing where the model's facts come from. Instead of relying only on what is baked into its weights, the system retrieves relevant documents at query time and places them into the prompt as context. The model then answers from that supplied text rather than from memory. If the answer is in the retrieved documents, the model can report it accurately and point to specific, current sources.
+
+The pipeline has three steps. Retrieve: take the question and find the most relevant pieces of a document collection. Augment: insert those pieces into the prompt alongside the question. Generate: have the model produce an answer grounded in that context.
+
+Retrieval is where embeddings come back. Each document is split into chunks, and every chunk is turned into a vector, the same way the embeddings topic turned words into points in space. The question is embedded the same way, and the system finds the chunks whose vectors are closest to the question's vector. Closeness means relevance, so the nearest chunks are the ones most likely to contain the answer, and the top few are retrieved.
+
+RAG does not make the model smarter; it makes it better informed. It is how an assistant can answer questions about a specific product manual, a codebase, or a set of policies without being retrained, and it makes answers checkable, because the retrieved sources can be shown next to the answer.
+
+The figure below walks through the pipeline on a small, fixed knowledge base about a fictional company. Pick a question, then step through retrieve, augment, and generate, and compare the grounded answer with what a bare model would say from memory. The similarity scores and answers are hand-authored to illustrate the behavior, not produced by a real model; the retrieve, augment, generate pipeline is the real architecture.
+
+<RagViz />

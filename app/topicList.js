@@ -16,16 +16,17 @@ AI and ML|08|Attention|How a transformer decides which words to focus on, like "
 AI and ML|09|Transformers and Multi-Head Attention|Many attention heads in parallel, each head watching a different relationship over the same sentence|transformers
 AI and ML|10|RLHF|Pick the answers you prefer and watch your feedback reshape the model|rlhf
 AI and ML|11|Temperature and Sampling|Move a temperature slider and watch the next-word distribution sharpen or flatten|temperature
-Databases and SQL|12|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
-Databases and SQL|13|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
-Databases and SQL|14|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
-Databases and SQL|15|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
-Databases and SQL|16|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
-Databases and SQL|17|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
-Object-Oriented Programming|18|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
-Object-Oriented Programming|19|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
-Object-Oriented Programming|20|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
-Object-Oriented Programming|21|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
+AI and ML|12|RAG (Retrieval-Augmented Generation)|Retrieve relevant document chunks by similarity, drop them into the prompt, and watch the model answer from real sources instead of memory|rag
+Databases and SQL|13|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
+Databases and SQL|14|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
+Databases and SQL|15|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
+Databases and SQL|16|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
+Databases and SQL|17|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
+Databases and SQL|18|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
+Object-Oriented Programming|19|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
+Object-Oriented Programming|20|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
+Object-Oriented Programming|21|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
+Object-Oriented Programming|22|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Databases and SQL', 'Object-Oriented Programming']
