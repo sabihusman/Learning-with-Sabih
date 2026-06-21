@@ -1,5 +1,16 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { trackConsoleErrors } from './util'
+
+// The contents page is an accordion: sections start collapsed, so topic links are in
+// the DOM (and discoverable by querySelector) but inert until their section is
+// expanded. Open every section so the links become interactive.
+async function expandAllSections(page: Page) {
+  for (;;) {
+    const collapsed = page.locator('main button[aria-expanded="false"]')
+    if ((await collapsed.count()) === 0) break
+    await collapsed.first().click()
+  }
+}
 
 // Every topic that ships in the contents page. Each must load its Figure cleanly.
 const TOPICS = [
@@ -71,6 +82,7 @@ test('contents page links to every topic', async ({ page }) => {
 for (const topic of TOPICS) {
   test(`clicking the "${topic.slug}" contents link navigates and renders its figure`, async ({ page }) => {
     await page.goto('/')
+    await expandAllSections(page)
     const href = `/topics/${topic.slug}/`
     await page.locator(`main a[href="${href}"]`).first().click()
     await expect(page).toHaveURL(new RegExp(`${href.replace(/[/]/g, '\\/')}$`))
