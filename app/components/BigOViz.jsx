@@ -31,7 +31,7 @@ const LANES = [
 ]
 
 const OPS_PER_SECOND = 2e9
-const N_MAX = 40
+const N_MAX = 80
 const BASE_DURATION_MS = 2500 // the O(n) reference lane finishes in this time
 
 const fmtOps = (v) => {
@@ -229,7 +229,7 @@ export default function BigOViz() {
           <text x={sx(n)} y={padT + plotH + 18} fontFamily="ui-monospace, monospace" fontSize="10" fill="var(--accent)" textAnchor="middle">
             n={n}
           </text>
-          {[0, 10, 20, 30, 40].map((t) => (
+          {[0, 20, 40, 60, 80].map((t) => (
             <text key={t} x={sx(t)} y={padT + plotH + 18} fontFamily="ui-monospace, monospace" fontSize="9" fill="var(--fade)" textAnchor="middle">
               {t}
             </text>
