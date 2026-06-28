@@ -1,0 +1,13 @@
+import BigOViz from '@/app/components/BigOViz'
+
+export const metadata = {
+  title: 'Big-O and time complexity - Learning with Sabih',
+}
+
+# Big-O and time complexity
+
+Big-O describes how an algorithm's work grows as its input grows, ignoring hardware and constant factors. The figure below races six real algorithms and plots their exact operation counts against input size on a log scale.
+
+The figure's operation counts and the curve are exact for each class, including the naive-Fibonacci call count for the exponential lane. Only the race speed is illustrative, scaled so the O(n) lane finishes in about 2.5 seconds, and the wall-clock times assume a fixed example rate of 2 billion operations per second to make the differences tangible. The relative gaps are real.
+
+<BigOViz />

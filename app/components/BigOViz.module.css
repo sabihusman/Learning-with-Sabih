@@ -1,0 +1,154 @@
+/* Big-O topic. Three stacked parts: the race hero, the wall-clock block, and the exact
+   log-scale curve, in the project's paper/ink/accent palette. Per-lane colors and the
+   live bar width are inline (dynamic); everything structural is here. */
+
+.raceCard,
+.curveCard {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #fffefb;
+}
+
+.raceCard {
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.lane {
+  margin-bottom: 11px;
+}
+
+.lane:last-child {
+  margin-bottom: 0;
+}
+
+.laneHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.laneLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.laneAlgo {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  color: var(--ink);
+  margin-left: 8px;
+  font-size: 0.8125rem;
+}
+
+.laneStat {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+}
+
+.bar {
+  position: relative;
+  height: 11px;
+  background: #efece4;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: width 0.05s linear;
+}
+
+/* shared input-size slider */
+.sliderRow {
+  margin-bottom: 18px;
+}
+
+.sliderHead {
+  display: flex;
+  justify-content: space-between;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 6px;
+}
+
+.sliderHead strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.slider {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* wall-clock estimate block */
+.wallClock {
+  background: #efece4;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  padding: 13px 16px;
+  margin-bottom: 22px;
+}
+
+.wallClockLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 9px;
+}
+
+.wallGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 18px;
+}
+
+.wallRow {
+  display: flex;
+  justify-content: space-between;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.wallRowLabel {
+  font-weight: 700;
+}
+
+/* the exact curve */
+.curveLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 8px;
+}
+
+.curveIntro {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.9rem;
+  color: #3a3a3a;
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+
+.curveCard {
+  padding: 6px 8px 2px;
+}
+
+.svg {
+  width: 100%;
+  display: block;
+}
