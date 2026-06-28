@@ -1,0 +1,68 @@
+/* Recursion topic: Towers of Hanoi pegs beside the reusable call-stack panel, with a
+   disk-count slider and an honesty caption. Project paper/ink/accent palette. */
+
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.board {
+  flex: 1 1 320px;
+  min-width: 280px;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.panel {
+  flex: 0 1 200px;
+  min-width: 170px;
+  display: flex;
+}
+
+.panel > * {
+  flex: 1;
+}
+
+.diskRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 0;
+}
+
+.diskLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.slider {
+  flex: 1;
+  max-width: 220px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.diskValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 1ch;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 0.9rem 0 0;
+}

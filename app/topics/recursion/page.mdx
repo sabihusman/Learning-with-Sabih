@@ -1,0 +1,19 @@
+import RecursionViz from '@/app/components/RecursionViz'
+
+export const metadata = {
+  title: 'Recursion and the call stack - Learning with Sabih',
+}
+
+# Recursion and the call stack
+
+Recursion is when a function solves a problem by calling itself on a smaller version of the same problem. It keeps doing that until it reaches a case small enough to solve directly. That stopping point is called the base case. Without a base case, the function would keep calling itself forever.
+
+Each recursive call has to remember its own place. The computer does this with the call stack. When a function calls itself, the computer saves where that call was, what values it was using, and what still needs to happen after the smaller problem finishes. Those saved calls stack up on top of each other. When the smallest call finishes, the computer pops back to the previous call, then the one before that, until it returns to the original problem.
+
+Towers of Hanoi is a classic recursion example. The goal is to move a tower of disks from one peg to another, while never putting a bigger disk on top of a smaller one. The trick is that moving a tall tower has the same shape as moving a slightly shorter tower: move the smaller tower out of the way, move the largest disk, then move the smaller tower back on top. The same plan repeats inside itself, which makes the puzzle a natural fit for recursion.
+
+The stack matters because every unfinished call takes space. Deeper recursion means a taller stack, and that memory is not free. For small problems this is fine, but very deep recursion can use a lot of memory. The work can also grow quickly as the problem gets bigger. Add a disk in the figure and watch the stack grow, the calls unfold, and the move count change.
+
+The figure solves the puzzle for real and the move and stack numbers are exact. The disk count is kept small so the stack stays easy to follow.
+
+<RecursionViz />

@@ -28,6 +28,7 @@ const TOPICS = [
   { slug: 'rag', name: 'RAG (Retrieval-Augmented Generation)' },
   { slug: 'big-o', name: 'Big-O and Time Complexity' },
   { slug: 'binary-search', name: 'Binary Search' },
+  { slug: 'recursion', name: 'Recursion and the Call Stack' },
   { slug: 'relational-model', name: 'Tables and the Relational Model' },
   { slug: 'select-where-case', name: 'SELECT, WHERE and CASE' },
   { slug: 'joins', name: 'Joins' },
