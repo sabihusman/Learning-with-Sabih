@@ -1,0 +1,11 @@
+import RecursionViz from '@/app/components/RecursionViz'
+
+export const metadata = {
+  title: 'Recursion and the call stack - Learning with Sabih',
+}
+
+# Recursion and the call stack
+
+Recursion solves a problem by having a function call itself on a smaller version of the same problem. Each call gets its own frame on the call stack, and the stack grows as the work descends and shrinks as each call returns. The figure below solves the Towers of Hanoi puzzle one move at a time and shows the call stack pushing and popping alongside it.
+
+<RecursionViz />

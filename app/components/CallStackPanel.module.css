@@ -1,0 +1,77 @@
+/* Reusable call-stack panel. The pile sits at the bottom of a fixed-height box and
+   grows upward; a freshly pushed frame slides in from the top. Project palette. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 8px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* pile sits at the bottom; empty space opens at the top */
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #faf9f6;
+}
+
+.empty {
+  margin: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--fade);
+  font-style: italic;
+}
+
+.frame {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #ffffff;
+  animation: frameIn 0.22s ease-out both;
+}
+
+.active {
+  border-color: var(--accent);
+  background: #fcf3f1;
+}
+
+.name {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.args {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  color: var(--fade);
+}
+
+@keyframes frameIn {
+  from {
+    opacity: 0;
+    transform: translateY(-7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
