@@ -6,8 +6,18 @@ export const metadata = {
 
 # Binary search
 
-Binary search finds a value in a sorted list by repeatedly halving the search space: it checks the middle element and throws away the half that cannot contain the target. The figure below steps through a search and counts comparisons against a plain linear scan.
+Binary search works when the collection is sorted. That one requirement matters. The values have to be in order, like names alphabetically or numbers from smallest to largest. The ordering is what lets the algorithm rule out large chunks at once instead of checking items one by one.
 
-The list is kept small for clarity; real datasets are far larger, where the gap between the two counts is enormous.
+The core move is simple: check the middle item. If the middle item is the target, the search is done. If the target is smaller than the middle item, then everything above the middle is too large, so the whole upper half can be ignored. If the target is larger, then everything below the middle is too small, so the whole lower half can be ignored. Either way, one comparison eliminates half of what is left.
+
+That is why binary search is so powerful. Halving again and again makes the work grow very slowly as the data grows. Doubling the amount of data adds only one more step to the search. Compare that with scanning from the start, where a bigger collection means more items to check one after another. If the data is unsorted, you are usually stuck with that kind of scan because there is no order you can use to safely skip ahead.
+
+The caveat is that binary search gets its speed from sorted data. Sorting data takes work, and keeping data sorted as it changes can also cost time. Binary search shines when the same sorted data will be searched many times, so the sorting cost pays off across repeated lookups.
+
+This is the same logarithmic growth shown as the O(log n) lane in the Big-O figure, now shown step by step.
+
+Pick a target in the figure and step through the search. Watch the middle item move, the search range shrink, and the number of comparisons update as each half is discarded.
+
+The search in the figure runs for real and the comparison counts are exact. The input is kept small so the steps are easy to follow, while real datasets are far larger.
 
 <BinarySearchViz />
