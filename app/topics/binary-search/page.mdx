@@ -1,0 +1,13 @@
+import BinarySearchViz from '@/app/components/BinarySearchViz'
+
+export const metadata = {
+  title: 'Binary search - Learning with Sabih',
+}
+
+# Binary search
+
+Binary search finds a value in a sorted list by repeatedly halving the search space: it checks the middle element and throws away the half that cannot contain the target. The figure below steps through a search and counts comparisons against a plain linear scan.
+
+The list is kept small for clarity; real datasets are far larger, where the gap between the two counts is enormous.
+
+<BinarySearchViz />
