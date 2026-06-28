@@ -1,0 +1,23 @@
+import BigOViz from '@/app/components/BigOViz'
+
+export const metadata = {
+  title: 'Big-O and time complexity - Learning with Sabih',
+}
+
+# Big-O and time complexity
+
+Timing one run of a program can be useful, but it does not answer the bigger question. A result from one computer, one language, one compiler, and one input might not hold somewhere else. To compare algorithms fairly, we need a way to talk about how their work grows as the input grows, without tying the answer to a stopwatch.
+
+Big-O is that tool. It describes the shape of growth as input size n gets larger. It ignores constant factors, small setup costs, and hardware speed. The point is not how many seconds one run takes. The point is what happens to the amount of work when the input gets bigger.
+
+Some algorithms are constant time: they do about the same work no matter how much data exists, like looking up a value directly. Logarithmic time grows slowly by cutting the search space down again and again, the way a binary search halves a sorted list. Linear time grows in step with the input, like scanning each item once.
+
+Linearithmic time, often written n log n, shows up in many good sorting algorithms such as merge sort. It grows faster than a single scan, but much better than comparing everything with everything. Quadratic time is the classic nested-loop shape, where each item is checked against many others. Exponential time grows much faster, often from naive recursion that keeps solving the same subproblems again and again.
+
+These shapes may look close on small inputs, but they separate dramatically as n grows. An algorithm that feels fine on a tiny example can become hopeless on a large real dataset. Slide the input size in the figure and watch the gap open up.
+
+Big-O usually describes the worst case. Best case and average case can be different, so the full story sometimes needs more than one label.
+
+The figure's operation counts and the curve are exact for every class. The exponential lane uses the real number of calls a naive recursive Fibonacci makes, which is why pushing the input far enough sends it past the age of the universe. Only the race speed is set for watchability rather than any real processor, and the wall-clock times assume a fixed rate of two billion operations per second to make the differences tangible. The relative gaps are real.
+
+<BigOViz />
