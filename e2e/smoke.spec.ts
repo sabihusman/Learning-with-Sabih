@@ -27,6 +27,7 @@ const TOPICS = [
   { slug: 'temperature', name: 'Temperature and Sampling' },
   { slug: 'rag', name: 'RAG (Retrieval-Augmented Generation)' },
   { slug: 'big-o', name: 'Big-O and Time Complexity' },
+  { slug: 'binary-search', name: 'Binary Search' },
   { slug: 'relational-model', name: 'Tables and the Relational Model' },
   { slug: 'select-where-case', name: 'SELECT, WHERE and CASE' },
   { slug: 'joins', name: 'Joins' },
