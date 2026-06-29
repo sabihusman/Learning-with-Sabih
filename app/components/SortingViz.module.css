@@ -1,0 +1,71 @@
+/* Sorting topic: an algorithm toggle, a row of value bars, a last-run memory line, and
+   an honesty caption. Bars glide via a CSS transform transition (flourish only; the
+   step cadence is a timer in the component). Project paper/ink/accent palette. */
+
+.toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+
+.toggleBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.toggleBtn:hover {
+  border-color: var(--ink);
+}
+
+.toggleActive {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.svg {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* fixed-slot bars, scaled by value from the baseline; transform glide is cosmetic and
+   degrades gracefully to an instant snap where unsupported */
+.bar {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  transition:
+    transform 0.16s ease,
+    fill 0.12s ease;
+}
+
+.lastRun {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  color: var(--ink);
+  background: #efece4;
+  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
+  margin: 0.85rem 0 0;
+}
+
+.lastRun strong {
+  font-weight: 700;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 0.85rem 0 0;
+}

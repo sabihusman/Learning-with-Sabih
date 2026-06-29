@@ -1,0 +1,21 @@
+import SortingViz from '@/app/components/SortingViz'
+
+export const metadata = {
+  title: 'Sorting - Learning with Sabih',
+}
+
+# Sorting
+
+Sorting means putting data into order: numbers from small to large, names alphabetically, dates from earlier to later. Ordered data is easier to work with. It is the basis for many other tasks, including fast searching. There are many ways to sort, and they do not all scale the same way.
+
+Bubble sort is one of the simplest methods to understand. It repeatedly compares neighboring items and swaps them if they are out of order. After one pass, it starts another pass, then another, until it can pass over the list without making any swaps. The idea is clear, but it is slow because the number of comparisons grows with the square of the list size. As the list grows, the work grows much faster than the input.
+
+Insertion sort builds a sorted section one item at a time. It takes the next item from the unsorted part and slides it backward into the correct place among the items already sorted. Like bubble sort, it is in the slower group for large random lists. But it can do very well when the data is already close to sorted, because most items do not need to move far. That is an important lesson: two algorithms in the same broad speed class can still behave differently on real inputs.
+
+Merge sort uses a different strategy. It splits the list in half, sorts each half, then merges the two sorted halves back together. The halves are sorted the same way, by splitting again and again until the pieces are simple to combine. This is recursion, the same idea from the recursion topic: solve a problem by solving smaller versions of itself. Because merge sort keeps splitting the work, it is much faster on large lists than the simple methods.
+
+On a small list, the methods may look close. As the list gets bigger, the gap opens quickly. Bubble sort is the quadratic case from Big-O, while merge sort is the n log n case shown earlier. Run two sorts on the same array in the figure and compare the counts.
+
+Every sort in the figure is a real implementation and the counts are exact. The array is kept small so the steps are easy to watch, while real datasets are far larger.
+
+<SortingViz />
