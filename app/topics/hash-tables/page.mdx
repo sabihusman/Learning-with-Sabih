@@ -1,0 +1,11 @@
+import HashTableViz from '@/app/components/HashTableViz'
+
+export const metadata = {
+  title: 'Hash tables - Learning with Sabih',
+}
+
+# Hash tables
+
+A hash table stores keys by running each one through a hash function to pick a bucket, so lookups can jump near the right spot instead of scanning everything. When two keys land in the same bucket they collide, and one common fix is chaining them together. The figure below hashes keys with a simple visible rule and shows the buckets, the chains, and the load filling up.
+
+<HashTableViz />
