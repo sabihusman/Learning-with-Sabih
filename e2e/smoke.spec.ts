@@ -33,6 +33,7 @@ const TOPICS = [
   { slug: 'linked-list-vs-array', name: 'Linked List vs Array' },
   { slug: 'hash-tables', name: 'Hash Tables' },
   { slug: 'binary-search-trees', name: 'Binary Search Trees' },
+  { slug: 'graph-traversal', name: 'Graph Traversal (BFS and DFS)' },
   { slug: 'relational-model', name: 'Tables and the Relational Model' },
   { slug: 'select-where-case', name: 'SELECT, WHERE and CASE' },
   { slug: 'joins', name: 'Joins' },

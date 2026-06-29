@@ -1,0 +1,23 @@
+import GraphTraversalViz from '@/app/components/GraphTraversalViz'
+
+export const metadata = {
+  title: 'Graph traversal - Learning with Sabih',
+}
+
+# Graph traversal
+
+A graph is a set of nodes connected by edges. The nodes are the things, and the edges are the relationships between them. Road maps are graphs, with places connected by roads. Social networks are graphs, with people connected by friendships or follows. Web pages form a graph too, with pages connected by links. Traversal means visiting the nodes in some order, starting from one node and following edges outward.
+
+The two classic traversal methods are breadth-first search and depth-first search. Breadth-first search, or BFS, spreads out in layers. It visits everything one step away from the start first, then everything two steps away, then keeps moving outward. It is like exploring a neighborhood by checking all nearby streets before going farther away.
+
+Depth-first search, or DFS, behaves differently. It follows one path as far as it can go, then backs up and tries another path. Instead of spreading out evenly, it plunges deep first. It is like walking through a maze by choosing a hallway and following it until you hit a dead end, then returning to the last choice point.
+
+The clean punchline is that BFS and DFS are almost the same idea with one key swap: the data structure that holds the nodes waiting to be visited. BFS uses a queue. A queue gives back the oldest waiting node first, so BFS finishes a whole layer before moving on. DFS uses a stack. A stack gives back the newest waiting node first, so DFS keeps diving down the most recent path. Same graph, same starting point, two different orders, and the main thing that changed is queue versus stack. Watch the side panel in the figure to see that waiting structure drive the traversal.
+
+BFS is useful when you want the path with the fewest steps from the start, such as a shortest-hop route through an unweighted network. DFS is useful when you want to explore possibilities deeply, such as searching a maze, walking every branch, or checking whether something is reachable.
+
+When edges carry weights, like distances or costs, finding the cheapest path needs a smarter method, which is the next topic.
+
+The figure runs real breadth-first and depth-first traversals on the same small graph, and the queue and stack shown are the real structures driving each one. The graph is kept small so the order is easy to follow.
+
+<GraphTraversalViz />

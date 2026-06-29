@@ -1,0 +1,187 @@
+/* Graph traversal: a BFS/DFS toggle, the shared graph beside a queue/stack frontier
+   panel, and an honesty caption. Node fills transition as a small CSS flourish; the step
+   cadence is a timer in the component. Project paper/ink/accent palette. */
+
+.algoToggle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+
+.algoBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.algoBtn:hover {
+  border-color: var(--ink);
+}
+
+.algoActive {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.startHint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--fade);
+  margin-left: 4px;
+}
+
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.graphWrap {
+  flex: 1 1 320px;
+  min-width: 280px;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.node circle {
+  transition:
+    fill 0.18s ease,
+    stroke 0.18s ease;
+}
+
+.nodeLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.nodeTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.56rem;
+  fill: var(--fade);
+}
+
+/* frontier panel */
+.panel {
+  flex: 0 1 150px;
+  min-width: 130px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panelLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 8px;
+}
+
+.frontier {
+  flex: 1;
+  display: flex;
+  gap: 5px;
+  padding: 6px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #faf9f6;
+  min-height: 54px;
+}
+
+.queue {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.stack {
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.frontierEmpty {
+  margin: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--fade);
+  font-style: italic;
+}
+
+.frontierItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+  animation: frontierIn 0.18s ease-out both;
+}
+
+.stack .frontierItem {
+  width: 100%;
+}
+
+.frontierHead {
+  border-color: var(--accent);
+  background: #fcf3f1;
+}
+
+.headTag {
+  position: absolute;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.queue .headTag {
+  top: -12px;
+  left: 0;
+}
+
+.stack .headTag {
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes frontierIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 0.9rem 0 0;
+}
