@@ -6,6 +6,20 @@ export const metadata = {
 
 # Dijkstra's shortest path
 
-When a graph's edges carry weights, like distances or costs, the shortest path is the one with the smallest total weight, which is not always the one with the fewest hops. Dijkstra's algorithm finds the cheapest path from a source to every other node by repeatedly locking in the nearest unfinalized node and relaxing its edges. The figure below runs it on the same graph as the previous topic, now using its weights.
+In the previous topic, a graph edge was just a connection. The shortest path meant the path with the fewest hops. That works for some problems, but real connections often have costs. Roads have distances. Networks have delays. Routes have prices. In those cases, the shortest path means the cheapest total cost, not the fewest steps. A path with fewer hops can still be more expensive than a path with more hops.
+
+Plain breadth-first search is not enough for this job. BFS counts how many edges you cross. It does not add up the cost written on each edge. If every edge costs the same, that is fine. Once edges have different weights, BFS can choose a route that looks short by step count but is not actually cheapest. We need a method that tracks total cost.
+
+Dijkstra's algorithm does that by keeping a running best-known distance from the start to every node. At the beginning, the start node has distance zero, because you are already there. Every other node is unknown. The algorithm then repeats a careful process: pick the closest node whose distance is not final yet, lock in that distance, and check its neighbors.
+
+Checking a neighbor means asking, "Would it be cheaper to reach this neighbor by going through the node I just locked in?" If the answer is yes, update the neighbor's best-known distance. If not, leave it alone. Over time, more nodes get updated, then locked in, until every reachable node has its final cheapest distance from the start.
+
+The key idea is the order. Dijkstra always locks in the closest remaining node first. Because of that, once a node is locked in, there is no cheaper path to it hiding somewhere else. Any other route would have to pass through a node that is at least as far away already, so it cannot improve the locked result. That is what makes the final distances trustworthy.
+
+Pick a start in the figure and step through it. Watch the distances settle from nearest outward as nodes get locked in, then pick any destination to light up the cheapest path to it.
+
+This is the same graph idea from the traversal topic, now with weights. The cheapest path is something the earlier fewest-hops methods could not find.
+
+The figure runs a real Dijkstra on the small weighted graph, and every distance and the final path are computed for real. The graph is kept small so the steps are easy to follow.
 
 <DijkstraViz />
