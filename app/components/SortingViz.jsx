@@ -23,15 +23,19 @@ function bubbleFrames(a0) {
   let c = 0
   let s = 0
   for (let i = 0; i < n - 1; i += 1) {
+    let swappedThisPass = false
     for (let j = 0; j < n - 1 - i; j += 1) {
       c += 1
       const swapped = a[j] > a[j + 1]
       if (swapped) {
         ;[a[j], a[j + 1]] = [a[j + 1], a[j]]
         s += 1
+        swappedThisPass = true
       }
       frames.push({ arr: [...a], compare: [j, j + 1], write: null, mergeRange: null, settledFrom: n - i, settledTo: 0, comparisons: c, secondary: s, note: swapped ? `Swap positions ${j} and ${j + 1}` : `Compare positions ${j} and ${j + 1}` })
     }
+    // standard early exit: a full pass with no swaps means the array is already sorted
+    if (!swappedThisPass) break
   }
   frames.push(doneFrame(a, c, s, 'swaps'))
   return { frames, label: 'swaps' }
