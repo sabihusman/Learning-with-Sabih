@@ -6,6 +6,18 @@ export const metadata = {
 
 # Binary search trees
 
-A binary search tree keeps values in order by shape: every node is larger than everything in its left subtree and smaller than everything in its right subtree. That rule lets a search go left or right at each node instead of checking everything. The figure below builds trees and traces the insert and search walks so you can watch the path, and see how the insert order decides whether the tree stays short or collapses into a line.
+A binary search tree is a tree made of nodes. Each node stores a value and can have up to two children: one on the left and one on the right. The values follow a simple rule. For any node, smaller values go to the left, and larger values go to the right. That ordering rule is what makes it a search tree.
+
+To find a value, you start at the top, called the root, and compare. If the value you want is smaller than the current node, you move left. If it is larger, you move right. Each choice lets you ignore the whole other side of the tree. In the good case, this makes search fast because the search space keeps shrinking. This is the same halving idea as binary search, but built into the shape of the data instead of done on a sorted array.
+
+Insertion follows the same path. To add a value, you start at the root and walk downward using the smaller-left, larger-right rule. When you reach an empty spot where the value should go, you place the new node there. The tree grows one node at a time, and each inserted value helps decide the final shape.
+
+The catch is the important part: a binary search tree is only fast when it stays short and bushy. The order you insert values in decides the shape. If values arrive in already sorted order, each new value keeps going to the same side, because it is larger than everything before it. The tree collapses into a single long line. At that point, searching the tree is no better than walking through a linked list one item at a time. In Big-O terms, a balanced tree gives the fast logarithmic case, while a collapsed line gives the slow worst case.
+
+Real systems often use self-balancing trees that rearrange themselves as values are inserted or removed. The goal is to keep the tree short, even when the input order would otherwise make it lopsided.
+
+Insert values in the figure and watch the tree take shape. Try the balanced preset and the sorted-order preset, then compare the tree height each one produces.
+
+The tree, the search and insert paths, and the height and comparison counts in the figure are all real and computed from the actual tree. The tree is kept small so its shape is easy to see.
 
 <BinarySearchTreeViz />
