@@ -1,0 +1,27 @@
+import LinkedListArrayViz from '@/app/components/LinkedListArrayViz'
+
+export const metadata = {
+  title: 'Linked list vs array - Learning with Sabih',
+}
+
+# Linked list vs array
+
+An array and a linked list are two ways to store a sequence of items. An array keeps its items in one contiguous block of memory, side by side. Each item has a position number, called an index, so the program can reach an item by asking for its position.
+
+A linked list stores the same kind of sequence in a different shape. Its items live in separate nodes that may be scattered around memory. Each node holds a value and a pointer to the next node. The list is connected by those pointers, like a chain.
+
+That layout difference is the whole story. Arrays are strong where position matters. Since the items sit in a known order in one block, the program can jump straight to the item at any position. It does not need to inspect the earlier items first.
+
+A linked list cannot jump that way. To reach an item at a given position, it has to start at the front and follow pointers one node at a time until it arrives. Access by position is slower because the list only knows how to move from one node to the next.
+
+Linked lists are strong when you insert or remove near the front. In an array, adding a new first item means every later item has to shift over to make room. Removing the first item means later items shift back to close the gap. That is a lot of moving.
+
+In a linked list, inserting or removing near the front mostly means changing pointers. The nodes do not have to slide around in memory. The list just rewires which node points to which.
+
+Neither structure is simply better. They trade off. Arrays are fast to read by position and slower to insert near the front. Linked lists are the reverse. The right choice depends on what your program does most.
+
+Run insert at the front in the figure and watch the array shift while the list just repoints. Then run access by position and watch the array jump straight there while the list walks node by node.
+
+The figure shows the real work each structure does for each operation, and the costs shown are real counts of that work. The structures are kept small so the steps are easy to see, while real ones hold far more.
+
+<LinkedListArrayViz />
