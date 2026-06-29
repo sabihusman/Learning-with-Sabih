@@ -1,0 +1,23 @@
+import HashTableViz from '@/app/components/HashTableViz'
+
+export const metadata = {
+  title: 'Hash tables - Learning with Sabih',
+}
+
+# Hash tables
+
+A hash table solves a common problem: you want to store items and find them again fast, using a key. The key might be a username, an email address, or an ID. Without a hash table, you might have to scan through many items until you find the one you want. A hash table is built to avoid that scan and give near-instant lookup by key.
+
+The trick is a hash function. A hash function takes a key and turns it into a number. That number is used to choose a slot in the table, usually called a bucket. When you store an item, the key decides which bucket it goes in. When you want to find it later, you run the same hash function on the same key, get the same bucket, and look there. The table does not need to search from the beginning.
+
+This is why hash table lookup is the constant-time case. In the usual case, it goes more or less straight to the right bucket no matter how many items are stored. This is the O(1) lane from the Big-O figure, now shown as a real data structure.
+
+There is one catch: different keys can hash to the same bucket. This is called a collision. Collisions are normal, and once there are more possible keys than buckets, they are unavoidable. One common fix is chaining. Each bucket holds a small list, and keys that collide are added to that list. The figure uses chaining, so you can see colliding keys stack up in the same bucket. Another approach, called open addressing, puts a collided key into a different open bucket instead.
+
+As the table fills up, collisions become more likely. The load factor describes how full the table is. When the load factor rises, chains tend to get longer, and lookup slows down because the table has to walk through the chain inside a bucket. Keeping the table from getting too full is how hash tables stay fast. Add a few keys in the figure and watch where they land, then compare the load-factor and chain readouts.
+
+The same basic idea, using a hash to decide where something goes, also scales up to spreading data across many servers.
+
+The hash function in the figure is a simple teaching example: it just adds up the character codes of the key and wraps that around the table size. Real hash functions are far more complex and are designed to scatter keys much more evenly than this one does. The placement, collisions, and load factor shown are all computed for real from that simple hash; the table is kept small so collisions are easy to see.
+
+<HashTableViz />

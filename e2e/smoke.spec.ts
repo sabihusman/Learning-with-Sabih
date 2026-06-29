@@ -31,6 +31,7 @@ const TOPICS = [
   { slug: 'recursion', name: 'Recursion and the Call Stack' },
   { slug: 'sorting', name: 'Sorting' },
   { slug: 'linked-list-vs-array', name: 'Linked List vs Array' },
+  { slug: 'hash-tables', name: 'Hash Tables' },
   { slug: 'relational-model', name: 'Tables and the Relational Model' },
   { slug: 'select-where-case', name: 'SELECT, WHERE and CASE' },
   { slug: 'joins', name: 'Joins' },
