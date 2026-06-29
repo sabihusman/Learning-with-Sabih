@@ -1,0 +1,11 @@
+import DijkstraViz from '@/app/components/DijkstraViz'
+
+export const metadata = {
+  title: "Dijkstra's shortest path - Learning with Sabih",
+}
+
+# Dijkstra's shortest path
+
+When a graph's edges carry weights, like distances or costs, the shortest path is the one with the smallest total weight, which is not always the one with the fewest hops. Dijkstra's algorithm finds the cheapest path from a source to every other node by repeatedly locking in the nearest unfinalized node and relaxing its edges. The figure below runs it on the same graph as the previous topic, now using its weights.
+
+<DijkstraViz />

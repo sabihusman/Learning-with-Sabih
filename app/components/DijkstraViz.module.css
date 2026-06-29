@@ -1,0 +1,89 @@
+/* Dijkstra: a source selector and the shared weighted graph, with each node showing its
+   tentative distance, finalized nodes filled, and the edge being relaxed highlighted.
+   Node fills and edge strokes transition as a small CSS flourish; the step cadence is a
+   timer in the component. Deliberately minimal: no distance table, queue, or predecessor
+   data on screen. Project paper/ink/accent palette. */
+
+.sourceRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0 0 12px;
+}
+
+.sourceLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-right: 3px;
+}
+
+.sourceBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.sourceBtn:hover {
+  border-color: var(--ink);
+}
+
+.sourceActive {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.edge {
+  transition:
+    stroke 0.18s ease,
+    stroke-width 0.18s ease;
+}
+
+.node circle {
+  transition: fill 0.18s ease;
+}
+
+.dist {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.nodeTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  fill: var(--fade);
+}
+
+.weight {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.66rem;
+  fill: #6b6862;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 0.9rem 0 0;
+}
