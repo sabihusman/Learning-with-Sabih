@@ -1,0 +1,11 @@
+import DynamicProgrammingViz from '@/app/components/DynamicProgrammingViz'
+
+export const metadata = {
+  title: 'Dynamic programming - Learning with Sabih',
+}
+
+# Dynamic programming
+
+Dynamic programming speeds up a recursive computation by remembering the answers to subproblems instead of solving them again. Naive recursive Fibonacci is the classic example: it solves the same smaller problems over and over, so its call tree explodes. Memoizing each result once collapses that tree dramatically. The figure below builds both call trees for the same Fibonacci number so you can compare them.
+
+<DynamicProgrammingViz />

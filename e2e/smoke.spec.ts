@@ -35,6 +35,7 @@ const TOPICS = [
   { slug: 'binary-search-trees', name: 'Binary Search Trees' },
   { slug: 'graph-traversal', name: 'Graph Traversal (BFS and DFS)' },
   { slug: 'dijkstra', name: "Dijkstra's Shortest Path" },
+  { slug: 'dynamic-programming', name: 'Dynamic Programming' },
   { slug: 'relational-model', name: 'Tables and the Relational Model' },
   { slug: 'select-where-case', name: 'SELECT, WHERE and CASE' },
   { slug: 'joins', name: 'Joins' },
