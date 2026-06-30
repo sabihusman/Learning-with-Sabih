@@ -16,6 +16,8 @@ Checking a neighbor means asking, "Would it be cheaper to reach this neighbor by
 
 The key idea is the order. Dijkstra always locks in the closest remaining node first. Because of that, once a node is locked in, there is no cheaper path to it hiding somewhere else. Any other route would have to pass through a node that is at least as far away already, so it cannot improve the locked result. That is what makes the final distances trustworthy.
 
+This trust depends on one rule: edge weights cannot be negative. If an edge could have a negative cost, a path through a node that looks farther away might still come out cheaper later, and the lock-in step would no longer be safe. Graphs with negative weights need a different algorithm.
+
 Pick a start in the figure and step through it. Watch the distances settle from nearest outward as nodes get locked in, then pick any destination to light up the cheapest path to it.
 
 This is the same graph idea from the traversal topic, now with weights. The cheapest path is something the earlier fewest-hops methods could not find.
