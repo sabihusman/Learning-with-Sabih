@@ -34,6 +34,7 @@ const TOPICS = [
   { slug: 'hash-tables', name: 'Hash Tables' },
   { slug: 'binary-search-trees', name: 'Binary Search Trees' },
   { slug: 'graph-traversal', name: 'Graph Traversal (BFS and DFS)' },
+  { slug: 'dijkstra', name: "Dijkstra's Shortest Path" },
   { slug: 'relational-model', name: 'Tables and the Relational Model' },
   { slug: 'select-where-case', name: 'SELECT, WHERE and CASE' },
   { slug: 'joins', name: 'Joins' },
