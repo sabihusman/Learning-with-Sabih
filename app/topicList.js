@@ -26,16 +26,17 @@ Algorithms and Data Structures|18|Hash Tables|Hash keys into buckets by a visibl
 Algorithms and Data Structures|19|Binary Search Trees|Insert and search values down a tree, then watch a sorted insert order collapse it into a slow straight line|binary-search-trees
 Algorithms and Data Structures|20|Graph Traversal (BFS and DFS)|Walk one graph two ways and watch the only real difference, a queue versus a stack, reorder the visits|graph-traversal
 Algorithms and Data Structures|21|Dijkstra's Shortest Path|Lock in the nearest node and relax its edges until every shortest distance from a source is found, then trace any path|dijkstra
-Databases and SQL|22|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
-Databases and SQL|23|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
-Databases and SQL|24|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
-Databases and SQL|25|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
-Databases and SQL|26|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
-Databases and SQL|27|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
-Object-Oriented Programming|28|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
-Object-Oriented Programming|29|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
-Object-Oriented Programming|30|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
-Object-Oriented Programming|31|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
+Algorithms and Data Structures|22|Dynamic Programming|Compute Fibonacci naively and watch the call tree explode with repeated work, then memoize and see it collapse|dynamic-programming
+Databases and SQL|23|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
+Databases and SQL|24|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
+Databases and SQL|25|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
+Databases and SQL|26|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
+Databases and SQL|27|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
+Databases and SQL|28|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
+Object-Oriented Programming|29|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
+Object-Oriented Programming|30|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
+Object-Oriented Programming|31|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
+Object-Oriented Programming|32|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Object-Oriented Programming']

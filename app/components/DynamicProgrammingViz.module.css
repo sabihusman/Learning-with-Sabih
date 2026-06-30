@@ -1,0 +1,101 @@
+/* Dynamic programming: a naive/memoized toggle with an n control, the Fibonacci call
+   tree as small rounded node frames (echoing the recursion topic's CallStackPanel look),
+   and an honesty caption. Node reveal is a CSS opacity transition; the step cadence is a
+   timer in the component. Project paper/ink/accent palette. */
+
+.toggle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+
+.toggleBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.toggleBtn:hover {
+  border-color: var(--ink);
+}
+
+.toggleActive {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.nControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.nLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.slider {
+  width: 110px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.nValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 1ch;
+}
+
+.treeWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* frame-style nodes that echo CallStackPanel: rounded mono frames that fade in as the
+   call order is traced */
+.node {
+  transition: opacity 0.18s ease;
+}
+
+.node rect {
+  transition:
+    stroke 0.16s ease,
+    fill 0.16s ease;
+}
+
+.nodeText {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 0.9rem 0 0;
+}
