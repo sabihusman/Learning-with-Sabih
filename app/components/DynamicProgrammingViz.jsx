@@ -196,7 +196,9 @@ export default function DynamicProgrammingViz() {
       <p className={styles.caption}>
         Each node is one call to fib(k); the call counts and the tree are computed for real from the recursion. The same
         subproblem in naive mode is recomputed every time it appears, while memoized mode computes each one once and
-        reuses it. n is kept small so the naive tree stays readable; the blow-up is real and gets far worse for larger n.
+        reuses it. In memoized mode, solid nodes are real computations and dashed nodes are cache-hit lookups; the
+        memoized-calls readout counts both, so the real computations are fewer. n is kept small so the naive tree stays
+        readable; the blow-up is real and gets far worse for larger n.
       </p>
     </Figure>
   )
