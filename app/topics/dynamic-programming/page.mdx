@@ -6,6 +6,22 @@ export const metadata = {
 
 # Dynamic programming
 
-Dynamic programming speeds up a recursive computation by remembering the answers to subproblems instead of solving them again. Naive recursive Fibonacci is the classic example: it solves the same smaller problems over and over, so its call tree explodes. Memoizing each result once collapses that tree dramatically. The figure below builds both call trees for the same Fibonacci number so you can compare them.
+Some problems break into smaller subproblems. Dynamic programming applies when those subproblems overlap, meaning the same smaller question comes up again and again. The idea is simple but powerful: solve each subproblem once, remember the answer, and reuse it instead of solving it over and over.
+
+Fibonacci is the classic example. Each Fibonacci number is the sum of the two before it. A direct recursive version says `fib(n)` depends on `fib(n - 1)` and `fib(n - 2)`. Each of those depends on the two before it, and the calls keep branching until they reach the smallest cases.
+
+The catch is that many branches ask for the same values. One branch may compute a smaller Fibonacci value, then another branch computes that same value again, then another does it again. The naive recursive version does a huge amount of repeated work because it forgets answers as soon as each call returns.
+
+This is the same recursive call structure from the recursion topic. The naive version's explosion of repeated calls is also the same exponential growth shown as the worst case in the Big-O topic. In the figure, you can see that explosion as a branching tree.
+
+Memoization is the fix. Keep a small store of answers that have already been computed. The first time the program needs `fib` of some value, it computes it normally and saves the result. Every time after that, it just looks the value up. A branch that reaches a known value does not need to expand again, so the repeated branches collapse.
+
+That changes the shape of the work. Instead of recomputing the same subproblems across many branches, the memoized version does roughly one real computation per distinct subproblem. It spends a little memory to avoid a lot of repeated work.
+
+Pick a value in the figure and switch between naive and memoized. Watch the tree go from bushy to lean, then compare the two call counts.
+
+That trade, using memory to remember answers so the program does not repeat itself, is the heart of dynamic programming. Fibonacci is only the small teaching example. The same shape appears in many harder problems where repeated subproblems hide inside a larger task.
+
+The figure computes both versions for real and the call counts shown are exact. The value of n is kept small so the naive tree stays readable, but the blow-up is real and grows far worse for larger n.
 
 <DynamicProgrammingViz />
