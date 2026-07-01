@@ -6,10 +6,18 @@ export const metadata = {
 
 # Why activations matter
 
-The previous topic showed a network training. This one asks a narrower question: what does the activation function actually buy you? The short answer is that without a non-linear activation, stacking layers gains you nothing, because a chain of linear steps is still just one linear step. The boundary it can draw is always a straight line.
+The previous topic showed a small network learning to separate two groups of points. This topic answers a question that is easy to skip: why does the network need an activation function at all?
 
-A non-linear activation like ReLU breaks that limit. It lets each hidden unit contribute a bend, so the network can fold a straight boundary into a shape that wraps around data a single line could never separate.
+An activation function is a small nonlinear step applied to each neuron's output. Without it, each neuron only takes inputs, multiplies them by weights, adds them up, and passes the result forward. That is a straight-line operation. If every layer only does straight-line operations, then stacking layers does not make the network more powerful. A stack of straight-line operations can always be collapsed into one straight-line operation. No matter how many layers or neurons you add, the network can only draw a straight boundary. Depth buys it nothing.
 
-In the figure below, turn the activation off and the boundary is a straight line that fails on the ring-shaped data, no matter how many hidden units you add. Turn ReLU on and the boundary bends to fit; add more units and it gains more bends.
+That is a problem because lots of real data cannot be split by a straight line. Imagine one group of points sitting inside a ring, with another group surrounding it. No single straight line can separate the inside from the outside. A network with no activation is stuck trying to solve a curved problem with a straight ruler.
+
+ReLU is one common activation function, and it is very simple. It passes positive values through unchanged and turns negative values into zero. That small bend is enough to change what the network can represent. Once each neuron can bend its output, the network can combine many small bends into a boundary that curves around the data. Each ReLU unit adds another possible bend, so more hidden units let the boundary take on a more complex shape.
+
+Turn the activation off in the figure and watch the boundary fall back to a straight line that cannot separate the groups. Then turn ReLU on and watch the boundary bend to fit the pattern. Add hidden units and watch the boundary gain more bends and fit more tightly.
+
+This small nonlinear step is what makes deep networks powerful. Without it, all the layers in the world collapse into one straight line.
+
+The figure shows real network behavior on a small fixed dataset. The network is trained for real on the fixed dataset, and the boundary you see is that real result. The dataset is kept small so the effect is easy to see.
 
 <ActivationViz />
