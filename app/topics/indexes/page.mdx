@@ -1,0 +1,15 @@
+import IndexViz from '@/app/components/IndexViz'
+
+export const metadata = {
+  title: 'Indexes - Learning with Sabih',
+}
+
+# Indexes
+
+Without an index, a database answers a query by scanning the whole table, checking every row one at a time. That is fine for a handful of rows and slow for millions.
+
+An index is a sorted structure kept alongside the table. A B-tree index keeps the searched column in sorted order, so the engine can jump almost straight to the matching rows instead of reading everything, the same halving idea as binary search. Because the index is sorted, it also handles range queries by finding the start and then walking along in order.
+
+In the figure below, run a query with the index off and watch it scan every row, then turn the index on and run the same query and watch rows examined collapse to a handful.
+
+<IndexViz />
