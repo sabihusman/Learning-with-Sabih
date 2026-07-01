@@ -22,6 +22,7 @@ const TOPICS = [
   { slug: 'attention', name: 'Attention' },
   { slug: 'transformers', name: 'Transformers and Multi-Head Attention' },
   { slug: 'neural-networks', name: 'Neural Networks' },
+  { slug: 'activation-functions', name: 'Why Activations Matter' },
   { slug: 'overfitting', name: 'Overfitting and Generalization' },
   { slug: 'rlhf', name: 'RLHF' },
   { slug: 'temperature', name: 'Temperature and Sampling' },

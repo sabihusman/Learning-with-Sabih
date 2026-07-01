@@ -1,0 +1,15 @@
+import ActivationViz from '@/app/components/ActivationViz'
+
+export const metadata = {
+  title: 'Why activations matter - Learning with Sabih',
+}
+
+# Why activations matter
+
+The previous topic showed a network training. This one asks a narrower question: what does the activation function actually buy you? The short answer is that without a non-linear activation, stacking layers gains you nothing, because a chain of linear steps is still just one linear step. The boundary it can draw is always a straight line.
+
+A non-linear activation like ReLU breaks that limit. It lets each hidden unit contribute a bend, so the network can fold a straight boundary into a shape that wraps around data a single line could never separate.
+
+In the figure below, turn the activation off and the boundary is a straight line that fails on the ring-shaped data, no matter how many hidden units you add. Turn ReLU on and the boundary bends to fit; add more units and it gains more bends.
+
+<ActivationViz />
