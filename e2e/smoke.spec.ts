@@ -44,6 +44,7 @@ const TOPICS = [
   { slug: 'window-functions', name: 'Window Functions' },
   { slug: 'funnel-analysis', name: 'Funnel Analysis' },
   { slug: 'indexes', name: 'Indexes' },
+  { slug: 'query-planning', name: 'Query Planning' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
   { slug: 'inheritance', name: 'Inheritance' },
   { slug: 'polymorphism', name: 'Polymorphism' },

@@ -35,10 +35,11 @@ Databases and SQL|27|GROUP BY and Aggregation|Collapse rows into one summary per
 Databases and SQL|28|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
 Databases and SQL|29|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
 Databases and SQL|30|Indexes|Run the same query with the index off then on, and watch rows examined collapse from the whole table to a handful|indexes
-Object-Oriented Programming|31|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
-Object-Oriented Programming|32|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
-Object-Oriented Programming|33|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
-Object-Oriented Programming|34|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
+Databases and SQL|31|Query Planning|Slide selectivity to watch the planner flip between an index and a full scan, then compare a good and a bad join order|query-planning
+Object-Oriented Programming|32|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
+Object-Oriented Programming|33|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
+Object-Oriented Programming|34|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
+Object-Oriented Programming|35|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Object-Oriented Programming']
