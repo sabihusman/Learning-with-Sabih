@@ -43,6 +43,7 @@ const TOPICS = [
   { slug: 'group-by', name: 'GROUP BY and Aggregation' },
   { slug: 'window-functions', name: 'Window Functions' },
   { slug: 'funnel-analysis', name: 'Funnel Analysis' },
+  { slug: 'indexes', name: 'Indexes' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
   { slug: 'inheritance', name: 'Inheritance' },
   { slug: 'polymorphism', name: 'Polymorphism' },

@@ -1,0 +1,25 @@
+import IndexViz from '@/app/components/IndexViz'
+
+export const metadata = {
+  title: 'Indexes - Learning with Sabih',
+}
+
+# Indexes
+
+A database table is just rows of data. To find rows that match a query, the simplest thing the database can do is check every row from top to bottom. That is called a full scan. On a small table, a full scan is fine. On a table with millions of rows, it can be slow, because the amount of work grows with the number of rows in the table.
+
+An index is an extra structure the database keeps on the side to speed up searches. It is usually built from one column, such as `email`, `created_at`, or `user_id`. Instead of scanning the whole table, the database can use the index to find the matching rows more directly. The tradeoff is that the index takes extra space and has to stay updated when the table changes. In return, lookups on that column can become much faster.
+
+A common index uses a structure called a B-tree. In plain terms, it keeps the indexed column's values in sorted order, with pointers back to the matching table rows. Because the values are sorted, the database can jump toward the value it wants instead of reading everything from the start. This is the same halving idea as binary search from the algorithms section, applied inside a database.
+
+Sorted order is useful for more than exact matches. If you ask for one value, the index can find it quickly. If you ask for a range, like "everything greater than X" or "everything between X and Y", the database can find the start of the range and then walk along the sorted values. A hash index works more like the hash tables topic: it can be excellent for exact matches, but it does not preserve order, so it cannot handle range queries the same way.
+
+Indexes are not free. They use storage, and they make writes a little slower, because every insert or update may also need to update the index. That is why you add indexes to columns you search, filter, join, or sort on often, not to every column.
+
+Run the same query in the figure with the index off, then on. Watch the database examine every row during the full scan, then use the index to jump to the answer while the rows-examined count stays tiny.
+
+A full scan is the slow linear case where work grows with table size. An indexed lookup is the fast case that stays quick even as the table grows.
+
+The figure runs the scan and the indexed lookup for real on a small fixed table, and the rows-examined counts are the real number of rows each strategy touches. The table is kept small so the steps are easy to see, while real tables have millions of rows where the gap is enormous. The index shown is a simplified version of a real B-tree that works on the same sorted-lookup principle.
+
+<IndexViz />
