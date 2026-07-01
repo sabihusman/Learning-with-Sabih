@@ -169,6 +169,13 @@ export default function AtomicityViz() {
   const arrowColor = bChanged ? GREEN : FADE
   const activeIndex = step - 1
 
+  // The two account cards are identical markup with different data, so render them
+  // from a small config to keep one copy of the card.
+  const cards = [
+    { key: 'A', x: AX, label: 'Account A', balance: a, changed: aChanged, fill: c.aFill, stroke: c.aStroke, delta: `-${AMOUNT}`, deltaColor: AMBER_STROKE },
+    { key: 'B', x: BX, label: 'Account B', balance: b, changed: bChanged, fill: c.bFill, stroke: c.bStroke, delta: `+${AMOUNT}`, deltaColor: GREEN },
+  ]
+
   let status
   if (f) {
     status = f.note
@@ -223,33 +230,23 @@ export default function AtomicityViz() {
             {AMOUNT}
           </text>
 
-          {/* Account A card */}
-          <rect x={AX} y={CARD_Y} width={CARD_W} height={CARD_H} rx={6} fill={c.aFill} stroke={c.aStroke} strokeWidth={1.4} className={styles.card} />
-          <text x={AX + 10} y={CARD_Y + 18} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
-            Account A
-          </text>
-          <text x={AX + CARD_W / 2} y={CARD_Y + 48} fontSize={26} fill={INK} fontFamily={MONO} fontWeight={700} textAnchor="middle">
-            {a}
-          </text>
-          {aChanged && (
-            <text x={AX + CARD_W / 2} y={CARD_Y + 64} fontSize={11} fill={AMBER_STROKE} fontFamily={MONO} textAnchor="middle">
-              {`-${AMOUNT}`}
-            </text>
-          )}
-
-          {/* Account B card */}
-          <rect x={BX} y={CARD_Y} width={CARD_W} height={CARD_H} rx={6} fill={c.bFill} stroke={c.bStroke} strokeWidth={1.4} className={styles.card} />
-          <text x={BX + 10} y={CARD_Y + 18} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
-            Account B
-          </text>
-          <text x={BX + CARD_W / 2} y={CARD_Y + 48} fontSize={26} fill={INK} fontFamily={MONO} fontWeight={700} textAnchor="middle">
-            {b}
-          </text>
-          {bChanged && (
-            <text x={BX + CARD_W / 2} y={CARD_Y + 64} fontSize={11} fill={GREEN} fontFamily={MONO} textAnchor="middle">
-              {`+${AMOUNT}`}
-            </text>
-          )}
+          {/* Account cards (A and B share one markup block) */}
+          {cards.map((cd) => (
+            <g key={cd.key}>
+              <rect x={cd.x} y={CARD_Y} width={CARD_W} height={CARD_H} rx={6} fill={cd.fill} stroke={cd.stroke} strokeWidth={1.4} className={styles.card} />
+              <text x={cd.x + 10} y={CARD_Y + 18} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
+                {cd.label}
+              </text>
+              <text x={cd.x + CARD_W / 2} y={CARD_Y + 48} fontSize={26} fill={INK} fontFamily={MONO} fontWeight={700} textAnchor="middle">
+                {cd.balance}
+              </text>
+              {cd.changed && (
+                <text x={cd.x + CARD_W / 2} y={CARD_Y + 64} fontSize={11} fill={cd.deltaColor} fontFamily={MONO} textAnchor="middle">
+                  {cd.delta}
+                </text>
+              )}
+            </g>
+          ))}
 
           {/* total pill */}
           <rect x={TOTAL_X} y={TOTAL_Y} width={TOTAL_W} height={TOTAL_H} rx={14} fill={c.totalFill} stroke={c.totalStroke} strokeWidth={1.4} className={styles.card} />
