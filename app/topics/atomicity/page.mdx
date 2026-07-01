@@ -1,0 +1,17 @@
+import AtomicityViz from '@/app/components/AtomicityViz'
+
+export const metadata = {
+  title: 'Atomicity - Learning with Sabih',
+}
+
+# Atomicity
+
+A transaction groups several database changes into one unit of work. Atomicity is the rule that this unit is all-or-nothing: either every change in it commits, or none of them do. There is no halfway state left behind.
+
+The classic case is a transfer. Moving money from one account to another is really two steps, a debit and a credit. If the system fails after the debit but before the credit, the money would simply vanish. Atomicity prevents that. If any step fails, the database rolls back the whole transaction and restores the starting state, so the accounts never settle in a broken in-between.
+
+The figure below runs one small transfer as a single transaction of two steps. Run it normally and it commits, with the total unchanged. Trigger a failure between the two steps and watch the rollback undo the partial work, restoring the balances.
+
+Atomicity is only one of the guarantees a transaction provides. What happens when two transactions run at the same time, and how much each is allowed to see of the other, are separate questions covered in the next two topics, on concurrency and isolation levels.
+
+<AtomicityViz />
