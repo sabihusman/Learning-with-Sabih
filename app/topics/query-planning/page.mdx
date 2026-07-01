@@ -6,10 +6,20 @@ export const metadata = {
 
 # Query planning
 
-You write a query saying what you want. The database decides how to run it. That decision is the query plan, and the same query can be run in very different ways with very different costs.
+In SQL, you describe what you want, not exactly how to get it. You might ask for users from one country, sessions in a date range, or rows joined across several tables. The database still has to decide how to run that request. That job belongs to the query planner. The same query can often be executed in more than one way, and the planner tries to choose the cheapest plan.
 
-Two decisions matter here. First, whether to use an index or just scan the whole table: an index is fast when few rows match, but once a large fraction of the table matches, reading everything in one pass can be cheaper. Second, when a query joins several tables, the order to join them: joining the small, filtered table first keeps the intermediate result small, while a bad order can blow it up.
+One major choice is whether to use an index or scan the whole table. From the previous topic, an index lets the database jump toward matching rows instead of checking every row. That sounds like it should always win, but it does not. If a query matches only a few rows, the index is usually a big win because it skips most of the table. If a query matches most of the rows, using the index can be wasteful because the database still has to visit almost everything. In that case, reading the table straight through with a full scan can be cheaper.
 
-In the figure below, part one lets you slide how many rows match and watch the chosen plan flip between an index scan and a full scan. Part two lets you try a good and a bad join order and compare their cost.
+This depends on selectivity, which means how narrow the filter is. A highly selective filter matches few rows, so it favors the index. A low-selectivity filter matches many rows, so it favors the scan. The planner estimates this before running the query and chooses the plan it expects to cost less.
+
+Another choice is join order. When a query combines several tables, the database can often join them in different sequences. Joining smaller or more-filtered tables first keeps the temporary, in-between results small. That usually makes the rest of the query cheaper. A poor join order can create a large intermediate result, then force the database to do extra work just to reduce it later.
+
+Most databases let engineers inspect the chosen plan. In PostgreSQL, the command is called `EXPLAIN`. It prints the plan the database expects to use, so you can see whether it chose a scan, an index lookup, a join strategy, and other details. The figure shows a simplified version of this idea.
+
+Slide the filter in the figure and watch the chosen plan flip between using the index and scanning the whole table as the number of matching rows changes. Then try different join orders and watch the cost change.
+
+A full scan is the linear case from Big-O, where work grows with the table. An index lookup is the fast case, which is why the planner prefers it when only a few rows match.
+
+Real query planners are more complex than this. They use detailed table statistics, cost models, and many kinds of plans. The figure uses a simplified, transparent cost model to show the core ideas, and the EXPLAIN-style readout is illustrative rather than exact PostgreSQL output. What is real is the direction of each tradeoff: selectivity drives the choice between an index and a scan, and join order changes how big the in-between results get. The specific numbers are a teaching simplification.
 
 <QueryPlanViz />
