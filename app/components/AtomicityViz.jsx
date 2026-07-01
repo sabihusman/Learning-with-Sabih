@@ -99,7 +99,7 @@ function idleStatus(failAfterDebit) {
   return 'Idle. Step or play to run BEGIN, debit A, credit B, COMMIT.'
 }
 
-// Pure colour derivation, kept out of the component so the component stays simple.
+// Pure colour derivation, kept out of the component so the render body stays simple.
 function accountColors(aChanged, bChanged, broken) {
   return {
     aFill: aChanged ? AMBER_FILL : IDLE_FILL,
@@ -126,72 +126,6 @@ const TOTAL_Y = 108
 const TOTAL_W = 140
 const TOTAL_H = 28
 const SVG_STYLE = { maxWidth: 460 }
-
-// Presentational scene: two account cards, a transfer arrow, and the total pill. All
-// values are passed in; it holds no state and does no branching beyond simple display.
-function AccountsScene({ a, b, runningTotal, aChanged, bChanged, colors, ariaLabel }) {
-  const arrowColor = bChanged ? GREEN : FADE
-  return (
-    <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className={styles.svg} style={SVG_STYLE} role="img" aria-label={ariaLabel}>
-      {/* transfer arrow A -> B */}
-      <line x1={AX + CARD_W} y1={MIDY} x2={BX} y2={MIDY} stroke={arrowColor} strokeWidth={1.5} strokeDasharray="3 3" />
-      <path d={`M ${BX - 6} ${MIDY - 4} L ${BX} ${MIDY} L ${BX - 6} ${MIDY + 4} Z`} fill={arrowColor} />
-      <text x={(AX + CARD_W + BX) / 2} y={MIDY - 6} fontSize={9} fill={FADE} fontFamily={MONO} textAnchor="middle">
-        {AMOUNT}
-      </text>
-
-      {/* Account A card */}
-      <rect x={AX} y={CARD_Y} width={CARD_W} height={CARD_H} rx={6} fill={colors.aFill} stroke={colors.aStroke} strokeWidth={1.4} className={styles.card} />
-      <text x={AX + 10} y={CARD_Y + 18} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
-        Account A
-      </text>
-      <text x={AX + CARD_W / 2} y={CARD_Y + 48} fontSize={26} fill={INK} fontFamily={MONO} fontWeight={700} textAnchor="middle">
-        {a}
-      </text>
-      {aChanged && (
-        <text x={AX + CARD_W / 2} y={CARD_Y + 64} fontSize={11} fill={AMBER_STROKE} fontFamily={MONO} textAnchor="middle">
-          {`-${AMOUNT}`}
-        </text>
-      )}
-
-      {/* Account B card */}
-      <rect x={BX} y={CARD_Y} width={CARD_W} height={CARD_H} rx={6} fill={colors.bFill} stroke={colors.bStroke} strokeWidth={1.4} className={styles.card} />
-      <text x={BX + 10} y={CARD_Y + 18} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
-        Account B
-      </text>
-      <text x={BX + CARD_W / 2} y={CARD_Y + 48} fontSize={26} fill={INK} fontFamily={MONO} fontWeight={700} textAnchor="middle">
-        {b}
-      </text>
-      {bChanged && (
-        <text x={BX + CARD_W / 2} y={CARD_Y + 64} fontSize={11} fill={GREEN} fontFamily={MONO} textAnchor="middle">
-          {`+${AMOUNT}`}
-        </text>
-      )}
-
-      {/* total pill */}
-      <rect x={TOTAL_X} y={TOTAL_Y} width={TOTAL_W} height={TOTAL_H} rx={14} fill={colors.totalFill} stroke={colors.totalStroke} strokeWidth={1.4} className={styles.card} />
-      <text x={TOTAL_X + 16} y={TOTAL_Y + TOTAL_H / 2 + 4} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
-        total
-      </text>
-      <text x={TOTAL_X + TOTAL_W - 16} y={TOTAL_Y + TOTAL_H / 2 + 5} fontSize={16} fill={colors.totalText} fontFamily={MONO} fontWeight={700} textAnchor="end">
-        {runningTotal}
-      </text>
-    </svg>
-  )
-}
-
-// The transaction script, with the current statement highlighted.
-function ScriptBlock({ frames, activeIndex }) {
-  return (
-    <div className={styles.script} aria-hidden="true">
-      {frames.map((fr, i) => (
-        <div key={fr.line} className={`${styles.scriptLine} ${i === activeIndex ? styles.scriptLineActive : ''}`}>
-          {fr.line}
-        </div>
-      ))}
-    </div>
-  )
-}
 
 export default function AtomicityViz() {
   const [failAfterDebit, setFailAfterDebit] = useState(false)
@@ -231,7 +165,9 @@ export default function AtomicityViz() {
   const broken = runningTotal !== START_TOTAL
   const aChanged = a !== A_START
   const bChanged = b !== B_START
-  const colors = accountColors(aChanged, bChanged, broken)
+  const c = accountColors(aChanged, bChanged, broken)
+  const arrowColor = bChanged ? GREEN : FADE
+  const activeIndex = step - 1
 
   let status
   if (f) {
@@ -279,18 +215,60 @@ export default function AtomicityViz() {
       </div>
 
       <div className={styles.plotWrap}>
-        <AccountsScene
-          a={a}
-          b={b}
-          runningTotal={runningTotal}
-          aChanged={aChanged}
-          bChanged={bChanged}
-          colors={colors}
-          ariaLabel={ariaLabel}
-        />
+        <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className={styles.svg} style={SVG_STYLE} role="img" aria-label={ariaLabel}>
+          {/* transfer arrow A -> B */}
+          <line x1={AX + CARD_W} y1={MIDY} x2={BX} y2={MIDY} stroke={arrowColor} strokeWidth={1.5} strokeDasharray="3 3" />
+          <path d={`M ${BX - 6} ${MIDY - 4} L ${BX} ${MIDY} L ${BX - 6} ${MIDY + 4} Z`} fill={arrowColor} />
+          <text x={(AX + CARD_W + BX) / 2} y={MIDY - 6} fontSize={9} fill={FADE} fontFamily={MONO} textAnchor="middle">
+            {AMOUNT}
+          </text>
+
+          {/* Account A card */}
+          <rect x={AX} y={CARD_Y} width={CARD_W} height={CARD_H} rx={6} fill={c.aFill} stroke={c.aStroke} strokeWidth={1.4} className={styles.card} />
+          <text x={AX + 10} y={CARD_Y + 18} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
+            Account A
+          </text>
+          <text x={AX + CARD_W / 2} y={CARD_Y + 48} fontSize={26} fill={INK} fontFamily={MONO} fontWeight={700} textAnchor="middle">
+            {a}
+          </text>
+          {aChanged && (
+            <text x={AX + CARD_W / 2} y={CARD_Y + 64} fontSize={11} fill={AMBER_STROKE} fontFamily={MONO} textAnchor="middle">
+              {`-${AMOUNT}`}
+            </text>
+          )}
+
+          {/* Account B card */}
+          <rect x={BX} y={CARD_Y} width={CARD_W} height={CARD_H} rx={6} fill={c.bFill} stroke={c.bStroke} strokeWidth={1.4} className={styles.card} />
+          <text x={BX + 10} y={CARD_Y + 18} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
+            Account B
+          </text>
+          <text x={BX + CARD_W / 2} y={CARD_Y + 48} fontSize={26} fill={INK} fontFamily={MONO} fontWeight={700} textAnchor="middle">
+            {b}
+          </text>
+          {bChanged && (
+            <text x={BX + CARD_W / 2} y={CARD_Y + 64} fontSize={11} fill={GREEN} fontFamily={MONO} textAnchor="middle">
+              {`+${AMOUNT}`}
+            </text>
+          )}
+
+          {/* total pill */}
+          <rect x={TOTAL_X} y={TOTAL_Y} width={TOTAL_W} height={TOTAL_H} rx={14} fill={c.totalFill} stroke={c.totalStroke} strokeWidth={1.4} className={styles.card} />
+          <text x={TOTAL_X + 16} y={TOTAL_Y + TOTAL_H / 2 + 4} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
+            total
+          </text>
+          <text x={TOTAL_X + TOTAL_W - 16} y={TOTAL_Y + TOTAL_H / 2 + 5} fontSize={16} fill={c.totalText} fontFamily={MONO} fontWeight={700} textAnchor="end">
+            {runningTotal}
+          </text>
+        </svg>
       </div>
 
-      <ScriptBlock frames={frames} activeIndex={step - 1} />
+      <div className={styles.script} aria-hidden="true">
+        {frames.map((fr, i) => (
+          <div key={fr.line} className={`${styles.scriptLine} ${i === activeIndex ? styles.scriptLineActive : ''}`}>
+            {fr.line}
+          </div>
+        ))}
+      </div>
 
       <p className={styles.note}>
         The transfer, the failure, and the rollback are real integer arithmetic on the fixed starting balances
