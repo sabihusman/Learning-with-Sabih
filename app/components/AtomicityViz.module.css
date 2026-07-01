@@ -1,0 +1,108 @@
+/* Atomicity: two account cards (A and B) and a total pill, driven by a fixed sequence
+   of transaction statements. Stepping is timer-driven in the component; the card fills
+   recompute from the current frame's balances. Project paper/ink/accent palette. */
+
+.controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 0 0 14px;
+}
+
+.line {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.toggle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.toggle:hover {
+  background: #ece9e1;
+}
+
+.toggleOn {
+  background: #c0392b;
+  border-color: #c0392b;
+  color: #f7f5f0;
+}
+
+.toggleOn:hover {
+  background: #c0392b;
+}
+
+.plotWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.card {
+  transition:
+    fill 0.16s ease,
+    stroke 0.16s ease;
+}
+
+.script {
+  margin: 14px 0 0;
+  padding: 8px 10px;
+  background: #f0ede6;
+  border: 1px solid #e2e0d8;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  overflow-x: auto;
+}
+
+.scriptLine {
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: pre;
+  color: #6f6c65;
+}
+
+.scriptLineActive {
+  background: #e4dfd4;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 12px 0 0;
+}
