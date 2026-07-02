@@ -1,0 +1,17 @@
+import ConcurrencyViz from '@/app/components/ConcurrencyViz'
+
+export const metadata = {
+  title: 'Concurrency - Learning with Sabih',
+}
+
+# Concurrency
+
+The previous topic treated one transaction as an all-or-nothing unit. But databases run many transactions at the same time, and when two of them touch the same data, they can interfere.
+
+The classic bug is a lost update. Two transactions both read the same value, both add to it, and both write back. The second write is based on the value the transaction read earlier, before the first write happened, so it overwrites the first update instead of building on it. One change simply disappears.
+
+The fix is to stop the two transactions from stepping on each other. One transaction locks the row it is working on, and the other has to wait until the first commits before it reads and writes. Because the second transaction now reads the updated value, both updates survive.
+
+In the figure below, two transactions each add 50 to a balance that starts at 100, so the correct answer is 200. Run it with no protection to watch one update get lost, then switch to locking and watch the second transaction wait and land on the right answer.
+
+<ConcurrencyViz />
