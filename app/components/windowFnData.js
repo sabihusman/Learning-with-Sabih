@@ -79,11 +79,17 @@ export function maxRunning(rows) {
 // The SQL for the active function, reflecting the PARTITION BY toggle.
 export function buildSql(fn, partition) {
   const over = partition ? 'PARTITION BY session_id ORDER BY occurred_at' : 'ORDER BY occurred_at'
+  // The running total is computed row by row in annotate() (run += r.value on every
+  // row), so tied peers get distinct totals. Postgres' default frame with ORDER BY is
+  // RANGE UNBOUNDED PRECEDING, which extends CURRENT ROW through the last peer and would
+  // give tied rows the SAME total. Emit an explicit ROWS frame so the displayed SQL
+  // matches the per-row computation. Ranking functions keep the default frame.
+  const sumOver = `${over} ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`
   const expr = {
-    ROW_NUMBER: 'ROW_NUMBER() OVER (%) AS rn',
-    RANK: 'RANK() OVER (%) AS rnk',
-    DENSE_RANK: 'DENSE_RANK() OVER (%) AS dr',
-    SUM: 'SUM(value) OVER (%) AS running_total',
-  }[fn].replace('%', over)
+    ROW_NUMBER: 'ROW_NUMBER() OVER (%) AS rn'.replace('%', over),
+    RANK: 'RANK() OVER (%) AS rnk'.replace('%', over),
+    DENSE_RANK: 'DENSE_RANK() OVER (%) AS dr'.replace('%', over),
+    SUM: 'SUM(value) OVER (%) AS running_total'.replace('%', sumOver),
+  }[fn]
   return `SELECT session_id, occurred_at, event,\n  ${expr}\nFROM events;`
 }
