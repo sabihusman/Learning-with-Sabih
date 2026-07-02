@@ -7,6 +7,9 @@ import styles from './BigOViz.module.css'
 // Number of calls the naive recursive Fibonacci makes for fib(n): 2*Fib(n+1) - 1,
 // computed with a deterministic iterative Fibonacci (no floating-point powers). This is
 // the true exponential-class count (~1.618^n), not Math.pow(2, n).
+// Note: for large n the running sum exceeds Number.MAX_SAFE_INTEGER, so the count becomes
+// float-approximate (JS Number loses exact integer precision here). That is fine: the value
+// only feeds a greater-than comparison and an exponential-format display, never exact math.
 function fibCalls(n) {
   let a = 0 // Fib(0)
   let b = 1 // Fib(1)
@@ -31,8 +34,14 @@ const LANES = [
 ]
 
 const OPS_PER_SECOND = 2e9
-const N_MAX = 120
+// N_MAX chosen so the "> age of universe" label is genuinely reachable: the naive-Fibonacci
+// lane crosses the age of the universe at n = 129, so a max of 140 leaves headroom above it.
+const N_MAX = 140
 const BASE_DURATION_MS = 2500 // the O(n) reference lane finishes in this time
+
+// Age of the universe in seconds, built from the same 3.15e7 seconds-per-year figure fmtTime
+// uses so the cutoff stays internally consistent. 13.8e9 years is an approximate figure.
+const AGE_OF_UNIVERSE_S = 13.8e9 * 3.15e7
 
 const fmtOps = (v) => {
   if (v < 1000) return Math.round(v).toString()
@@ -50,7 +59,7 @@ const fmtTime = (s) => {
   if (s < 86400) return (s / 3600).toFixed(1) + ' hr'
   if (s < 3.15e7) return (s / 86400).toFixed(1) + ' days'
   if (s < 3.15e9) return (s / 3.15e7).toFixed(1) + ' yr'
-  if (s < 3.15e14) return (s / 3.15e7).toExponential(1) + ' yr'
+  if (s < AGE_OF_UNIVERSE_S) return (s / 3.15e7).toExponential(1) + ' yr'
   return '> age of universe'
 }
 
