@@ -1,0 +1,25 @@
+import ConcurrencyViz from '@/app/components/ConcurrencyViz'
+
+export const metadata = {
+  title: 'Concurrency - Learning with Sabih',
+}
+
+# Concurrency
+
+The previous topic looked at one transaction running by itself. Real databases do not work that way for long. They serve many users at once, so transactions often run at the same time. That is usually good because it keeps the system responsive. The trouble starts when two transactions touch the same data at the same time. If the database does not control the overlap, they can interfere with each other.
+
+A common problem is the lost-update bug. Imagine two transactions both want to update the same value. Each one reads the current value, changes it, and writes the result back. If they run one after the other, the result is fine. But if they overlap, the second transaction may read the value before the first transaction has saved its change.
+
+Now the second transaction is working from a stale value. When it writes its result back, it overwrites the first transaction's update. One of the updates disappears. There may be no error message, no crash, and no obvious sign that anything went wrong. The database still contains a normal-looking value, but it is the wrong value.
+
+This kind of bug is dangerous because it depends on timing. Most of the time, the two transactions may not overlap in the exact wrong order, so the code seems correct. Then, under load or bad luck, the timing lines up and the bug appears. That makes it easy to miss in testing and hard to reproduce later. The figure shows one specific ordering chosen to make the bug visible, not something that happens every time.
+
+The fix is to make the transactions take turns on that data instead of overlapping freely. When the first transaction is working on the value, the second transaction has to wait. After the first transaction commits, the second transaction reads the now-updated value and applies its own change to that. Since it no longer starts from stale data, no update is lost.
+
+Run the buggy version in the figure and watch the second write overwrite the first so one update vanishes. Then run the protected version and watch the second transaction wait, read the updated value, and land on the correct total.
+
+This is one specific problem that can happen when transactions overlap. Databases offer different isolation levels that control which of these problems can occur, which is the next topic.
+
+The figure shows one specific worst-case ordering so the lost update is easy to see. In real systems the problem is timing-dependent and does not always happen, which is exactly what makes it dangerous. The balances are real arithmetic kept small for clarity, and the locking is shown as a simplified concept rather than specific database commands.
+
+<ConcurrencyViz />

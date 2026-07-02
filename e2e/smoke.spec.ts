@@ -46,6 +46,7 @@ const TOPICS = [
   { slug: 'indexes', name: 'Indexes' },
   { slug: 'query-planning', name: 'Query Planning' },
   { slug: 'atomicity', name: 'Atomicity' },
+  { slug: 'concurrency', name: 'Concurrency' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
   { slug: 'inheritance', name: 'Inheritance' },
   { slug: 'polymorphism', name: 'Polymorphism' },
