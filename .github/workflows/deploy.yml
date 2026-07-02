@@ -51,9 +51,11 @@ jobs:
 
       - name: Verify deployment (expect HTTP 200)
         run: |
-          status=$(curl -o /dev/null -s -w "%{http_code}" "http://${{ secrets.SITE_DOMAIN }}/")
-          echo "HTTP status: $status"
-          if [ "$status" != "200" ]; then
-            echo "ERROR: expected 200, got $status"
+          # The site redirects http -> https (301), so follow redirects (-L) and check the
+          # final https response. Still strict: any non-200 fails the deploy.
+          code=$(curl -sS -L -o /dev/null -w "%{http_code}" "https://${{ secrets.SITE_DOMAIN }}/")
+          echo "Final HTTP status (after redirects): $code"
+          if [ "$code" != "200" ]; then
+            echo "ERROR: expected 200, got $code"
             exit 1
           fi
