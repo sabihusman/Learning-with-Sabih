@@ -106,20 +106,22 @@ export default function BigOViz() {
     const opsPerMs = refTotal / BASE_DURATION_MS
     timerRef.current = setInterval(() => {
       const elapsed = Date.now() - startRef.current
-      setProgress(() => {
-        const next = {}
-        let allDone = true
-        for (const l of LANES) {
-          const done = Math.min(totals[l.key], opsPerMs * elapsed)
-          next[l.key] = done
-          if (done < totals[l.key]) allDone = false
-        }
-        if (allDone) {
-          clearInterval(timerRef.current)
-          setRunning(false)
-        }
-        return next
-      })
+      // Compute the next progress and the all-done condition outside the state updater:
+      // each lane's fill depends only on totals and elapsed, not on previous progress, so
+      // the updater can stay pure. Side effects (stopping the timer, clearing running) run
+      // after setProgress, not inside it.
+      const next = {}
+      let allDone = true
+      for (const l of LANES) {
+        const done = Math.min(totals[l.key], opsPerMs * elapsed)
+        next[l.key] = done
+        if (done < totals[l.key]) allDone = false
+      }
+      setProgress(next)
+      if (allDone) {
+        clearInterval(timerRef.current)
+        setRunning(false)
+      }
     }, 40)
   }, [totals, refTotal, reset])
 
