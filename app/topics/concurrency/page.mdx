@@ -6,12 +6,20 @@ export const metadata = {
 
 # Concurrency
 
-The previous topic treated one transaction as an all-or-nothing unit. But databases run many transactions at the same time, and when two of them touch the same data, they can interfere.
+The previous topic looked at one transaction running by itself. Real databases do not work that way for long. They serve many users at once, so transactions often run at the same time. That is usually good because it keeps the system responsive. The trouble starts when two transactions touch the same data at the same time. If the database does not control the overlap, they can interfere with each other.
 
-The classic bug is a lost update. Two transactions both read the same value, both add to it, and both write back. The second write is based on the value the transaction read earlier, before the first write happened, so it overwrites the first update instead of building on it. One change simply disappears.
+A common problem is the lost-update bug. Imagine two transactions both want to update the same value. Each one reads the current value, changes it, and writes the result back. If they run one after the other, the result is fine. But if they overlap, the second transaction may read the value before the first transaction has saved its change.
 
-The fix is to stop the two transactions from stepping on each other. One transaction locks the row it is working on, and the other has to wait until the first commits before it reads and writes. Because the second transaction now reads the updated value, both updates survive.
+Now the second transaction is working from a stale value. When it writes its result back, it overwrites the first transaction's update. One of the updates disappears. There may be no error message, no crash, and no obvious sign that anything went wrong. The database still contains a normal-looking value, but it is the wrong value.
 
-In the figure below, two transactions each add 50 to a balance that starts at 100, so the correct answer is 200. Run it with no protection to watch one update get lost, then switch to locking and watch the second transaction wait and land on the right answer.
+This kind of bug is dangerous because it depends on timing. Most of the time, the two transactions may not overlap in the exact wrong order, so the code seems correct. Then, under load or bad luck, the timing lines up and the bug appears. That makes it easy to miss in testing and hard to reproduce later. The figure shows one specific ordering chosen to make the bug visible, not something that happens every time.
+
+The fix is to make the transactions take turns on that data instead of overlapping freely. When the first transaction is working on the value, the second transaction has to wait. After the first transaction commits, the second transaction reads the now-updated value and applies its own change to that. Since it no longer starts from stale data, no update is lost.
+
+Run the buggy version in the figure and watch the second write overwrite the first so one update vanishes. Then run the protected version and watch the second transaction wait, read the updated value, and land on the correct total.
+
+This is one specific problem that can happen when transactions overlap. Databases offer different isolation levels that control which of these problems can occur, which is the next topic.
+
+The figure shows one specific worst-case ordering so the lost update is easy to see. In real systems the problem is timing-dependent and does not always happen, which is exactly what makes it dangerous. The balances are real arithmetic kept small for clarity, and the locking is shown as a simplified concept rather than specific database commands.
 
 <ConcurrencyViz />
