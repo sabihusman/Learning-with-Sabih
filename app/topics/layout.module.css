@@ -8,6 +8,13 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  /* Keep the sticky header on its own stable compositing layer and stacking context so a
+     browser zoom cannot drop it or let a GPU-composited figure canvas paint over it (a
+     Chromium compositing quirk seen when topic pages are zoomed in). will-change promotes
+     the layer without applying a visual transform, so it does not disturb the sticky
+     behavior; isolation makes the header's stacking order deterministic above content. */
+  isolation: isolate;
+  will-change: transform;
 }
 
 .back {

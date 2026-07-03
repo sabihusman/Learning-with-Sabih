@@ -15,7 +15,10 @@
   position: fixed;
   left: 0;
   top: 50%;
-  transform: translateY(-50%);
+  /* translateZ(0) keeps this fixed edge tab on a stable compositing layer so a browser
+     zoom cannot drop it or let a GPU-composited figure canvas paint over it (same
+     Chromium compositing quirk the sticky header guards against). */
+  transform: translateY(-50%) translateZ(0);
   z-index: 30;
   display: flex;
   align-items: center;
