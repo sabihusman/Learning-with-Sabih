@@ -1,0 +1,348 @@
+/* Contents drawer: a left-edge jump-between-topics panel for topic pages.
+   Desktop: a slim vertical tab pinned to the left edge; hovering it or moving keyboard
+   focus into the drawer slides the panel out as an overlay (no page reflow); a Pin
+   control keeps it open. Mobile: the tab is a tap target that slides the panel in over
+   a dimmed backdrop, closed by the backdrop or an X. Reveal is JS-driven via the
+   data-revealed attribute, so the same transform rule serves hover, focus, pin, and tap.
+   Project paper/ink/accent palette; sits above the sticky header (z-index 10). */
+
+.root {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ── edge tab ─────────────────────────────────────────────────────────────────────── */
+.tab {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  min-height: 132px;
+  padding: 14px 7px;
+  border: 1px solid var(--rule);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  background: var(--paper);
+  color: var(--fade);
+  cursor: pointer;
+  box-shadow: 2px 0 8px rgba(26, 26, 26, 0.06);
+  transition:
+    color 0.15s,
+    background 0.15s;
+}
+
+.tab:hover {
+  color: var(--accent);
+  background: #efece5;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tabLabel {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ── backdrop (mobile only) ───────────────────────────────────────────────────────── */
+.backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  border: none;
+  padding: 0;
+  background: rgba(26, 26, 26, 0.38);
+  cursor: pointer;
+}
+
+/* ── sliding panel ────────────────────────────────────────────────────────────────── */
+.panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: 310px;
+  max-width: 86vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  padding: 1.25rem 1.25rem 2rem;
+  background: var(--paper);
+  border-right: 1px solid var(--rule);
+  box-shadow: 4px 0 20px rgba(26, 26, 26, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
+}
+
+.root[data-revealed] .panel {
+  transform: translateX(0);
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.panelTitle {
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.pin,
+.closeBtn {
+  font-family: inherit;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  color: var(--fade);
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.pin {
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+}
+
+.pin[aria-pressed='true'] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.pin:hover,
+.closeBtn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.pin:focus-visible,
+.closeBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.closeBtn {
+  font-size: 1.25rem;
+  line-height: 1;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── section list ─────────────────────────────────────────────────────────────────── */
+.nav {
+  display: block;
+}
+
+.section {
+  margin-bottom: 0.5rem;
+}
+
+.sectionHeadingWrap {
+  margin: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 600;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  padding: 0.5rem 0;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.15s;
+}
+
+.sectionHeader:hover {
+  color: var(--accent);
+}
+
+.sectionHeader:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.chevron {
+  display: inline-block;
+  font-size: 0.85em;
+  line-height: 1;
+  color: var(--fade);
+  transform: rotate(0deg);
+  transition:
+    transform 0.25s ease,
+    color 0.15s;
+}
+
+.chevron[data-open='true'] {
+  transform: rotate(90deg);
+}
+
+.sectionHeader:hover .chevron {
+  color: var(--accent);
+}
+
+.sectionName {
+  flex: 0 1 auto;
+}
+
+.count {
+  margin-left: auto;
+  font-size: 0.85em;
+  letter-spacing: 0.08em;
+  color: var(--fade);
+  font-weight: 400;
+}
+
+/* collapsible section body: grid-template-rows 0fr -> 1fr, matching the contents page */
+.sectionPanel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.3s ease,
+    opacity 0.24s ease;
+}
+
+.sectionPanelOpen {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.sectionPanelInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0 0.35rem;
+}
+
+.item {
+  margin-bottom: 0.1rem;
+}
+
+.link {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0.3rem 0.4rem;
+  border-radius: 5px;
+  border-left: 2px solid transparent;
+  transition: background 0.15s;
+}
+
+.link:hover {
+  background: #efece5;
+  text-decoration: none;
+}
+
+.link:hover .topicTitle {
+  color: var(--accent);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.linkActive {
+  border-left-color: var(--accent);
+  background: #efece5;
+}
+
+.linkActive .topicTitle {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.num {
+  font-family: inherit;
+  font-size: 0.625rem;
+  color: var(--fade);
+  min-width: 2rem;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.topicTitle {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--ink);
+  transition: color 0.15s;
+  flex: 0 1 auto;
+  line-height: 1.25;
+}
+
+.leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--fade);
+  margin: 0 0 0.25em 0.6rem;
+  opacity: 0.4;
+  min-width: 0.75rem;
+}
+
+/* ── mobile (below the desktop breakpoint) ────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  .tab {
+    /* comfortable tap target */
+    min-width: 44px;
+    min-height: 108px;
+  }
+
+  .root[data-mobile-open='true'] .backdrop {
+    display: block;
+  }
+}
+
+/* On desktop the backdrop and the close button are never used (pin replaces close). */
+@media (min-width: 768px) {
+  .backdrop {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .sectionPanel,
+  .chevron,
+  .tab {
+    transition: none;
+  }
+}
