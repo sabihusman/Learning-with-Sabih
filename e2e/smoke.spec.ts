@@ -21,6 +21,7 @@ const TOPICS = [
   { slug: 'embeddings', name: 'Embeddings' },
   { slug: 'attention', name: 'Attention' },
   { slug: 'tensors', name: 'Tensors' },
+  { slug: 'broadcasting', name: 'Broadcasting' },
   { slug: 'transformers', name: 'Transformers and Multi-Head Attention' },
   { slug: 'neural-networks', name: 'Neural Networks' },
   { slug: 'activation-functions', name: 'Why Activations Matter' },
