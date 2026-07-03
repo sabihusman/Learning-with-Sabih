@@ -92,7 +92,7 @@ test('contents page links to every topic', async ({ page }) => {
 })
 
 // Clicking each contents link must navigate to that topic and render its figure.
-// Split per-topic (rather than one 20-iteration loop) so every navigation gets its
+// Split per-topic (rather than one 38-iteration loop) so every navigation gets its
 // own test timeout instead of sharing a single budget that overflows under parallel
 // load as the topic count grows.
 for (const topic of TOPICS) {

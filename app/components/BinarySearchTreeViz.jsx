@@ -110,6 +110,9 @@ export default function BinarySearchTreeViz() {
   const cy = (depth) => PAD_TOP + depth * ROW_H
 
   const parseValue = () => {
+    // Guard the empty/whitespace case explicitly: Number('') and Number('   ') are both 0,
+    // which Number.isInteger accepts, so without this an empty box would act on the value 0.
+    if (input.trim() === '') return null
     const v = Number(input)
     return Number.isInteger(v) ? v : null
   }
@@ -126,7 +129,7 @@ export default function BinarySearchTreeViz() {
   const doSearch = () => {
     if (!validSearch) return
     const { path, found } = search(tree, v)
-    setAnim({ kind: 'search', path, step: 0, resultValue: found ? v : null, found })
+    setAnim({ kind: 'search', path, step: 0, resultValue: found ? v : null, found, query: v })
   }
   const loadPreset = (values) => {
     setAnim(null)
@@ -158,7 +161,7 @@ export default function BinarySearchTreeViz() {
     if (!done) status = `${anim.kind === 'search' ? 'Searching for' : 'Inserting'} ${anim.path.length ? anim.path[anim.step] : anim.resultValue}...`
     else if (anim.kind === 'insert') status = `Inserted ${anim.resultValue} after ${comparisons} ${comparisons === 1 ? 'comparison' : 'comparisons'}`
     else if (anim.found) status = `Found ${anim.resultValue} in ${comparisons} ${comparisons === 1 ? 'comparison' : 'comparisons'}`
-    else status = `${Number(input) || anim.path[anim.path.length - 1]} is not in the tree (${comparisons} ${comparisons === 1 ? 'comparison' : 'comparisons'})`
+    else status = `${anim.query} is not in the tree (${comparisons} ${comparisons === 1 ? 'comparison' : 'comparisons'})`
   } else if (count === 0) {
     status = 'Empty tree. Load a preset, or insert a value.'
   } else {
