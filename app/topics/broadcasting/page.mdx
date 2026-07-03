@@ -6,9 +6,22 @@ export const metadata = {
 
 # Broadcasting
 
-PLACEHOLDER: Broadcasting is how an operation combines two arrays of different
-shapes by stretching size-1 or missing dimensions to match, without copying
-data. This is a placeholder paragraph; the real prose is a later step. Pick two
-shapes and read the alignment from the right to see whether they combine.
+Often you want to combine two tensors that do not have the same shape. You might add a small array to a bigger one, or apply one set of values across many rows. Broadcasting is the set of rules that lets this work without writing loops and, in the usual case, without copying the smaller data over and over.
+
+The intuition is that the smaller array is "stretched" to fit the larger one. That stretching is conceptual. The computer is not usually making a full expanded copy in memory. Broadcasting is really a rule for lining shapes up so the operation knows which values to reuse.
+
+The rule starts from the right side of the shapes. Line up the last dimensions first, then move leftward. Two dimensions fit if they are the same size, or if one of them is 1. When a dimension has size 1, that value can be reused across the larger matching dimension.
+
+If the two tensors do not have the same rank, the shorter shape is treated as if it had extra dimensions of size 1 added on the left side. Missing leading dimensions count as size 1. If any lined-up pair is not equal and neither side is 1, the shapes do not fit, and the operation fails with an error.
+
+When the shapes do fit, the result takes the larger size at each position. So if one tensor has a size-1 dimension and the other has a larger size in that same position, the result uses the larger size. The smaller side is reused along that dimension.
+
+A simple working example is adding one row of numbers to every row of a grid. The row is reused across the grid. Another example is scaling each color channel of an image by one value per channel. A simple failing case is trying to combine two dimensions where both are larger than 1 but not the same size. There is no safe way to line them up, so broadcasting rejects it.
+
+Broadcasting matters in machine learning because these shape tricks happen constantly. It is how a bias gets added to every row of outputs, how data is normalized, and how per-channel or per-feature values are applied across a whole batch without slow manual loops.
+
+Pick two shapes in the figure, line them up from the right, and watch which dimensions are compatible, which size-1 dimensions stretch, and what result shape is produced, or see the operation marked incompatible when a pair does not fit.
+
+The figure checks compatibility and computes the result shape for real, using the standard NumPy-style broadcasting rule. The shapes are kept small and simple so the alignment is easy to read.
 
 <BroadcastingViz />
