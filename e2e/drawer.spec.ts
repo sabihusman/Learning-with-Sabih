@@ -54,6 +54,19 @@ test('the drawer is keyboard operable: Enter pins, Escape closes', async ({ page
   await expect(tab).toHaveAttribute('aria-expanded', 'false')
 })
 
+test('the header and the Contents tab stay visible at a narrow (zoomed) width', async ({ page }) => {
+  // Browser page-zoom shrinks the effective CSS width, so a zoomed-in laptop can cross
+  // below the 768px breakpoint into mobile mode. Guard that neither the sticky header nor
+  // the Contents opener is dropped in that mode. (This covers the breakpoint dimension;
+  // the compositing-under-real-page-zoom dimension cannot be exercised in a headless run.)
+  await page.setViewportSize({ width: 640, height: 800 })
+  await page.goto('/topics/embeddings/')
+  // the sticky header (its "Contents" back link) stays visible
+  await expect(page.locator('a[href="/"]')).toBeVisible()
+  // the left Contents opener tab stays visible
+  await expect(page.locator('[aria-controls="contents-drawer-panel"]')).toBeVisible()
+})
+
 test('expanding a section in the drawer stays in sync with the contents page', async ({ page }) => {
   // The drawer and the contents accordion share one localStorage store, so a section
   // opened in the drawer is open on the contents page too (they never drift).
