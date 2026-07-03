@@ -61,7 +61,7 @@ export const SECTIONS = SECTION_ORDER.map((name) => ({
   topics: TOPICS.filter((topic) => topic.section === name),
 }))
 
-// The previous/next topic for a given slug, treating the 16-topic list as one
+// The previous/next topic for a given slug, treating the 38-topic list as one
 // sequence that crosses section boundaries. Either side is null at the ends.
 export function neighbors(slug) {
   const i = TOPICS.findIndex((t) => t.slug === slug)
