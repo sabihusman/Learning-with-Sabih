@@ -6,6 +6,24 @@ export const metadata = {
 
 # Isolation levels
 
-Placeholder: this is a temporary paragraph so the topic builds and renders. The real prose is applied in a later step. Isolation levels control which concurrency phenomena a transaction can see. Turn the dial and pick a phenomenon in the figure below to watch how PostgreSQL behaves at each level.
+A transaction is a unit of work: a group of database steps that should be treated together. Atomicity keeps one transaction from finishing halfway. Concurrency is what happens when many transactions run at the same time and touch the same data. The isolation level controls how much those transactions are allowed to affect each other. Stricter isolation means fewer surprises, but usually less speed.
+
+The four standard isolation levels, from least strict to most strict, are Read Uncommitted, Read Committed, Repeatable Read, and Serializable. Each level is meant to allow or prevent certain kinds of interference between transactions.
+
+A dirty read happens when you read a change made by another transaction before that transaction commits. If that other transaction rolls back, you read something that never really became part of the database. A non-repeatable read happens when you read a row, another transaction changes and commits it, then reading the same row again gives a different value.
+
+A phantom read is similar, but it affects a set of rows instead of one row. You run a query, another transaction adds or removes rows that match it and commits, then running the same query again returns a different set. A serialization anomaly is broader: several transactions each look correct alone, but running them at the same time produces a result that no one-at-a-time ordering could have produced. Write skew is one example.
+
+The general pattern is simple. As you move up the isolation levels, the database prevents more of these problems. Serializable is the strictest level, and it prevents all four.
+
+Real databases do not always match the textbook chart exactly. This topic uses PostgreSQL, which is stricter than the SQL standard in two important places. First, the SQL standard allows dirty reads at Read Uncommitted, but PostgreSQL never allows dirty reads at any isolation level. PostgreSQL offers all four level names, but internally it implements only three distinct behaviors, so Read Uncommitted behaves the same as Read Committed.
+
+Second, the SQL standard allows phantom reads at Repeatable Read, but PostgreSQL prevents them. PostgreSQL's Repeatable Read uses snapshot isolation, which gives a stronger guarantee than the standard requires. This matters because the rules people memorize from the standard are minimum guarantees. A real database is allowed to be safer. The practical skill is knowing what your actual database does, not only what the textbook says it may do.
+
+Serializable is the only level that stops serialization anomalies. In PostgreSQL, it does this by watching for dangerous dependencies between transactions. If the database detects a pattern that could produce an invalid concurrent result, it may cancel one transaction with an error, and the application may need to retry it.
+
+In the figure, pick an isolation level and one of the four problems, then step through a two-transaction timeline. Watch whether the problem happens or is prevented at that level. The two stricter-than-standard PostgreSQL cases are the ones worth watching closely: no dirty reads at Read Uncommitted, and no phantom reads at Repeatable Read.
+
+The figure is a scripted, hand-authored walkthrough of two transactions, not a live database. The result shown for each level-and-problem combination is taken from the official PostgreSQL documentation table on transaction isolation. The step-by-step values in the timeline are illustrative, chosen to make each case easy to follow.
 
 <IsolationLevelsViz />
