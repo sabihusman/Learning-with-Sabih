@@ -1,0 +1,148 @@
+/* Tensors: a dimensionality ladder. A rank control (0-4) rebuilds an n-dimensional
+   array; the first axis lays out horizontally, the second vertically, and the last
+   one or two axes render as a grid, so rank 3 reads as a stack of grids and rank 4 as
+   a row of stacks. Cells are real buttons so they are keyboard-reachable. Project
+   paper/ink/accent palette. Rebuilds are state-driven; there is no clock here. */
+
+.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: 18px 10px;
+  overflow-x: auto;
+}
+
+/* the recursive array container; axis alternates row/column with depth */
+.axisRow {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  align-items: center;
+}
+
+.axisCol {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+/* a 2D block (rows x cols), or the row of a rank-1 vector */
+.grid {
+  display: grid;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid #e2e0d8;
+  border-radius: 8px;
+  background: #faf9f6;
+}
+
+/* a scalar has no grid chrome, just the single cell */
+.scalarWrap {
+  padding: 4px;
+}
+
+.cell {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid #b9c6d8;
+  border-radius: 5px;
+  background: #fffefb;
+  color: #46617e;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    transform 0.12s ease;
+}
+
+.cell:hover {
+  background: #eef3f9;
+  border-color: #2f6f8f;
+}
+
+.cell:focus-visible {
+  outline: 2px solid #2f6f8f;
+  outline-offset: 2px;
+}
+
+.cellSelected {
+  background: #2f6f8f;
+  border-color: #2f6f8f;
+  color: #f7f5f0;
+  transform: scale(1.08);
+}
+
+/* the index-path readout under the stage */
+.pathBox {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  min-height: 34px;
+  margin: 4px 0 2px;
+  padding: 7px 12px;
+  border: 1px solid #e2e0d8;
+  border-radius: 8px;
+  background: #fffefb;
+  text-align: center;
+}
+
+.pathLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.pathValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  color: #2f6f8f;
+  font-weight: 700;
+}
+
+.pathHint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  color: #6b6862;
+}
+
+/* the "what this rung is" caption */
+.rung {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+.rungKind {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.rungExample {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  color: #6b6862;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+  text-align: center;
+}
