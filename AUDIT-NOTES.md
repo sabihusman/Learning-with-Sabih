@@ -51,3 +51,34 @@ Each item was re-verified by reading the current source unless marked
 
 **Counts:** 11 accuracy · 5 a11y · 2 cosmetic = 18 open items.
 Two items (A9, A10) need a runtime re-check to fully confirm/quantify.
+
+---
+
+## Second-pass backlog (transaction-topics session)
+
+Additional items found after the first triage above, appended without altering the entries
+above. Ordered by severity (accuracy, then a11y, then cosmetic). IDs continue the scheme
+above. Statuses are current as of this entry; nothing is marked fixed unless it was actually
+fixed in the same change.
+
+### accuracy
+
+| # | Issue | File(s) | Status |
+|---|-------|---------|--------|
+| A12 | BST empty or whitespace input parses as `0` (because `Number('')` is `0` and `Number.isInteger(0)` is true), so Insert/Search act on `0`; and the not-found status uses `Number(input) || anim.path[...]`, so a real search for `0` is falsy and gets misreported as the last walked node instead of `0`. | `app/components/BinarySearchTreeViz.jsx` (`parseValue` line ~112, not-found status line ~161) | Fixing now (this change, Part 2) |
+| A13 | Overfitting `regime()` thresholds may not match the computed test-error minimum at the boundaries (auditor reports degree 7 lands "overfitting" while still near the good-fit plateau). | `app/components/overfittingData.js` (`regime`) | UNVERIFIED: needs the seeded fit re-run before any threshold change; not changed now |
+
+### a11y
+
+| # | Issue | File(s) | Status |
+|---|-------|---------|--------|
+| B6 | Several figures attach `onClick` to SVG nodes/cells/rows with no `tabIndex`, `role`, or key handler, leaving no keyboard alternative. The ones with no keyboard path are binary-search cells, the graph start-node, and index rows. | `app/components/BinarySearchViz.jsx`, `app/components/GraphTraversalViz.jsx`, `app/components/IndexViz.jsx` | Logged: needs a focused a11y pass |
+| B7 | Low-contrast secondary text: the `--fade` grey (approx 2.66:1) and some Big-O legend colors fall below WCAG AA. | `app/globals.css` (`--fade`), `app/components/BigOViz.jsx` | Logged: design-token decision pending |
+
+### cosmetic
+
+| # | Issue | File(s) | Status |
+|---|-------|---------|--------|
+| C3 | Stale code comments reference outdated topic counts (a "16-topic list" comment and a "20-iteration loop" comment) that no longer match the real count. | `app/topicList.js`, `e2e/smoke.spec.ts` | Fixing now (this change, Part 2) |
+
+**Second-pass counts:** 2 accuracy · 2 a11y · 1 cosmetic = 5 items (2 fixed in this change: A12, C3).
