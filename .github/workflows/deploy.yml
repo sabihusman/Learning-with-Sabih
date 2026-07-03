@@ -51,9 +51,15 @@ jobs:
 
       - name: Verify deployment (expect HTTP 200)
         run: |
-          status=$(curl -o /dev/null -s -w "%{http_code}" "http://${{ secrets.SITE_DOMAIN }}/")
-          echo "HTTP status: $status"
-          if [ "$status" != "200" ]; then
-            echo "ERROR: expected 200, got $status"
+          # SITE_DOMAIN is a raw IP that redirects http -> https (301) and serves an
+          # IP-scoped TLS cert, which public CAs do not issue, so strict validation cannot
+          # pass on a CI runner. -k is used deliberately here: this is a liveness gate
+          # against our own raw-IP host, not a trust check. Follow redirects (-L) and
+          # require the final response to be 200. Still strict on the code: any non-200
+          # fails the deploy. (Proper fix later: a real domain + valid cert, then drop -k.)
+          code=$(curl -sS -L -k -o /dev/null -w "%{http_code}" "https://${{ secrets.SITE_DOMAIN }}/")
+          echo "Final HTTP status (after redirects): $code"
+          if [ "$code" != "200" ]; then
+            echo "ERROR: expected 200, got $code"
             exit 1
           fi
