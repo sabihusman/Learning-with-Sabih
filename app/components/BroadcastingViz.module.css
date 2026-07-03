@@ -1,0 +1,229 @@
+/* Broadcasting: pick two shapes and see whether they combine. The two shapes are aligned
+   from the right, the shorter one padded with 1s on the left, each aligned pair marked
+   compatible or the mismatch that fails, size-1 dimensions shown stretching, and the
+   result shape (or a cannot-broadcast verdict) computed for real. State-driven per
+   selection; no clock. Project palette, with A in blue and B in mauve to tell them apart. */
+
+.selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.selLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.selLabelA {
+  color: #2f6f8f;
+}
+
+.selLabelB {
+  color: #9a5a86;
+}
+
+.segGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.seg {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  padding: 6px 10px;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  background: #f4f2ec;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.seg:hover {
+  background: #ece9e1;
+}
+
+.seg:focus-visible {
+  outline: 2px solid #2f6f8f;
+  outline-offset: 2px;
+}
+
+.segActiveA {
+  background: #2f6f8f;
+  color: #f7f5f0;
+  border-color: #2f6f8f;
+}
+
+.segActiveB {
+  background: #9a5a86;
+  color: #f7f5f0;
+  border-color: #9a5a86;
+}
+
+/* ── alignment grid ─────────────────────────────────────────────────────────────────── */
+.stage {
+  overflow-x: auto;
+  padding: 6px 2px 2px;
+}
+
+.align {
+  display: inline-grid;
+  gap: 6px;
+  margin: 0 auto;
+}
+
+.rowLabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rowLabelA {
+  color: #2f6f8f;
+}
+
+.rowLabelB {
+  color: #9a5a86;
+}
+
+.rowLabelR {
+  color: #1a1a1a;
+}
+
+.cell {
+  min-width: 54px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e0d8;
+  border-radius: 7px;
+  background: #fffefb;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 15px;
+  color: #1a1a1a;
+}
+
+.cellA {
+  border-color: #b9c6d8;
+  color: #2f6f8f;
+}
+
+.cellB {
+  border-color: #d8bcd0;
+  color: #9a5a86;
+}
+
+/* a padded (missing) dimension, shown as 1 */
+.cellPad {
+  background: #f4f2ec;
+  color: #9b9892;
+  border-style: dashed;
+}
+
+.padTag {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+/* a size-1 dimension that stretches up to the other operand */
+.stretch {
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1f6f5c;
+}
+
+.resultCell {
+  border-color: #cfcbc2;
+  background: #f6f8f6;
+  font-weight: 700;
+}
+
+.resultFail {
+  border-color: #e3b7b1;
+  background: #fdf3ee;
+  color: #c0392b;
+}
+
+/* the compatibility marker row between operands and result */
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.markOk {
+  color: #1f6f5c;
+}
+
+.markFail {
+  color: #c0392b;
+}
+
+/* ── verdict ────────────────────────────────────────────────────────────────────────── */
+.verdict {
+  margin-top: 14px;
+  padding: 9px 12px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.verdictOk {
+  border-color: #1f6f5c;
+  background: #eef6f2;
+  color: #1f6f5c;
+}
+
+.verdictFail {
+  border-color: #c0392b;
+  background: #fdf3ee;
+  color: #c0392b;
+}
+
+.failDetail {
+  margin-top: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #c0392b;
+  text-align: center;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+  text-align: center;
+}
