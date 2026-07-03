@@ -1,0 +1,27 @@
+import TensorsViz from '@/app/components/TensorsViz'
+
+export const metadata = {
+  title: 'Tensors - Learning with Sabih',
+}
+
+# Tensors
+
+In machine learning, a tensor just means an array of numbers with some number of dimensions. It is the basic container for almost everything a model works with. If the model needs to store inputs, weights, embeddings, scores, or outputs, those numbers usually live in tensors.
+
+The simplest tensor is a single number on its own, with zero dimensions. A loss value can be like this: one number that says how wrong the model was. Add one dimension and you get a list of numbers in a row. An embedding, which you have already seen, is a good example: one token or word represented by a list of numeric features.
+
+Add another dimension and the list becomes a grid. A grayscale image can be thought of as a grid of brightness values, one number per pixel. A layer of model weights can also be stored as a grid, with rows and columns of numbers.
+
+Add another dimension and you get a stack of grids. A color image fits this idea because it has separate grids for color channels. Add one more dimension and you can hold a group of those stacks together, like several images processed at the same time in one batch.
+
+Two words show up constantly with tensors: "rank" and "shape." The rank is how many dimensions the tensor has. The shape tells you the size along each dimension. If you multiply the sizes in the shape, you get the total number of numbers stored inside the tensor.
+
+Indexing is how you point to one exact number inside a tensor. For a row, you give one position. For a grid, you give a row position and a column position. For higher-dimensional tensors, you give one position for each dimension. More dimensions means more coordinates are needed to locate one element.
+
+This matters because nearly everything inside a machine learning model is a tensor: the input data, the weights in each layer, the embeddings, and the final output. Once you see them all as arrays of numbers with a rank and a shape, the rest of the model becomes easier to reason about.
+
+Raise the number of dimensions in the figure and watch the array grow from a single cell into a row, a grid, a stack, and beyond. Watch the shape update, and click a cell to see exactly how it is located inside the tensor.
+
+The figure computes the shapes, the element counts, and the index positions for real. The only simplification is that the dimension sizes are kept small so the array stays easy to see on screen.
+
+<TensorsViz />
