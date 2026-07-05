@@ -217,12 +217,20 @@ export default function ConstructorsHeapViz() {
                 stroke="#e2e0d8"
                 strokeWidth={1}
               />
-              <text x={HEAP_X + 12} y={HEAP_TOP + 50} className={styles.heapField}>
-                name ={' '}
-                <tspan className={state.highlight ? styles.heapValueHot : styles.heapValue}>
-                  {state.heap.name === null ? '?' : `"${state.heap.name}"`}
-                </tspan>
-              </text>
+              {/* The box exists once allocated (step 2), but the name field only
+                  appears once the constructor has initialized it (step 3). */}
+              {state.heap.name === null ? (
+                <text x={HEAP_X + 12} y={HEAP_TOP + 50} className={styles.heapEmpty}>
+                  fields uninitialized
+                </text>
+              ) : (
+                <text x={HEAP_X + 12} y={HEAP_TOP + 50} className={styles.heapField}>
+                  name ={' '}
+                  <tspan className={state.highlight ? styles.heapValueHot : styles.heapValue}>
+                    {`"${state.heap.name}"`}
+                  </tspan>
+                </text>
+              )}
             </g>
           ) : (
             <text x={HEAP_X} y={HEAP_TOP + 40} className={styles.heapEmpty}>
