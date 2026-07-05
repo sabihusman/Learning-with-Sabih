@@ -1,0 +1,123 @@
+/* "One object, two names": a stack/heap trace. Reuses the OOP section's visual
+   vocabulary (mono members, rule borders, muted paper) from ClassesObjectsViz, with
+   an SVG stage split into a stack column and a heap column. */
+
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+
+/* ── traced snippet ──────────────────────────────────────────────────────── */
+.code {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: #faf9f6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.codeLine {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--fade);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  white-space: pre;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.codeActive {
+  color: var(--ink);
+  background: #eef3f7;
+  box-shadow: inset 2px 0 0 #46617e;
+}
+
+/* ── SVG stage ───────────────────────────────────────────────────────────── */
+.svg {
+  flex: 1 1 380px;
+  min-width: 300px;
+  max-width: 520px;
+  height: auto;
+}
+
+.panelLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: var(--fade);
+}
+
+.frameTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--fade);
+}
+
+.slotName {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--ink);
+  text-anchor: end;
+}
+
+.dash {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  fill: #b9c6d8;
+  text-anchor: middle;
+}
+
+.refTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  fill: #46617e;
+  text-anchor: middle;
+}
+
+.heapType {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  fill: #2f6f8f;
+}
+
+.heapField {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  fill: var(--ink);
+}
+
+.heapValue {
+  fill: var(--ink);
+}
+
+.heapValueHot {
+  fill: var(--accent);
+  font-weight: 700;
+}
+
+.heapEmpty {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-style: italic;
+  fill: var(--fade);
+}
+
+/* ── caption ─────────────────────────────────────────────────────────────── */
+.caption {
+  margin: 0.9rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--fade);
+}

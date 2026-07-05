@@ -51,6 +51,7 @@ const TOPICS = [
   { slug: 'concurrency', name: 'Concurrency' },
   { slug: 'isolation-levels', name: 'Isolation Levels' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
+  { slug: 'constructors-and-the-heap', name: 'Constructors and the Heap' },
   { slug: 'inheritance', name: 'Inheritance' },
   { slug: 'polymorphism', name: 'Polymorphism' },
   { slug: 'composition-vs-inheritance', name: 'Composition vs Inheritance' },

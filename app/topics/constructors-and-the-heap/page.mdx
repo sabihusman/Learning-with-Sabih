@@ -1,0 +1,23 @@
+import ConstructorsHeapViz from '@/app/components/ConstructorsHeapViz'
+
+export const metadata = {
+  title: 'Constructors and the heap - Learning with Sabih',
+}
+
+# Constructors and the heap
+
+When you write `Dog a = new Dog("Rex")`, it reads like one action. It is actually three, and keeping them separate is the key to understanding how objects behave.
+
+First, `Dog a` declares a reference. A reference is a slot that can point at a Dog. At this moment it points at nothing. No Dog exists yet.
+
+Second, `new` allocates. It reserves a patch of memory on the heap, the region where objects live, big enough to hold a Dog's fields. The heap object and the reference are different things in different places: the reference lives in the current stack frame, the object lives on the heap.
+
+Third, the constructor runs. It fills in the new object's fields, here setting `name` to "Rex". Only after the constructor finishes does `a` receive the reference to the finished object.
+
+The part that surprises people is the second line: `Dog b = a`. This does not copy the Dog. It copies the reference. Two slots now point at the same single object on the heap. So when the third line changes `b.name` to "Max", there is no second dog to protect the first one. Ask for `a.name` and you get "Max", even though the code never touched `a` after the first line. One object, two names.
+
+This is why the readout at the end of the figure matters: two references, one heap object. Almost every confusing bug involving objects that "change on their own" comes down to two names for the same thing.
+
+A note on accuracy: this is the standard conceptual model, and it is the right way to reason about Java code. Real JVMs are allowed to optimize behind the scenes, for example allocating an object elsewhere when they can prove the object never escapes a method. Those optimizations never change what your code observes, so the model shown here is what you should trust when reading and writing code.
+
+<ConstructorsHeapViz />
