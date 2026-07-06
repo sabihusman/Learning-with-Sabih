@@ -36,6 +36,6 @@ test('last topic has no next', async ({ page }) => {
   await page.goto('/topics/composition-vs-inheritance/')
   const nav = topicNav(page)
   await expect(nav).toBeVisible()
-  await expect(nav).toContainText('Polymorphism') // previous still present
+  await expect(nav).toContainText('Abstract Classes and Interfaces') // previous still present
   await expect(nav).not.toContainText('Next')
 })
