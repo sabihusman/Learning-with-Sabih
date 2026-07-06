@@ -1,0 +1,23 @@
+import EncapsulationViz from '@/app/components/EncapsulationViz'
+
+export const metadata = {
+  title: 'Encapsulation - Learning with Sabih',
+}
+
+# Encapsulation
+
+The previous topic ended with a warning: two references to one object mean anyone holding a reference can change it. This topic is about how a class defends itself.
+
+Consider a `BankAccount` with one rule it must never break: the balance can never go negative. That rule is called an invariant, a condition that must hold no matter what the rest of the program does.
+
+If `balance` is a public field, the class cannot enforce its own rule. Any code anywhere can write `account.balance = -500` and the account is instantly in a state that should be impossible. Nothing malicious is required. A typo, a sign error, or a refund applied twice is enough. The class has an invariant but no way to defend it.
+
+Encapsulation fixes this by changing who is allowed to touch the data. Make `balance` private and it can only be changed from inside the class. Outside code must go through a method like `withdraw()`, and that method is where the rule lives: if the amount is more than the balance, the withdrawal is refused. Every path to the data now passes the guard.
+
+The figure runs the same three actions against both versions. With a public field, all three land: the legitimate withdrawal, the direct write to -$500, and an overdraw on top of it. The account ends deep in an impossible state. With a private field, the direct write is not even a legal program, the compiler rejects it, and the overdraw is refused by the guard inside `withdraw()`. The account ends at $60 and the invariant holds.
+
+This is the real point of `private`. It is not about secrecy, it is about responsibility. When only the class can modify its own fields, only the class needs to be correct for the invariant to hold. Everyone else can be wrong safely.
+
+One note on the figure: the "does not compile" step is simulated. The figure shows what the Java compiler would reject if `balance` were private; no code is actually being compiled in your browser.
+
+<EncapsulationViz />

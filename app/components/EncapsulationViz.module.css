@@ -1,0 +1,107 @@
+/* "The object defends itself": a BankAccount invariant demo. Reuses the OOP section's
+   mono/rule vocabulary; an SVG stage splits into the account (balance + invariant
+   badge) and the outside-code action list. */
+
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+
+/* ── class definition ────────────────────────────────────────────────────── */
+.code {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: #faf9f6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  overflow-x: auto;
+}
+
+.codeLine {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--ink);
+  padding: 0.08rem 0.35rem;
+  border-radius: 4px;
+  white-space: pre;
+}
+
+.codeHot {
+  background: #eef3f7;
+  box-shadow: inset 2px 0 0 #2f6f8f;
+}
+
+.comment {
+  color: var(--fade);
+}
+
+/* ── SVG stage ───────────────────────────────────────────────────────────── */
+.svg {
+  flex: 1 1 400px;
+  min-width: 320px;
+  max-width: 540px;
+  height: auto;
+}
+
+.panelLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: var(--fade);
+}
+
+.balanceLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--fade);
+  text-anchor: middle;
+}
+
+.balance {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 34px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-anchor: middle;
+}
+
+.actionCode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  fill: var(--ink);
+}
+
+.strike {
+  text-decoration: line-through;
+  fill: var(--fade);
+}
+
+.outcome {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+}
+
+/* ── caption ─────────────────────────────────────────────────────────────── */
+.caption {
+  margin: 0.9rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--fade);
+}
