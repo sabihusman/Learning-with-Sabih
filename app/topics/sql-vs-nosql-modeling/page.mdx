@@ -1,0 +1,15 @@
+import SqlNoSqlViz from '@/app/components/SqlNoSqlViz'
+
+export const metadata = {
+  title: 'SQL vs NoSQL modeling - Learning with Sabih',
+}
+
+# SQL vs NoSQL modeling
+
+TODO: Placeholder prose. This paragraph will be replaced with the finalized copy in a follow-up. It picks up the trade the Normalization topic ended on, joins versus redundancy, and reframes it as a modeling choice: the same data can be split into normalized tables or gathered into one document per user.
+
+TODO: Placeholder prose. The second paragraph will walk the two shapes side by side and explain that neither is better in general, only better for a given access pattern: data read together can be stored together, but a shared fact copied into many documents brings back the update anomaly.
+
+TODO: Placeholder prose. The final paragraph will set up the figure below, where three canned queries show the winner flipping between the relational and document shapes depending on whether the query reads one entity, changes a shared fact, or spans many entities.
+
+<SqlNoSqlViz />
