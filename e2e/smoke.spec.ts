@@ -55,6 +55,7 @@ const TOPICS = [
   { slug: 'encapsulation', name: 'Encapsulation' },
   { slug: 'inheritance', name: 'Inheritance' },
   { slug: 'polymorphism', name: 'Polymorphism' },
+  { slug: 'abstract-classes-and-interfaces', name: 'Abstract Classes and Interfaces' },
   { slug: 'composition-vs-inheritance', name: 'Composition vs Inheritance' },
 ]
 
