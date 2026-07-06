@@ -6,10 +6,18 @@ export const metadata = {
 
 # SQL vs NoSQL modeling
 
-TODO: Placeholder prose. This paragraph will be replaced with the finalized copy in a follow-up. It picks up the trade the Normalization topic ended on, joins versus redundancy, and reframes it as a modeling choice: the same data can be split into normalized tables or gathered into one document per user.
+The last topic ended by splitting one wide table into three, and admitted the cost: joins to reassemble what one row used to show. That trade has another side, and this topic gives it a fair fight. Take the same users, plans, and orders and model them twice: once as normalized relational tables, once as documents, where each user is a self-contained object with its plan details embedded and its orders nested inside.
 
-TODO: Placeholder prose. The second paragraph will walk the two shapes side by side and explain that neither is better in general, only better for a given access pattern: data read together can be stored together, but a shared fact copied into many documents brings back the update anomaly.
+Neither shape is the right one. Which shape wins depends entirely on what you ask, and the figure lets you ask three things.
 
-TODO: Placeholder prose. The final paragraph will set up the figure below, where three canned queries show the winner flipping between the relational and document shapes depending on whether the query reads one entity, changes a shared fact, or spans many entities.
+Fetch everything about one user, and the document wins. The relational side has to touch three tables and stitch them together with keys. The document side touches one thing, because everything about that user was stored together in the first place. This is the document model's core bet: data that is read together should be stored together.
+
+Change the pro plan's price, and the tables win. The relational side changes one cell in the plans table, and there is nothing else to disagree with it. The document side finds that price embedded in every document for a pro user, so the same fact must be updated in several places. This is the update anomaly from the Normalization topic, reintroduced deliberately. Embedding is denormalization; it buys the fast read from the first query by copying facts, and copies can drift.
+
+Ask a question across users, all orders over 25, and the tables win again. Relationally, all orders live in one table regardless of whose they are, so the query scans one place. In this document layout, orders live scattered inside each user's document, so answering means digging into every document's nested array. A real document store can soften this with secondary indexes, which is an engine feature rather than a property of the shape, but the shape itself is fighting the question.
+
+The pattern behind all three: the document layout is an answer frozen in storage form. Store the data pre-assembled for one question and that question gets very cheap, while questions that cut across the assembly, or update a fact inside many copies, get awkward. Normalized tables refuse to pre-assemble anything, which keeps every fact in one place and every cross-cutting question reachable, at the price of join work on every read.
+
+So the modeling question is not which technology is better. It is: what will this data be asked, most often, by whom? Read-heavy, self-contained, one-entity-at-a-time access patterns lean toward documents. Shared facts, frequent updates, and cross-entity questions lean relational. Many real systems use both, one as the source of truth and the other as a shaped copy, which is a topic for another day.
 
 <SqlNoSqlViz />
