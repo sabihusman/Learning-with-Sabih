@@ -12,7 +12,7 @@ import {
 } from './constructorsHeapData'
 import styles from './ConstructorsHeapViz.module.css'
 
-const PLAY_MS = 1100
+const PLAY_MS = 1300
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 const VB_W = 420

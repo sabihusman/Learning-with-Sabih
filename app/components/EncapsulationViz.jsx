@@ -101,6 +101,7 @@ export default function EncapsulationViz() {
   const readouts = [
     { label: 'balance', value: formatMoney(balance) },
     { label: 'invariant', value: broken ? 'BROKEN' : 'OK' },
+    { label: 'step', value: `${step} / ${LAST_STEP}` },
   ]
 
   // Status: caption for the most recently executed action, else a lead-in.
