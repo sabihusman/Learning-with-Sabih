@@ -47,6 +47,7 @@ const TOPICS = [
   { slug: 'funnel-analysis', name: 'Funnel Analysis' },
   { slug: 'indexes', name: 'Indexes' },
   { slug: 'query-planning', name: 'Query Planning' },
+  { slug: 'normalization', name: 'Normalization' },
   { slug: 'atomicity', name: 'Atomicity' },
   { slug: 'concurrency', name: 'Concurrency' },
   { slug: 'isolation-levels', name: 'Isolation Levels' },

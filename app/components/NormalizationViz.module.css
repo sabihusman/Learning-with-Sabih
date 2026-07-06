@@ -1,0 +1,11 @@
+/* "One table becomes three": a normalization stepper. Renders SQL tables in SVG using
+   the Databases section's mono/rule vocabulary (ink text, faded headers, accent for
+   the foreign-key and error highlights, green for primary keys). */
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
