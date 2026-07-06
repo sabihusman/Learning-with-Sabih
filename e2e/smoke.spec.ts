@@ -48,6 +48,7 @@ const TOPICS = [
   { slug: 'indexes', name: 'Indexes' },
   { slug: 'query-planning', name: 'Query Planning' },
   { slug: 'normalization', name: 'Normalization' },
+  { slug: 'sql-vs-nosql-modeling', name: 'SQL vs NoSQL Modeling' },
   { slug: 'atomicity', name: 'Atomicity' },
   { slug: 'concurrency', name: 'Concurrency' },
   { slug: 'isolation-levels', name: 'Isolation Levels' },

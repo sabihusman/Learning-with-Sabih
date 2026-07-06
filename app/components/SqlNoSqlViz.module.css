@@ -1,0 +1,121 @@
+/* "Same data, two shapes": relational tables (SVG, Databases palette) beside a set of
+   JSON documents (mono). A query picker steps through which containers each shape must
+   touch. */
+
+.queryRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.queryLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.queryBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.queryBtn:hover {
+  background: #ece9e1;
+}
+
+.queryBtnOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.queryBtn:focus-visible {
+  outline: 2px solid #c0392b;
+  outline-offset: 2px;
+}
+
+/* ── two panels side by side ─────────────────────────────────────────────── */
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.panel {
+  flex: 1 1 340px;
+  min-width: 300px;
+}
+
+.panelTag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9b9892;
+  margin-bottom: 6px;
+}
+
+.relSvg {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  display: block;
+}
+
+/* ── document cards ──────────────────────────────────────────────────────── */
+.docs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.docCard {
+  border: 1px solid #e2e0d8;
+  border-left: 3px solid #d8d4cc;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 8px 10px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.docCardHot {
+  border-color: #d8b878;
+  border-left-color: #caa24a;
+  background: #fefaf1;
+}
+
+.json {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.hl {
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 600;
+}
+
+/* ── caption ─────────────────────────────────────────────────────────────── */
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
