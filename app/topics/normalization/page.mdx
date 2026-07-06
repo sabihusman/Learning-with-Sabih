@@ -6,10 +6,18 @@ export const metadata = {
 
 # Normalization
 
-TODO: Placeholder prose. This paragraph will be replaced with the finalized copy in a follow-up. It introduces the idea that stuffing everything into one wide table causes the same fact to be stored in many places.
+The queries so far have run against tables that were already well shaped. This topic is about what well shaped means, and what goes wrong when a table isn't.
 
-TODO: Placeholder prose. The second paragraph will walk from the messy table through first normal form (atomic cells) to a split that puts each fact in one place, and will name the update anomaly that redundancy causes.
+The figure starts with one wide table trying to do three jobs at once: who the users are, what the plans cost, and which orders belong to whom. It looks convenient. Everything about a user is on one row. But two smells are already visible. One cell holds a comma-separated list of order ids, and the pro plan's price is written out on every pro user's row.
 
-TODO: Placeholder prose (final prose must note this honestly): the figure goes from first normal form straight to third normal form and deliberately skips a separate second-normal-form step, because the single split shown resolves both the partial and the transitive dependency for this table and a 2NF-only intermediate would add a step without adding insight.
+The list cell breaks first normal form. 1NF says every cell holds a single atomic value, no lists, no nesting. The fix is mechanical: one row per order. The table gets taller, and that is fine. Rows are cheap; unqueryable cells are not.
+
+The repeated price is the deeper problem. The same fact, pro costs 20, is stored in several places, and nothing forces those places to agree. The figure demonstrates the failure directly: update the price in one row and the table now contains two answers to one question. That is an update anomaly, and it is not a hypothetical. It is what happens when an UPDATE's WHERE clause catches some rows and not others.
+
+The cause has a name: a transitive dependency. The price does not depend on the user, it depends on the plan, which depends on the user. Facts that hang off the key through an intermediate step like that belong in their own table. So the split makes three tables: users, plans, and orders, linked by keys. Each non-key column now depends directly on its own table's key, which is what third normal form requires, and the pro price lives in exactly one cell. Replay the same update against this shape and nothing can disagree. There is only one place to change.
+
+One honesty note about the steps. Textbooks list a second normal form between 1NF and 3NF, which deals with columns that depend on only part of a composite key. This figure's single split resolves the partial and transitive dependencies at once, so it jumps from 1NF straight to the 3NF shape rather than staging an intermediate table you would immediately reshape again. The destination is genuinely 3NF; the route is shortened for teaching.
+
+Normalization has a cost, which is why it is a choice and not a law: the three-table shape needs joins to reassemble what the wide table showed on one row. Analytics systems often denormalize deliberately, accepting redundancy for read speed. But that trade is safe only when you make it knowingly, from a normalized starting point, not when a table grew wide by accident.
 
 <NormalizationViz />
