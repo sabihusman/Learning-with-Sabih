@@ -6,28 +6,16 @@ export const metadata = {
 
 # Load balancing
 
-{/*
-  TODO: final prose lands in a follow-up.
+One server can only do so much, so real systems run several and put a load balancer in front: one door, many servers. Every incoming request hits the balancer, and the balancer's whole job is a single repeated decision: which server gets this one? The figure runs the same 16 requests through two versions of that decision.
 
-  Honesty constraints the prose must honor:
-  - The figure runs a FIXED, hand-authored 16-request stream with hand-authored
-    durations over 3 servers, each processing one request at a time (others queue).
-    Say the stream and durations are contrived so the two policies visibly diverge.
-  - Deterministic result: under round robin, max server load reaches 4 (long
-    requests pile on one server while the others idle) and the run takes 25 ticks;
-    under least connections the same stream stays balanced, max load 2, and finishes
-    in 17 ticks. Killing a server mid-run makes round robin worse (max load 5) while
-    least connections stays at 2; either way the killed server's in-flight requests
-    are dropped.
-  - The tie rule for least connections is lowest server number.
-  - Scheduling here is SIMPLIFIED: real balancers also use health checks, weights,
-    and hashing; requests on a dead server are usually retried or drained, not
-    silently dropped. Say so.
-  - No-subhead / figure-last structure, matching the other section pages.
-    Straight quotes and apostrophes only, no em or en dashes.
-*/}
+Round robin is the obvious rule: deal requests out in a circle, one to each server in turn. It is simple, fair by count, and blind. It counts requests, not work. The stream here contains a few long requests among the quick ones, and watch what round robin does with them: by sheer rhythm the long jobs keep landing on the same server, whose queue climbs to four while its neighbors sit idle. Fair by count, absurd by load. The max server load readout is the number to watch; it is the imbalance made visible.
 
-Placeholder prose. The interactive figure below is complete; the written
-explanation will be added in a follow-up.
+Least connections replaces blindness with one glance backward: send the request to the server currently holding the fewest. That single bit of feedback is enough. The same stream stays balanced, max load never passes two, and there is a bonus you can see in the tick counter: the whole batch finishes 8 ticks sooner. Nothing got faster; work just stopped queueing behind other work while capacity sat idle. Balance is not only about protecting servers, it is throughput.
+
+Then break something, because that is the other half of a balancer's job. Kill a server mid-run and both policies immediately route around it; a down server simply stops being a choice. The requests it was holding are lost, and the figure shows them leaving as ghosts and counts them in dropped. Kill the buried round-robin server and the damage is worse for a reason worth noticing: it was holding more work, so blindness cost twice, first in imbalance, then in blast radius.
+
+Least connections is not magic, only better informed. Its glance at queue depth is still a guess about the future; a burst of arrivals can still push it to two, and it cannot know a long request from a short one on arrival. Every policy is a bet placed with partial information, the same lesson the cache eviction policy taught two topics ago.
+
+Honesty notes. This simulation is deliberately simplified: each server works one request at a time so queues are visible, the stream and durations are hand-built so the two policies diverge on screen, and dropped means dropped, while real balancers health-check servers before sending, retry or drain requests off a dying one, and often add weights or hashing to the decision. The simulation itself is real: a deterministic tick function processes every request, and every readout is computed from its state.
 
 <LoadBalancingViz />
