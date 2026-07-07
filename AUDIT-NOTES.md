@@ -82,3 +82,13 @@ fixed in the same change.
 | C3 | Stale code comments reference outdated topic counts (a "16-topic list" comment and a "20-iteration loop" comment) that no longer match the real count. | `app/topicList.js`, `e2e/smoke.spec.ts` | Fixing now (this change, Part 2) |
 
 **Second-pass counts:** 2 accuracy · 2 a11y · 1 cosmetic = 5 items (2 fixed in this change: A12, C3).
+
+---
+
+## CI / test-infrastructure notes
+
+Not audit items against the site; recurring observations about the Playwright suite itself.
+
+| # | Note | Detail |
+|---|------|--------|
+| T1 | Playwright parallel-load flake (third occurrence). | The "no console errors" style smoke checks are timing-sensitive under full parallel load: a run at the default worker count occasionally fails one such assertion (seen on embeddings, tensors, and broadcasting across sessions), and the same test passes reliably when re-run in isolation. Not a product bug; the assertion races the lazily-mounted scene under contention. CI already mitigates with `retries: 1` and a reduced worker count. If it recurs often, consider a short readiness wait before the no-error assertion rather than raising retries. |
