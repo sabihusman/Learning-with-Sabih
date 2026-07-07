@@ -30,8 +30,11 @@ const PANEL_BG = '#faf9f6'
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
+// The three bands (stream, cache, origin) are stacked tightly: just enough gap
+// between the cache and the origin for the fetch arrow and the eviction ghost to
+// read at the steps where they appear, and no reserved blank space beyond that.
 const VB_W = 460
-const VB_H = 320
+const VB_H = 224
 
 // Top: the request stream as a timeline of tokens.
 const TOK_W = 26
@@ -43,7 +46,7 @@ const tokenX = (i) => STREAM_X + i * (TOK_W + TOK_GAP)
 
 // Middle: the CACHE service box and its three recency slots (newest on the left).
 const CACHE_X = 70
-const CACHE_Y = 108
+const CACHE_Y = 66
 const CACHE_W = 320
 const CACHE_H = 66
 const SLOT_W = 84
@@ -58,7 +61,7 @@ const CACHE_CX = CACHE_X + CACHE_W / 2
 const ORIGIN_W = 168
 const ORIGIN_H = 46
 const ORIGIN_X = CACHE_CX - ORIGIN_W / 2
-const ORIGIN_Y = 250
+const ORIGIN_Y = 170
 const ORIGIN_CX = ORIGIN_X + ORIGIN_W / 2
 
 export default function CachingViz() {
