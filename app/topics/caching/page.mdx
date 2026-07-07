@@ -1,0 +1,29 @@
+import CachingViz from '@/app/components/CachingViz'
+
+export const metadata = {
+  title: 'Caching - Learning with Sabih',
+}
+
+# Caching
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The figure runs a real LRU cache (capacity 3) over a FIXED, hand-authored
+    12-key stream (A B C A B A C D A E A C). The prose must say the stream is
+    contrived to be instructive; real traffic is far messier.
+  - Final hit rate for this stream is exactly 50 percent (6 hits, 6 misses);
+    origin fetches equal misses. State that every miss is a trip to the slow origin.
+  - LRU is ONE eviction policy among several (LFU, FIFO, random, etc.); do not
+    imply it is optimal. The tryThis moment (E evicts C, which is needed again two
+    requests later) is the setup for exactly this point: recency is a guess about
+    the future, and it is sometimes wrong.
+  - No-subhead / figure-last structure, matching the other Systems and Databases
+    topic pages. Straight quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<CachingViz />
