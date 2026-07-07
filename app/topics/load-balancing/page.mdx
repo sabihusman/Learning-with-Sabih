@@ -1,0 +1,33 @@
+import LoadBalancingViz from '@/app/components/LoadBalancingViz'
+
+export const metadata = {
+  title: 'Load balancing - Learning with Sabih',
+}
+
+# Load balancing
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The figure runs a FIXED, hand-authored 16-request stream with hand-authored
+    durations over 3 servers, each processing one request at a time (others queue).
+    Say the stream and durations are contrived so the two policies visibly diverge.
+  - Deterministic result: under round robin, max server load reaches 4 (long
+    requests pile on one server while the others idle) and the run takes 25 ticks;
+    under least connections the same stream stays balanced, max load 2, and finishes
+    in 17 ticks. Killing a server mid-run makes round robin worse (max load 5) while
+    least connections stays at 2; either way the killed server's in-flight requests
+    are dropped.
+  - The tie rule for least connections is lowest server number.
+  - Scheduling here is SIMPLIFIED: real balancers also use health checks, weights,
+    and hashing; requests on a dead server are usually retried or drained, not
+    silently dropped. Say so.
+  - No-subhead / figure-last structure, matching the other section pages.
+    Straight quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<LoadBalancingViz />

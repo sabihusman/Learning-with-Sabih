@@ -45,13 +45,14 @@ Databases and SQL|37|Concurrency|Run two transactions that both add to one balan
 Databases and SQL|38|Isolation Levels|Turn the isolation dial and pick a concurrency phenomenon, then watch a two-transaction timeline show whether PostgreSQL lets it happen or prevents it|isolation-levels
 Systems and Networking|39|Caching|Feed a fixed request stream through a real least-recently-used cache of three slots and watch hits skip the slow origin while each miss fetches a key and evicts the one used longest ago|caching
 Systems and Networking|40|Percentiles and Tail Latency|Drag a percentile handle across a fixed sample of 60 request latencies and watch the mean sit far below p99, because a handful of slow tail requests drag the average up while most requests never see them|percentiles-and-tail-latency
-Object-Oriented Programming|41|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
-Object-Oriented Programming|42|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
-Object-Oriented Programming|43|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
-Object-Oriented Programming|44|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
-Object-Oriented Programming|45|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
-Object-Oriented Programming|46|Abstract Classes and Interfaces|Toggle a Robot type between an abstract class and an interface, and watch a checklist compare what each kind of contract can force, carry, and be extended by|abstract-classes-and-interfaces
-Object-Oriented Programming|47|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
+Systems and Networking|41|Load Balancing|Send one fixed request stream through a balancer to three servers and watch round robin pile long requests onto one server while least connections keeps them level, then kill a server mid-run and see which policy copes|load-balancing
+Object-Oriented Programming|42|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
+Object-Oriented Programming|43|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
+Object-Oriented Programming|44|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
+Object-Oriented Programming|45|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
+Object-Oriented Programming|46|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
+Object-Oriented Programming|47|Abstract Classes and Interfaces|Toggle a Robot type between an abstract class and an interface, and watch a checklist compare what each kind of contract can force, carry, and be extended by|abstract-classes-and-interfaces
+Object-Oriented Programming|48|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Systems and Networking', 'Object-Oriented Programming']

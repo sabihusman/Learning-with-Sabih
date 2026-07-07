@@ -172,3 +172,26 @@ test('percentiles: the handle is fully keyboard operable', async ({ page }) => {
   await page.getByRole('button', { name: 'Reset' }).click()
   await expect(slider).toHaveValue('50')
 })
+
+test('load-balancing: policy switch and kill toggle are keyboard reachable', async ({ page }) => {
+  await page.goto('/topics/load-balancing/')
+  const rr = page.getByRole('button', { name: 'Round robin' })
+  const lc = page.getByRole('button', { name: 'Least connections' })
+  await expect(rr).toHaveAttribute('aria-pressed', 'true')
+
+  // Switching policy (a real button, focusable and Enter-activatable) flips the pair.
+  await lc.focus()
+  await page.keyboard.press('Enter')
+  await expect(lc).toHaveAttribute('aria-pressed', 'true')
+  await expect(rr).toHaveAttribute('aria-pressed', 'false')
+
+  // The per-server kill toggle is a real button; killing marks the server down and
+  // drives the derived "dropped" readout once it was holding work.
+  const dropped = readoutValue(page, 'dropped')
+  await expect(dropped).toHaveText('0')
+  for (let i = 0; i < 4; i += 1) await page.getByRole('button', { name: 'Step' }).click()
+  const kill = page.getByRole('button', { name: /Server 1:/ })
+  await kill.click()
+  await expect(kill).toHaveText(/down/)
+  await expect(dropped).not.toHaveText('0')
+})
