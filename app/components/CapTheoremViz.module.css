@@ -1,0 +1,80 @@
+/* "Two copies, one truth": two replicas with a network link between them and two
+   clients below. Reuses the Systems section vocabulary (service boxes, request
+   tokens, timer-driven steps). Palette stays in the site family: ink / fade /
+   accent, plus the ok-green already used elsewhere. The partition and choice
+   toggles are real buttons so the whole figure is keyboard reachable. */
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.groupLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.btn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn:hover {
+  background: #ece9e1;
+}
+
+.btnOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #c0392b;
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* the partition toggle when the link is broken */
+.btnPartitioned {
+  background: #fbecea;
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.btnPartitioned:hover {
+  background: #f7ded9;
+}
+
+.svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}

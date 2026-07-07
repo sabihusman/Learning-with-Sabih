@@ -195,3 +195,34 @@ test('load-balancing: policy switch and kill toggle are keyboard reachable', asy
   await expect(kill).toHaveText(/down/)
   await expect(dropped).not.toHaveText('0')
 })
+
+test('cap-theorem: partition forces the consistency/availability tradeoff', async ({ page }) => {
+  await page.goto('/topics/cap-theorem/')
+  const consistency = page.getByRole('button', { name: 'Prefer consistency' })
+  const availability = page.getByRole('button', { name: 'Prefer availability' })
+  const refused = readoutValue(page, 'refused')
+  const divergences = readoutValue(page, 'divergences')
+
+  // The choice buttons are disabled while the link is healthy (no tradeoff to make).
+  await expect(availability).toBeDisabled()
+
+  // Partition the network (a real, focusable button), which enables the choice.
+  const net = page.getByRole('button', { name: /^Network:/ })
+  await net.focus()
+  await page.keyboard.press('Enter')
+  await expect(availability).toBeEnabled()
+
+  // Consistency: stepping through refuses operations; nothing diverges.
+  await expect(consistency).toHaveAttribute('aria-pressed', 'true')
+  const step = page.getByRole('button', { name: 'Step' })
+  await step.click()
+  await expect(refused).toHaveText('1')
+  await expect(divergences).toHaveText('0')
+
+  // Reset, switch to availability: now operations succeed but the replicas diverge.
+  await page.getByRole('button', { name: 'Reset' }).click()
+  await availability.click()
+  await step.click()
+  await expect(divergences).not.toHaveText('0')
+  await expect(refused).toHaveText('0')
+})

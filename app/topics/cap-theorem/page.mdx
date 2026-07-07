@@ -1,0 +1,34 @@
+import CapTheoremViz from '@/app/components/CapTheoremViz'
+
+export const metadata = {
+  title: 'CAP theorem - Learning with Sabih',
+}
+
+# CAP theorem
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The figure is a deliberately tiny model: one key x, two replicas (Node A, Node
+    B), synchronous replication while the link is healthy, over a FIXED 6-operation
+    sequence. Say it is simplified.
+  - Deterministic outcomes over the same sequence:
+      healthy       -> both nodes end at 3, 0 refused, 0 divergences.
+      partition + C -> all 6 operations refused, nodes stay at 1, data never diverges.
+      partition + A -> 0 refused, 6 divergences, nodes drift to 2 and 3; healing then
+                       surfaces the conflict (x=2 vs x=3) that must be reconciled.
+  - Accuracy: the theorem is that a PARTITION forces a choice between consistency and
+    availability; with a healthy network you get both. Do NOT say "pick any two of
+    three"; partition tolerance is not optional in a distributed system.
+  - The C in CAP (linearizability: the two nodes never disagree) is stricter than the
+    C in ACID (Isolation Levels is a sibling topic); draw that line.
+  - Conflict resolution after healing is real and hard, and out of scope here.
+  - No-subhead / figure-last structure, matching the other section pages. Straight
+    quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<CapTheoremViz />
