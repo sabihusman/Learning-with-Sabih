@@ -1,0 +1,62 @@
+/* "The average is lying to you": a strip of 60 request-latency tokens on a log ms
+   axis, with mean / p50 / p95 / p99 markers and a draggable percentile handle.
+   The handle is a native range input in percentile space (linear, fully keyboard
+   reachable); the strip above shows where that percentile lands in milliseconds,
+   so the nonlinear jump into the tail is visible. Colors stay in the site family:
+   ink / fade / accent, plus the ok-green already used elsewhere. */
+
+.svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* percentile slider row (in the figure body, below the strip) */
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 480px;
+  margin: 6px auto 0;
+}
+
+.sliderLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+  white-space: nowrap;
+}
+
+.sliderValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+  min-width: 128px;
+  white-space: nowrap;
+}
+
+.slider {
+  flex: 1 1 auto;
+  height: 22px;
+  cursor: pointer;
+  accent-color: #c0392b;
+}
+
+.slider:focus-visible {
+  outline: 2px solid #c0392b;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}

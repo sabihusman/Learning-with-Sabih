@@ -1,0 +1,33 @@
+import PercentilesViz from '@/app/components/PercentilesViz'
+
+export const metadata = {
+  title: 'Percentiles and tail latency - Learning with Sabih',
+}
+
+# Percentiles and tail latency
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The figure runs over a FIXED, hand-authored 60-request latency sample
+    (main cluster 20-80 ms, a short mid tail 150-300 ms, two outliers 880 and
+    1080 ms). Say the sample is contrived to be instructive; real latency
+    distributions vary.
+  - Final stats (computed from the sample, nearest-rank): mean 80.7 ms,
+    median 39.5 ms, p50 39 ms, p95 220 ms, p99 1080 ms. The teaching point is
+    the mean-vs-p99 gap: the average (81 ms) is dragged up by a tail most
+    requests never see, and p99 (1080 ms) is ~13x the mean and ~28x the median.
+  - Percentiles use the nearest-rank definition; state that monitoring tools
+    that interpolate may report slightly different numbers for the same data.
+  - The tail here is the slowest 5 of 60 requests (the jump into the tail is
+    around p93). Tie this to the tryThis: a small fraction of users, but a huge
+    absolute number at scale.
+  - No-subhead / figure-last structure, matching the other section pages.
+    Straight quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<PercentilesViz />
