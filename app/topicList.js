@@ -52,7 +52,7 @@ Object-Oriented Programming|44|Abstract Classes and Interfaces|Toggle a Robot ty
 Object-Oriented Programming|45|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
 `
 
-export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Object-Oriented Programming']
+export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Systems and Networking', 'Object-Oriented Programming']
 
 // Flat ordered list (the canonical sequence used for prev/next, spanning sections).
 export const TOPICS = TOPIC_ROWS.trim()
