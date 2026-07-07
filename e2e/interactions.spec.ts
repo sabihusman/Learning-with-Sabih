@@ -144,3 +144,31 @@ test('window-functions: switching the ranking function updates the view and SQL'
   await expect(view).not.toHaveText(viewBefore)
   await expect(sql).not.toHaveText(sqlBefore)
 })
+
+test('percentiles: the handle is fully keyboard operable', async ({ page }) => {
+  await page.goto('/topics/percentiles-and-tail-latency/')
+  const slider = page.getByRole('slider', { name: 'percentile' })
+  await expect(slider).toBeVisible()
+  // starts at p50
+  await expect(slider).toHaveValue('50')
+  const slower = readoutValue(page, 'requests slower')
+  const slowerAtP50 = (await slower.textContent())?.trim() ?? ''
+
+  // Arrow nudges by 1 (native range behaviour), so the derived readout updates.
+  await slider.focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(slider).toHaveValue('51')
+
+  // Shift+Arrow nudges by 5 (custom handler), reachable without a mouse.
+  await page.keyboard.press('Shift+ArrowRight')
+  await expect(slider).toHaveValue('56')
+
+  // End jumps to p100, where nothing is slower than the max latency.
+  await page.keyboard.press('End')
+  await expect(slider).toHaveValue('100')
+  await expect(slower).not.toHaveText(slowerAtP50)
+
+  // Reset returns the handle to p50.
+  await page.getByRole('button', { name: 'Reset' }).click()
+  await expect(slider).toHaveValue('50')
+})

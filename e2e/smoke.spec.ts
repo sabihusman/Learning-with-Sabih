@@ -53,6 +53,7 @@ const TOPICS = [
   { slug: 'concurrency', name: 'Concurrency' },
   { slug: 'isolation-levels', name: 'Isolation Levels' },
   { slug: 'caching', name: 'Caching' },
+  { slug: 'percentiles-and-tail-latency', name: 'Percentiles and Tail Latency' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
   { slug: 'constructors-and-the-heap', name: 'Constructors and the Heap' },
   { slug: 'encapsulation', name: 'Encapsulation' },

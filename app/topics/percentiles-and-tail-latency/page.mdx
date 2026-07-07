@@ -1,0 +1,19 @@
+import PercentilesViz from '@/app/components/PercentilesViz'
+
+export const metadata = {
+  title: 'Percentiles and tail latency - Learning with Sabih',
+}
+
+# Percentiles and tail latency
+
+Say your service handles sixty requests and you want to describe how fast it is. The obvious move is the average, and for this sample the average is about 81 milliseconds. That number is not wrong. It is worse than wrong: it describes almost nobody. Most requests here finish around 40ms, and a few take over a second. The average lands in between, in a place where hardly any real request lives.
+
+Percentiles describe the same sample honestly. Sort every request from fastest to slowest; pXX is the value XX percent of the way up. The median, p50, says half your requests were at or under 39ms. p95 says all but the slowest 5 percent were under 220ms. p99 is 1080ms: one request in a hundred takes more than a second. That slowest region is the tail, and the gap between the comfortable median and the ugly p99, roughly 28 times here, is what the average was hiding.
+
+Drag the handle and feel the shape. Through the main cluster it crawls: each percentile step barely moves in milliseconds, because requests there are packed tightly together. Then, in the low nineties, it leaps, crossing from the cluster into the tail in a couple of steps. The slider moves linearly through percentiles while the axis is logarithmic in milliseconds, so that lurch you feel is the distribution itself, not an artifact.
+
+Why obsess over the slowest few? Because at scale the tail is not rare, it is constant. Five slow requests out of sixty is easy to shrug off. The same shape at sixty million requests a day is five million bad experiences, every day, concentrated on real users. Worse, one user action often fans out into many internal requests, and the slowest one sets the pace, so a p99 problem in one service becomes a much-more-often-than-1% problem at the top. That is why teams set targets on p95 or p99 rather than on the mean: the mean improves when you speed up the requests that were already fast.
+
+Two honesty notes. The sample is hand-built so the shape is clear: a tight cluster, a modest tail, two outliers; real distributions vary and are rarely this tidy. And this figure computes percentiles by nearest rank on the sorted sample, while many monitoring tools interpolate between ranks or estimate from histograms, so their pXX for the same data can differ slightly. The stats here are computed live from the 60 values shown, nothing is typed in.
+
+<PercentilesViz />
