@@ -6,28 +6,14 @@ export const metadata = {
 
 # Percentiles and tail latency
 
-{/*
-  TODO: final prose lands in a follow-up.
+Say your service handles sixty requests and you want to describe how fast it is. The obvious move is the average, and for this sample the average is about 81 milliseconds. That number is not wrong. It is worse than wrong: it describes almost nobody. Most requests here finish around 40ms, and a few take over a second. The average lands in between, in a place where hardly any real request lives.
 
-  Honesty constraints the prose must honor:
-  - The figure runs over a FIXED, hand-authored 60-request latency sample
-    (main cluster 20-80 ms, a short mid tail 150-300 ms, two outliers 880 and
-    1080 ms). Say the sample is contrived to be instructive; real latency
-    distributions vary.
-  - Final stats (computed from the sample, nearest-rank): mean 80.7 ms,
-    median 39.5 ms, p50 39 ms, p95 220 ms, p99 1080 ms. The teaching point is
-    the mean-vs-p99 gap: the average (81 ms) is dragged up by a tail most
-    requests never see, and p99 (1080 ms) is ~13x the mean and ~28x the median.
-  - Percentiles use the nearest-rank definition; state that monitoring tools
-    that interpolate may report slightly different numbers for the same data.
-  - The tail here is the slowest 5 of 60 requests (the jump into the tail is
-    around p93). Tie this to the tryThis: a small fraction of users, but a huge
-    absolute number at scale.
-  - No-subhead / figure-last structure, matching the other section pages.
-    Straight quotes and apostrophes only, no em or en dashes.
-*/}
+Percentiles describe the same sample honestly. Sort every request from fastest to slowest; pXX is the value XX percent of the way up. The median, p50, says half your requests were at or under 39ms. p95 says all but the slowest 5 percent were under 220ms. p99 is 1080ms: one request in a hundred takes more than a second. That slowest region is the tail, and the gap between the comfortable median and the ugly p99, roughly 28 times here, is what the average was hiding.
 
-Placeholder prose. The interactive figure below is complete; the written
-explanation will be added in a follow-up.
+Drag the handle and feel the shape. Through the main cluster it crawls: each percentile step barely moves in milliseconds, because requests there are packed tightly together. Then, in the low nineties, it leaps, crossing from the cluster into the tail in a couple of steps. The slider moves linearly through percentiles while the axis is logarithmic in milliseconds, so that lurch you feel is the distribution itself, not an artifact.
+
+Why obsess over the slowest few? Because at scale the tail is not rare, it is constant. Five slow requests out of sixty is easy to shrug off. The same shape at sixty million requests a day is a million bad experiences, every day, concentrated on real users. Worse, one user action often fans out into many internal requests, and the slowest one sets the pace, so a p99 problem in one service becomes a much-more-often-than-1% problem at the top. That is why teams set targets on p95 or p99 rather than on the mean: the mean improves when you speed up the requests that were already fast.
+
+Two honesty notes. The sample is hand-built so the shape is clear: a tight cluster, a modest tail, two outliers; real distributions vary and are rarely this tidy. And this figure computes percentiles by nearest rank on the sorted sample, while many monitoring tools interpolate between ranks or estimate from histograms, so their pXX for the same data can differ slightly. The stats here are computed live from the 60 values shown, nothing is typed in.
 
 <PercentilesViz />
