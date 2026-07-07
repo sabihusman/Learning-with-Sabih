@@ -1,0 +1,21 @@
+/* "The cache remembers": a fixed request stream feeding a real LRU cache (3 slots)
+   above a slow origin. Establishes the Systems and Networking section vocabulary:
+   REQUESTS are small labeled tokens, SERVICES are boxes with a mono header, and the
+   stream row reads left to right as a timeline. Colors stay in the site family:
+   ink / fade / accent, plus the ok-green and error-red already used elsewhere. */
+
+.svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
