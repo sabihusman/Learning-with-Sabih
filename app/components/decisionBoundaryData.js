@@ -41,7 +41,11 @@ export const INITIAL_POINTS = [
   { id: 13, x: 0.15, y: 0.1, label: 1 }, // near the eventual boundary
 ]
 
-export const ZERO_WEIGHTS = { w1: 0, w2: 0, b: 0 }
+// Not exactly zero: w1 = 0.001 gives a real, visible vertical line at x = 0
+// (w2 = 0 means y has no influence yet), rather than the fully degenerate
+// w1 = w2 = 0 case where no line can be drawn at all. 0.001 carries no
+// meaningful signal, so the fit's trajectory and convergence are unaffected.
+export const ZERO_WEIGHTS = { w1: 0.001, w2: 0, b: 0 }
 
 // numerically stable sigmoid
 export const sigmoid = (z) => (z >= 0 ? 1 / (1 + Math.exp(-z)) : Math.exp(z) / (1 + Math.exp(z)))

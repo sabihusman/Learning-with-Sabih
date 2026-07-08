@@ -6,68 +6,66 @@ export const metadata = {
 
 # Decision boundary
 
-{/*
-  TODO: final prose lands in a follow-up.
+Say you have points scattered across a page and each one belongs to
+one of two classes, circle or square. Your job is to draw a line such
+that circles fall on one side and squares fall on the other. If the
+two clusters are cleanly separated, the line is easy; if they overlap,
+no line is perfect and the best you can do is a compromise. The line
+you settle on is the model's decision boundary, and this topic is
+about where it comes from.
 
-  Honesty constraints the prose must honor:
-  - The math is real and standard: logistic regression, sigmoid activation,
-    binary cross-entropy loss, full-batch gradient descent. w = 0, b = 0 at
-    the start of every run; learning rate 3; 10 gradient steps per timer tick;
-    every run takes exactly 200 steps then stops. Verified in a Node harness
-    before the UI was built (see the PR description for the exact numbers).
-  - The point of THIS topic is that the boundary is the LEARNED OBJECT: three
-    numbers (w1, w2, b) that define the line w1*x + w2*y + b = 0, produced by
-    minimizing a loss on data, and which move when the data moves. That must
-    be the throughline, not "here is a classifier."
-  - Two deliberate overlap guards with sibling topics, both confirmed against
-    the built figures before this one was built:
-    - Why Activations Matter (#3) bends a boundary to fit a FIXED dataset, to
-      show why non-linearity matters. This figure's dataset is draggable and
-      the boundary is always a straight line (logistic regression has no
-      hidden layer, no activation) - it never bends. The prose should not
-      blur this: the two figures are about different things (nonlinearity vs
-      the boundary as a learned, moving object).
-    - Confusion Matrix (#6) slides a decision THRESHOLD along fixed 1D model
-      scores. This figure never has a threshold and never mentions one; the
-      boundary lives in 2D feature space, not on a 1D score axis. Do not use
-      the word "threshold" in this topic's prose.
-  - Dataset: 14 hand-authored points in [-1, 1]^2, roughly two linearly
-    separable clusters (7 label-0 lower-left, 7 label-1 upper-right), each
-    cluster with one point planted close to the eventual boundary.
-  - Default run (untouched data): converges to 0 misclassified points, final
-    loss about 0.030, weights approximately w1 = 7.44, w2 = 6.15, b = -0.20.
-  - Points are draggable (pointer) and keyboard-reachable: each point is a
-    real, focusable SVG element (tabIndex, role="button"), so Tab cycles
-    through them as the point-picker, and arrow keys nudge whichever point is
-    focused. This is a native mechanism, not a custom slider.
-  - Moving a point does NOT reset the weights to zero. It restarts the timer
-    (iterations back to 0 of 300) but the fit resumes from the CURRENT
-    weights, so the boundary visibly chases the moved point rather than
-    re-solving from scratch. Refit is the explicit control that restarts from
-    w = 0; Reset restores the original point positions and also refits from
-    w = 0.
-  - Dragging a near-boundary point deep into the other class's territory can
-    make the data non-separable. Verified: moving the class-0 near-boundary
-    point to (0.6, 0.45) - deep in class-1 territory - and running the fixed
-    200 steps leaves 1 point misclassified and loss around 0.278, versus 0
-    misclassified for the untouched data. Logistic regression cannot always
-    accommodate every point with a single straight line, and the prose should
-    frame this as expected behavior, not a bug: the model does not overfit to
-    rescue one point. That is a deliberate forward link to the Overfitting
-    and Generalization topic.
-  - The boundary's equation renders live above the caption as
-    "w1x + w2y + b = 0" with current values to 2 decimals, so the reader sees
-    the three numbers being learned, not just a line.
-  - Two simplifications to state plainly, matching the figure's own TODO:
-    - Logistic regression only draws straight boundaries. Curved boundaries
-      need the non-linearity story from Why Activations Matter.
-    - The dataset is hand-authored and 2D for visibility. Real feature spaces
-      have many dimensions, where the "line" is a hyperplane.
-  - No-subhead / figure-last structure, matching the other section pages.
-    Straight quotes and apostrophes only, no em or en dashes.
-*/}
+Watch the figure Refit. The boundary starts as a straight vertical
+line, essentially a guess: the model has no reason yet to prefer any
+orientation. Then the loss readout starts falling and the line
+rotates. What is running underneath is real logistic regression fit
+by gradient descent, the same idea introduced in the first topic of
+this section. At each tick the model looks at every point, measures
+how badly it is currently classifying them, and nudges three numbers,
+w1, w2, and b, in the direction that would reduce that penalty. After
+a couple of hundred steps the loss has flattened and the line has
+found its resting position, dividing the two classes with all
+fourteen points on the correct side.
 
-Placeholder prose. The interactive figure below is complete; the written
-explanation will be added in a follow-up.
+That is the whole trick, and it is worth stating plainly: the
+decision boundary is not a shape you draw, it is the visible
+consequence of three numbers. The equation shown under the readouts,
+w1 x plus w2 y plus b equals zero, is the boundary. Everything above
+the line is classified one way, everything below the other; the
+shaded half-planes make the two sides visible. Learning a classifier
+is learning those numbers, and the numbers arrive by a process that
+in principle is just as mechanical as long division.
+
+Now grab a point and drag it. The boundary chases. Move a circle a
+little way toward the squares and the line tilts to keep it on the
+correct side; move it deeper and the line tilts more. The model does
+not care which point moved or why, it just wants the current loss to
+go down, and it revises its three numbers accordingly. Drag a point
+clean into the middle of the other cluster and something more
+interesting happens: the boundary compromises. It shifts to reduce
+total loss across the whole set, and one point ends up on the wrong
+side of the line. The misclassified readout ticks to one. Loss levels
+off higher than zero, because a straight line cannot honestly
+separate that arrangement.
+
+That failure is not a bug, it is the model being disciplined. A
+classifier that twisted itself into a shape that got every point
+right, including a single wanderer buried in the other class, would
+be memorizing the wanderer instead of learning the rule. The next
+topic, Confusion Matrix, is about counting exactly what a classifier
+gets right and wrong; and Overfitting, which comes just before this
+one, is about what happens when a model does contort itself to reach
+every point, and why straightness, or something close to it, is often
+the honest answer.
+
+Honesty notes. Logistic regression can only draw straight boundaries,
+which is enough here because the data is two-dimensional and roughly
+separable. Real classifiers work in feature spaces with hundreds or
+thousands of dimensions, where the "line" is a hyperplane you cannot
+draw, and where curved boundaries come from stacking nonlinear
+layers, the story told in Why Activations Matter. The math in this
+figure is standard: sigmoid outputs, cross-entropy loss, batch
+gradient descent at a fixed learning rate. Every gradient step is
+computed live from the current positions of the points; nothing is
+scripted.
 
 <DecisionBoundaryViz />
