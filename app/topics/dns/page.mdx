@@ -6,50 +6,53 @@ export const metadata = {
 
 # DNS
 
-{/*
-  TODO: final prose lands in a follow-up.
+Every request in this section started after a name became an address.
+Type app.example.com into a browser and something has to turn that name
+into an IP the network can route to. The obvious design is a global
+phone book, one directory holding every name on the internet. The
+actual design is more interesting: the phone book is distributed, and
+no single server holds the whole thing.
 
-  Honesty constraints the prose must honor:
-  - Verified against RFC 1034 (query resolution, recursive vs iterative
-    queries, referrals, caching/TTL) and IANA's root server documentation
-    (root servers as the resolver's bootstrap entry point). No deviation from
-    current docs was found; state the chain plainly, not as folklore.
-  - The chain: stub resolver (the device) sends ONE recursive query to the
-    recursive resolver and waits. The resolver does the iterative work:
-    root, then the .com TLD, then the authoritative server for example.com.
-  - Root and TLD servers NEVER hold the final answer. They reply with a
-    REFERRAL (who to ask next), not an answer. Only the authoritative server
-    holds the actual record. This is the core point and must survive into
-    prose, not get softened into "they look it up."
-  - The example domain is app.example.com (example.com is reserved for
-    documentation, RFC 2606). The example IP is 192.0.2.42, from the
-    documentation-only TEST-NET-1 range (RFC 5737). Say both are reserved,
-    not real.
-  - The resolver CACHES the authoritative answer (with its TTL, 300 seconds
-    here) the moment it arrives, before relaying it to the device.
-  - First lookup (cold, empty cache): 4 servers asked (device to resolver,
-    resolver to root, resolver to TLD, resolver to auth), 8 steps total
-    (each server pair does a query then a reply).
-  - Second lookup, run immediately after with the cache still warm: 1 server
-    asked (just the device asking the resolver), 2 steps, answer returned
-    immediately. Root, TLD, and the authoritative server are never contacted
-    and stay visually dark in the figure.
-  - An "Expire cache" control simulates the TTL aging out; the lookup after
-    that walks the full chain again exactly like the first cold run.
-  - The point is that distributing the answer this way plus caching is what
-    makes near-instant lookups the common case, not the exception. Root and
-    TLD servers handle enormous query volume precisely because they only ever
-    hand out referrals, which are small and reusable, not authoritative
-    answers for every domain on earth.
-  - Simplifications to state plainly: one query type (an A record lookup),
-    one resolver, no device or browser cache shown (only the resolver's),
-    root/TLD/auth each stand in for many real server instances, no CNAME
-    chains.
-  - No-subhead / figure-last structure, matching the other section pages.
-    Straight quotes and apostrophes only, no em or en dashes.
-*/}
+The figure runs one lookup through the real chain. Your device does
+almost nothing: it asks its recursive resolver one question and waits.
+The resolver does the legwork, and the legwork is the lesson.
 
-Placeholder prose. The interactive figure below is complete; the written
-explanation will be added in a follow-up.
+The resolver's cache starts empty, so it goes to a root server. Watch
+the reply carefully: it is not the answer. The root does not know
+app.example.com's address. It knows one thing, who handles .com, and
+replies with a referral: ask them. The .com TLD server does the same
+trick one level down: it does not know the address either, but it knows
+who runs example.com, and refers the resolver there. Only the third
+stop, example.com's authoritative server, actually knows, and it
+returns the answer: an IP, along with a TTL, a number of seconds the
+answer may be treated as fresh.
+
+Count who knew the answer on that first run: four servers were asked,
+and exactly one knew. The other three each knew only the next link.
+That is the design. No global directory, just a hierarchy of delegation
+where every tier can point one level closer, so the system scales to
+the whole internet and each organization runs its own leaf.
+
+Now run the lookup again and the whole apparatus disappears. The
+resolver cached the answer with its TTL, so the second run asks one
+server, the resolver itself, and comes back in two steps while root,
+TLD, and authoritative stay dark. This is why the internet is not
+crushed by name lookups: the busiest names resolve out of caches almost
+everywhere, and the hierarchy is only walked when a cache is cold.
+Expire the cache, aging the entry past its TTL, and the third lookup
+walks the full chain again, identical to the first. TTL is the dial
+each domain owner sets between the two costs: a long TTL means fewer
+walks but slower propagation when the address changes; a short one
+means the opposite.
+
+Honesty notes. This figure abbreviates on purpose. Real resolution has
+more caches in front of the resolver, your operating system and browser
+both keep their own; each tier is many redundant server instances
+rather than one box; names can chain through aliases before reaching an
+address; and A records, the name-to-IP kind shown here, are one of many
+record types. The chain itself, referral by referral down the
+hierarchy with the resolver doing the walking, is the standard model as
+specified in the DNS RFCs. The name is a reserved example domain and
+the IP is from a documentation range; neither points anywhere real.
 
 <DnsViz />
