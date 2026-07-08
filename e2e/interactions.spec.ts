@@ -226,3 +226,46 @@ test('cap-theorem: partition forces the consistency/availability tradeoff', asyn
   await expect(divergences).not.toHaveText('0')
   await expect(refused).toHaveText('0')
 })
+
+test('tcp-and-udp: protocol toggle and loss slider are keyboard reachable', async ({ page }) => {
+  await page.goto('/topics/tcp-and-udp/')
+  const tcp = page.getByRole('button', { name: 'TCP' })
+  const udp = page.getByRole('button', { name: 'UDP' })
+  await expect(tcp).toHaveAttribute('aria-pressed', 'true')
+
+  const slider = page.getByRole('slider', { name: 'packet loss percent' })
+  await expect(slider).toHaveValue('25')
+
+  // Default TCP run at the default 25% loss: dropped packets get retransmitted,
+  // so more than 8 sends happen, yet all 8 still arrive.
+  const sent = readoutValue(page, 'sent')
+  const delivered = readoutValue(page, 'delivered')
+  const retransmits = readoutValue(page, 'retransmits')
+  const step = page.getByRole('button', { name: 'Step' })
+  for (let i = 0; i < 11; i += 1) await step.click()
+  await expect(delivered).toHaveText('8')
+  await expect(retransmits).not.toHaveText('0')
+  await expect(sent).not.toHaveText('8')
+
+  // Switching protocol (a real, focusable button) resets the run.
+  await page.getByRole('button', { name: 'Reset' }).click()
+  await udp.focus()
+  await page.keyboard.press('Enter')
+  await expect(udp).toHaveAttribute('aria-pressed', 'true')
+  await expect(tcp).toHaveAttribute('aria-pressed', 'false')
+
+  // Same seed, same 25% loss: UDP never recovers a drop, so delivery is
+  // incomplete and out of order.
+  const lost = readoutValue(page, 'lost')
+  const inOrder = readoutValue(page, 'in order')
+  for (let i = 0; i < 8; i += 1) await step.click()
+  await expect(lost).not.toHaveText('0')
+  await expect(inOrder).toHaveText('no')
+
+  // The loss slider is a native range input: fully reachable and adjustable
+  // by keyboard, and changing it resets the run.
+  await slider.focus()
+  await page.keyboard.press('Home')
+  await expect(slider).toHaveValue('0')
+  await expect(step).toBeEnabled()
+})

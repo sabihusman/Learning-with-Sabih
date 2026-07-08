@@ -1,0 +1,86 @@
+/* "Reliable, or fast": 8 packets cross one channel from SENDER to RECEIVER
+   under a seeded, reproducible loss rate. A loss slider and a TCP/UDP toggle
+   both reset the run. Reuses the section vocabulary (request tokens, service
+   boxes, timer-driven steps) and the site palette: ink / fade / accent, plus
+   the ok-green and amber already used elsewhere. */
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.groupLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+  white-space: nowrap;
+}
+
+.btn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn:hover {
+  background: #ece9e1;
+}
+
+.btnOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #c0392b;
+  outline-offset: 2px;
+}
+
+.slider {
+  width: 140px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: #c0392b;
+}
+
+.slider:focus-visible {
+  outline: 2px solid #c0392b;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.sliderValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+  min-width: 40px;
+}
+
+.svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}

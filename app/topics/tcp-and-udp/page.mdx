@@ -1,0 +1,58 @@
+import TcpUdpViz from '@/app/components/TcpUdpViz'
+
+export const metadata = {
+  title: 'TCP and UDP - Learning with Sabih',
+}
+
+# TCP and UDP
+
+Two programs on different machines need to exchange data, and the
+network between them is allowed to lose things. That is not a flaw to
+fix, it is the condition every protocol is built on top of. TCP and UDP
+are two answers to the same question, and they answer it oppositely.
+
+The figure sends eight numbered packets across a lossy channel. The
+loss slider sets how likely each one is to vanish, and a fixed seed
+means both protocols face the exact same drops at the same setting:
+same network, different rules. Set loss to zero and the two are
+indistinguishable, all eight arrive in order either way. The difference
+only appears once the network starts failing.
+
+UDP sends and forgets. Every packet is fired once; the ones the channel
+drops are simply gone. At 25 percent loss the receiver ends up with
+five of eight: packets 1, 3, 5, 6, and 8 arrive, and the holes where 2,
+4, and 7 should be are permanent. No one asks for them again, no one
+waits. What arrived, arrived, and the run is over in eight ticks. That
+is the whole deal UDP offers: no recovery, no waiting, minimum delay.
+
+TCP refuses to lose anything. A dropped packet is detected and sent
+again, so the sent counter climbs past eight while the retransmits
+accumulate. And delivery is strictly in order: when packet 3 arrives
+while 2 is still missing, the receiver does not hand it over, it holds
+it in a buffer until the gap ahead is filled, then releases the run of
+them at once. Watch packet 2 get lost and resent; the moment its
+retransmit lands, the packets that were waiting behind it flush through
+together. The end state is perfect, all eight delivered in order, and
+the cost is written in the readouts: eleven sends instead of eight, and
+eleven ticks instead of eight. Completeness takes time and takes
+bandwidth.
+
+That is the tradeoff, not a winner. TCP's guarantees are exactly what a
+file transfer, a web page, or a database connection needs, where a
+single missing byte ruins everything. UDP's speed is exactly what live
+video, a phone call, or a game needs, where a packet that arrives late
+is more useless than one that never arrives, and where the next frame
+matters more than the last one. A dropped syllable is better than a
+frozen call. The right protocol is a question about what your data can
+tolerate, not about which is better engineered.
+
+Honesty notes. This model is heavily simplified: there is no connection
+handshake, no congestion control, no windowing or flow control, and the
+retransmit here always succeeds rather than modeling real
+acknowledgment and timeout timing. The packet loss is pseudo-random
+with a fixed seed so every run is reproducible; real networks lose
+packets in messier bursts. The simulation underneath is real, though: a
+seeded generator decides the drops and a deterministic tick function
+drives every packet, with all the readouts computed from its state.
+
+<TcpUdpViz />
