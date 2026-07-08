@@ -57,6 +57,7 @@ const TOPICS = [
   { slug: 'load-balancing', name: 'Load Balancing' },
   { slug: 'cap-theorem', name: 'CAP Theorem' },
   { slug: 'tcp-and-udp', name: 'TCP and UDP' },
+  { slug: 'dns', name: 'DNS' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
   { slug: 'constructors-and-the-heap', name: 'Constructors and the Heap' },
   { slug: 'encapsulation', name: 'Encapsulation' },

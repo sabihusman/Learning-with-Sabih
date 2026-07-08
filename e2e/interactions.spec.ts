@@ -269,3 +269,41 @@ test('tcp-and-udp: protocol toggle and loss slider are keyboard reachable', asyn
   await expect(slider).toHaveValue('0')
   await expect(step).toBeEnabled()
 })
+
+test('dns: a second lookup hits cache, and expiring it forces a cold walk again', async ({ page }) => {
+  await page.goto('/topics/dns/')
+  const step = page.getByRole('button', { name: 'Step' })
+  const lookupAgain = page.getByRole('button', { name: 'Look up again' })
+  const expireCache = page.getByRole('button', { name: 'Expire cache (TTL)' })
+  const serversAsked = readoutValue(page, 'servers asked')
+  const steps = readoutValue(page, 'steps')
+  const cache = readoutValue(page, 'cache')
+
+  await expect(cache).toHaveText('empty')
+  // Real buttons, but gated: nothing to look up again or expire until the
+  // first run (cold, 8 steps) completes.
+  await expect(lookupAgain).toBeDisabled()
+  await expect(expireCache).toBeDisabled()
+
+  for (let i = 0; i < 8; i += 1) await step.click()
+  await expect(serversAsked).toHaveText('4')
+  await expect(steps).toHaveText('8/8')
+  await expect(cache).not.toHaveText('empty')
+
+  // Look up again (real, focusable button): same name, cache is warm now, so
+  // this run is a 2-step cache hit that asks only the resolver.
+  await lookupAgain.focus()
+  await page.keyboard.press('Enter')
+  await expect(steps).toHaveText('0/2')
+  await step.click()
+  await step.click()
+  await expect(serversAsked).toHaveText('1')
+  await expect(steps).toHaveText('2/2')
+
+  // Expiring the cache and looking up again forces the full 8-step chain.
+  await expireCache.focus()
+  await page.keyboard.press('Enter')
+  await expect(cache).toHaveText('empty')
+  await lookupAgain.click()
+  await expect(steps).toHaveText('0/8')
+})
