@@ -1,0 +1,50 @@
+import TcpUdpViz from '@/app/components/TcpUdpViz'
+
+export const metadata = {
+  title: 'TCP and UDP - Learning with Sabih',
+}
+
+# TCP and UDP
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The figure is a deliberately tiny model: 8 fixed packets, one channel,
+    SENDER to RECEIVER. Loss is decided by a seeded PRNG (mulberry32, seed 555),
+    so the SAME loss setting always produces the SAME drops, and both
+    protocols face identical drops for a given setting. Say it is simplified.
+  - No three-way handshake, no congestion control, no windowing, no flow
+    control. Acks are implied, not drawn.
+  - TCP's retransmit is modeled as a guaranteed-to-arrive resend appended after
+    the 8 original sends, NOT real ack/timeout timing, so a run is always
+    bounded (no repeated loss on a resend).
+  - UDP: every packet sends once. A dropped packet is simply gone; the
+    receiver shows whatever arrived, with permanent gaps at the missing
+    sequence numbers, in arrival order.
+  - TCP: a dropped packet is detected and resent; the receiver releases
+    packets to the application strictly in order, so a packet that arrives
+    before an earlier missing one visibly holds in a buffer until the gap
+    behind it fills in, then releases (sometimes several at once, as a
+    cascade).
+  - At 0 percent loss the two protocols are identical: nothing to detect,
+    nothing to hold, same sent/delivered/ticks. The comparison only appears
+    once loss is greater than 0.
+  - At 25 percent loss (this seed): UDP sends 8, delivers 5, loses 3, and is
+    NOT in order (delivered seqs 1,3,5,6,8 - permanent gaps at 2, 4, 7). TCP
+    sends 11 (8 + 3 retransmits), delivers all 8, in order, and takes 11 ticks
+    total (vs UDP's 8) to get there.
+  - The point is the reliability-vs-speed tradeoff and in-order delivery, not
+    wire-accurate protocol internals. Do not imply this models real TCP
+    congestion control, real retransmission timers, or real windowing.
+  - UDP is not "the broken one": it is the right tool when speed and low
+    latency beat completeness (live audio/video, games, DNS queries). Worth a
+    forward link to whatever topic follows.
+  - No-subhead / figure-last structure, matching the other section pages.
+    Straight quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<TcpUdpViz />
