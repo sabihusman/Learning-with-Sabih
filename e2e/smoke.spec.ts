@@ -55,6 +55,7 @@ const TOPICS = [
   { slug: 'caching', name: 'Caching' },
   { slug: 'percentiles-and-tail-latency', name: 'Percentiles and Tail Latency' },
   { slug: 'load-balancing', name: 'Load Balancing' },
+  { slug: 'cap-theorem', name: 'CAP Theorem' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
   { slug: 'constructors-and-the-heap', name: 'Constructors and the Heap' },
   { slug: 'encapsulation', name: 'Encapsulation' },

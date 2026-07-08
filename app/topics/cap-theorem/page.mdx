@@ -1,0 +1,23 @@
+import CapTheoremViz from '@/app/components/CapTheoremViz'
+
+export const metadata = {
+  title: 'CAP theorem - Learning with Sabih',
+}
+
+# CAP theorem
+
+The Databases section dealt with one node keeping its promises. Run two copies of the data on two nodes, and a new problem appears that no amount of clever code removes: the network between them can fail. The CAP theorem is about the choice that failure forces.
+
+The figure keeps two replicas of one value in sync over a link. While the link is healthy, life is good: a write to either node crosses the link, both copies agree, every read on either side returns the same answer. Consistency and availability, both at once. The theorem is not about this case, and any framing of CAP as "pick two of three" starts wrong: a partition is not something you pick, it is something the network does to you.
+
+Break the link and the choice arrives. Node A's client wants to write, and node A cannot tell node B. There are exactly two honest responses, and the toggle lets you run the same sequence under each.
+
+Prefer consistency, and the system refuses. Any operation that cannot be confirmed across the link is turned away; the refused counter climbs to six while the two values sit untouched and identical. Nothing diverges, nothing ever needs repairing, and the price is that the system was, for the duration, simply down.
+
+Prefer availability, and the system serves. Every operation succeeds locally, both clients stay happy, and the two replicas quietly become two different truths: x is 2 on one side and 3 on the other. The divergences counter pays the price this time, counting every operation that ran while the nodes disagreed. Then heal the link and meet the bill: the system now holds two values for one key and must reconcile them. How systems resolve such conflicts is a hard topic of its own; this figure stops at the moment the conflict becomes undeniable.
+
+Run the sequence three ways and read the three prices. Healthy: nothing. Consistent under partition: six refusals. Available under partition: six divergences and a conflict to resolve. That is the theorem in one table: when the network partitions, you choose which price to pay, and not whether to pay one.
+
+Two clarifications the terminology deserves. The C here is stricter than the C in ACID: CAP's consistency means every read sees the latest write as if there were one copy, which is a statement about replicas, while ACID's consistency is about a single database honoring its own rules. And this figure is deliberately minimal: one key, two nodes, synchronous replication. Real systems run more replicas and can keep a majority side serving during a partition while the minority side refuses, run replication asynchronously, and offer consistency levels between the two poles shown here. The poles are what the theorem is about; the figure shows them undiluted.
+
+<CapTheoremViz />
