@@ -66,7 +66,10 @@ const CACHE_LABEL_Y = 138
 const CACHE_Y = 144
 const CACHE_H = 26
 const CACHE_W = 300
-const CACHE_X = boxCX(BOXES.indexOf('resolver')) - CACHE_W / 2
+// Centered on the canvas rather than on the resolver box: at this width,
+// centering on the resolver (index 1, near the left) pushed the panel's left
+// edge to x=-10, clipping the "CA" off "CACHE (at the resolver)".
+const CACHE_X = (VB_W - CACHE_W) / 2
 
 const idxOf = (id) => BOXES.indexOf(id)
 const arcDip = (distance) => 16 + distance * 14
