@@ -1,0 +1,44 @@
+/* Decision boundary: a logistic regression fit live on a timer to 14 draggable
+   points. No slider controls beyond Refit/Reset; the whole interaction is the
+   drag (or arrow-key nudge on a focused point). Project paper/ink/accent palette. */
+
+.plotWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.svg {
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  display: block;
+}
+
+.point {
+  cursor: grab;
+}
+
+.point:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.equation {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  margin: 0.75rem 0 0;
+  letter-spacing: 0.01em;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 0.9rem 0 0;
+}

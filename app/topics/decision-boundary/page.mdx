@@ -1,0 +1,73 @@
+import DecisionBoundaryViz from '@/app/components/DecisionBoundaryViz'
+
+export const metadata = {
+  title: 'Decision boundary - Learning with Sabih',
+}
+
+# Decision boundary
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The math is real and standard: logistic regression, sigmoid activation,
+    binary cross-entropy loss, full-batch gradient descent. w = 0, b = 0 at
+    the start of every run; learning rate 3; 10 gradient steps per timer tick;
+    every run takes exactly 200 steps then stops. Verified in a Node harness
+    before the UI was built (see the PR description for the exact numbers).
+  - The point of THIS topic is that the boundary is the LEARNED OBJECT: three
+    numbers (w1, w2, b) that define the line w1*x + w2*y + b = 0, produced by
+    minimizing a loss on data, and which move when the data moves. That must
+    be the throughline, not "here is a classifier."
+  - Two deliberate overlap guards with sibling topics, both confirmed against
+    the built figures before this one was built:
+    - Why Activations Matter (#3) bends a boundary to fit a FIXED dataset, to
+      show why non-linearity matters. This figure's dataset is draggable and
+      the boundary is always a straight line (logistic regression has no
+      hidden layer, no activation) - it never bends. The prose should not
+      blur this: the two figures are about different things (nonlinearity vs
+      the boundary as a learned, moving object).
+    - Confusion Matrix (#6) slides a decision THRESHOLD along fixed 1D model
+      scores. This figure never has a threshold and never mentions one; the
+      boundary lives in 2D feature space, not on a 1D score axis. Do not use
+      the word "threshold" in this topic's prose.
+  - Dataset: 14 hand-authored points in [-1, 1]^2, roughly two linearly
+    separable clusters (7 label-0 lower-left, 7 label-1 upper-right), each
+    cluster with one point planted close to the eventual boundary.
+  - Default run (untouched data): converges to 0 misclassified points, final
+    loss about 0.030, weights approximately w1 = 7.44, w2 = 6.15, b = -0.20.
+  - Points are draggable (pointer) and keyboard-reachable: each point is a
+    real, focusable SVG element (tabIndex, role="button"), so Tab cycles
+    through them as the point-picker, and arrow keys nudge whichever point is
+    focused. This is a native mechanism, not a custom slider.
+  - Moving a point does NOT reset the weights to zero. It restarts the timer
+    (iterations back to 0 of 300) but the fit resumes from the CURRENT
+    weights, so the boundary visibly chases the moved point rather than
+    re-solving from scratch. Refit is the explicit control that restarts from
+    w = 0; Reset restores the original point positions and also refits from
+    w = 0.
+  - Dragging a near-boundary point deep into the other class's territory can
+    make the data non-separable. Verified: moving the class-0 near-boundary
+    point to (0.6, 0.45) - deep in class-1 territory - and running the fixed
+    200 steps leaves 1 point misclassified and loss around 0.278, versus 0
+    misclassified for the untouched data. Logistic regression cannot always
+    accommodate every point with a single straight line, and the prose should
+    frame this as expected behavior, not a bug: the model does not overfit to
+    rescue one point. That is a deliberate forward link to the Overfitting
+    and Generalization topic.
+  - The boundary's equation renders live above the caption as
+    "w1x + w2y + b = 0" with current values to 2 decimals, so the reader sees
+    the three numbers being learned, not just a line.
+  - Two simplifications to state plainly, matching the figure's own TODO:
+    - Logistic regression only draws straight boundaries. Curved boundaries
+      need the non-linearity story from Why Activations Matter.
+    - The dataset is hand-authored and 2D for visibility. Real feature spaces
+      have many dimensions, where the "line" is a hyperplane.
+  - No-subhead / figure-last structure, matching the other section pages.
+    Straight quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<DecisionBoundaryViz />
