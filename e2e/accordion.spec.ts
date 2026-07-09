@@ -16,7 +16,7 @@ test('sections start collapsed; headers show a chevron and topic count', async (
     await expect(headers.nth(i)).toHaveAttribute('aria-expanded', 'false')
   }
   // the count is shown so collapsed sections still advertise their contents
-  await expect(aiHeader(page)).toContainText('16 topics')
+  await expect(aiHeader(page)).toContainText('17 topics')
   // topic links are in the DOM even while collapsed, but the panel is collapsed to 0
   expect(await page.locator('main a[href^="/topics/"]').count()).toBeGreaterThan(0)
   expect(await aiPanelHeight(page)).toBe(0)

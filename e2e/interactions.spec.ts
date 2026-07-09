@@ -308,6 +308,46 @@ test('dns: a second lookup hits cache, and expiring it forces a cold walk again'
   await expect(steps).toHaveText('0/8')
 })
 
+test('beam-search: raising beam width finds a better sequence, k=1 collapses to greedy', async ({ page }) => {
+  await page.goto('/topics/beam-search/')
+  const slider = page.getByRole('slider', { name: 'Beam width k' })
+  await expect(slider).toBeVisible()
+  await expect(slider).toHaveValue('2')
+
+  const advantage = readoutValue(page, 'beam advantage')
+  const bestLogProb = readoutValue(page, 'best beam log-prob')
+
+  // Default k=2 already beats greedy (this is the whole point of the figure).
+  await expect(advantage).not.toHaveText('0.000')
+
+  // k=1 (native range keyboard control) must collapse the beam walk onto greedy
+  // exactly: the advantage readout, derived from real state, drops to zero.
+  await slider.focus()
+  await page.keyboard.press('Home')
+  await expect(slider).toHaveValue('1')
+  await expect(advantage).toHaveText('0.000')
+
+  // Raising it back to k=3 restores (at least) the k=2 advantage.
+  await page.keyboard.press('End')
+  await expect(slider).toHaveValue('3')
+  await expect(advantage).not.toHaveText('0.000')
+
+  // Beam survivor chips are real, focusable, keyboard-activatable buttons; clicking
+  // one other than the winner changes which sequence is traced (aria-pressed moves).
+  const chips = page.getByRole('group', { name: /Surviving beam sequences/ }).getByRole('button')
+  await expect(chips).toHaveCount(3)
+  const first = chips.nth(0)
+  const second = chips.nth(1)
+  await expect(first).toHaveAttribute('aria-pressed', 'true')
+  await second.focus()
+  await page.keyboard.press('Enter')
+  await expect(second).toHaveAttribute('aria-pressed', 'true')
+  await expect(first).toHaveAttribute('aria-pressed', 'false')
+
+  // best-beam-log-prob stays fixed (it always reports the winner, not the selection).
+  await expect(bestLogProb).toHaveText('-1.261')
+})
+
 test('decision-boundary: the fit trains automatically, and nudging a point restarts and re-chases it', async ({ page }) => {
   // Three separate full training runs happen in this test, and each one is a
   // real setInterval-driven process (not sped up), so give it more than the

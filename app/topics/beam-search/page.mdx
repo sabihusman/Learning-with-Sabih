@@ -1,0 +1,64 @@
+import BeamSearchViz from '@/app/components/BeamSearchViz'
+
+export const metadata = {
+  title: 'Beam search vs greedy decoding - Learning with Sabih',
+}
+
+# Beam search vs greedy decoding
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The tree, greedy decoding, and beam search are all real, deterministic, testable
+    functions of hand-authored data (see the PR description for the verification run).
+    Nothing here is a real model's live output; the honesty note already in the figure
+    caption says this and should not be softened or removed.
+  - Tree shape: prompt "The forecast for tomorrow is", then 3 decision steps (token
+    positions), branching factor 3 at every node, so 3 + 9 + 27 = 39 non-root nodes.
+    Every sibling group's probabilities sum to exactly 1 (verified in code, not by eye).
+  - Greedy decoding: at each step, take the single highest-probability next token, one
+    walk, no backtracking, no lookahead. On this tree it reaches "cloudy and windy",
+    log-probability about -3.074.
+  - Beam search: at each step, keep the top-k running partial sequences by cumulative
+    log-probability (sum of log-probabilities, not the product of probabilities,
+    though they rank identically since log is monotonic). At k=1 this is mathematically
+    identical to greedy and the figure visibly collapses to a single walk (verified: the
+    beam-only render layer is empty at k=1, so only the greedy path is drawn). At k=2 or
+    k=3 it finds "clear and warm", log-probability about -1.261, beating greedy by about
+    1.81 (roughly 6.1x more probable in raw probability terms).
+  - The point of THIS topic is that trap: greedy commits at step 1 to the locally best
+    token ("cloudy", p=0.40 vs "clear", p=0.35), and that commitment forecloses every
+    continuation through "cloudy", none of which are any good (best is "with gusts",
+    logP about -2.941, still worse than beam's answer). Beam search's wider search keeps
+    "clear" alive long enough to discover its near-certain follow-up ("and", p=0.90),
+    which greedy could never find because it never looks past one token at a time. The
+    prose should build to this contrast as the throughline, not just describe two
+    algorithms in parallel.
+  - Beam width k is a slider, range 1 to 3 (MAX_BEAM_WIDTH in beamSearchData.js).
+    Raising k trades compute for a wider search; it does not guarantee finding the
+    single best possible sequence out of all 27 (that would be exhaustive search), only
+    a wider one than a beam of 1.
+  - The figure lists every surviving beam sequence as a clickable, keyboard-reachable
+    chip (native <button>, ranked by log-probability), so the reader can inspect any
+    survivor, not only the winner. Clicking a chip re-traces that sequence on the tree.
+  - Two deliberate overlap guards with sibling topics, both confirmed against the built
+    figure before this one was built:
+    - Temperature and Sampling (#15, immediately before this topic) reshapes a
+      probability distribution and then samples from it, choice made by chance. This
+      figure never samples; every walk is a deterministic argmax or top-k search over
+      cumulative log-probability. Do not use the word "sampling" to describe what
+      happens after the distribution is reshaped here, and do not imply randomness
+      anywhere in this figure's process.
+    - Tokenization (#7) is about splitting text into tokens before a model ever sees
+      it. This figure assumes tokens already exist and is entirely about the search
+      strategy applied AFTER a model has produced a probability distribution over
+      candidate tokens at each step. Do not blur the two topics.
+  - No-subhead / figure-last structure, matching the other section pages. Straight
+    quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<BeamSearchViz />
