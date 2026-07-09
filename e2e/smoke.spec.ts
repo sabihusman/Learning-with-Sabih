@@ -29,6 +29,7 @@ const TOPICS = [
   { slug: 'decision-boundary', name: 'Decision Boundary' },
   { slug: 'rlhf', name: 'RLHF' },
   { slug: 'temperature', name: 'Temperature and Sampling' },
+  { slug: 'beam-search', name: 'Beam Search vs Greedy Decoding' },
   { slug: 'rag', name: 'RAG (Retrieval-Augmented Generation)' },
   { slug: 'big-o', name: 'Big-O and Time Complexity' },
   { slug: 'binary-search', name: 'Binary Search' },

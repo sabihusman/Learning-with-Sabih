@@ -1,0 +1,154 @@
+/* Beam search vs greedy decoding: a token-probability tree, a beam-width slider, and
+   chip buttons for the surviving beam sequences. All highlight color is derived from
+   real path membership computed in the component; this file is presentation only. */
+
+.prompt {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: 'Source Serif Pro', Georgia, serif;
+  font-size: 16px;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+
+.promptLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.promptBlank {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.sliderRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 14px;
+}
+
+.sliderLabel {
+  display: flex;
+  justify-content: space-between;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.sliderValue {
+  color: var(--ink);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.slider {
+  width: 100%;
+  accent-color: #2f8f63;
+  cursor: pointer;
+}
+
+.svg {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  display: block;
+  margin: 6px auto;
+}
+
+.nodeText {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10.5px;
+  color: var(--fade);
+  margin: 4px 0 14px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.swatchDashed {
+  width: 12px;
+  height: 0;
+  border-radius: 0;
+  border-top: 2px dashed #2f8f63;
+}
+
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 0;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.chip:hover {
+  border-color: #2f8f63;
+}
+
+.chipActive {
+  border-color: #2f8f63;
+  background: #eaf4ef;
+}
+
+.chipRank {
+  color: var(--fade);
+  min-width: 1.6rem;
+}
+
+.chipTokens {
+  flex: 1;
+}
+
+.chipLogProb {
+  color: var(--fade);
+  font-variant-numeric: tabular-nums;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  margin: 0.9rem 0 0;
+}

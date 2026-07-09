@@ -1,0 +1,19 @@
+import BeamSearchViz from '@/app/components/BeamSearchViz'
+
+export const metadata = {
+  title: 'Beam search vs greedy decoding - Learning with Sabih',
+}
+
+# Beam search vs greedy decoding
+
+A language model does not hand you a sentence. At each step it produces a probability for every token that could come next, and something has to turn that stream of distributions into a single chosen sequence. The simplest rule is greedy decoding: at every step, take the single most probable next token, commit to it, and move on. It is fast and it is obvious, and it has one deep flaw. The token that looks best right now can lead somewhere bad, and greedy has no way to know, because it never looks past the next step.
+
+Watch the figure at k=1. The highlighted walk is greedy. Starting from the prompt, it takes the highest-probability token at each of three steps and lands on "cloudy and windy," with a total log-probability of -3.074. Look at the first step and you can already see the trap being set. Greedy picks "cloudy" because 0.40 beats "clear" at 0.35. That decision is locked the instant it is made. Every continuation greedy can still reach now runs through "cloudy," and none of them are good. The best branch under "cloudy" only gets to about -2.941, still worse than what sits one token away down the road not taken.
+
+Now raise k to 2. Beam search keeps the k best running sequences at every step instead of just one, ranked by cumulative log-probability. Because it holds more than one option open, it does not have to throw away "clear" just because "cloudy" scored higher at step one. It carries "clear" forward, and one step later that patience pays off: "clear" is followed by "and" with probability 0.90, then "warm" with probability 0.90, a near-certain continuation that greedy never got to see. The result is "clear and warm" at -1.261, beating greedy by 1.813 in log-probability, which is about six times more probable in plain terms. The readouts show the gap directly.
+
+The lesson is not that beam search is always right. Widening the beam trades compute for a broader search, and even a wide beam is not guaranteed to find the single best sequence out of all of them; only an exhaustive search does that, and real vocabularies are far too large for it. What beam search buys you is protection against the specific failure greedy is prone to: committing early to a locally strong token that quietly forecloses a better path. Raise k to 3 and you can inspect the other survivors as chips below the tree; each one is a full sequence the search kept alive long enough to score. Greedy keeps exactly one, which is why k=1 collapses the whole picture back to a single red walk.
+
+Honesty notes. The tree here is hand-authored and tiny: three first tokens, three continuations each, three more after that, with the probabilities in every group summing to one. It is built to contain the trap cleanly so you can see it. What is real is the search. The greedy walk, the beam walk, and every log-probability on the page are computed live by actual greedy and beam-search functions running over the tree, not scripted or typed in. A real decoder does the same search over a full vocabulary of tens of thousands of candidates at every step, where the tree is far too wide to draw. And note what this figure never does: it never samples and nothing here is random. Every walk is a deterministic search for the highest-scoring sequence. Turning a distribution into a chosen token by chance is a different topic, Temperature and Sampling, just before this one.
+
+<BeamSearchViz />
