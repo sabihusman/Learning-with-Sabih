@@ -32,18 +32,6 @@ export const AGG_LABEL = {
 }
 const AGG_ALIAS = { COUNT: 'n', SUM: 'total_events', AVG: 'avg_events', DISTINCT: 'users' }
 
-// The largest HAVING threshold worth offering: the biggest single group's COUNT(*),
-// taken across BOTH grouping columns (country and plan), not just whichever column
-// is currently selected. So when the selected column's biggest group is smaller than
-// the other column's biggest group, the slider's top end is unreachable by it.
-export const MAX_COUNT = Math.max(
-  ...GROUP_COLUMNS.map((col) => {
-    const counts = new Map()
-    ROWS.forEach((r) => counts.set(r[col], (counts.get(r[col]) || 0) + 1))
-    return Math.max(...counts.values())
-  })
-)
-
 // Round to at most one decimal place, dropping a trailing .0 so COUNT/SUM stay
 // integer-looking while AVG shows e.g. 1.8.
 const round1 = (n) => Math.round(n * 10) / 10
