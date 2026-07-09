@@ -348,6 +348,35 @@ test('beam-search: raising beam width finds a better sequence, k=1 collapses to 
   await expect(bestLogProb).toHaveText('-1.261')
 })
 
+test('entropy-and-compression: dragging a probability to 100% collapses entropy and the Huffman gap widens to exactly 1 bit', async ({ page }) => {
+  await page.goto('/topics/entropy-and-compression/')
+  const sliderA = page.getByRole('slider', { name: 'Probability of symbol A' })
+  await expect(sliderA).toBeVisible()
+  await expect(sliderA).toHaveValue('40')
+
+  const entropy = readoutValue(page, 'entropy')
+  const gap = readoutValue(page, 'gap')
+  const nonzero = readoutValue(page, 'nonzero symbols')
+
+  // The default table has a deliberate, visible gap: not power-of-two probabilities.
+  await expect(entropy).toHaveText('1.846 bits')
+  await expect(gap).toHaveText('0.054 bits')
+  await expect(nonzero).toHaveText('4')
+
+  // Pushing A to 100% (native range keyboard control) renormalizes B, C, D to 0: one
+  // symbol left, entropy collapses to 0, and the single-symbol Huffman code still
+  // costs 1 bit, so the gap widens to exactly 1.
+  await sliderA.focus()
+  await page.keyboard.press('End')
+  await expect(sliderA).toHaveValue('100')
+  await expect(entropy).toHaveText('0.000 bits')
+  await expect(gap).toHaveText('1.000 bits')
+  await expect(nonzero).toHaveText('1')
+
+  const sliderB = page.getByRole('slider', { name: 'Probability of symbol B' })
+  await expect(sliderB).toHaveValue('0')
+})
+
 test('decision-boundary: the fit trains automatically, and nudging a point restarts and re-chases it', async ({ page }) => {
   // Three separate full training runs happen in this test, and each one is a
   // real setInterval-driven process (not sped up), so give it more than the

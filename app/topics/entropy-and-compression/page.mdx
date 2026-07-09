@@ -1,0 +1,49 @@
+import EntropyCompressionViz from '@/app/components/EntropyCompressionViz'
+
+export const metadata = {
+  title: 'Entropy and compression - Learning with Sabih',
+}
+
+# Entropy and compression
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - Everything computed is real: Shannon entropy H = -sum(p_i * log2(p_i)) and a
+    genuine Huffman code built by repeatedly merging the two lowest-probability
+    nodes, both recomputed live from the current 4-symbol probability table.
+    Verified in a Node harness before the UI was built (see the PR description
+    for the exact numbers).
+  - Default probabilities {A:0.4, B:0.3, C:0.2, D:0.1}: entropy ~= 1.846
+    bits/symbol, Huffman average ~= 1.900 bits/symbol, gap ~= 0.054 bits. The
+    gap is visible on load, deliberately (a powers-of-1/2 default would hide
+    the point).
+  - Three reachable regimes, all confirmed against the built figure:
+    - Powers of one-half, e.g. {0.5, 0.25, 0.125, 0.125}: Huffman meets
+      entropy exactly, gap = 0 (both 1.750).
+    - Uniform, {0.25, 0.25, 0.25, 0.25}: both settle at 2.000 bits.
+    - Skewed, e.g. {0.7, 0.15, 0.10, 0.05}: entropy drops to ~1.319, Huffman
+      averages ~1.450, gap widens to ~0.131.
+  - Moving one slider renormalizes the other three proportionally (not
+    equally) so the table always sums to 1; this is a real, tested function,
+    not a display trick.
+  - The core lesson: entropy is a hard floor on the average bits/symbol any
+    per-symbol code can achieve, and Huffman gets as close to that floor as a
+    per-symbol prefix code can get. The gap only closes to zero when the
+    probabilities are exact powers of one-half.
+  - Honesty note (must appear, substantially as follows): the alphabet is
+    tiny and contrived, four symbols, hand-picked probabilities. Entropy and
+    the Huffman code are real and computed live. But Huffman is optimal only
+    among per-symbol prefix codes; real compressors do better by exploiting
+    context and longer-range structure that a per-symbol code cannot capture.
+    The "you cannot beat entropy" bound shown here is the per-symbol limit,
+    not an absolute floor on all compression.
+  - No-subhead / figure-last structure, matching the other section pages.
+    Straight quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<EntropyCompressionViz />

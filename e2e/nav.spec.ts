@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test'
 
 // Bottom-of-page prev/next topic navigation. Neighbors come from the shared ordered
 // list; these expectations follow the current order (Tokenization, Why Models Struggle
-// with Math, Embeddings ... around the middle; Gradient Descent first, Composition vs
-// Inheritance last).
+// with Math, Embeddings ... around the middle; Gradient Descent first, Entropy and
+// Compression last).
 const topicNav = (page) => page.getByRole('navigation', { name: 'Topic navigation' })
 
 test('middle topic shows previous and next with correct neighbor names', async ({ page }) => {
@@ -33,9 +33,9 @@ test('first topic has no previous', async ({ page }) => {
 })
 
 test('last topic has no next', async ({ page }) => {
-  await page.goto('/topics/composition-vs-inheritance/')
+  await page.goto('/topics/entropy-and-compression/')
   const nav = topicNav(page)
   await expect(nav).toBeVisible()
-  await expect(nav).toContainText('Abstract Classes and Interfaces') // previous still present
+  await expect(nav).toContainText('Composition vs Inheritance') // previous still present
   await expect(nav).not.toContainText('Next')
 })

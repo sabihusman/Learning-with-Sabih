@@ -58,9 +58,10 @@ Object-Oriented Programming|50|Inheritance|Build a robot family tree and watch m
 Object-Oriented Programming|51|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
 Object-Oriented Programming|52|Abstract Classes and Interfaces|Toggle a Robot type between an abstract class and an interface, and watch a checklist compare what each kind of contract can force, carry, and be extended by|abstract-classes-and-interfaces
 Object-Oriented Programming|53|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
+Data and Compression|54|Entropy and Compression|Drag four symbol probabilities and watch a real Huffman code chase Shannon's entropy floor, closing the gap only at powers of one-half|entropy-and-compression
 `
 
-export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Systems and Networking', 'Object-Oriented Programming']
+export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Systems and Networking', 'Object-Oriented Programming', 'Data and Compression']
 
 // Flat ordered list (the canonical sequence used for prev/next, spanning sections).
 export const TOPICS = TOPIC_ROWS.trim()

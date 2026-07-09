@@ -67,6 +67,7 @@ const TOPICS = [
   { slug: 'polymorphism', name: 'Polymorphism' },
   { slug: 'abstract-classes-and-interfaces', name: 'Abstract Classes and Interfaces' },
   { slug: 'composition-vs-inheritance', name: 'Composition vs Inheritance' },
+  { slug: 'entropy-and-compression', name: 'Entropy and Compression' },
 ]
 
 test('home page loads with the contents list and no console errors', async ({ page }) => {
