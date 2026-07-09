@@ -7,7 +7,6 @@
 export const PAPER = '#f7f6f2'
 export const INK = '#1a1a1a'
 export const FADE = '#9b9892'
-export const ACCENT = '#c0392b'
 export const CLASS1 = '#2f6f8f' // inside the circle (blue)
 export const CLASS0 = '#c98a3b' // outside the circle (amber)
 export const POS_EDGE = '#1a1a1a' // positive weight

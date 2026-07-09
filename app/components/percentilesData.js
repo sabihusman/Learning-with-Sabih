@@ -25,18 +25,10 @@ export const SAMPLE = [
 ]
 
 export const N = SAMPLE.length // 60
-export const SORTED = [...SAMPLE].sort((a, b) => a - b)
-export const MIN = SORTED[0]
-export const MAX = SORTED[N - 1]
+const SORTED = [...SAMPLE].sort((a, b) => a - b)
 
 // The arithmetic mean, the statistic the tail distorts.
 export const MEAN = SAMPLE.reduce((a, b) => a + b, 0) / N
-
-// The true median (average of the two middle values for an even sample size).
-// Reported alongside p50 because they can differ; here p50 is the nearest-rank
-// version the handle uses.
-export const MEDIAN =
-  N % 2 === 0 ? (SORTED[N / 2 - 1] + SORTED[N / 2]) / 2 : SORTED[(N - 1) / 2]
 
 // Nearest-rank percentile: for p in 1..100, take the value at rank ceil(p/100 * N)
 // in the sorted sample (1-indexed). This is one common definition; monitoring

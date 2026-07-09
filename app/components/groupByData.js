@@ -32,8 +32,10 @@ export const AGG_LABEL = {
 }
 const AGG_ALIAS = { COUNT: 'n', SUM: 'total_events', AVG: 'avg_events', DISTINCT: 'users' }
 
-// The largest HAVING threshold worth offering: just below the biggest group's
-// COUNT(*), so the slider can empty the result entirely at the top end.
+// The largest HAVING threshold worth offering: the biggest single group's COUNT(*),
+// taken across BOTH grouping columns (country and plan), not just whichever column
+// is currently selected. So when the selected column's biggest group is smaller than
+// the other column's biggest group, the slider's top end is unreachable by it.
 export const MAX_COUNT = Math.max(
   ...GROUP_COLUMNS.map((col) => {
     const counts = new Map()

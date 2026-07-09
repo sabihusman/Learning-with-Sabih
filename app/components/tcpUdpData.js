@@ -22,7 +22,7 @@
 // run; step() just advances one event at a time, so the whole simulation is a
 // pure function of (state, action): step(), setLoss(), setProtocol(), reset().
 
-const PACKET_COUNT = 8
+export const PACKET_COUNT = 8
 export const SEED = 555
 export const DEFAULT_LOSS_PCT = 25
 export const MAX_LOSS_PCT = 50

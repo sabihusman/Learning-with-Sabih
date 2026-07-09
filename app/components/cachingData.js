@@ -128,7 +128,3 @@ export function statusFor(state) {
       return ''
   }
 }
-
-// Final hit rate for the chosen stream, exported so the prose can cite the exact
-// figure without recomputing it. For this stream it is 50.
-export const FINAL_HIT_RATE = hitRate(STATES[LAST_STEP])

@@ -98,11 +98,10 @@ export function flattenTree(tree) {
   return out
 }
 export const ALL_NODES = flattenTree(TREE)
-export const NODES_BY_ID = new Map(ALL_NODES.map((n) => [n.id, n]))
 
 // Every sibling group's probabilities sum to 1 (within floating-point tolerance).
-// Exercised directly by the committed logic test; kept here too as a load-time
-// invariant so a future edit to the tree fails loudly.
+// Not invoked at module load; this function is only exercised by the committed
+// e2e logic spec, which calls it directly to assert the invariant holds.
 export function siblingSumsValid(tree, tolerance = 1e-9) {
   if (tree.children.length === 0) return true
   const sum = tree.children.reduce((s, c) => s + c.prob, 0)
