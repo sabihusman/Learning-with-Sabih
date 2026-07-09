@@ -1,0 +1,71 @@
+import DecisionBoundaryViz from '@/app/components/DecisionBoundaryViz'
+
+export const metadata = {
+  title: 'Decision boundary - Learning with Sabih',
+}
+
+# Decision boundary
+
+Say you have points scattered across a page and each one belongs to
+one of two classes, circle or square. Your job is to draw a line such
+that circles fall on one side and squares fall on the other. If the
+two clusters are cleanly separated, the line is easy; if they overlap,
+no line is perfect and the best you can do is a compromise. The line
+you settle on is the model's decision boundary, and this topic is
+about where it comes from.
+
+Watch the figure Refit. The boundary starts as a straight vertical
+line, essentially a guess: the model has no reason yet to prefer any
+orientation. Then the loss readout starts falling and the line
+rotates. What is running underneath is real logistic regression fit
+by gradient descent, the same idea introduced in the first topic of
+this section. At each tick the model looks at every point, measures
+how badly it is currently classifying them, and nudges three numbers,
+w1, w2, and b, in the direction that would reduce that penalty. After
+a couple of hundred steps the loss has flattened and the line has
+found its resting position, dividing the two classes with all
+fourteen points on the correct side.
+
+That is the whole trick, and it is worth stating plainly: the
+decision boundary is not a shape you draw, it is the visible
+consequence of three numbers. The equation shown under the readouts,
+w1 x plus w2 y plus b equals zero, is the boundary. Everything above
+the line is classified one way, everything below the other; the
+shaded half-planes make the two sides visible. Learning a classifier
+is learning those numbers, and the numbers arrive by a process that
+in principle is just as mechanical as long division.
+
+Now grab a point and drag it. The boundary chases. Move a circle a
+little way toward the squares and the line tilts to keep it on the
+correct side; move it deeper and the line tilts more. The model does
+not care which point moved or why, it just wants the current loss to
+go down, and it revises its three numbers accordingly. Drag a point
+clean into the middle of the other cluster and something more
+interesting happens: the boundary compromises. It shifts to reduce
+total loss across the whole set, and one point ends up on the wrong
+side of the line. The misclassified readout ticks to one. Loss levels
+off higher than zero, because a straight line cannot honestly
+separate that arrangement.
+
+That failure is not a bug, it is the model being disciplined. A
+classifier that twisted itself into a shape that got every point
+right, including a single wanderer buried in the other class, would
+be memorizing the wanderer instead of learning the rule. The next
+topic, Confusion Matrix, is about counting exactly what a classifier
+gets right and wrong; and Overfitting, which comes just before this
+one, is about what happens when a model does contort itself to reach
+every point, and why straightness, or something close to it, is often
+the honest answer.
+
+Honesty notes. Logistic regression can only draw straight boundaries,
+which is enough here because the data is two-dimensional and roughly
+separable. Real classifiers work in feature spaces with hundreds or
+thousands of dimensions, where the "line" is a hyperplane you cannot
+draw, and where curved boundaries come from stacking nonlinear
+layers, the story told in Why Activations Matter. The math in this
+figure is standard: sigmoid outputs, cross-entropy loss, batch
+gradient descent at a fixed learning rate. Every gradient step is
+computed live from the current positions of the points; nothing is
+scripted.
+
+<DecisionBoundaryViz />

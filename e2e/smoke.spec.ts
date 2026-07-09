@@ -26,6 +26,7 @@ const TOPICS = [
   { slug: 'neural-networks', name: 'Neural Networks' },
   { slug: 'activation-functions', name: 'Why Activations Matter' },
   { slug: 'overfitting', name: 'Overfitting and Generalization' },
+  { slug: 'decision-boundary', name: 'Decision Boundary' },
   { slug: 'rlhf', name: 'RLHF' },
   { slug: 'temperature', name: 'Temperature and Sampling' },
   { slug: 'rag', name: 'RAG (Retrieval-Augmented Generation)' },

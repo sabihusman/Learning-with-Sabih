@@ -307,3 +307,45 @@ test('dns: a second lookup hits cache, and expiring it forces a cold walk again'
   await lookupAgain.click()
   await expect(steps).toHaveText('0/8')
 })
+
+test('decision-boundary: the fit trains automatically, and nudging a point restarts and re-chases it', async ({ page }) => {
+  // Three separate full training runs happen in this test, and each one is a
+  // real setInterval-driven process (not sped up), so give it more than the
+  // default budget.
+  test.setTimeout(90000)
+  await page.goto('/topics/decision-boundary/')
+  const iterations = readoutValue(page, 'iterations')
+  const misclassified = readoutValue(page, 'misclassified')
+
+  // Training starts on its own and runs to the fixed 200-step budget.
+  await expect(iterations).toHaveText('200/200', { timeout: 20000 })
+  await expect(misclassified).toHaveText('0 of 14')
+
+  // Each point is a real, focusable element: Tab reaches it (the point-picker)
+  // and arrow keys nudge it. Nudging restarts the timer, dropping the counter
+  // back below the budget.
+  const point = page.getByRole('button', { name: 'Class 0 point 7' })
+  await point.focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(iterations).not.toHaveText('200/200')
+
+  // Nudge it far enough into class 1's territory that no straight line can
+  // separate the data anymore, then let the fixed-length run finish.
+  for (let i = 0; i < 12; i += 1) await page.keyboard.press('ArrowRight')
+  for (let i = 0; i < 12; i += 1) await page.keyboard.press('ArrowUp')
+  await expect(iterations).toHaveText('200/200', { timeout: 20000 })
+  await expect(misclassified).not.toHaveText('0 of 14')
+
+  // Refit (real, focusable button) restarts from w = 0 on the current
+  // (still-moved) points; the data is still unseparable, so it still fails.
+  const refit = page.getByRole('button', { name: 'Refit' })
+  await refit.focus()
+  await page.keyboard.press('Enter')
+  await expect(iterations).toHaveText('200/200', { timeout: 20000 })
+  await expect(misclassified).not.toHaveText('0 of 14')
+
+  // Reset restores the original point positions and refits from scratch.
+  await page.getByRole('button', { name: 'Reset' }).click()
+  await expect(iterations).toHaveText('200/200', { timeout: 20000 })
+  await expect(misclassified).toHaveText('0 of 14')
+})
