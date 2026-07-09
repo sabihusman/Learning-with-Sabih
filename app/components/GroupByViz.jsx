@@ -7,7 +7,6 @@ import {
   GROUP_COLUMNS,
   AGGREGATES,
   AGG_LABEL,
-  MAX_COUNT,
   computeGroups,
   aggValue,
   passesHaving,
@@ -46,6 +45,9 @@ export default function GroupByViz() {
   const [havingN, setHavingN] = useState(0)
 
   const groups = computeGroups(groupCol).map((g, i) => ({ ...g, color: PALETTE[i % PALETTE.length] }))
+  // The largest COUNT(*) actually reachable for the SELECTED grouping column, so the
+  // HAVING slider's top end is never a dead range for whichever column is showing.
+  const maxCount = Math.max(...groups.map((g) => g.count))
 
   // Lay clusters out top to bottom. Computed functionally (no mutable cursor):
   // each group's top is TOP plus the full height of every earlier group and its
@@ -232,7 +234,11 @@ export default function GroupByViz() {
           <button
             key={c}
             type="button"
-            onClick={() => setGroupCol(c)}
+            onClick={() => {
+              const newMax = Math.max(...computeGroups(c).map((g) => g.count))
+              setGroupCol(c)
+              setHavingN((h) => Math.min(h, newMax))
+            }}
             aria-pressed={groupCol === c}
             className={`${styles.toggle} ${groupCol === c ? styles.toggleOn : ''}`}
           >
@@ -248,7 +254,7 @@ export default function GroupByViz() {
           className={styles.slider}
           type="range"
           min={0}
-          max={MAX_COUNT}
+          max={maxCount}
           step={1}
           value={havingN}
           onChange={(e) => setHavingN(Number(e.target.value))}

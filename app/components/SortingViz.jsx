@@ -156,7 +156,7 @@ export default function SortingViz() {
 
   // snapshot the current run into "last run" memory so two algorithms can be compared
   const snapshot = () => {
-    if (step > 0) setLastRun({ name: algoName, comparisons: f.comparisons, secondary: f.secondary, label })
+    if (step > 0) setLastRun({ name: algoName, comparisons: f.comparisons, secondary: f.secondary, label, complete: done })
   }
   const onStep = () => setStep((s) => Math.min(last, s + 1))
   const reset = () => {
@@ -232,6 +232,7 @@ export default function SortingViz() {
       {lastRun && (
         <p className={styles.lastRun}>
           Last run, {lastRun.name}: <strong>{lastRun.comparisons}</strong> comparisons, <strong>{lastRun.secondary}</strong> {lastRun.label}
+          {!lastRun.complete && ' (partial)'}
         </p>
       )}
 
