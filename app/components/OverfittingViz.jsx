@@ -82,7 +82,7 @@ export default function OverfittingViz() {
       title="Underfitting, a good fit, and overfitting"
       readouts={readouts}
       status={status}
-      tryThis={`The blue dots are the training data: a true underlying curve (faint grey) plus random noise. The red curve is a polynomial fit; the slider sets its degree. At low complexity the fit is a straight line that misses the trend (underfitting). In the middle it follows the trend smoothly while ignoring the noise (a good fit). At high complexity it zig-zags through every training point, including the noise (overfitting). Watch the readouts: training error keeps dropping as complexity rises, but test error on the green held-out points drops then rises again. The minimum of test error is the best-generalizing model.`}
+      tryThis={`The blue dots are the training data: a true underlying curve (faint grey) plus random noise. The red curve is a polynomial fit; the slider sets its degree. At low complexity the fit is a straight line that misses the trend (underfitting). In the middle it follows the trend smoothly while ignoring the noise (a good fit). At high complexity it wiggles to chase the training points and fit the noise (overfitting). Watch the readouts: training error keeps dropping as complexity rises, but test error on the green held-out points drops then rises again. The minimum of test error is the best-generalizing model.`}
     >
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -141,7 +141,7 @@ export default function OverfittingViz() {
       </div>
       <div className={styles.endsRow}>
         <span>← simple (straight line)</span>
-        <span>wiggly (passes every point) →</span>
+        <span>wiggly (chases the training points) →</span>
       </div>
 
       <p className={styles.note}>
