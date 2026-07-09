@@ -205,7 +205,7 @@ export default function AtomicityViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Run it with fail after debit off: step through BEGIN, the debit, the credit, and COMMIT. A drops to 60, B rises to 40, and the total stays 100 the whole way. Now turn fail after debit on and step again. The debit runs, then the failure hits before the credit, so the total briefly reads 60, money that has left A and reached no one. Watch ROLLBACK undo the debit and restore A to 100, with the total back to 100."
+      tryThis="Run it with fail after debit off: step through BEGIN, the debit, the credit, and COMMIT. A drops to 60, B rises to 40, and the total briefly reads 60 between the two steps before COMMIT settles it back to 100. Now turn fail after debit on and step again. The debit runs, then the failure hits before the credit, so the total is left reading 60, money that has left A and reached no one. Watch ROLLBACK undo the debit and restore A to 100, with the total back to 100."
     >
       <div className={styles.controls}>
         <div className={styles.line}>

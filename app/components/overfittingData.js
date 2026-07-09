@@ -102,3 +102,18 @@ export function regime(degree) {
   if (degree <= 6) return 'good fit'
   return 'overfitting'
 }
+
+// Train and test error at every degree from MIN_DEG to MAX_DEG, for the U-curve panel.
+export function errorCurve() {
+  const points = []
+  for (let d = MIN_DEG; d <= MAX_DEG; d += 1) {
+    const coef = fitPolynomial(TRAIN, d)
+    points.push({ degree: d, train: mse(coef, TRAIN), test: mse(coef, TEST) })
+  }
+  return points
+}
+
+// The degree at which test error is smallest, i.e. the best-generalizing model.
+export function bestDegree(curve) {
+  return curve.reduce((best, p) => (p.test < best.test ? p : best), curve[0]).degree
+}

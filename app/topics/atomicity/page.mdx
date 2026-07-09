@@ -14,7 +14,7 @@ Atomicity is the all-or-nothing rule for transactions. Either every step happens
 
 That matters because real systems fail in messy ways. A statement can hit an error. A server can crash. A connection can drop. Without atomicity, any of those failures could leave data stuck in a broken in-between state. With atomicity, the money is either fully moved or not moved at all. It is never destroyed in the middle.
 
-Run the transfer in the figure and watch both accounts change while the total stays the same. Then make it fail partway, after the first step. The transaction rolls back, the first step is undone, and the total is still correct.
+Run the transfer in the figure and watch both accounts change. The total dips out of balance for a moment mid-transfer, between the debit and the credit, which is exactly the in-flight state atomicity does not let you commit. Then make it fail partway, after the first step. The transaction rolls back, the first step is undone, and the total is back to correct.
 
 Atomicity is one of the guarantees a transaction provides. What happens when two transactions run at the same time, and how databases keep them from corrupting each other, are the next two topics.
 

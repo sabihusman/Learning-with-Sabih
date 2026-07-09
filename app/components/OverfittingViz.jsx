@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Figure from './Figure'
-import { TRAIN, TEST, MIN_DEG, MAX_DEG, fitPolynomial, predict, mse, regime, truth } from './overfittingData'
+import { TRAIN, TEST, MIN_DEG, MAX_DEG, fitPolynomial, predict, mse, regime, truth, errorCurve, bestDegree } from './overfittingData'
 import styles from './OverfittingViz.module.css'
 
 const INK = '#1a1a1a'
@@ -52,6 +52,29 @@ function truthPath(samples = 240) {
 }
 const TRUTH_PATH = truthPath()
 
+// ── Error-vs-degree curve panel (train + test error over the whole degree range) ──
+const CURVE_VB_W = 560
+const CURVE_VB_H = 150
+const CURVE_PAD_L = 34
+const CURVE_PAD_R = 14
+const CURVE_PAD_T = 10
+const CURVE_PAD_B = 22
+const CURVE_PLOT_W = CURVE_VB_W - CURVE_PAD_L - CURVE_PAD_R
+const CURVE_PLOT_H = CURVE_VB_H - CURVE_PAD_T - CURVE_PAD_B
+
+const ERROR_CURVE = errorCurve()
+const BEST_DEGREE = bestDegree(ERROR_CURVE)
+const CURVE_Y_MAX = Math.max(...ERROR_CURVE.map((p) => Math.max(p.train, p.test))) * 1.08
+
+const degPx = (d) => CURVE_PAD_L + ((d - MIN_DEG) / (MAX_DEG - MIN_DEG)) * CURVE_PLOT_W
+const errPx = (e) => CURVE_PAD_T + (1 - e / CURVE_Y_MAX) * CURVE_PLOT_H
+
+function curvePath(key) {
+  return `M${ERROR_CURVE.map((p) => `${degPx(p.degree).toFixed(2)},${errPx(p[key]).toFixed(2)}`).join(' L')}`
+}
+const TRAIN_CURVE_PATH = curvePath('train')
+const TEST_CURVE_PATH = curvePath('test')
+
 function regimeClass(name) {
   if (name === 'good fit') return styles.regimeGood
   if (name === 'overfitting') return styles.regimeOver
@@ -82,7 +105,7 @@ export default function OverfittingViz() {
       title="Underfitting, a good fit, and overfitting"
       readouts={readouts}
       status={status}
-      tryThis={`The blue dots are the training data: a true underlying curve (faint grey) plus random noise. The red curve is a polynomial fit; the slider sets its degree. At low complexity the fit is a straight line that misses the trend (underfitting). In the middle it follows the trend smoothly while ignoring the noise (a good fit). At high complexity it zig-zags through every training point, including the noise (overfitting). Watch the readouts: training error keeps dropping as complexity rises, but test error on the green held-out points drops then rises again. The minimum of test error is the best-generalizing model.`}
+      tryThis={`The blue dots are the training data: a true underlying curve (faint grey) plus random noise. The red curve is a polynomial fit; the slider sets its degree. At low complexity the fit is a straight line that misses the trend (underfitting). In the middle it follows the trend smoothly while ignoring the noise (a good fit). At high complexity it chases the noise between training points (overfitting). The panel below plots both errors against every degree at once: training error keeps dropping as complexity rises, but test error on the green held-out points drops then rises again, tracing the U-shape that gives the topic its shape. The dashed line marks where test error is smallest, degree ${BEST_DEGREE} here — the best-generalizing model, matching the slider's "good fit" range.`}
     >
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -141,8 +164,42 @@ export default function OverfittingViz() {
       </div>
       <div className={styles.endsRow}>
         <span>← simple (straight line)</span>
-        <span>wiggly (passes every point) →</span>
+        <span>wiggly (chases every training point) →</span>
       </div>
+
+      <svg
+        viewBox={`0 0 ${CURVE_VB_W} ${CURVE_VB_H}`}
+        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '14px auto 0', background: PAPER, borderRadius: 6 }}
+        aria-label={`Training and test error plotted against model complexity. Training error keeps falling as degree rises. Test error falls then rises again, forming a U-shape with its minimum at degree ${BEST_DEGREE}.`}
+      >
+        {/* minimum-test-error marker */}
+        <line
+          x1={degPx(BEST_DEGREE)} y1={CURVE_PAD_T} x2={degPx(BEST_DEGREE)} y2={CURVE_PAD_T + CURVE_PLOT_H}
+          stroke={GREEN} strokeWidth={1} strokeDasharray="3 3" opacity={0.45}
+        />
+        <text x={degPx(BEST_DEGREE)} y={CURVE_PAD_T - 1} fontSize={9} fill={GREEN} fontFamily={MONO} textAnchor="middle">
+          best: degree {BEST_DEGREE}
+        </text>
+
+        {/* axes */}
+        <line x1={CURVE_PAD_L} y1={CURVE_PAD_T + CURVE_PLOT_H} x2={CURVE_PAD_L + CURVE_PLOT_W} y2={CURVE_PAD_T + CURVE_PLOT_H} stroke="#d4d0c8" strokeWidth={1} />
+        <text x={CURVE_PAD_L} y={CURVE_VB_H - 4} fontSize={9} fill={FADE} fontFamily={MONO} textAnchor="start">degree {MIN_DEG}</text>
+        <text x={CURVE_PAD_L + CURVE_PLOT_W} y={CURVE_VB_H - 4} fontSize={9} fill={FADE} fontFamily={MONO} textAnchor="end">degree {MAX_DEG}</text>
+
+        {/* the two error curves */}
+        <path d={TRAIN_CURVE_PATH} fill="none" stroke={TEAL} strokeWidth={2} />
+        <path d={TEST_CURVE_PATH} fill="none" stroke={GREEN} strokeWidth={2} />
+
+        {/* dot marking the currently-selected degree on each curve */}
+        <circle cx={degPx(deg).toFixed(2)} cy={errPx(trainErr).toFixed(2)} r={3.5} fill={TEAL} stroke="#fff" strokeWidth={1} />
+        <circle cx={degPx(deg).toFixed(2)} cy={errPx(testErr).toFixed(2)} r={4.5} fill="none" stroke={GREEN} strokeWidth={2} />
+
+        {/* legend */}
+        <g transform={`translate(${CURVE_PAD_L + 6}, ${CURVE_PAD_T + 6})`}>
+          <line x1={0} y1={4} x2={9} y2={4} stroke={TEAL} strokeWidth={2} /><text x={14} y={7} fontSize={9.5} fill={INK} fontFamily={MONO}>training error</text>
+          <line x1={0} y1={17} x2={9} y2={17} stroke={GREEN} strokeWidth={2} /><text x={14} y={20} fontSize={9.5} fill={INK} fontFamily={MONO}>test error</text>
+        </g>
+      </svg>
 
       <p className={styles.note}>
         Real polynomial least-squares fit over a fixed, seeded dataset (16 training + 6 held-out test points around a

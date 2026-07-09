@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Figure from './Figure'
-import { STEPS, STEP_STATS, TOTAL_SESSIONS, OVERALL_RATE, fmtPct, buildSql } from './funnelData'
+import { STEP_EVENTS, COHORTS, computeFunnel, fmtPct, buildSql } from './funnelData'
 import styles from './FunnelViz.module.css'
 
 const INK = '#1a1a1a'
@@ -22,24 +22,34 @@ const BAR_H = 50
 const GAP = 46
 const MAX_BAR_W = 440
 
-const maxCount = STEPS[0].count
+// Bar widths are scaled against the largest possible step-0 count (the unfiltered
+// funnel), so switching cohorts shrinks the bars rather than rescaling the whole chart.
+const maxCount = computeFunnel('all').steps[0].count
 const barW = (count) => (count / maxCount) * MAX_BAR_W
 const barTop = (i) => TOP + i * (BAR_H + GAP)
-const VB_H = barTop(STEPS.length - 1) + BAR_H + 26
+const VB_H = barTop(STEP_EVENTS.length - 1) + BAR_H + 26
 
 export default function FunnelViz() {
   const [showDropoff, setShowDropoff] = useState(false)
+  const [cohort, setCohort] = useState('all')
+
+  const { steps, stepStats, totalSessions, overallRate } = computeFunnel(cohort)
 
   const controls = [
     { label: showDropoff ? 'Hide drop-off' : 'Show drop-off', onClick: () => setShowDropoff((d) => !d), active: showDropoff },
+    ...COHORTS.map((c) => ({
+      label: c === 'all' ? 'All sessions' : `${c[0].toUpperCase()}${c.slice(1)} plan`,
+      onClick: () => setCohort(c),
+      active: cohort === c,
+    })),
   ]
   const readouts = [
-    { label: 'topic_opened', value: STEPS[0].count },
-    { label: 'interactive_used', value: STEPS[1].count },
-    { label: 'topic_completed', value: STEPS[2].count },
-    { label: 'overall completion', value: fmtPct(OVERALL_RATE) },
+    { label: 'topic_opened', value: steps[0].count },
+    { label: 'interactive_used', value: steps[1].count },
+    { label: 'topic_completed', value: steps[2].count },
+    { label: 'overall completion', value: fmtPct(overallRate) },
   ]
-  const status = `${STEPS[2].count} of ${TOTAL_SESSIONS} sessions completed (${fmtPct(OVERALL_RATE)})`
+  const status = `${steps[2].count} of ${totalSessions} sessions completed (${fmtPct(overallRate)})`
 
   return (
     <Figure
@@ -48,14 +58,14 @@ export default function FunnelViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Each bar is the number of distinct sessions that reached a step: a session counts at a step if it ever fired that event. The percentages between bars are step-to-step conversion (interactive_used over topic_opened, then topic_completed over interactive_used), and the overall completion rate is the final step over all 146 sessions. Turn on drop-off to see how many sessions are lost at each step. The SQL builds one set of distinct sessions per step, then counts each."
+      tryThis="Each bar is the number of distinct sessions that reached a step: a session counts at a step if it ever fired that event. The percentages between bars are step-to-step conversion, and the overall completion rate is the final step over all sessions in view. Switch between All sessions, Pro plan, and Free plan to recompute every count live from a real join against each session's owning user: pro sessions convert noticeably better end to end than free ones, and the two cohorts don't necessarily leak at the same step. Turn on drop-off to see how many sessions are lost at each step. The SQL builds one set of distinct sessions per step (filtered by plan when a cohort is selected), then counts each."
     >
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         style={{ width: '100%', maxWidth: 560, height: 'auto', display: 'block', margin: '0 auto' }}
-        aria-label="A three-step conversion funnel: topic_opened 143, interactive_used 77, topic_completed 45, with step-to-step conversion percentages and optional drop-off."
+        aria-label={`A three-step conversion funnel for ${cohort === 'all' ? 'all sessions' : `the ${cohort} plan`}: topic_opened ${steps[0].count}, interactive_used ${steps[1].count}, topic_completed ${steps[2].count}, with step-to-step conversion percentages and optional drop-off.`}
       >
-        {STEP_STATS.map((s, i) => {
+        {stepStats.map((s, i) => {
           const w = barW(s.count)
           const x = CENTER_X - w / 2
           const top = barTop(i)
@@ -129,7 +139,7 @@ export default function FunnelViz() {
           overflowX: 'auto',
         }}
       >
-        {buildSql()}
+        {buildSql(cohort)}
       </pre>
 
       <p className={styles.note}>
