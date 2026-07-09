@@ -214,7 +214,7 @@ export default function NeuralNetViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Press Play and watch the loss fall as the network trains. The connection lines thicken and change color (black for positive weights, red for negative) as the weights update, and the shaded decision boundary bends from a straight guess into a ring that wraps the inner class. Reset re-randomizes the weights and starts over. Step advances training a little at a time."
+      tryThis="Press Play and watch the loss fall as the network trains. The connection lines thicken and change color (black for positive weights, red for negative) as the weights update, and the shaded decision boundary bends from a straight guess into a ring that wraps the inner class. Reset restores the same seeded starting weights and starts over. Step advances training a little at a time."
     >
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center', alignItems: 'center' }}>
         {/* network diagram */}
