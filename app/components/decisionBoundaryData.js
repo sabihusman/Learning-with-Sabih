@@ -9,9 +9,6 @@
 
 export const CLASS0 = '#c98a3b' // amber, label 0 (matches the activations figure's outside class)
 export const CLASS1 = '#2f6f8f' // blue, label 1 (matches the activations figure's inside class)
-export const PAPER = '#f7f6f2'
-export const INK = '#1a1a1a'
-export const FADE = '#9b9892'
 
 // ── hyperparameters (fixed, deterministic; verified by a Node harness before
 // this module was wired into the UI) ─────────────────────────────────────────

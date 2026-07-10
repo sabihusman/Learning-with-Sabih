@@ -54,7 +54,7 @@ export default function EntropyCompressionViz() {
               <div className={styles.rowHead}>
                 <span className={styles.symbol}>{label}</span>
                 <span className={styles.prob}>{fmtPct(p)}</span>
-                <span className={styles.code}>{code || '—'}</span>
+                <span className={styles.code}>{code || '-'}</span>
                 <span className={styles.codeLen}>{code ? `${code.length} bit${code.length === 1 ? '' : 's'}` : ''}</span>
               </div>
               <div className={styles.barTrack}>

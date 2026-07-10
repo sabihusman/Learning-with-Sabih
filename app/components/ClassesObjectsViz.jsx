@@ -85,11 +85,8 @@ export default function ClassesObjectsViz() {
   // Method call reportStatus(): reads the field through the class's own API, so it
   // works even when the field is private.
   const reportStatus = (id) => {
-    setObjects((objs) => {
-      const o = objs.find((x) => x.id === id)
-      if (o) setReport({ id: o.id, text: `${o.name} battery: ${o.battery}%` })
-      return objs
-    })
+    const o = objects.find((x) => x.id === id)
+    if (o) setReport({ id: o.id, text: `${o.name} battery: ${o.battery}%` })
   }
 
   const controls = [

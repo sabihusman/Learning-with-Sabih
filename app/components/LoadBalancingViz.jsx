@@ -6,7 +6,6 @@ import Figure from './Figure'
 import {
   STREAM,
   POLICIES,
-  SERVER_COUNT,
   initialState,
   tick,
   killServer,

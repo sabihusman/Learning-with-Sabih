@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Figure from './Figure'
 import styles from './GraphTraversalViz.module.css'
-import { NODES, EDGES, NODE_IDS, nodePos, buildAdjacency, GRAPH_VIEWBOX } from './graphData'
+import { NODES, EDGES, nodePos, buildAdjacency, GRAPH_VIEWBOX } from './graphData'
 
 const PLAY_MS = 700
 const ADJ = buildAdjacency()

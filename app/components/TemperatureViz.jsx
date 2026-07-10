@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import Figure from './Figure'
-import { CONTEXT, CANDIDATES, T_MIN, T_MAX, probsAt, entropy, sampleWith } from './temperatureData'
+import { CANDIDATES, T_MIN, T_MAX, probsAt, entropy, sampleWith } from './temperatureData'
 import styles from './TemperatureViz.module.css'
 
 const INK = '#1a1a1a'

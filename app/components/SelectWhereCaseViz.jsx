@@ -9,6 +9,7 @@ import {
   TOGGLE_COLS,
   TIER_COL,
   WHERE_OPTS,
+  CASE_SQL,
   whereById,
   tierOf,
   buildSql,
@@ -160,9 +161,7 @@ export default function SelectWhereCaseViz() {
         >
           {caseOn ? 'tier column: on' : 'tier column: off'}
         </button>
-        <span style={{ fontFamily: MONO, fontSize: 11, color: FADE }}>
-          CASE WHEN plan = &apos;pro&apos; THEN &apos;paid&apos; ELSE &apos;free&apos; END
-        </span>
+        <span style={{ fontFamily: MONO, fontSize: 11, color: FADE }}>{CASE_SQL}</span>
       </div>
 
       {/* live SQL */}

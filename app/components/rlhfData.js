@@ -9,7 +9,6 @@
 export const INK = '#1a1a1a'
 export const FADE = '#9b9892'
 export const ACCENT = '#c0392b'
-export const PAPER = '#f7f6f2'
 export const POS = '#2f6f8f' // positive preference (blue)
 export const NEG = '#c98a3b' // negative preference (amber)
 

@@ -24,8 +24,6 @@ export const ORDERS = [
   { order_id: 105, user_id: 3, order_total: 30 },
 ]
 
-export const ORDER_THRESHOLD = 25 // "orders over 25"
-
 // ── document shape (one embedded document per user) ───────────────────────────────
 // Plan details are embedded (a copy per user) and orders are nested as an array.
 export const DOCS = USERS.map((u) => ({

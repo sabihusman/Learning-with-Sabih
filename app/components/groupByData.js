@@ -32,16 +32,6 @@ export const AGG_LABEL = {
 }
 const AGG_ALIAS = { COUNT: 'n', SUM: 'total_events', AVG: 'avg_events', DISTINCT: 'users' }
 
-// The largest HAVING threshold worth offering: just below the biggest group's
-// COUNT(*), so the slider can empty the result entirely at the top end.
-export const MAX_COUNT = Math.max(
-  ...GROUP_COLUMNS.map((col) => {
-    const counts = new Map()
-    ROWS.forEach((r) => counts.set(r[col], (counts.get(r[col]) || 0) + 1))
-    return Math.max(...counts.values())
-  })
-)
-
 // Round to at most one decimal place, dropping a trailing .0 so COUNT/SUM stay
 // integer-looking while AVG shows e.g. 1.8.
 const round1 = (n) => Math.round(n * 10) / 10

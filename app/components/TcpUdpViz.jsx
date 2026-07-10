@@ -6,6 +6,7 @@ import Figure from './Figure'
 import {
   DEFAULT_LOSS_PCT,
   MAX_LOSS_PCT,
+  PACKET_COUNT,
   initialState,
   step,
   setLoss,
@@ -22,7 +23,6 @@ import {
 import styles from './TcpUdpViz.module.css'
 
 const PLAY_MS = 900
-const PACKET_COUNT = 8
 
 // Palette: the site family (ink / fade / accent) plus the ok-green and amber
 // already used elsewhere in the section. No new colors.

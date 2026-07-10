@@ -151,5 +151,3 @@ function indexFrames(q) {
 export function buildFrames(q, indexed) {
   return indexed ? indexFrames(q) : scanFrames(q)
 }
-
-export const matchedIds = (q) => ROWS.filter((r) => matches(r, q)).map((r) => r.id)
