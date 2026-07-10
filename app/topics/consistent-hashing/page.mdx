@@ -6,49 +6,18 @@ export const metadata = {
 
 # Consistent Hashing
 
-{/*
-  TODO: final prose lands in a follow-up.
+The last topic ended with a problem. If you place rows with hash mod n, then adding a shard changes n, and almost every row's hash mod n now points somewhere new. Nearly all your data has to move at once. For a cache or a database that is a stall, or an outage. Consistent hashing is the fix, and it is what real distributed caches and databases actually use.
 
-  Honesty constraints the prose must honor:
-  - The hash is a real FNV-1a (32-bit) hash, the same implementation as the
-    Sharding topic: offset basis 2166136261, prime 16777619, XOR each byte
-    then multiply. Ring position = fnv1a(String(value)) mod RING_SIZE.
-    Ownership is genuinely computed by ownerOf, not choreographed: walk
-    clockwise from a key's ring position to the next node, wrapping to the
-    lowest-positioned node past the end.
-  - RING_SIZE = 1024.
-  - 14 hand-authored, realistic-looking keys (session/user/cart/asset/page
-    names). NODES_BASE = node-A, node-B, node-C. The UI adds a 4th, node-D,
-    and can remove it again.
-  - Measured numbers (verified against the committed code, not estimated):
-    - base 3-node assignment: node-A holds 4 keys, node-B holds 6, node-C
-      holds 4 (no node empty).
-    - adding node-D (3 -> 4 nodes): the ring remaps 2 of 14 keys
-      (user:1001 and cart:5001, both previously on node-B). Plain hash mod n
-      for the same change remaps 12 of 14 keys.
-    - one of the two remapped keys, user:1001, is a genuine wraparound case:
-      its ring position (1014) is past every node's position at 4 nodes
-      (highest is node-A at 1011), so it wraps to the lowest-positioned node,
-      node-D (172), which is exactly the wraparound rule being exercised for
-      real, not a staged example.
-  - The contrast (2 remapped vs 12) is the whole point: consistent hashing
-    remaps roughly 1/n of keys when a node joins or leaves; plain hash mod n
-    remaps nearly everything, because almost every key's remainder changes
-    when the modulus changes.
-  - This figure uses one ring point per node for clarity. Real
-    consistent-hashing systems assign many virtual points per physical node
-    (virtual nodes) to smooth out the load each node ends up holding; the
-    single-point ring here approximates the 1/n remap result rather than
-    guaranteeing an even split (node-B holding 6 of 14 keys at the 3-node
-    baseline is a visible example of that unevenness).
-  - This is the direct sequel to Sharding, which ends by naming the
-    resharding problem (hash mod n reshuffles almost everything when n
-    changes) that this topic solves.
-  - No-subhead / figure-last structure, matching the other section pages.
-    Straight quotes and apostrophes only, no em or en dashes.
-*/}
+The idea is to stop hashing to a shard number and start hashing to a position on a ring. Picture a circle of positions. Each node gets a position on the ring, from the hash of its name. Each key gets a position too, from the hash of the key. A key belongs to the first node you reach going clockwise from the key's position. That is the whole rule.
 
-Placeholder prose. The interactive figure below is complete; the written
-explanation will be added in a follow-up.
+The figure places the nodes and the keys on the ring by their real hash positions, and draws each key to the node that owns it. Same key, same position, same owner, every time, which is what lets you find it again later.
+
+Now the payoff. Add a node to the ring and it drops in at one position. Only the keys sitting just behind that new position, the ones that used to walk clockwise past it to reach their old node, change owners. Every other key on the ring is untouched. Adding a node disturbs only a small slice of the ring, not the whole thing.
+
+The figure shows this directly. Add the fourth node and watch two numbers. One counts the keys that actually moved on the ring. The other counts what plain hash mod n would have moved for the same change from three nodes to four. The ring moves a handful. Hash mod n moves almost everything. That gap is the entire reason consistent hashing exists.
+
+The rough rule is that adding one node to a ring of n moves about 1/n of the keys, instead of nearly all of them. That is what makes a distributed system able to grow or shrink a node at a time without reshuffling all its data.
+
+The hash is a real FNV-1a hash, and every ring position, owner, and remap count is computed from it, not scripted. This figure uses one point per node to keep the ring readable. Real systems give each physical node many positions on the ring, called virtual nodes, so keys spread more evenly and no single node gets unlucky with a big arc. The "about 1/n of keys move" result is an expectation that a simple one-point-per-node ring like this one only approximates; with fourteen keys and a few nodes you see the shape of the idea, not a precise ratio.
 
 <ConsistentHashingViz />

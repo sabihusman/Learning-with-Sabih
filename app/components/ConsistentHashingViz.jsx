@@ -67,7 +67,7 @@ export default function ConsistentHashingViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Add node-D and watch only the keys sitting just before it on the ring switch owners; every other key stays put. The readouts below the ring show the real count next to what plain hash mod n would have remapped for the same change. Remove node-D and the keys return to their original owners."
+      tryThis="Look at which node owns each key with three nodes. Add the fourth node and watch the two remap counts: the ring moves only the keys nearest the new node, while hash mod n would move almost all of them. Remove the node again and the ring returns to where it was."
     >
       <svg
         viewBox={`0 0 ${VB} ${VB}`}
