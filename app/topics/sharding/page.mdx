@@ -14,7 +14,7 @@ The figure hashes each row's chosen key with a real hash function and places the
 
 A good partition key has many distinct values, so the rows spread out. Pick the id column, where every row has a unique value, and the shards fill up fairly evenly. No shard is doing much more work than the others. That is the goal: even load.
 
-A bad key has few distinct values, and the trouble is structural. Every row with the same key value hashes to the same shard, so a column with only a handful of values can only ever reach a handful of shards. Group by country, spread across seven values, and the load is uneven but livable. Group by plan, which is only free or pro, and it collapses: the eleven free rows all pile onto one shard while others sit empty. That overloaded shard is a hot shard, and it becomes the bottleneck for the whole system no matter how many machines you add.
+A bad key has few distinct values, and the trouble is structural. Every row with the same key value hashes to the same shard, so a column with only a handful of values can only ever reach a handful of shards. Group by country, spread across seven values, and the load is uneven but livable. Group by plan, which is only free or pro, and it collapses: the free rows all pile onto one shard, leaving others nearly empty. That overloaded shard is a hot shard, and it becomes the bottleneck for the whole system no matter how many machines you add.
 
 So the lesson is that adding shards does not help if your key can't spread rows across them. Choosing the key is the real decision.
 
