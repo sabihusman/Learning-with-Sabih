@@ -1,0 +1,28 @@
+import PositionalEncodingViz from '@/app/components/PositionalEncodingViz'
+
+export const metadata = {
+  title: 'Positional Encoding - Learning with Sabih',
+}
+
+# Positional Encoding
+
+Attention lets every word look at every other word, but on its own it has no notion of
+order: shuffle the sentence and the same set of weights could apply. Positional
+encoding is how a transformer tells the model where each token sits in the sequence.
+
+TODO: replace this placeholder with final prose. Constraints the final prose must
+satisfy:
+- Attention is order-blind without this: it treats a sequence as a set. Positional
+  encoding adds the order signal attention itself does not provide.
+- The encodings shown are the real sin/cos formula from the transformer paper,
+  computed live from position and dimension, not hand-drawn or hand-typed.
+- The figure uses a small d_model (8) and 10 positions for legibility. Real models use
+  hundreds of dimensions, and the encoding is ADDED to the token embedding rather than
+  shown standalone the way this figure shows it.
+- Nearby positions have similar encodings, and that closeness fades smoothly with
+  distance; this is a real, measured property of the formula, not asserted.
+- Cite the measured vectors: at d_model = 8, position 0 is
+  [0, 1, 0, 1, 0, 1, 0, 1] (sin(0) = 0 and cos(0) = 1 in every pair), and position 1 is
+  approximately [0.8415, 0.5403, 0.0998, 0.9950, 0.0100, 1.0000, 0.0010, 1.0000].
+
+<PositionalEncodingViz />
