@@ -55,18 +55,63 @@ test('a fully sequential order in either thread order yields 102', () => {
   expect(runSequence(['B', 'B', 'B', 'A', 'A', 'A']).finalState.balance).toBe(CORRECT)
 })
 
-test('the lock makes 101 impossible: representative interleavings all settle at 102', () => {
-  const orderings = [
-    ['A', 'B'],
-    ['B', 'A'],
-    ['A', 'A', 'B'],
-    ['B', 'B', 'A'],
-    ['A', 'B', 'B', 'A'],
-    ['B', 'A', 'A', 'B'],
-    ['A', 'B', 'A', 'B'],
-    ['B', 'A', 'B', 'A'],
-  ]
-  for (const order of orderings) {
+// Every valid interleaving of thread A's 3 steps with thread B's 3 steps: choose which
+// 3 of the 6 slots belong to A (6 choose 3 = 20 ways), fill the rest with B. Each is
+// automatically order-preserving per thread, since a thread's own steps are identical
+// tokens whose order is just "which slots got picked for it" - there is no way to
+// permute a thread's own three slots out of order.
+function chooseIndices(n: number, k: number): number[][] {
+  const result: number[][] = []
+  function pick(start: number, combo: number[]) {
+    if (combo.length === k) {
+      result.push([...combo])
+      return
+    }
+    for (let i = start; i < n; i++) {
+      combo.push(i)
+      pick(i + 1, combo)
+      combo.pop()
+    }
+  }
+  pick(0, [])
+  return result
+}
+
+const ALL_INTERLEAVINGS: string[][] = chooseIndices(6, 3).map((aSlots) => {
+  const order = Array(6).fill('B')
+  aSlots.forEach((slot) => {
+    order[slot] = 'A'
+  })
+  return order
+})
+
+test('there are exactly 20 valid interleavings of three A steps and three B steps', () => {
+  expect(ALL_INTERLEAVINGS.length).toBe(20)
+  for (const order of ALL_INTERLEAVINGS) {
+    expect(order.filter((t) => t === 'A').length).toBe(3)
+    expect(order.filter((t) => t === 'B').length).toBe(3)
+  }
+  // no duplicate orderings
+  const unique = new Set(ALL_INTERLEAVINGS.map((order) => order.join('')))
+  expect(unique.size).toBe(20)
+})
+
+test('without the lock, the lost update (101) is genuinely reachable among all 20 interleavings', () => {
+  const balances = ALL_INTERLEAVINGS.map((order) => runSequence(order).finalState.balance)
+  expect(balances).toContain(101)
+})
+
+test('without the lock, the two fully sequential interleavings yield 102', () => {
+  const cleanAFirst = ALL_INTERLEAVINGS.find((order) => order.join('') === 'AAABBB')
+  const cleanBFirst = ALL_INTERLEAVINGS.find((order) => order.join('') === 'BBBAAA')
+  expect(cleanAFirst).toBeDefined()
+  expect(cleanBFirst).toBeDefined()
+  expect(runSequence(cleanAFirst!).finalState.balance).toBe(CORRECT)
+  expect(runSequence(cleanBFirst!).finalState.balance).toBe(CORRECT)
+})
+
+test('the lock makes 101 impossible: ALL 20 interleavings settle at 102, none at 101', () => {
+  for (const order of ALL_INTERLEAVINGS) {
     const finalState = runLockedUntilDone(order)
     expect(isDone(finalState)).toBe(true)
     expect(finalState.balance).toBe(CORRECT)
