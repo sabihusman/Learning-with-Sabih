@@ -60,6 +60,7 @@ const TOPICS = [
   { slug: 'cap-theorem', name: 'CAP Theorem' },
   { slug: 'sharding', name: 'Sharding' },
   { slug: 'consistent-hashing', name: 'Consistent Hashing' },
+  { slug: 'race-conditions', name: 'Race Conditions and Locks' },
   { slug: 'tcp-and-udp', name: 'TCP and UDP' },
   { slug: 'dns', name: 'DNS' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
