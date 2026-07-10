@@ -1,0 +1,42 @@
+import RaceConditionsViz from '@/app/components/RaceConditionsViz'
+
+export const metadata = {
+  title: 'Race Conditions and Locks - Learning with Sabih',
+}
+
+# Race Conditions and Locks
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The shared balance and each thread's local register are real state, modeled
+    explicitly (app/components/raceConditionsData.js): balance starts at 100, each
+    thread has a program counter (0..3) and a register. The three steps per thread,
+    in order, are READ (register = balance), ADD (register = register + 1), WRITE
+    (balance = register).
+  - applyStep is pure and never mutates state; runSequence folds it over an ordered
+    list of thread ids from a fresh initial state.
+  - The CLEAN order (A, A, A, B, B, B) really yields a final balance of 102, and the
+    INTERLEAVED order (A, B, A, B, A, B) really yields 101, both computed by running
+    the same engine over the two orders, never hand-typed. 101 is the lost update:
+    both threads read 100 before either writes back, so one thread's +1 overwrites
+    the other's.
+  - The lock model is explicit: a thread acquires the lock on its first step (READ)
+    and holds it through ADD and WRITE; the other thread cannot take any step while
+    the lock is held. This makes 101 impossible under any interleaving the UI
+    allows, not just the two named presets, since the second thread that tries to
+    read is blocked until the first thread finishes writing and releases.
+  - Manual Step A / Step B buttons advance one thread by one step; auto-play issues
+    the same steps on a timer (setInterval) and can be paused and resumed. The lock
+    toggle disables a step the lock disallows rather than silently skipping it.
+  - This is a simplified model of one shared variable and two threads. Real races
+    involve many threads, CPU caches, and instruction reordering not shown here.
+  - No-subhead / figure-last structure, matching the other section pages. Straight
+    quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<RaceConditionsViz />

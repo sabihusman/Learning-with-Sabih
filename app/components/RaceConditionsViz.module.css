@@ -1,0 +1,174 @@
+/* Race Conditions: two thread lanes over one shared balance, stepped by hand or by a
+   timer-driven auto-play (see RaceConditionsViz.jsx). Toggle groups reuse the
+   Sharding/Consistent-Hashing button vocabulary; the balance box and lanes reuse the
+   Concurrency figure's layout, since both figures show the same lost-update shape.
+   Project paper/ink/accent palette. Transitions are cosmetic only. */
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.groupLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.btn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  color: #1a1a1a;
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn:hover {
+  background: #ece9e1;
+}
+
+.btnOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #c0392b;
+  outline-offset: 2px;
+}
+
+.balanceBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 1.5px solid #e2e0d8;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: #fffefb;
+  width: fit-content;
+  margin: 0 auto 14px;
+}
+
+.balanceLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.balanceValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1a1a1a;
+  transition: color 0.18s ease;
+}
+
+.balanceGoal {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  color: #9b9892;
+}
+
+.lanes {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.lane {
+  flex: 1 1 0;
+  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  border: 1px solid #e2e0d8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fffefb;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.laneLocked {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 1px #c0392b;
+}
+
+.laneHead {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #f4f2ec;
+  color: #1a1a1a;
+  border: 1px solid #d8d4cc;
+}
+
+.badgeDone {
+  background: #e9f1ee;
+  color: #1f6f5c;
+  border-color: #1f6f5c;
+}
+
+.registerLine {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  color: #4a4843;
+}
+
+.lockLine {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #c0392b;
+}
+
+.verdict {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.verdictGood {
+  color: #1f6f5c;
+  border-color: #1f6f5c;
+}
+
+.verdictBad {
+  color: #c0392b;
+  border-color: #c0392b;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
