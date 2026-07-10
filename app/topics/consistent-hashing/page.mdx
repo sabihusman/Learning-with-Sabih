@@ -1,0 +1,54 @@
+import ConsistentHashingViz from '@/app/components/ConsistentHashingViz'
+
+export const metadata = {
+  title: 'Consistent Hashing - Learning with Sabih',
+}
+
+# Consistent Hashing
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - The hash is a real FNV-1a (32-bit) hash, the same implementation as the
+    Sharding topic: offset basis 2166136261, prime 16777619, XOR each byte
+    then multiply. Ring position = fnv1a(String(value)) mod RING_SIZE.
+    Ownership is genuinely computed by ownerOf, not choreographed: walk
+    clockwise from a key's ring position to the next node, wrapping to the
+    lowest-positioned node past the end.
+  - RING_SIZE = 1024.
+  - 14 hand-authored, realistic-looking keys (session/user/cart/asset/page
+    names). NODES_BASE = node-A, node-B, node-C. The UI adds a 4th, node-D,
+    and can remove it again.
+  - Measured numbers (verified against the committed code, not estimated):
+    - base 3-node assignment: node-A holds 4 keys, node-B holds 6, node-C
+      holds 4 (no node empty).
+    - adding node-D (3 -> 4 nodes): the ring remaps 2 of 14 keys
+      (user:1001 and cart:5001, both previously on node-B). Plain hash mod n
+      for the same change remaps 12 of 14 keys.
+    - one of the two remapped keys, user:1001, is a genuine wraparound case:
+      its ring position (1014) is past every node's position at 4 nodes
+      (highest is node-A at 1011), so it wraps to the lowest-positioned node,
+      node-D (172), which is exactly the wraparound rule being exercised for
+      real, not a staged example.
+  - The contrast (2 remapped vs 12) is the whole point: consistent hashing
+    remaps roughly 1/n of keys when a node joins or leaves; plain hash mod n
+    remaps nearly everything, because almost every key's remainder changes
+    when the modulus changes.
+  - This figure uses one ring point per node for clarity. Real
+    consistent-hashing systems assign many virtual points per physical node
+    (virtual nodes) to smooth out the load each node ends up holding; the
+    single-point ring here approximates the 1/n remap result rather than
+    guaranteeing an even split (node-B holding 6 of 14 keys at the 3-node
+    baseline is a visible example of that unevenness).
+  - This is the direct sequel to Sharding, which ends by naming the
+    resharding problem (hash mod n reshuffles almost everything when n
+    changes) that this topic solves.
+  - No-subhead / figure-last structure, matching the other section pages.
+    Straight quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<ConsistentHashingViz />
