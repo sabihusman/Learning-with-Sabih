@@ -22,13 +22,13 @@ export const metadata = {
       - 3 shards: [7, 4, 3]
       - 4 shards: [3, 4, 3, 4]
       id spreads reasonably across shards at both shard counts.
-    - key = country (4 distinct values: US x6, UK x4, DE x2, FR x2):
-      - 3 shards: [0, 12, 2]
-      - 4 shards: [0, 12, 2, 0]
-      With only 4 distinct country strings, the real hash concentrates most of
-      them into one shard at both shard counts; two of the four countries
-      happen to land in the same shard. This is a real, measured outcome of
-      hashing a low-cardinality column, not a staged result.
+    - key = country (7 distinct values, mildly uneven: DE x3, CA x3, FI x2,
+      JP x2, AR x2, MX x1, IE x1):
+      - 3 shards: [4, 5, 5]
+      - 4 shards: [3, 3, 5, 3]
+      country spreads mildly across every shard at both shard counts, no shard
+      holding close to half the rows. This is a real, measured outcome of
+      hashing a medium-cardinality column, not a staged result.
     - key = plan (2 distinct values, skewed: free x11, pro x3):
       - 3 shards: [14, 0, 0] (every row lands in a single shard)
       - 4 shards: [3, 0, 0, 11]
@@ -36,11 +36,13 @@ export const metadata = {
       values can never occupy more than two shards, no matter how many shards
       exist, and the skew toward "free" concentrates the load further.
   - The UI defaults to key = id, shards = 4, which shows the most balanced
-    view first; switching to plan or country reveals the concentration.
+    view first; switching to plan reveals a hot shard, and switching to
+    country shows a mild, in-between spread.
   - Core lesson: the partition key's cardinality caps how many shards can ever
     be used, and skew within that key decides how unevenly load piles onto
     the shards that are used. Adding more shards does not fix a low-cardinality
-    key.
+    key. country (medium cardinality) demonstrates the middle ground between
+    id's even spread and plan's hot shard.
   - Honesty note (must appear, substantially as follows): this is a real hash
     over a tiny, hand-picked dataset built to make the lesson visible. Real
     sharded systems pick partition keys deliberately to avoid this failure
