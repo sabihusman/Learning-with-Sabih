@@ -6,53 +6,20 @@ export const metadata = {
 
 # Sharding
 
-{/*
-  TODO: final prose lands in a follow-up.
+When one database can't hold all your data or handle all your traffic, you split the rows across several machines. Each machine is a shard. The question sharding answers is simple to ask and easy to get wrong: given a row, which shard does it live on?
 
-  Honesty constraints the prose must honor:
-  - The hash is a real FNV-1a (32-bit) hash: offset basis 2166136261, prime
-    16777619, XOR each byte then multiply. Placement = fnv1a(String(value)) mod
-    the shard count. This is genuinely computed, not choreographed.
-  - The dataset is 14 hand-authored rows, small on purpose so the skew is easy
-    to see. Real shards hold millions of rows, and real deployments use far
-    more than 3 or 4 shards.
-  - Measured per-shard counts (verified against the committed code, not
-    estimated):
-    - key = id (high cardinality, unique per row):
-      - 3 shards: [7, 4, 3]
-      - 4 shards: [3, 4, 3, 4]
-      id spreads reasonably across shards at both shard counts.
-    - key = country (7 distinct values, mildly uneven: DE x3, CA x3, FI x2,
-      JP x2, AR x2, MX x1, IE x1):
-      - 3 shards: [4, 5, 5]
-      - 4 shards: [3, 3, 5, 3]
-      country spreads mildly across every shard at both shard counts, no shard
-      holding close to half the rows. This is a real, measured outcome of
-      hashing a medium-cardinality column, not a staged result.
-    - key = plan (2 distinct values, skewed: free x11, pro x3):
-      - 3 shards: [14, 0, 0] (every row lands in a single shard)
-      - 4 shards: [3, 0, 0, 11]
-      plan produces the clearest hot shard: a column with only two possible
-      values can never occupy more than two shards, no matter how many shards
-      exist, and the skew toward "free" concentrates the load further.
-  - The UI defaults to key = id, shards = 4, which shows the most balanced
-    view first; switching to plan reveals a hot shard, and switching to
-    country shows a mild, in-between spread.
-  - Core lesson: the partition key's cardinality caps how many shards can ever
-    be used, and skew within that key decides how unevenly load piles onto
-    the shards that are used. Adding more shards does not fix a low-cardinality
-    key. country (medium cardinality) demonstrates the middle ground between
-    id's even spread and plan's hot shard.
-  - Honesty note (must appear, substantially as follows): this is a real hash
-    over a tiny, hand-picked dataset built to make the lesson visible. Real
-    sharded systems pick partition keys deliberately to avoid this failure
-    mode, often combining a high-cardinality key with the low-cardinality one,
-    or hashing a composite key.
-  - No-subhead / figure-last structure, matching the other section pages.
-    Straight quotes and apostrophes only, no em or en dashes.
-*/}
+The common answer is to pick one column as the partition key, hash its value, and use the hash to choose a shard. Hashing turns any value into a number, and that number mod the shard count gives a shard. Same key value, same shard, every time. That is what lets you find a row later: hash the key, go straight to the shard, no searching.
 
-Placeholder prose. The interactive figure below is complete; the written
-explanation will be added in a follow-up.
+The figure hashes each row's chosen key with a real hash function and places the row in hash mod n. Switch the partition key and watch the rows redistribute.
+
+A good partition key has many distinct values, so the rows spread out. Pick the id column, where every row has a unique value, and the shards fill up fairly evenly. No shard is doing much more work than the others. That is the goal: even load.
+
+A bad key has few distinct values, and the trouble is structural. Every row with the same key value hashes to the same shard, so a column with only a handful of values can only ever reach a handful of shards. Group by country, spread across seven values, and the load is uneven but livable. Group by plan, which is only free or pro, and it collapses: the eleven free rows all pile onto one shard while others sit empty. That overloaded shard is a hot shard, and it becomes the bottleneck for the whole system no matter how many machines you add.
+
+So the lesson is that adding shards does not help if your key can't spread rows across them. Choosing the key is the real decision.
+
+This sets up the next problem. Hashing with mod n works until n changes. Add a shard and almost every row's hash mod n lands somewhere new, so nearly all your data has to move. The next topic, consistent hashing, is how systems avoid that.
+
+The hash is a real FNV-1a hash and every placement is genuinely computed from it, not scripted. The dataset is tiny and hand-picked to show the range from even to hot in fourteen rows; real shards hold millions of rows and real systems use far more than three or four. The country values were chosen so their real hash spread reads as mild here, but the spreading itself is the honest output of the hash, not a staged result.
 
 <ShardingViz />
