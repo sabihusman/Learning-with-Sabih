@@ -6,45 +6,20 @@ export const metadata = {
 
 # Deadlock
 
-{/*
-  TODO: final prose lands in a follow-up.
+The last topic used a lock to stop two threads from corrupting shared data. Locks fix races, but they introduce a new way to get stuck. If a thread needs more than one lock, and two threads reach for the same locks in different orders, they can end up waiting on each other forever. That is deadlock.
 
-  Honesty constraints the prose must honor:
-  - Lock state and each thread's waiting status are real state, modeled explicitly
-    (app/components/deadlockData.js): two locks (1 and 2), each free or held by a
-    thread; two threads (A and B), each with a fixed four-action sequence (acquire
-    lock 1, acquire lock 2, release lock 1, release lock 2). OPPOSITE mode has A
-    acquire 1 then 2 and B acquire 2 then 1; SAME mode (the fix) has both acquire 1
-    then 2.
-  - applyStep is pure and never mutates state. A thread whose next action is to
-    acquire a lock the other thread holds does not advance; it is marked waiting for
-    that lock until a later attempt finds it free.
-  - isDeadlocked is DETECTION, not a scripted flag: it is true exactly when thread A
-    is waiting for a lock thread B holds AND thread B is waiting for a lock thread A
-    holds, computed straight from lock ownership and waiting status.
-  - OPPOSITE mode can reach deadlock: the classic interleaving (A takes lock 1, B
-    takes lock 2, A blocks wanting lock 2, B blocks wanting lock 1) genuinely produces
-    isDeadlocked === true, computed by running the engine, not hand-set.
-  - SAME mode cannot reach deadlock. This has been checked exhaustively: every valid
-    interleaving of the two threads' four-action sequences (70 of them, choosing which
-    4 of 8 turns belong to thread A) was run through the engine, and isDeadlocked was
-    never true in any of them.
-  - The wait-for graph in the figure (two locks, two threads, held and waiting edges)
-    is drawn straight from real state on every render, not animated into existence. A
-    held edge means the lock really is held by that thread; a waiting edge means that
-    thread's next action really is blocked on that lock. When the four edges close
-    into a loop, that loop is the deadlock, not a decoration of it.
-  - This is the two-thread, two-lock case. Real deadlock needs four conditions (mutual
-    exclusion, hold-and-wait, no preemption, circular wait) and can involve many
-    threads and resources not shown here.
-  - This is the direct sequel to Race Conditions and Locks: locks fixed the lost
-    update, but locks themselves introduce a new failure mode when more than one is
-    needed at once.
-  - No-subhead / figure-last structure, matching the other section pages. Straight
-    quotes and apostrophes only, no em or en dashes.
-*/}
+Here is the setup. Two threads, A and B, each need both lock 1 and lock 2 to finish their work. A grabs lock 1 first, then lock 2. B grabs lock 2 first, then lock 1. As long as one thread gets both locks before the other starts, everything is fine and nobody waits.
 
-Placeholder prose. The interactive figure below is complete; the written
-explanation will be added in a follow-up.
+The trouble is the interleaving. Suppose A takes lock 1, and before A can take lock 2, B takes lock 2. Now A wants lock 2, which B holds, so A waits. B wants lock 1, which A holds, so B waits. Neither will ever release what it has, because neither can move. They are stuck, and nothing crashed. The program just stops making progress.
+
+The figure draws this as a wait-for graph. Each lock and each thread is a node. A solid line shows a lock held by a thread. An arrow shows a thread waiting for a lock. When the deadlock happens, those lines close into a loop: A holds 1 and points at 2, B holds 2 and points at 1. That closed circle is the deadlock. You can see it form.
+
+Step the threads in the opposite-order mode and try to close the loop. You will not always deadlock, because if one thread gets both locks first, it finishes and frees them. Deadlock is something the bad interleaving can reach, not something that always happens. That is part of what makes it nasty in real systems: it shows up only sometimes, depending on timing.
+
+The fix is lock ordering. Make every thread acquire locks in the same order, always lock 1 then lock 2. Switch the figure to same-order mode and try to cause a deadlock. You cannot. If both threads want lock 1 first, one of them gets it and the other waits for just that one lock. Whoever holds lock 1 can still go on to take lock 2, finish, and release both. The waiting thread then proceeds. There is no way to form the circle, because no thread ever holds lock 2 while waiting for lock 1.
+
+That is the standard defense against deadlock: not cleverness at the moment it happens, but a rule agreed up front that makes the circular wait impossible to build.
+
+The lock ownership and each thread's waiting status are real state, and the deadlock is detected as a genuine circular wait in that state, not scripted to appear. Opposite ordering can reach deadlock but does not always, which the figure lets you confirm by stepping. Same ordering has been checked exhaustively across every interleaving of the two threads, and it never deadlocks. This is the smallest case, two threads and two locks. A real deadlock needs four conditions together (mutual exclusion, hold and wait, no preemption, and a circular wait), and real systems can deadlock across many threads and resources this figure does not show. Lock ordering works by making the circular wait impossible.
 
 <DeadlockViz />

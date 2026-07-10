@@ -186,7 +186,7 @@ export default function DeadlockViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Leave the order on opposite and run auto-play, or step A then B then A then B by hand. Watch the arrows close into a loop: lock 1 held by A, A waiting on lock 2, lock 2 held by B, B waiting on lock 1. Neither thread's buttons work anymore, because neither can proceed. Now switch to same order and try again: the loop never closes, because whichever thread arrives second always waits on a lock the first thread is about to release, never on a lock it is itself waiting for."
+      tryThis="In opposite-order mode, step A once, then B once, then keep stepping, and watch the wait-for graph close into a loop with a deadlock label. Notice both threads freeze and no step is allowed. Now switch to same-order mode and try the same thing. One thread waits on a single lock, the other finishes, and the loop never closes."
     >
       <div className={styles.controlsRow}>
         <span className={styles.groupLabel}>acquire order</span>
