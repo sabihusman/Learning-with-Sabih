@@ -35,7 +35,7 @@ export default function ShardingViz() {
       title="Which shard does a row live on?"
       status={status}
       readouts={readouts}
-      tryThis="Start with id and watch rows spread fairly evenly across the shards. Switch the partition key to plan: because plan only has two possible values, all its rows collapse onto at most two shards no matter how many shards exist, and one of them turns into a hot shard. A low-cardinality partition key caps how many shards can ever be used."
+      tryThis="Start on the id key and note how evenly the shards fill. Switch to country for a milder spread, then to plan and watch one shard swallow most of the rows. Change the shard count between 3 and 4 and see the placements recompute."
     >
       <div className={styles.controlsRow}>
         <span className={styles.groupLabel}>partition key</span>
