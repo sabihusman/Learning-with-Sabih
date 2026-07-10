@@ -1,0 +1,23 @@
+import ConsistentHashingViz from '@/app/components/ConsistentHashingViz'
+
+export const metadata = {
+  title: 'Consistent Hashing - Learning with Sabih',
+}
+
+# Consistent Hashing
+
+The last topic ended with a problem. If you place rows with hash mod n, then adding a shard changes n, and almost every row's hash mod n now points somewhere new. Nearly all your data has to move at once. For a cache or a database that is a stall, or an outage. Consistent hashing is the fix, and it is what real distributed caches and databases actually use.
+
+The idea is to stop hashing to a shard number and start hashing to a position on a ring. Picture a circle of positions. Each node gets a position on the ring, from the hash of its name. Each key gets a position too, from the hash of the key. A key belongs to the first node you reach going clockwise from the key's position. That is the whole rule.
+
+The figure places the nodes and the keys on the ring by their real hash positions, and draws each key to the node that owns it. Same key, same position, same owner, every time, which is what lets you find it again later.
+
+Now the payoff. Add a node to the ring and it drops in at one position. Only the keys sitting just behind that new position, the ones that used to walk clockwise past it to reach their old node, change owners. Every other key on the ring is untouched. Adding a node disturbs only a small slice of the ring, not the whole thing.
+
+The figure shows this directly. Add the fourth node and watch two numbers. One counts the keys that actually moved on the ring. The other counts what plain hash mod n would have moved for the same change from three nodes to four. The ring moves a handful. Hash mod n moves almost everything. That gap is the entire reason consistent hashing exists.
+
+The rough rule is that adding one node to a ring of n moves about 1/n of the keys, instead of nearly all of them. That is what makes a distributed system able to grow or shrink a node at a time without reshuffling all its data.
+
+The hash is a real FNV-1a hash, and every ring position, owner, and remap count is computed from it, not scripted. This figure uses one point per node to keep the ring readable. Real systems give each physical node many positions on the ring, called virtual nodes, so keys spread more evenly and no single node gets unlucky with a big arc. The "about 1/n of keys move" result is an expectation that a simple one-point-per-node ring like this one only approximates; with fourteen keys and a few nodes you see the shape of the idea, not a precise ratio.
+
+<ConsistentHashingViz />

@@ -1,0 +1,19 @@
+/* Consistent hashing: a ring of nodes and keys, direct manipulation only, no
+   timers. Reuses the site's categorical palette (see GroupByViz) for the up to
+   4 node colors, and the project's monospace/ink/fade vocabulary elsewhere. */
+
+.svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
