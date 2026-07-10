@@ -49,16 +49,17 @@ Systems and Networking|41|Caching|Feed a fixed request stream through a real lea
 Systems and Networking|42|Percentiles and Tail Latency|Drag a percentile handle across a fixed sample of 60 request latencies and watch the mean sit far below p99, because a handful of slow tail requests drag the average up while most requests never see them|percentiles-and-tail-latency
 Systems and Networking|43|Load Balancing|Send one fixed request stream through a balancer to three servers and watch round robin pile long requests onto one server while least connections keeps them level, then kill a server mid-run and see which policy copes|load-balancing
 Systems and Networking|44|CAP Theorem|Replicate one key across two nodes, cut the network between them, and choose: refuse writes to stay consistent or serve both sides and let the copies diverge, the tradeoff a partition forces|cap-theorem
-Systems and Networking|45|TCP and UDP|Send the same 8 packets across an identical lossy channel and watch UDP finish fast with permanent gaps while TCP detects each drop, resends it, and holds arrivals out of order until the gap behind them fills in|tcp-and-udp
-Systems and Networking|46|DNS|Resolve a name through root, TLD, and authoritative servers, watching each one hand back a referral instead of an answer, then look it up again and watch the cached answer skip the whole chain|dns
-Object-Oriented Programming|47|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
-Object-Oriented Programming|48|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
-Object-Oriented Programming|49|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
-Object-Oriented Programming|50|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
-Object-Oriented Programming|51|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
-Object-Oriented Programming|52|Abstract Classes and Interfaces|Toggle a Robot type between an abstract class and an interface, and watch a checklist compare what each kind of contract can force, carry, and be extended by|abstract-classes-and-interfaces
-Object-Oriented Programming|53|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
-Data and Compression|54|Entropy and Compression|Drag four symbol probabilities and watch a real Huffman code chase Shannon's entropy floor, closing the gap only at powers of one-half|entropy-and-compression
+Systems and Networking|45|Sharding|Pick a partition key and watch rows hash into shards, then see a low-cardinality key pile most rows onto one hot shard|sharding
+Systems and Networking|46|TCP and UDP|Send the same 8 packets across an identical lossy channel and watch UDP finish fast with permanent gaps while TCP detects each drop, resends it, and holds arrivals out of order until the gap behind them fills in|tcp-and-udp
+Systems and Networking|47|DNS|Resolve a name through root, TLD, and authoritative servers, watching each one hand back a referral instead of an answer, then look it up again and watch the cached answer skip the whole chain|dns
+Object-Oriented Programming|48|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
+Object-Oriented Programming|49|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
+Object-Oriented Programming|50|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
+Object-Oriented Programming|51|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
+Object-Oriented Programming|52|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
+Object-Oriented Programming|53|Abstract Classes and Interfaces|Toggle a Robot type between an abstract class and an interface, and watch a checklist compare what each kind of contract can force, carry, and be extended by|abstract-classes-and-interfaces
+Object-Oriented Programming|54|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
+Data and Compression|55|Entropy and Compression|Drag four symbol probabilities and watch a real Huffman code chase Shannon's entropy floor, closing the gap only at powers of one-half|entropy-and-compression
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Systems and Networking', 'Object-Oriented Programming', 'Data and Compression']
