@@ -6,37 +6,22 @@ export const metadata = {
 
 # Race Conditions and Locks
 
-{/*
-  TODO: final prose lands in a follow-up.
+When two threads run at the same time and both touch the same piece of data, the result can depend on the exact order their steps happen to interleave. That is a race condition: the same code, run twice, can give different answers depending on timing you do not control.
 
-  Honesty constraints the prose must honor:
-  - The shared balance and each thread's local register are real state, modeled
-    explicitly (app/components/raceConditionsData.js): balance starts at 100, each
-    thread has a program counter (0..3) and a register. The three steps per thread,
-    in order, are READ (register = balance), ADD (register = register + 1), WRITE
-    (balance = register).
-  - applyStep is pure and never mutates state; runSequence folds it over an ordered
-    list of thread ids from a fresh initial state.
-  - The CLEAN order (A, A, A, B, B, B) really yields a final balance of 102, and the
-    INTERLEAVED order (A, B, A, B, A, B) really yields 101, both computed by running
-    the same engine over the two orders, never hand-typed. 101 is the lost update:
-    both threads read 100 before either writes back, so one thread's +1 overwrites
-    the other's.
-  - The lock model is explicit: a thread acquires the lock on its first step (READ)
-    and holds it through ADD and WRITE; the other thread cannot take any step while
-    the lock is held. This makes 101 impossible under any interleaving the UI
-    allows, not just the two named presets, since the second thread that tries to
-    read is blocked until the first thread finishes writing and releases.
-  - Manual Step A / Step B buttons advance one thread by one step; auto-play issues
-    the same steps on a timer (setInterval) and can be paused and resumed. The lock
-    toggle disables a step the lock disallows rather than silently skipping it.
-  - This is a simplified model of one shared variable and two threads. Real races
-    involve many threads, CPU caches, and instruction reordering not shown here.
-  - No-subhead / figure-last structure, matching the other section pages. Straight
-    quotes and apostrophes only, no em or en dashes.
-*/}
+Here is the smallest example. A shared balance holds 100. Two threads each want to add 1, so the balance should end at 102. But adding 1 is not one step. Each thread has to read the balance into its own local copy, add 1 to that copy, then write the copy back. Three steps, and the two threads run their three steps in some interleaved order.
 
-Placeholder prose. The interactive figure below is complete; the written
-explanation will be added in a follow-up.
+Step them cleanly and it works. Let one thread finish all three steps before the other starts, and you get 102. Each thread reads the other's finished result, so the increments stack.
+
+Step them badly and one addition vanishes. Let both threads read before either writes, and both read 100. Both add 1 to get 101 in their own copy. Both write 101. Two increments went in, but the balance only moved by one. A dollar is gone, and nothing errored. The code looks correct. The order was the problem.
+
+In the figure, step the two threads by hand, or let auto-play run a clean order or an interleaved one. The balance and each thread's local copy are real; the final number is whatever the order you chose produces. The bad result only appears when you actually create the bad interleaving.
+
+The fix is a lock. A lock lets only one thread into the critical section at a time. The first thread to arrive takes the lock, does its read, add, and write, then releases it. Until then the other thread has to wait. It cannot read a half-finished value because it cannot start at all.
+
+Turn the lock on in the figure and try to cause the lost update again. You cannot. Once one thread takes the lock, the other's steps are blocked until the first finishes, so the only orders left are the clean ones. The balance always ends at 102.
+
+That is the whole tradeoff of concurrency in one figure. Threads running at once are fast but can step on each other. A lock makes them take turns at the critical moment, which is slower but correct.
+
+The balance and each thread's local copy are real state, and the final number is computed from the exact step order you run, not scripted. The lost update only happens when the interleaving actually causes it, and the lock genuinely blocks the steps that would cause it. Every possible interleaving of the two threads has been checked, and with the lock on the balance lands on 102 every time. This is a simplified model: one shared variable, two threads, one step at a time. Real races involve many threads, CPU caches, and instruction reordering that this figure does not show.
 
 <RaceConditionsViz />

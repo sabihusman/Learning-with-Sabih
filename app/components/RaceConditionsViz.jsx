@@ -136,7 +136,7 @@ export default function RaceConditionsViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Turn the lock off, then auto-play the Interleaved order: both threads read 100 before either writes, so one thread's +1 overwrites the other and the balance lands on 101, not 102. Switch to the Clean order and it lands on 102, since A finishes before B ever reads. Now turn the lock on and try the Interleaved order again: the second thread that tries to read is blocked until the first thread finishes writing, so it always ends at 102, no matter which order you press Step A and Step B in."
+      tryThis="Leave the lock off and run the interleaved order. Watch both threads read 100 and one increment disappear as the balance ends at 101. Now turn the lock on and run the same order. The second thread is forced to wait, and the balance ends at 102. Try to break it by stepping manually with the lock on, and notice the other thread's buttons are disabled while one thread holds the lock."
     >
       <div className={styles.controlsRow}>
         <span className={styles.groupLabel}>lock</span>
