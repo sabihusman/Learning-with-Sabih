@@ -1,0 +1,25 @@
+import DeadlockViz from '@/app/components/DeadlockViz'
+
+export const metadata = {
+  title: 'Deadlock - Learning with Sabih',
+}
+
+# Deadlock
+
+The last topic used a lock to stop two threads from corrupting shared data. Locks fix races, but they introduce a new way to get stuck. If a thread needs more than one lock, and two threads reach for the same locks in different orders, they can end up waiting on each other forever. That is deadlock.
+
+Here is the setup. Two threads, A and B, each need both lock 1 and lock 2 to finish their work. A grabs lock 1 first, then lock 2. B grabs lock 2 first, then lock 1. As long as one thread gets both locks before the other starts, everything is fine and nobody waits.
+
+The trouble is the interleaving. Suppose A takes lock 1, and before A can take lock 2, B takes lock 2. Now A wants lock 2, which B holds, so A waits. B wants lock 1, which A holds, so B waits. Neither will ever release what it has, because neither can move. They are stuck, and nothing crashed. The program just stops making progress.
+
+The figure draws this as a wait-for graph. Each lock and each thread is a node. A solid line shows a lock held by a thread. An arrow shows a thread waiting for a lock. When the deadlock happens, those lines close into a loop: A holds 1 and points at 2, B holds 2 and points at 1. That closed circle is the deadlock. You can see it form.
+
+Step the threads in the opposite-order mode and try to close the loop. You will not always deadlock, because if one thread gets both locks first, it finishes and frees them. Deadlock is something the bad interleaving can reach, not something that always happens. That is part of what makes it nasty in real systems: it shows up only sometimes, depending on timing.
+
+The fix is lock ordering. Make every thread acquire locks in the same order, always lock 1 then lock 2. Switch the figure to same-order mode and try to cause a deadlock. You cannot. If both threads want lock 1 first, one of them gets it and the other waits for just that one lock. Whoever holds lock 1 can still go on to take lock 2, finish, and release both. The waiting thread then proceeds. There is no way to form the circle, because no thread ever holds lock 2 while waiting for lock 1.
+
+That is the standard defense against deadlock: not cleverness at the moment it happens, but a rule agreed up front that makes the circular wait impossible to build.
+
+The lock ownership and each thread's waiting status are real state, and the deadlock is detected as a genuine circular wait in that state, not scripted to appear. Opposite ordering can reach deadlock but does not always, which the figure lets you confirm by stepping. Same ordering has been checked exhaustively across every interleaving of the two threads, and it never deadlocks. This is the smallest case, two threads and two locks. A real deadlock needs four conditions together (mutual exclusion, hold and wait, no preemption, and a circular wait), and real systems can deadlock across many threads and resources this figure does not show. Lock ordering works by making the circular wait impossible.
+
+<DeadlockViz />
