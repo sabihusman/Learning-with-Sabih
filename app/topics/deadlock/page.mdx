@@ -1,0 +1,50 @@
+import DeadlockViz from '@/app/components/DeadlockViz'
+
+export const metadata = {
+  title: 'Deadlock - Learning with Sabih',
+}
+
+# Deadlock
+
+{/*
+  TODO: final prose lands in a follow-up.
+
+  Honesty constraints the prose must honor:
+  - Lock state and each thread's waiting status are real state, modeled explicitly
+    (app/components/deadlockData.js): two locks (1 and 2), each free or held by a
+    thread; two threads (A and B), each with a fixed four-action sequence (acquire
+    lock 1, acquire lock 2, release lock 1, release lock 2). OPPOSITE mode has A
+    acquire 1 then 2 and B acquire 2 then 1; SAME mode (the fix) has both acquire 1
+    then 2.
+  - applyStep is pure and never mutates state. A thread whose next action is to
+    acquire a lock the other thread holds does not advance; it is marked waiting for
+    that lock until a later attempt finds it free.
+  - isDeadlocked is DETECTION, not a scripted flag: it is true exactly when thread A
+    is waiting for a lock thread B holds AND thread B is waiting for a lock thread A
+    holds, computed straight from lock ownership and waiting status.
+  - OPPOSITE mode can reach deadlock: the classic interleaving (A takes lock 1, B
+    takes lock 2, A blocks wanting lock 2, B blocks wanting lock 1) genuinely produces
+    isDeadlocked === true, computed by running the engine, not hand-set.
+  - SAME mode cannot reach deadlock. This has been checked exhaustively: every valid
+    interleaving of the two threads' four-action sequences (70 of them, choosing which
+    4 of 8 turns belong to thread A) was run through the engine, and isDeadlocked was
+    never true in any of them.
+  - The wait-for graph in the figure (two locks, two threads, held and waiting edges)
+    is drawn straight from real state on every render, not animated into existence. A
+    held edge means the lock really is held by that thread; a waiting edge means that
+    thread's next action really is blocked on that lock. When the four edges close
+    into a loop, that loop is the deadlock, not a decoration of it.
+  - This is the two-thread, two-lock case. Real deadlock needs four conditions (mutual
+    exclusion, hold-and-wait, no preemption, circular wait) and can involve many
+    threads and resources not shown here.
+  - This is the direct sequel to Race Conditions and Locks: locks fixed the lost
+    update, but locks themselves introduce a new failure mode when more than one is
+    needed at once.
+  - No-subhead / figure-last structure, matching the other section pages. Straight
+    quotes and apostrophes only, no em or en dashes.
+*/}
+
+Placeholder prose. The interactive figure below is complete; the written
+explanation will be added in a follow-up.
+
+<DeadlockViz />
