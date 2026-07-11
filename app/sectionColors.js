@@ -1,5 +1,6 @@
-// Single source of truth for each section's color. Nothing consumes this yet;
-// future PRs (intro cards, topic-page accents) will import from here.
+// Single source of truth for each section's chapter metadata: color, slug, and
+// blurb. Shared by the contents-page chapter cards and the /chapters/<slug>/ view
+// routes so neither copy ever drifts from the other.
 
 export const SECTION_COLORS = {
   'AI and ML': { color: '#c0392b' },
@@ -17,6 +18,25 @@ const FALLBACK_COLOR = '#c0392b'
 // crashes a consumer.
 export function colorForSection(name) {
   return SECTION_COLORS[name]?.color ?? FALLBACK_COLOR
+}
+
+// The single slug function for section/chapter names: lowercase, non-alphanumeric
+// runs collapsed to one hyphen, no leading/trailing hyphen. Used by both the
+// contents-page chapter cards (href) and generateStaticParams for /chapters/<slug>/,
+// so a card's link and the route it points to can never fall out of sync.
+export function sectionSlug(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+// One-line blurb per section, shown on both the contents-page chapter card and the
+// chapter view page's header - kept here as the single copy of this text.
+export const SECTION_BLURBS = {
+  'AI and ML': 'From gradient descent to attention, RLHF and RAG, watch models train, sample and retrieve live.',
+  'Algorithms and Data Structures': 'Race real algorithms, hash keys into buckets, and watch the call stack push and pop.',
+  'Databases and SQL': 'Joins, indexes, query plans and transactions, watch queries run against live tables.',
+  'Systems and Networking': 'Caches, load balancers, shards and packets, the machinery behind every request.',
+  'Object-Oriented Programming': 'Classes, inheritance and polymorphism as moving diagrams, not definitions.',
+  'Data and Compression': 'Drag probabilities and watch a Huffman code chase the entropy floor.',
 }
 
 export default SECTION_COLORS
