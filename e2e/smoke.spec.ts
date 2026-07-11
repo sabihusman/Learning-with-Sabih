@@ -1,18 +1,10 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { trackConsoleErrors } from './util'
 
-// The contents page is an accordion: sections start collapsed, so topic links are in
-// the DOM (and discoverable by querySelector) but inert until their section is
-// expanded. Open every section so the links become interactive.
-async function expandAllSections(page: Page) {
-  for (;;) {
-    const collapsed = page.locator('main button[aria-expanded="false"]')
-    if ((await collapsed.count()) === 0) break
-    await collapsed.first().click()
-  }
-}
-
-// Every topic that ships in the contents page. Each must load its Figure cleanly.
+// Every topic that ships in the site. Each must load its Figure cleanly, navigated to
+// directly (not via the homepage, which now links to six chapters, not 60 topics - see
+// e2e/homepage.spec.ts for the homepage's own links and e2e/chapter-routes.spec.ts for
+// every topic's link from its chapter page).
 const TOPICS = [
   { slug: 'gradient-descent', name: 'Gradient Descent' },
   { slug: 'confusion-matrix', name: 'Confusion Matrix' },
@@ -76,12 +68,12 @@ const TOPICS = [
   { slug: 'entropy-and-compression', name: 'Entropy and Compression' },
 ]
 
-test('home page loads with the contents list and no console errors', async ({ page }) => {
+test('home page loads with its chapter cards and no console errors', async ({ page }) => {
   const errors = trackConsoleErrors(page)
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-  const topicLinks = page.locator('main a[href^="/topics/"]')
-  expect(await topicLinks.count()).toBeGreaterThanOrEqual(TOPICS.length)
+  const chapterLinks = page.locator('main a[href^="/chapters/"]')
+  expect(await chapterLinks.count()).toBe(6)
   await page.waitForLoadState('networkidle')
   expect(errors, `console errors on home: ${errors.join(' | ')}`).toEqual([])
 })
@@ -98,32 +90,5 @@ for (const topic of TOPICS) {
     // allow the lazily-imported 3D scenes to mount, then assert no errors surfaced
     await page.waitForTimeout(800)
     expect(errors, `console errors on ${topic.slug}: ${errors.join(' | ')}`).toEqual([])
-  })
-}
-
-test('contents page links to every topic', async ({ page }) => {
-  await page.goto('/')
-  const hrefs = await page.locator('main a[href^="/topics/"]').evaluateAll((els) =>
-    els.map((e) => (e as HTMLAnchorElement).getAttribute('href') as string)
-  )
-  expect(hrefs.length).toBeGreaterThanOrEqual(TOPICS.length)
-  // each advertised slug has a link
-  for (const topic of TOPICS) {
-    expect(hrefs.some((h) => h.includes(`/topics/${topic.slug}/`))).toBeTruthy()
-  }
-})
-
-// Clicking each contents link must navigate to that topic and render its figure.
-// Split per-topic (rather than one 38-iteration loop) so every navigation gets its
-// own test timeout instead of sharing a single budget that overflows under parallel
-// load as the topic count grows.
-for (const topic of TOPICS) {
-  test(`clicking the "${topic.slug}" contents link navigates and renders its figure`, async ({ page }) => {
-    await page.goto('/')
-    await expandAllSections(page)
-    const href = `/topics/${topic.slug}/`
-    await page.locator(`main a[href="${href}"]`).first().click()
-    await expect(page).toHaveURL(new RegExp(`${href.replace(/[/]/g, '\\/')}$`))
-    await expect(page.locator('figure').first()).toBeVisible()
   })
 }

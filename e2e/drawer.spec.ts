@@ -66,14 +66,3 @@ test('the header and the Contents tab stay visible at a narrow (zoomed) width', 
   // the left Contents opener tab stays visible
   await expect(page.locator('[aria-controls="contents-drawer-panel"]')).toBeVisible()
 })
-
-test('expanding a section in the drawer stays in sync with the contents page', async ({ page }) => {
-  // The drawer and the contents accordion share one localStorage store, so a section
-  // opened in the drawer is open on the contents page too (they never drift).
-  await page.goto('/topics/embeddings/')
-  await tabOf(page).click()
-  await panelOf(page).getByRole('button', { name: /Databases and SQL/ }).click()
-  await page.goto('/')
-  const contentsHeader = page.getByRole('button', { name: /Databases and SQL/ })
-  await expect(contentsHeader).toHaveAttribute('aria-expanded', 'true')
-})
