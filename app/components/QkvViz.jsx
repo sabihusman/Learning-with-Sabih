@@ -87,7 +87,7 @@ export default function QkvViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis={`Pick a word to use it as the Query. Its Query is compared against every word's Key, and the match bars show how strong each comparison is (a higher bar is a higher attention weight). The word then pulls in a blend of every word's Value, weighted by those matches, to form its output row at the bottom. Pick "it" and its Query matches "animal"'s Key most, so its output is mostly "animal"'s Value. The Q, K, and V cells are hand-set to show the idea, not computed.`}
+      tryThis={`Pick a word to use it as the Query. Its Query is compared against every word's Key, and the match bars show how strong each comparison is (a higher bar is a higher attention weight). The word then pulls in a blend of every word's Value, weighted by those matches, to form its output row at the bottom. Pick "it" and its Query matches "animal"'s Key most, so its output is mostly "animal"'s Value. The Q, K, and V vectors are hand-set so the example is small, but the match, scaling, and softmax that turn them into weights are the real computation.`}
     >
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
