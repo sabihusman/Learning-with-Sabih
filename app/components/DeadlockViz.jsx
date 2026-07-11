@@ -76,13 +76,19 @@ function describeThread(state, threadId) {
   return `next: ${action.type} lock ${action.lock}`
 }
 
+// Whether threadId's Step button should be disabled: only once it has actually
+// attempted its blocked action and been recorded as waiting (state.threads[id].waitingFor),
+// not the instant the lock becomes contested. A thread that hasn't tried yet must stay
+// clickable, or the one click that would record the wait (and let isDeadlocked ever
+// become true) can never happen. Once recorded, this re-checks the lock's CURRENT
+// holder on every render, so the button re-enables the instant the lock frees, with no
+// need for another click.
 function nextActionBlocked(state, threadId) {
   const thread = state.threads[threadId]
   const actions = actionsFor(state.mode, threadId)
   if (thread.pc >= actions.length) return false
-  const action = actions[thread.pc]
-  if (action.type !== 'acquire') return false
-  const holder = state.locks[action.lock]
+  if (thread.waitingFor === null) return false
+  const holder = state.locks[thread.waitingFor]
   return holder !== null && holder !== threadId
 }
 
