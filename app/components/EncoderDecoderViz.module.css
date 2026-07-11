@@ -1,0 +1,10 @@
+/* Pure CSS flourish only, no state: cells and row highlight ease when the mode or
+   selected row changes, and a row gets a faint hover tint so it reads as clickable
+   before the user commits to a selection. */
+.row rect {
+  transition: fill 160ms ease-out, fill-opacity 160ms ease-out, stroke-opacity 160ms ease-out;
+}
+
+.row:hover rect:first-child {
+  fill: rgba(26, 26, 26, 0.04);
+}
