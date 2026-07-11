@@ -1,0 +1,16 @@
+import EncoderDecoderViz from '@/app/components/EncoderDecoderViz'
+
+export const metadata = {
+  title: 'Encoders and Decoders - Learning with Sabih',
+}
+
+# Encoders and Decoders
+
+TODO: placeholder prose. An encoder reads an input and builds an understanding of it. A decoder generates an output one token at a time. Some models are encoder-only, some decoder-only, some use both.
+
+TODO before final prose ships, the honesty constraints below must hold:
+- the grid shows what each position is ALLOWED to attend to (the mask), not the actual attention weights; it is the real causal-mask rule (`column index <= row index`), computed live
+- encoder = full attention (sees the whole sentence), decoder = causal mask (sees only itself and the earlier words)
+- this shows the masking difference, which is the core encoder vs decoder distinction; real models also differ in other ways (cross-attention, training) not shown here
+
+<EncoderDecoderViz />

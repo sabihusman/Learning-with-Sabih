@@ -24,6 +24,7 @@ const TOPICS = [
   { slug: 'broadcasting', name: 'Broadcasting' },
   { slug: 'positional-encoding', name: 'Positional Encoding' },
   { slug: 'transformers', name: 'Transformers and Multi-Head Attention' },
+  { slug: 'encoders-and-decoders', name: 'Encoders and Decoders' },
   { slug: 'neural-networks', name: 'Neural Networks' },
   { slug: 'activation-functions', name: 'Why Activations Matter' },
   { slug: 'overfitting', name: 'Overfitting and Generalization' },
