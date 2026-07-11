@@ -10,7 +10,7 @@
 // The wavelength grows with i, so low pairs cycle fast across positions and high pairs
 // cycle slow.
 
-export const D_MODEL = 8
+export const D_MODEL = 12
 export const SEQ_LEN = 10
 export const NUM_PAIRS = D_MODEL / 2
 export const POSITIONS = Array.from({ length: SEQ_LEN }, (_, i) => i)

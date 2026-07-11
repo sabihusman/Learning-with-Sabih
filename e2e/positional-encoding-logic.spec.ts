@@ -28,8 +28,8 @@ test('even dims use sine, odd dims use cosine, matching hand-computed values', (
   expect(peValue(2, 0, D_MODEL)).toBeCloseTo(Math.sin(2), 9)
   expect(peValue(2, 1, D_MODEL)).toBeCloseTo(Math.cos(2), 9)
 
-  // pos=3, pair i=1 (dims 2,3): angle = 3 / 10000^(2/8) = 3 / 10
-  const angle = 3 / 10000 ** (2 / 8)
+  // pos=3, pair i=1 (dims 2,3): angle = 3 / 10000^(2 / D_MODEL)
+  const angle = 3 / 10000 ** (2 / D_MODEL)
   expect(peValue(3, 2, D_MODEL)).toBeCloseTo(Math.sin(angle), 9)
   expect(peValue(3, 3, D_MODEL)).toBeCloseTo(Math.cos(angle), 9)
 })

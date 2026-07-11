@@ -200,7 +200,7 @@ export default function PositionalEncodingViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis={`Pick a position to see its full encoding vector and how similar every other position's encoding is to it. Notice the shading fades smoothly as you move away from the picked position, in both directions: the encoding for position 2 is closer to position 3 than to position 8. Then look at the waves below: each row is one sin/cos pair sampled across every position, and the dot marks where the picked position sits on that wave. Low-numbered pairs complete a full cycle in just a few positions; high-numbered pairs barely move across the whole sequence. The picked position's row above is exactly those wave values read off at one x-coordinate.`}
+      tryThis={`Click through the positions and watch the encoding row change. Notice position 0 is all zeros and ones, the simplest pattern. Watch the similarity shading: positions near the one you picked stay close, distant ones drift apart. Then look at the waves below, and see that a position's encoding is just those waves read off at that one spot. The fast waves separate nearby positions; the slow waves separate far ones.`}
     >
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
