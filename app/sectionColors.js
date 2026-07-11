@@ -3,11 +3,11 @@
 
 export const SECTION_COLORS = {
   'AI and ML': { color: '#c0392b' },
-  'Algorithms and Data Structures': { color: '#3a6f8f' },
-  'Databases and SQL': { color: '#8a6d3b' },
+  'Algorithms and Data Structures': { color: '#2f6f7e' },
+  'Databases and SQL': { color: '#9c6b1e' },
   'Systems and Networking': { color: '#1f6f5c' },
-  'Object-Oriented Programming': { color: '#7a4e7e' },
-  'Data and Compression': { color: '#a85632' },
+  'Object-Oriented Programming': { color: '#7b4b78' },
+  'Data and Compression': { color: '#46628f' },
 }
 
 const FALLBACK_COLOR = '#c0392b'
