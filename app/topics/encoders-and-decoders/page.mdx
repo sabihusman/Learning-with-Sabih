@@ -6,11 +6,20 @@ export const metadata = {
 
 # Encoders and Decoders
 
-TODO: placeholder prose. An encoder reads an input and builds an understanding of it. A decoder generates an output one token at a time. Some models are encoder-only, some decoder-only, some use both.
+A transformer can be built to do one of two jobs, and the difference comes down to what each word is allowed to look at.
 
-TODO before final prose ships, the honesty constraints below must hold:
-- the grid shows what each position is ALLOWED to attend to (the mask), not the actual attention weights; it is the real causal-mask rule (`column index <= row index`), computed live
-- encoder = full attention (sees the whole sentence), decoder = causal mask (sees only itself and the earlier words)
-- this shows the masking difference, which is the core encoder vs decoder distinction; real models also differ in other ways (cross-attention, training) not shown here
+An encoder reads a whole sentence at once. Every word can look at every other word, including the ones that come after it. This is good for understanding, because to know what a word means you often need the words around it, on both sides. Models that classify text or answer questions about a passage are usually encoders.
+
+A decoder generates text one word at a time, left to right. When it is producing a word, the words after it do not exist yet, they have not been written. So each word can only look at itself and the words before it, never ahead. This backward-only rule is called causal masking. Models that write text, like the GPT family, are decoders.
+
+The figure shows this as a grid. Each row is a word doing the looking; each column is a word being looked at. A filled cell means this word is allowed to look at that word.
+
+In encoder mode, every cell is filled. Every word sees the whole sentence. In decoder mode, only the lower triangle is filled. Each word sees itself and the words before it, and the empty upper triangle is everything it is not allowed to see yet.
+
+Click a word in decoder mode and you will see it can only reach back to earlier words, never forward.
+
+Some models are encoder-only, good at understanding. Some are decoder-only, good at generating. Some use both together, an encoder to read an input and a decoder to write an output, which is how translation works.
+
+The grid shows what each position is allowed to look at, the masking rule, not the actual attention weights. The rule is real and computed live: in decoder mode a word can see a column only if that column is at or before its own position. This masking is the core difference between encoders and decoders. Real models also differ in other ways, like how a decoder can additionally attend to an encoder's output in translation, which this single grid does not show.
 
 <EncoderDecoderViz />
