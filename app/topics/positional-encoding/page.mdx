@@ -1,0 +1,51 @@
+import PositionalEncodingViz from '@/app/components/PositionalEncodingViz'
+
+export const metadata = {
+  title: 'Positional Encoding - Learning with Sabih',
+}
+
+# Positional Encoding
+
+Attention has a blind spot. When a transformer looks at a sentence, it treats the words
+as a set, not a sequence. On its own, attention sees the same bag of words in "the dog
+bit the man" and "the man bit the dog." It has no built-in sense of which word came
+first. Something has to tell it the order.
+
+That something is positional encoding. Before the words go into the model, each
+position gets its own signal, a short pattern of numbers that depends only on where the
+word sits. Position 0 gets one pattern, position 1 gets another, and so on. The model
+adds this pattern to each word, so a word now carries both what it is and where it is.
+
+The trick is how to build a pattern that is unique for every position but still lets the
+model reason about distance. The transformer paper uses sine and cosine waves. Each
+dimension of the encoding is a wave, and different dimensions use different
+frequencies. Some waves cycle fast as you move along the positions, some cycle slowly.
+Sampling all of those waves at a single position gives that position its pattern.
+
+The figure shows both halves. One view is the pattern itself: pick a position and see
+its encoding, a row of values. Position 0 is the simplest case, every sine is zero and
+every cosine is one, so its pattern is a clean alternating row. Move to another position
+and the pattern shifts. The figure also shades every other position by how similar it is
+to the one you picked, and you will see neighbors are close while far-apart positions
+are not. That closeness is the useful part: it lets the model learn things like "the
+word two positions back" in a way that works anywhere in the sentence.
+
+The other view is the waves underneath. Each dimension pair is drawn as a sine and
+cosine curve running across the positions. The low dimensions wiggle quickly, the high
+dimensions drift slowly. A position's encoding is just these waves sampled at that spot,
+marked by the dots. Because the frequencies differ, no two positions land on the same
+combination, which is what makes each pattern unique.
+
+So positional encoding is what turns attention from a bag-of-words machine into
+something that respects order. The words tell the model what was said. The positions
+tell it in what order, and the sine and cosine pattern is a compact, repeatable way to
+write the order down.
+
+The encodings are the real sine and cosine formula from the transformer paper, computed
+live, not drawn by hand. For clarity the figure uses a small number of dimensions and
+about ten positions; a real model uses hundreds of dimensions and far longer sequences,
+and it adds this pattern to each word's embedding rather than showing it on its own as
+here. The property that nearby positions have similar encodings is a genuine result of
+the formula, which is exactly why the model can use it to reason about distance.
+
+<PositionalEncodingViz />

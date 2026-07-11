@@ -22,6 +22,7 @@ const TOPICS = [
   { slug: 'attention', name: 'Attention' },
   { slug: 'tensors', name: 'Tensors' },
   { slug: 'broadcasting', name: 'Broadcasting' },
+  { slug: 'positional-encoding', name: 'Positional Encoding' },
   { slug: 'transformers', name: 'Transformers and Multi-Head Attention' },
   { slug: 'neural-networks', name: 'Neural Networks' },
   { slug: 'activation-functions', name: 'Why Activations Matter' },
