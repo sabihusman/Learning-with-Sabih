@@ -61,7 +61,7 @@ export default function EncoderDecoderViz() {
       status={status}
       readouts={readouts}
       tryThis={
-        'Toggle between Encoder and Decoder and watch which cells turn on. In Encoder mode every cell is on: every word can attend to every other word. In Decoder mode only the lower triangle is on: a word can attend to itself and the words before it, never the words after, because a decoder generates left to right and later words do not exist yet when it is generating. Click a row (a word) to highlight exactly what that word can see. This is the mask, computed from a simple rule: column index <= row index for the decoder, always true for the encoder.'
+        'Toggle between encoder and decoder. In encoder mode every word sees the whole sentence. Switch to decoder and the upper half goes dark: each word can only look back at itself and earlier words. Click a word to see exactly which words it is allowed to reach.'
       }
     >
       <svg
