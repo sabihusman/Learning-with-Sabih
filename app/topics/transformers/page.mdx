@@ -22,6 +22,12 @@ Within one layer, the heads run in parallel and their results are combined, so t
 
 The attention topic is one head in one layer. A transformer is many heads in parallel, repeated across many layers. That combination, simple attention multiplied out and stacked, is what lets these models handle the structure of real language.
 
-## What the demo shows
+A single attention pattern can only capture one kind of relationship. Real transformers use several attention heads at the same time, each learning to look for something different. This is called multi-head attention, and the heads all run in parallel over the same sentence.
 
-The figure reuses the attention sentence and shows three illustrative heads. Switch heads to see the link pattern change over the same words, and click a word to draw the current head's links from it, with a readout naming the head and its strongest links. The weights are hand-set to make each head's job legible; a real transformer learns them from data, and uses far more than three heads across many layers.
+The figure shows three heads side by side, each looking at the same sentence "the animal didn't cross the street because it was tired." Click any word and watch how each head connects it differently.
+
+The first head tracks coreference, which word a pronoun refers to. Click "it" and this head points back to "animal," because that is what "it" means here. The second head tracks the previous word: each word simply looks back at the one before it. The third head tracks verbs and their arguments. Click "cross" and it points to "animal," the thing doing the crossing.
+
+Same sentence, same word, three different answers. That is the power of multiple heads. One head follows grammar, another follows meaning, another just tracks position, and the model gets all of these views at once instead of being forced to pick one. When the heads are combined, the word carries all of these relationships together.
+
+The three heads here are hand-designed to show three clear, recognizable jobs: coreference, previous-word, and verb-to-argument. In a real transformer the heads are not assigned jobs; each one learns its own pattern from data, and the patterns are often messier and harder to name than these. The links you see are computed from simple rules chosen to make each head's job legible. The idea they illustrate is real: many heads, running in parallel over the same words, each capturing a different kind of relationship.

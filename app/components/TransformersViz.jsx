@@ -124,7 +124,7 @@ export default function TransformersViz() {
       status={status}
       readouts={readouts}
       tryThis={
-        'This is the same sentence as the attention topic, but now there are three heads shown at once, one panel each. Click a word to draw its links in every panel at the same time: Coreference links "it" back to "animal", Previous word links each token to the one before it, and Verb to arguments links a verb like "cross" to its subject and object. A transformer runs many heads like these in parallel and stacks them in layers; these weights are hand-set to show the idea, not computed.'
+        'Click any word to see how all three heads connect it at once. Click "it" and watch the coreference head point to "animal" while the other heads show their own links. Each head sees the same sentence but looks for something different.'
       }
     >
       <svg
