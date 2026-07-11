@@ -8,7 +8,9 @@ import styles from './QkvViz.module.css'
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
-const VB_W = 500
+// VB_W widened from 500 to account for DIMS=5 (was 3): wider Q/K/V cell groups would
+// otherwise squeeze the match-bar column down to ~87px from its original ~189px.
+const VB_W = 600
 const TOP = 56
 const ROW_H = 34
 const CELL = 14

@@ -61,6 +61,14 @@ resolving a reference is easy to see.
 
 So far you have seen that words attend to each other with different strengths, but not where those strengths come from. The mechanism is query, key, and value. Each word starts with its embedding and produces three vectors from it: a Query, representing what this word is looking for, a Key, representing what it offers to other words, and a Value, the information it passes along if another word attends to it.
 
-To decide how much one word attends to another, you compare the first word's Query against the second word's Key. A closer match produces a higher attention weight. Once a word has weights for all the words, it pulls in a blend of their Values, with strong matches contributing more and weak ones less. The query, key, and value vectors shown here are hand-authored to illustrate the idea; a real model learns them from data.
+To decide how much one word attends to another, the model compares the first word's Query against the second word's Key. It does this with a dot product, which is just a single number measuring how well the two vectors line up. A bigger number means a closer match.
+
+But raw match numbers are not weights yet. Two things happen to turn them into weights. First, each match is divided by the square root of the vector size. This scaling keeps the numbers from getting too large, which would make the next step too extreme. Then all the scaled matches go through softmax, which turns a list of numbers into a set of weights that are all positive and add up to 1. Softmax also exaggerates the gaps: a slightly higher match becomes a clearly higher weight, so the strongest match stands out.
+
+This is the real formula from the transformer paper: attention weights are softmax of the Query-Key match, scaled by the square root of the key size.
+
+Try it in the figure. Click "it" and watch where its attention goes. Its strongest weight lands on "animal," which is what "it" refers to in the sentence. The model has no grammar rules telling it this. It falls out of the Query and Key vectors and the softmax over their matches.
+
+The attention weights here are the real computation: a Query-Key dot product, scaled by the square root of the vector size, then softmax, exactly the transformer paper's formula. What is hand-authored is the Query, Key, and Value vectors themselves. A real model learns those from data over billions of words; here they are set by hand so the example is small enough to read. The math on top of them is genuine.
 
 <QkvViz />
