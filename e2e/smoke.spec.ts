@@ -1,14 +1,16 @@
 import { test, expect, type Page } from '@playwright/test'
 import { trackConsoleErrors } from './util'
 
-// The contents page is an accordion: sections start collapsed, so topic links are in
-// the DOM (and discoverable by querySelector) but inert until their section is
-// expanded. Open every section so the links become interactive.
-async function expandAllSections(page: Page) {
-  for (;;) {
-    const collapsed = page.locator('main button[aria-expanded="false"]')
-    if ((await collapsed.count()) === 0) break
-    await collapsed.first().click()
+// The contents page is six chapter cards, one section open at a time: topic links are in
+// the DOM (and discoverable by querySelector) but inert until their card's section is
+// expanded, and opening one card closes whichever other was open. So rather than
+// expanding every section at once (impossible now that only one can be open), open just
+// the single card that contains the target link.
+async function openSectionFor(page: Page, href: string) {
+  const link = page.locator(`main a[href="${href}"]`).first()
+  const toggle = link.locator('xpath=ancestor::section[1]//button[@aria-expanded]').first()
+  if ((await toggle.getAttribute('aria-expanded')) === 'false') {
+    await toggle.click()
   }
 }
 
@@ -120,8 +122,8 @@ test('contents page links to every topic', async ({ page }) => {
 for (const topic of TOPICS) {
   test(`clicking the "${topic.slug}" contents link navigates and renders its figure`, async ({ page }) => {
     await page.goto('/')
-    await expandAllSections(page)
     const href = `/topics/${topic.slug}/`
+    await openSectionFor(page, href)
     await page.locator(`main a[href="${href}"]`).first().click()
     await expect(page).toHaveURL(new RegExp(`${href.replace(/[/]/g, '\\/')}$`))
     await expect(page.locator('figure').first()).toBeVisible()

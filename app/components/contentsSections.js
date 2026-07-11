@@ -53,3 +53,19 @@ export function toggleSection(name) {
   }
   window.dispatchEvent(new Event(CHANGE_EVENT))
 }
+
+// Open exactly one section, closing any others - the one-at-a-time toggle used by the
+// contents page's chapter cards. Re-clicking the already-open section closes it (empty
+// set), matching toggleSection's own click-to-close behavior. Writes to the SAME store
+// as toggleSection (used unchanged by the topic-page drawer, which keeps its own
+// multi-select behavior), so a section opened here still shows as open in the drawer.
+export function openOnlySection(name) {
+  const current = readOpen()
+  const next = current.length === 1 && current[0] === name ? [] : [name]
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+  } catch {
+    /* ignore persistence failures */
+  }
+  window.dispatchEvent(new Event(CHANGE_EVENT))
+}

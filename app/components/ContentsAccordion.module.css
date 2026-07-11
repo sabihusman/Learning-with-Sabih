@@ -1,0 +1,202 @@
+.contentsLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fade);
+  font-weight: 400;
+  margin-bottom: 0.875rem;
+}
+
+/* Auto-fit naturally gives 2-3 columns inside the page's 680px reading column, and
+   collapses to a single column on narrow viewports, with no extra breakpoint needed. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
+/* The card IS the accordion toggle. A light paper surface with a colored left border
+   keeps the section color as a clear accent without turning the card into a saturated
+   fill block. When open, the card spans the full grid width so its topic list reads as
+   directly attached to it, not as a separate block elsewhere on the page. */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--card-color);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(26, 26, 26, 0.06);
+}
+
+.card[data-open] {
+  grid-column: 1 / -1;
+}
+
+.cardHeadingWrap {
+  margin: 0;
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  width: 100%;
+  font-family: Georgia, 'Times New Roman', serif;
+  background: none;
+  border: none;
+  padding: 0.85rem 1rem 0.95rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cardHeader:hover .cardName {
+  color: var(--card-color);
+}
+
+.cardHeader:focus-visible {
+  outline: 2px solid var(--card-color);
+  outline-offset: -2px;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.cardName {
+  font-size: 1.0625em;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+  transition: color 0.15s;
+}
+
+.chevron {
+  flex-shrink: 0;
+  display: inline-block;
+  font-size: 0.75em;
+  line-height: 1;
+  color: var(--fade);
+  transform: rotate(0deg);
+  transition: transform 0.25s ease, color 0.15s;
+}
+
+.chevron[data-open='true'] {
+  transform: rotate(90deg);
+  color: var(--card-color);
+}
+
+.cardBlurb {
+  display: block;
+  font-size: 0.8125em;
+  line-height: 1.4;
+  color: var(--fade);
+}
+
+.countPill {
+  display: inline-block;
+  margin-top: 0.15rem;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--card-color);
+  border-radius: 999px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875em;
+  letter-spacing: 0.06em;
+  color: var(--card-color);
+}
+
+/* collapsible panel: animate height via grid-template-rows (0fr -> 1fr) + opacity */
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.32s ease, opacity 0.26s ease;
+}
+
+.panelOpen {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.panelInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: none;
+  }
+  .chevron {
+    transition: none;
+  }
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0.8rem 1rem 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.item {
+  margin-bottom: 0.55rem;
+}
+
+.item:last-child {
+  margin-bottom: 0;
+}
+
+.link {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0;
+}
+
+.link:hover .topicTitle {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875em;
+  color: var(--fade);
+  min-width: 2.5rem;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.topicTitle {
+  font-size: 1.125em;
+  font-weight: 400;
+  color: var(--ink);
+  transition: color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* dotted leader between title and number */
+.leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--fade);
+  margin: 0 0.75rem 0.25em;
+  opacity: 0.45;
+  min-width: 1.5rem;
+}
+
+.subtitle {
+  font-size: 0.8125em;
+  line-height: 1.3;
+  color: var(--fade);
+  padding-left: 2.5rem;
+  margin: 0;
+  font-style: italic;
+}
