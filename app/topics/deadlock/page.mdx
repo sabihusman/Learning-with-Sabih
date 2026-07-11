@@ -22,4 +22,6 @@ That is the standard defense against deadlock: not cleverness at the moment it h
 
 The lock ownership and each thread's waiting status are real state, and the deadlock is detected as a genuine circular wait in that state, not scripted to appear. Opposite ordering can reach deadlock but does not always, which the figure lets you confirm by stepping. Same ordering has been checked exhaustively across every interleaving of the two threads, and it never deadlocks. This is the smallest case, two threads and two locks. A real deadlock needs four conditions together (mutual exclusion, hold and wait, no preemption, and a circular wait), and real systems can deadlock across many threads and resources this figure does not show. Lock ordering works by making the circular wait impossible.
 
+## Watching the wait-for graph
+
 <DeadlockViz />

@@ -16,4 +16,6 @@ Why obsess over the slowest few? Because at scale the tail is not rare, it is co
 
 Two honesty notes. The sample is hand-built so the shape is clear: a tight cluster, a modest tail, two outliers; real distributions vary and are rarely this tidy. And this figure computes percentiles by nearest rank on the sorted sample, while many monitoring tools interpolate between ranks or estimate from histograms, so their pXX for the same data can differ slightly. The stats here are computed live from the 60 values shown, nothing is typed in.
 
+## Sliding through the percentiles
+
 <PercentilesViz />

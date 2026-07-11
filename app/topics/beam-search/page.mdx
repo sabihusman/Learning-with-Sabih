@@ -16,4 +16,6 @@ The lesson is not that beam search is always right. Widening the beam trades com
 
 Honesty notes. The tree here is hand-authored and tiny: three first tokens, three continuations each, three more after that, with the probabilities in every group summing to one. It is built to contain the trap cleanly so you can see it. What is real is the search. The greedy walk, the beam walk, and every log-probability on the page are computed live by actual greedy and beam-search functions running over the tree, not scripted or typed in. A real decoder does the same search over a full vocabulary of tens of thousands of candidates at every step, where the tree is far too wide to draw. And note what this figure never does: it never samples and nothing here is random. Every walk is a deterministic search for the highest-scoring sequence. Turning a distribution into a chosen token by chance is a different topic, Temperature and Sampling, just before this one.
 
+## The search itself is real
+
 <BeamSearchViz />

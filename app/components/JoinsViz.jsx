@@ -169,6 +169,7 @@ export default function JoinsViz() {
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         style={{ width: '100%', height: 'auto', display: 'block' }}
+        role="img"
         aria-label="A users table and a sessions table joined on user_id, with the result table below changing as the join type toggles."
       >
         {/* table titles */}

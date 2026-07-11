@@ -22,4 +22,6 @@ A full scan is the slow linear case where work grows with table size. An indexed
 
 The figure runs the scan and the indexed lookup for real on a small fixed table, and the rows-examined counts are the real number of rows each strategy touches. The table is kept small so the steps are easy to see, while real tables have millions of rows where the gap is enormous. The index shown is a simplified version of a real B-tree that works on the same sorted-lookup principle.
 
+## The full scan versus the index
+
 <IndexViz />

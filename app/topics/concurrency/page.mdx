@@ -22,4 +22,6 @@ This is one specific problem that can happen when transactions overlap. Database
 
 The figure shows one specific worst-case ordering so the lost update is easy to see. In real systems the problem is timing-dependent and does not always happen, which is exactly what makes it dangerous. The balances are real arithmetic kept small for clarity, and the locking is shown as a simplified concept rather than specific database commands.
 
+## The lost update in action
+
 <ConcurrencyViz />

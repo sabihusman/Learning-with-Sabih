@@ -20,4 +20,6 @@ Run the sequence three ways and read the three prices. Healthy: nothing. Consist
 
 Two clarifications the terminology deserves. The C here is stricter than the C in ACID: CAP's consistency means every read sees the latest write as if there were one copy, which is a statement about replicas, while ACID's consistency is about a single database honoring its own rules. And this figure is deliberately minimal: one key, two nodes, synchronous replication. Real systems run more replicas and can keep a majority side serving during a partition while the minority side refuses, run replication asynchronously, and offer consistency levels between the two poles shown here. The poles are what the theorem is about; the figure shows them undiluted.
 
+## Simulating a network partition
+
 <CapTheoremViz />

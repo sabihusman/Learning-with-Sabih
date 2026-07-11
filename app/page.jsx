@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import styles from './page.module.css'
-import { SECTIONS, TOPICS } from './topicList'
+import { SECTIONS, TOPICS, pluralTopics } from './topicList'
 import { colorForSection, sectionSlug, SECTION_BLURBS } from './sectionColors'
 import FontSizeControl from './components/FontSizeControl'
 
@@ -30,7 +30,6 @@ export default function ContentsPage() {
 
       <div className={styles.grid}>
         {SECTIONS.map((section) => {
-          const count = section.topics.length
           return (
             <Link
               key={section.name}
@@ -39,7 +38,7 @@ export default function ContentsPage() {
             >
               <div className={styles.cardTop}>
                 <span className={styles.countPill} style={{ backgroundColor: colorForSection(section.name) }}>
-                  {count} {count === 1 ? 'topic' : 'topics'}
+                  {pluralTopics(section.topics.length)}
                 </span>
                 <span className={styles.arrow} aria-hidden="true">
                   &rarr;

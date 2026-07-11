@@ -24,4 +24,6 @@ That is the whole tradeoff of concurrency in one figure. Threads running at once
 
 The balance and each thread's local copy are real state, and the final number is computed from the exact step order you run, not scripted. The lost update only happens when the interleaving actually causes it, and the lock genuinely blocks the steps that would cause it. Every possible interleaving of the two threads has been checked, and with the lock on the balance lands on 102 every time. This is a simplified model: one shared variable, two threads, one step at a time. Real races involve many threads, CPU caches, and instruction reordering that this figure does not show.
 
+## Stepping through the interleaving
+
 <RaceConditionsViz />

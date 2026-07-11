@@ -4,33 +4,45 @@ An interactive, browser-based computer-science study guide. Each topic is a shor
 explanation paired with one hand-built, interactive figure that lets the reader
 manipulate the concept directly. The site is a fully static export with no backend.
 
-_Last updated: reflects `main` with the complete Algorithms and Data Structures section
-(10 topics, Big-O through Dynamic programming) and the required-status-checks ruleset on
-`main` (32 topics, 4 sections)._
+_Last updated: reflects `main` with all six sections complete (60 topics) and the
+homepage redesign that replaced the collapsible contents accordion with a hero and
+chapter cards linking to `/chapters/<slug>/` view routes._
 
 ---
 
 ## 1. Product overview
 
-- **Format:** a contents page that lists every topic, grouped into collapsible
-  sections, plus one page per topic. Each topic page is prose + a single interactive
-  figure, with previous/next navigation across the whole sequence.
-- **Content scope:** 32 topics in 4 sections (in contents order):
-  - **AI and ML** (12): Gradient Descent, Neural Networks, Overfitting and
-    Generalization, Confusion Matrix, Tokenization, Why Models Struggle with Math,
-    Embeddings, Attention, Transformers and Multi-Head Attention, RLHF, Temperature and
-    Sampling, RAG (Retrieval-Augmented Generation).
+- **Format:** a homepage hero + six chapter cards (one per section), each linking to a
+  `/chapters/<slug>/` page that lists that section's topics, plus one page per topic.
+  Each topic page is prose + a single interactive figure, with previous/next navigation
+  across the whole sequence. A separate contents drawer (`ContentsDrawer.jsx`), reachable
+  from every topic page, lists all sections/topics without leaving the current page.
+- **Content scope:** 60 topics in 6 sections (in contents order):
+  - **AI and ML** (19): Gradient Descent, Neural Networks, Why Activations Matter,
+    Overfitting and Generalization, Decision Boundary, Confusion Matrix, Tokenization,
+    Why Models Struggle with Math, Embeddings, Attention, Tensors, Broadcasting,
+    Positional Encoding, Transformers and Multi-Head Attention, Encoders and Decoders,
+    RLHF, Temperature and Sampling, Beam Search vs Greedy Decoding, RAG
+    (Retrieval-Augmented Generation).
   - **Algorithms and Data Structures** (10): Big-O and Time Complexity, Binary Search,
     Recursion and the Call Stack, Sorting, Linked List vs Array, Hash Tables, Binary
     Search Trees, Graph Traversal (BFS and DFS), Dijkstra's Shortest Path, Dynamic
     Programming. The section is internally ordered to build on itself and is bookended by
-    recursion (topic 3, Towers of Hanoi) returning at topic 10 (Fibonacci memoization).
-  - **Databases and SQL** (6): Tables and the Relational Model, SELECT/WHERE/CASE,
-    Joins, GROUP BY and Aggregation, Window Functions, Funnel Analysis.
-  - **Object-Oriented Programming** (4): Classes and Objects, Inheritance,
-    Polymorphism, Composition vs Inheritance.
+    recursion (Towers of Hanoi) returning at the end (Fibonacci memoization).
+  - **Databases and SQL** (13): Tables and the Relational Model, SELECT/WHERE/CASE,
+    Joins, GROUP BY and Aggregation, Window Functions, Funnel Analysis, Indexes, Query
+    Planning, Normalization, SQL vs NoSQL Modeling, Atomicity, Concurrency, Isolation
+    Levels.
+  - **Systems and Networking** (10): Caching, Percentiles and Tail Latency, Load
+    Balancing, CAP Theorem, Sharding, Consistent Hashing, Race Conditions and Locks,
+    Deadlock, TCP and UDP, DNS.
+  - **Object-Oriented Programming** (7): Classes and Objects, Constructors and the Heap,
+    Encapsulation, Inheritance, Polymorphism, Abstract Classes and Interfaces,
+    Composition vs Inheritance.
+  - **Data and Compression** (1): Entropy and Compression.
 - **Design intent:** calm, editorial "study guide" aesthetic — serif body, mono labels,
-  dotted-leader contents rows, a restrained paper/ink/accent palette.
+  a restrained paper/ink/accent palette, and one accent color per chapter (see
+  `app/sectionColors.js`).
 
 ---
 
@@ -83,10 +95,16 @@ slug`) parsed into:
 
 **Every consumer reads from here.** Adding/reordering a topic in `TOPIC_ROWS` updates the
 contents page and all prev/next navigation automatically. Numbering is sequential,
-zero-padded, and spans sections (01–32); inserting a topic mid-list means renumbering
-every later row (e.g. each Algorithms topic shifted the Databases and OOP rows down).
-`SECTION_ORDER` places **Algorithms and Data Structures** second, between AI and ML and
-Databases and SQL.
+zero-padded, and spans sections (01–60); inserting a topic mid-list means renumbering
+every later row. `SECTION_ORDER` places **Algorithms and Data Structures** second,
+between AI and ML and Databases and SQL, followed by Systems and Networking, Object-
+Oriented Programming, and Data and Compression.
+
+`app/sectionColors.js` is the companion single source of truth for chapter metadata:
+`SECTION_COLORS` (one accent hex per section), `colorForSection(name)`, `sectionSlug(name)`
+(the one slug function feeding both a chapter card's `href` and `generateStaticParams` for
+`/chapters/<slug>/`, so they can never fall out of sync), and `SECTION_BLURBS` (one blurb
+per section, shared by the homepage card and the chapter page header).
 
 ### 3.3 The `Figure` shell — `app/components/Figure.jsx`
 
@@ -118,21 +136,28 @@ it.**
 - `app/topics/TopicNav.jsx` (`'use client'`) — bottom-of-page previous/next buttons.
   Derives the current slug from `usePathname()` and looks up neighbors via
   `topicList.neighbors()`, so it stays correct under static prerender.
-- **Contents page** = `app/page.jsx` (server, owns `metadata`) renders the header +
-  `<ContentsAccordion sections={SECTIONS} />`.
+- **Homepage** = `app/page.jsx` (server, owns `metadata`) renders a hero (dynamic topic/
+  chapter counts computed from `TOPICS.length`/`SECTIONS.length`, never hardcoded) plus a
+  grid of six chapter cards, one per `SECTIONS` entry, each linking to
+  `/chapters/${sectionSlug(section.name)}/`.
 
-### 3.5 Contents accordion — `app/components/ContentsAccordion.jsx`
+### 3.5 Chapter view routes — `app/chapters/[slug]/page.jsx`
 
-- Each section is a collapsible group: a real `<button>` header with `aria-expanded` +
-  `aria-controls`, a rotating chevron, and a topic count ("AI and ML … 12 topics").
-- **Default: all sections collapsed.** Open set persists in `localStorage` (key
-  `contentsOpenSections`) via `useSyncExternalStore` with a cached snapshot — single
-  source of truth, no `setState`-in-effect, hydration-safe (server renders collapsed;
-  the saved set is reconciled after mount with no mismatch).
-- Expand/collapse is a **pure CSS transition** (`grid-template-rows: 0fr → 1fr` +
-  opacity), state-driven; `prefers-reduced-motion` is respected.
-  Collapsed panels are `inert` but remain in the DOM (so collapsed topic links are still
-  discoverable by DOM queries).
+- One static page per section. `dynamicParams = false` and `generateStaticParams()` map
+  `SECTION_ORDER` through `sectionSlug()`, so exactly six routes exist
+  (`/chapters/ai-and-ml/`, `/chapters/algorithms-and-data-structures/`,
+  `/chapters/databases-and-sql/`, `/chapters/systems-and-networking/`,
+  `/chapters/object-oriented-programming/`, `/chapters/data-and-compression/`); any other
+  slug 404s at build/request time.
+- Each page renders that section's blurb (`SECTION_BLURBS`) and every topic in the
+  section as a linked row (`topic.href`, from `topicList.js`), colored by
+  `colorForSection(section.name)` via a `--chapter-color` CSS custom property.
+- A separate, independent contents drawer (`app/components/ContentsDrawer.jsx` +
+  `contentsSections.js`) is available from every topic page and has its own
+  collapsible-section accordion (real `<button>` headers with `aria-expanded` +
+  `aria-controls`, state persisted in `localStorage` under `contentsOpenSections`,
+  `useSyncExternalStore`, `inert` on collapsed panels) — unrelated to the homepage/
+  chapter routes above, and not to be confused with them.
 
 ### 3.6 Font-size control — `app/components/FontSizeControl.jsx`
 
@@ -154,12 +179,12 @@ A topic is three things:
    `'use client'` interaction on the `Figure` shell.
 3. **A row in `app/topicList.js`** and **an entry in `e2e/smoke.spec.ts`**.
 
-`app/components/` holds **42 `.jsx` files** (per-topic `*Viz` interactions, the Figure
-shell, RobotAvatar, FontSizeControl, ContentsAccordion, the R3F scenes, and the shared
-`CallStackPanel.jsx`) plus **21 `.js` modules** (per-topic `*Data.js` data modules, the
-shared `graphData.js`, and `vizPalette.js`). Several topics ship a small `*Data.js` module
-so the component body stays simple and hand-authored data is isolated; the two cross-topic
-shared modules are described in §4.3.
+`app/components/` holds around 69 `.jsx` files (per-topic `*Viz` interactions, the Figure
+shell, RobotAvatar, FontSizeControl, ContentsDrawer, the R3F scenes, and the shared
+`CallStackPanel.jsx`) plus around 48 `.js` modules (per-topic `*Data.js` data modules, the
+shared `graphData.js`, `vizPalette.js`, and `contentsSections.js`). Several topics ship a
+small `*Data.js` module so the component body stays simple and hand-authored data is
+isolated; the two cross-topic shared modules are described in §4.3.
 
 ### 4.1 Interaction conventions (important)
 
@@ -193,10 +218,10 @@ shared modules are described in §4.3.
 
 ### 4.2 3D topics and bundle isolation
 
-Only **Embeddings, Attention, and Transformers** use three.js / R3F. Their R3F scenes
-(`EmbeddingsScene`, `AttentionScene`, `MultiHeadAttentionScene`) are dynamically imported
-with `next/dynamic({ ssr: false })` so the ~hundreds-of-KB three.js bundle loads **only**
-on those three routes and never inflates the shared baseline.
+Only **Embeddings and Attention** use three.js / R3F. Their R3F scenes
+(`EmbeddingsScene`, `AttentionScene`) are dynamically imported with
+`next/dynamic({ ssr: false })` so the ~hundreds-of-KB three.js bundle loads **only** on
+those two routes and never inflates the shared baseline.
 
 ### 4.3 Shared modules across topics
 
@@ -317,13 +342,13 @@ automation.
 
 ## 8. Accessibility
 
-- Figures use real `<button>`/`<input>` controls; toggle groups and the accordion expose
-  state. The accordion is fully keyboard-operable (`aria-expanded` / `aria-controls` /
-  `role="region"`, native button activation, `inert` on collapsed panels).
+- Figures use real `<button>`/`<input>` controls; toggle groups expose state. The
+  contents drawer's accordion is fully keyboard-operable (`aria-expanded` /
+  `aria-controls` / `role="region"`, native button activation, `inert` on collapsed
+  panels). Homepage chapter cards and chapter-page topic rows are each a single
+  focusable `<Link>` with a visible `:focus-visible` outline.
 - Known gaps are tracked (see §9): some Figure toggle buttons use `data-active` instead of
-  `aria-pressed`; some figure SVGs use a bare `aria-label` without `role="img"`; a couple
-  of figures have heading-level or keyboard-reachability gaps. These are triage items, not
-  regressions.
+  `aria-pressed`. These are triage items, not regressions.
 
 ---
 
@@ -343,17 +368,21 @@ merged.
 app/
   layout.jsx            root layout + pre-paint read-scale script
   globals.css           design tokens, base type
-  page.jsx              contents page (server) -> ContentsAccordion
-  page.module.css       contents styling (shared with the accordion)
+  page.jsx              homepage (server): hero + 6 chapter cards -> /chapters/<slug>/
+  page.module.css       homepage hero/card styling
   topicList.js          SINGLE SOURCE OF TRUTH for topics/order/nav
+  sectionColors.js       SINGLE SOURCE OF TRUTH for chapter color/slug/blurb
+  chapters/
+    [slug]/page.jsx      one static page per section, topics as linked rows
+    [slug]/page.module.css
   components/
     Figure.jsx          the shared figure shell (do not modify per-topic)
     vizPalette.js       shared viz color/font tokens
-    FontSizeControl.jsx, ContentsAccordion.jsx, RobotAvatar.jsx
+    FontSizeControl.jsx, ContentsDrawer.jsx, contentsSections.js, RobotAvatar.jsx
     <Topic>Viz.jsx      one interaction per topic (+ <topic>Data.js, .module.css)
     graphData.js        shared graph (Graph traversal + Dijkstra)
     CallStackPanel.jsx  reusable call-stack view (Recursion; style echoed by DP)
-    *Scene.jsx          R3F scenes for the 3 3D topics (dynamic, ssr:false)
+    *Scene.jsx          R3F scenes for the 2 3D topics (dynamic, ssr:false)
   topics/
     layout.jsx          shared topic chrome (top nav + prose + TopicNav)
     TopicNav.jsx        prev/next, driven by topicList.neighbors()

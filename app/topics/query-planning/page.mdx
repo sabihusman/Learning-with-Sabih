@@ -22,4 +22,6 @@ A full scan is the linear case from Big-O, where work grows with the table. An i
 
 Real query planners are more complex than this. They use detailed table statistics, cost models, and many kinds of plans. The figure uses a simplified, transparent cost model to show the core ideas, and the EXPLAIN-style readout is illustrative rather than exact PostgreSQL output. What is real is the direction of each tradeoff: selectivity drives the choice between an index and a scan, and join order changes how big the in-between results get. The specific numbers are a teaching simplification.
 
+## Selectivity and join order
+
 <QueryPlanViz />

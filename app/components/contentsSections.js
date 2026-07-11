@@ -9,8 +9,8 @@
 // empty list so the static HTML renders every section collapsed with no hydration
 // mismatch; if localStorage holds a saved set, React reconciles it after mount.
 
-export const STORAGE_KEY = 'contentsOpenSections'
-export const CHANGE_EVENT = 'contentsaccordionchange'
+const STORAGE_KEY = 'contentsOpenSections'
+const CHANGE_EVENT = 'contentsaccordionchange'
 export const EMPTY = []
 
 export const slugify = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
