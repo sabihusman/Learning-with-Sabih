@@ -143,18 +143,18 @@ export default function ConfusionMatrixViz() {
         />
 
         {/* region labels */}
-        <text x={(PLOT_L + thrX) / 2} y={PAD.top - 14} fontSize={9} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+        <text x={(PLOT_L + thrX) / 2} y={PAD.top - 14} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
           predicted −
         </text>
-        <text x={(thrX + PLOT_R) / 2} y={PAD.top - 14} fontSize={9} fill={ACCENT} textAnchor="middle" fontFamily="ui-monospace,monospace">
+        <text x={(thrX + PLOT_R) / 2} y={PAD.top - 14} fontSize={11} fill={ACCENT} textAnchor="middle" fontFamily="ui-monospace,monospace">
           predicted +
         </text>
 
         {/* row labels */}
-        <text x={PLOT_L - 12} y={ROW_POS_Y + 3} fontSize={9} fill={FADE} textAnchor="end" fontFamily="ui-monospace,monospace">
+        <text x={PLOT_L - 12} y={ROW_POS_Y + 3} fontSize={11} fill={FADE} textAnchor="end" fontFamily="ui-monospace,monospace">
           actual +
         </text>
-        <text x={PLOT_L - 12} y={ROW_NEG_Y + 3} fontSize={9} fill={FADE} textAnchor="end" fontFamily="ui-monospace,monospace">
+        <text x={PLOT_L - 12} y={ROW_NEG_Y + 3} fontSize={11} fill={FADE} textAnchor="end" fontFamily="ui-monospace,monospace">
           actual −
         </text>
 
@@ -163,12 +163,12 @@ export default function ConfusionMatrixViz() {
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
           <g key={t}>
             <line x1={px(t)} y1={AXIS_Y} x2={px(t)} y2={AXIS_Y + 4} stroke="#c8c4bc" strokeWidth={0.8} />
-            <text x={px(t)} y={AXIS_Y + 15} fontSize={9} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+            <text x={px(t)} y={AXIS_Y + 15} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
               {t}
             </text>
           </g>
         ))}
-        <text x={(PLOT_L + PLOT_R) / 2} y={VB_H - 2} fontSize={9} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+        <text x={(PLOT_L + PLOT_R) / 2} y={VB_H - 2} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
           model score
         </text>
 

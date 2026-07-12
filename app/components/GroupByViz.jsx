@@ -100,13 +100,13 @@ export default function GroupByViz() {
         aria-label="A table of per-session rows on the left clusters by the chosen column and collapses into one summary row per group on the right, showing the selected aggregate. A HAVING slider removes whole groups."
       >
         {/* panel titles */}
-        <text x={X_L} y={TITLE_Y} fontSize={10} fill={INK} fontFamily={MONO} fontWeight="bold">
+        <text x={X_L} y={TITLE_Y} fontSize={13} fill={INK} fontFamily={MONO} fontWeight="bold">
           session_stats
         </text>
-        <text x={X_L + 88} y={TITLE_Y} fontSize={9} fill={FADE} fontFamily={MONO}>
+        <text x={X_L + 116} y={TITLE_Y} fontSize={11.5} fill={FADE} fontFamily={MONO}>
           (one row per session)
         </text>
-        <text x={X_R} y={TITLE_Y} fontSize={10} fill={INK} fontFamily={MONO} fontWeight="bold">
+        <text x={X_R} y={TITLE_Y} fontSize={13} fill={INK} fontFamily={MONO} fontWeight="bold">
           {`GROUP BY ${groupCol}`}
         </text>
 
@@ -121,7 +121,7 @@ export default function GroupByViz() {
             key={label}
             x={X_L + cx}
             y={TOP - 8}
-            fontSize={8.5}
+            fontSize={11}
             fill={label === groupCol ? INK : FADE}
             fontFamily={MONO}
             letterSpacing="0.04em"
@@ -161,7 +161,7 @@ export default function GroupByViz() {
             >
               <rect x={0} y={0} width={4} height={RH} fill={L.color} style={{ transition: 'fill 480ms ease' }} />
               <rect x={0} y={0} width={W_L} height={RH} fill="#ffffff" stroke="#eceae3" strokeWidth={0.5} />
-              <text x={COL.uid} y={RH / 2 + 3.3} fontSize={9.5} fill={INK} fontFamily={MONO}>
+              <text x={COL.uid} y={RH / 2 + 3.3} fontSize={12.5} fill={INK} fontFamily={MONO}>
                 {`u${r.user_id}`}
               </text>
               {dupFold && (
@@ -170,7 +170,7 @@ export default function GroupByViz() {
               <text
                 x={COL.country}
                 y={RH / 2 + 3.3}
-                fontSize={9.5}
+                fontSize={12.5}
                 fill={groupCol === 'country' ? L.color : INK}
                 fontFamily={MONO}
                 fontWeight={groupCol === 'country' ? 700 : 400}
@@ -180,14 +180,14 @@ export default function GroupByViz() {
               <text
                 x={COL.plan}
                 y={RH / 2 + 3.3}
-                fontSize={9.5}
+                fontSize={12.5}
                 fill={groupCol === 'plan' ? L.color : INK}
                 fontFamily={MONO}
                 fontWeight={groupCol === 'plan' ? 700 : 400}
               >
                 {r.plan}
               </text>
-              <text x={COL.events} y={RH / 2 + 3.3} fontSize={9.5} fill={FADE} fontFamily={MONO}>
+              <text x={COL.events} y={RH / 2 + 3.3} fontSize={12.5} fill={FADE} fontFamily={MONO}>
                 {`${r.events} ev`}
               </text>
             </g>
@@ -203,13 +203,13 @@ export default function GroupByViz() {
             <g key={`card-${groupCol}-${g.key}`} className={styles.summaryCard}>
               <rect x={X_R} y={top} width={W_R} height={CARD_H} rx={5} fill="#ffffff" stroke={g.color} strokeWidth={1.5} />
               <rect x={X_R} y={top} width={5} height={CARD_H} rx={1} fill={g.color} />
-              <text x={X_R + 14} y={top + 15} fontSize={12} fill={g.color} fontFamily={MONO} fontWeight="bold">
+              <text x={X_R + 14} y={top + 15} fontSize={15.5} fill={g.color} fontFamily={MONO} fontWeight="bold">
                 {g.key}
               </text>
-              <text x={X_R + 14} y={top + 29} fontSize={9.5} fill={FADE} fontFamily={MONO}>
+              <text x={X_R + 14} y={top + 29} fontSize={12.5} fill={FADE} fontFamily={MONO}>
                 {`${AGG_LABEL[agg]} =`}
               </text>
-              <text x={X_R + BAR_X - 6} y={top + 22} fontSize={13} fill={INK} fontFamily={MONO} fontWeight="bold" textAnchor="end">
+              <text x={X_R + BAR_X - 6} y={top + 22} fontSize={16} fill={INK} fontFamily={MONO} fontWeight="bold" textAnchor="end">
                 {val}
               </text>
               <rect

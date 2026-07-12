@@ -97,7 +97,7 @@ function Table({ x, top, cols, rows, getCell, rowClass, rowKey }) {
           key={`h${c.key}`}
           x={colX[ci] + 8}
           y={top + 14}
-          fontSize={9.5}
+          fontSize={11}
           fill={FADE}
           fontFamily={MONO}
           letterSpacing="0.04em"
@@ -126,7 +126,7 @@ function Table({ x, top, cols, rows, getCell, rowClass, rowKey }) {
                 key={c.key}
                 x={colX[ci] + 8}
                 y={top + HEAD_H + ri * ROW_H + ROW_H / 2 + 3.5}
-                fontSize={10.5}
+                fontSize={12.5}
                 fill={isNull ? ACCENT : INK}
                 fontFamily={MONO}
                 fontStyle={isNull ? 'italic' : 'normal'}
@@ -173,10 +173,10 @@ export default function JoinsViz() {
         aria-label="A users table and a sessions table joined on user_id, with the result table below changing as the join type toggles."
       >
         {/* table titles */}
-        <text x={L_X} y={SRC_TOP - 14} fontSize={11} fill={INK} fontFamily={MONO} fontWeight="bold">
+        <text x={L_X} y={SRC_TOP - 14} fontSize={13} fill={INK} fontFamily={MONO} fontWeight="bold">
           users (u)
         </text>
-        <text x={R_X} y={SRC_TOP - 14} fontSize={11} fill={INK} fontFamily={MONO} fontWeight="bold">
+        <text x={R_X} y={SRC_TOP - 14} fontSize={13} fill={INK} fontFamily={MONO} fontWeight="bold">
           sessions (s)
         </text>
 
@@ -198,7 +198,7 @@ export default function JoinsViz() {
         <Table x={R_X} top={SRC_TOP} cols={R_COLS} rows={RIGHT} getCell={(row, k) => row[k]} />
 
         {/* result label */}
-        <text x={RES_X} y={RES_TOP} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.12em">
+        <text x={RES_X} y={RES_TOP} fontSize={12} fill={FADE} fontFamily={MONO} letterSpacing="0.12em">
           {`RESULT  (${joinType} JOIN, ${result.length} rows)`}
         </text>
 

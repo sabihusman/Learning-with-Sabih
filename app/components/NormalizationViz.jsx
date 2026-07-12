@@ -124,7 +124,7 @@ export default function NormalizationViz() {
     const nodes = []
 
     nodes.push(
-      <text key={`${id}-t`} x={x} y={y + 8} fontSize={11} fill={INK} fontFamily={MONO} fontWeight="bold">
+      <text key={`${id}-t`} x={x} y={y + 8} fontSize={15} fill={INK} fontFamily={MONO} fontWeight="bold">
         {title}
       </text>
     )
@@ -139,7 +139,7 @@ export default function NormalizationViz() {
           key={`${id}-h-${c.key}`}
           x={colLeft(ci) + PAD}
           y={headTop + 13}
-          fontSize={8.5}
+          fontSize={11.5}
           fill={rc || FADE}
           fontFamily={MONO}
           fontWeight={c.role ? 700 : 400}
@@ -153,7 +153,7 @@ export default function NormalizationViz() {
         nodes.push(
           <g key={`${id}-b-${c.key}`}>
             <rect x={bx} y={headTop + 4} width={15} height={10} rx={2} fill={rc} />
-            <text x={bx + 7.5} y={headTop + 12} fontSize={7} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">
+            <text x={bx + 7.5} y={headTop + 12} fontSize={9.5} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">
               {c.role}
             </text>
           </g>
@@ -184,7 +184,7 @@ export default function NormalizationViz() {
             key={`${id}-x-${ri}-${c.key}`}
             x={colLeft(ci) + PAD}
             y={top + ROW_H / 2 + 3.3}
-            fontSize={9.5}
+            fontSize={13}
             fill={style ? style.text : rc || INK}
             fontFamily={MONO}
             fontWeight={c.role ? 600 : 400}

@@ -255,7 +255,7 @@ export default function NeuralNetViz() {
           {IN_Y.map((y, i) => (
             <g key={`in${i}`}>
               <circle cx={IN_X} cy={y} r={11} fill={PAPER} stroke={INK} strokeWidth={1.4} />
-              <text x={IN_X} y={y + 3.5} fontSize={10} fill={INK} textAnchor="middle" fontFamily="ui-monospace,monospace">
+              <text x={IN_X} y={y + 3.5} fontSize={13.5} fill={INK} textAnchor="middle" fontFamily="ui-monospace,monospace">
                 {i === 0 ? 'x' : 'y'}
               </text>
             </g>
@@ -265,17 +265,17 @@ export default function NeuralNetViz() {
           ))}
           <g>
             <circle cx={OUT_X} cy={OUT_Y} r={11} fill={PAPER} stroke={INK} strokeWidth={1.4} />
-            <text x={OUT_X} y={OUT_Y + 3.5} fontSize={8} fill={INK} textAnchor="middle" fontFamily="ui-monospace,monospace">
+            <text x={OUT_X} y={OUT_Y + 3.5} fontSize={11} fill={INK} textAnchor="middle" fontFamily="ui-monospace,monospace">
               out
             </text>
           </g>
-          <text x={IN_X} y={NN_H - 8} fontSize={8} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+          <text x={IN_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
             inputs
           </text>
-          <text x={HID_X} y={NN_H - 8} fontSize={8} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+          <text x={HID_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
             hidden
           </text>
-          <text x={OUT_X} y={NN_H - 8} fontSize={8} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+          <text x={OUT_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
             output
           </text>
         </svg>

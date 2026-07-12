@@ -93,7 +93,7 @@ export default function OverfittingViz() {
         <line x1={PAD_L} y1={yPx(0)} x2={PAD_L + PLOT_W} y2={yPx(0)} stroke="#d4d0c8" strokeWidth={1} strokeDasharray="2 3" />
         {yTicks.map((yv) => (
           <g key={`yt-${yv}`}>
-            <text x={PAD_L - 6} y={yPx(yv) + 3} fontSize={9} fill={FADE} fontFamily={MONO} textAnchor="end">{yv}</text>
+            <text x={PAD_L - 6} y={yPx(yv) + 3} fontSize={11} fill={FADE} fontFamily={MONO} textAnchor="end">{yv}</text>
           </g>
         ))}
 
@@ -117,10 +117,10 @@ export default function OverfittingViz() {
 
         {/* legend */}
         <g transform={`translate(${PAD_L + 6}, ${PAD_T + 4})`}>
-          <circle cx={4} cy={6} r={3.5} fill={TEAL} /><text x={14} y={9} fontSize={9.5} fill={INK} fontFamily={MONO}>training</text>
-          <circle cx={4} cy={20} r={4.5} fill="none" stroke={GREEN} strokeWidth={1.8} /><text x={14} y={23} fontSize={9.5} fill={INK} fontFamily={MONO}>test (held out)</text>
-          <line x1={0} y1={34} x2={9} y2={34} stroke={ACCENT} strokeWidth={2} /><text x={14} y={37} fontSize={9.5} fill={INK} fontFamily={MONO}>fit</text>
-          <line x1={0} y1={47} x2={9} y2={47} stroke={FADE} strokeWidth={1.3} strokeDasharray="3 3" /><text x={14} y={50} fontSize={9.5} fill={INK} fontFamily={MONO}>true trend</text>
+          <circle cx={4} cy={6} r={3.5} fill={TEAL} /><text x={14} y={9} fontSize={11.5} fill={INK} fontFamily={MONO}>training</text>
+          <circle cx={4} cy={20} r={4.5} fill="none" stroke={GREEN} strokeWidth={1.8} /><text x={14} y={23} fontSize={11.5} fill={INK} fontFamily={MONO}>test (held out)</text>
+          <line x1={0} y1={34} x2={9} y2={34} stroke={ACCENT} strokeWidth={2} /><text x={14} y={37} fontSize={11.5} fill={INK} fontFamily={MONO}>fit</text>
+          <line x1={0} y1={47} x2={9} y2={47} stroke={FADE} strokeWidth={1.3} strokeDasharray="3 3" /><text x={14} y={50} fontSize={11.5} fill={INK} fontFamily={MONO}>true trend</text>
         </g>
       </svg>
 
