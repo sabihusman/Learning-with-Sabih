@@ -48,6 +48,10 @@
 .shardRow {
   display: grid;
   gap: 10px;
+  /* On a narrow phone the shard columns can total more than the card width,
+     especially for the country/plan keys whose chips carry a second value.
+     Scroll the row instead of letting the card clip the rightmost shard. */
+  overflow-x: auto;
 }
 
 .shard {
@@ -111,6 +115,9 @@
   border: 1px solid #e2e0d8;
   border-radius: 4px;
   padding: 3px 6px;
+  /* Keep each token (u-1004, pro) on one line; the row scrolls to fit the
+     columns rather than breaking chip text at the hyphen. */
+  white-space: nowrap;
 }
 
 .chipId {

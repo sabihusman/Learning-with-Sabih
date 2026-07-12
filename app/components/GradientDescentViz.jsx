@@ -398,19 +398,19 @@ export default function GradientDescentViz() {
         {[-3, -2, -1, 0, 1, 2, 3].map((tx) => (
           <g key={tx}>
             <line x1={sx(tx)} y1={PLOT_B} x2={sx(tx)} y2={PLOT_B + 4} stroke="#c8c4bc" strokeWidth={0.8} />
-            <text x={sx(tx)} y={PLOT_B + 16} fontSize={9} fill="#9b9892" textAnchor="middle" fontFamily="ui-monospace,monospace">{tx}</text>
+            <text x={sx(tx)} y={PLOT_B + 16} fontSize={11.5} fill="#9b9892" textAnchor="middle" fontFamily="ui-monospace,monospace">{tx}</text>
           </g>
         ))}
-        <text x={(PLOT_L + PLOT_R) / 2} y={VB_H - 2} fontSize={9} fill="#9b9892" textAnchor="middle" fontFamily="ui-monospace,monospace">x</text>
+        <text x={(PLOT_L + PLOT_R) / 2} y={VB_H - 2} fontSize={11.5} fill="#9b9892" textAnchor="middle" fontFamily="ui-monospace,monospace">x</text>
 
         {/* the loss curve */}
         <path d={CURVE_D} fill="none" stroke="#bdb8ad" strokeWidth={1.6} strokeLinejoin="round" />
 
         {/* minima markers */}
         <circle cx={sx(GLOBAL_MIN)} cy={sy(f(GLOBAL_MIN))} r={3} fill="#1a1a1a" />
-        <text x={sx(GLOBAL_MIN)} y={sy(f(GLOBAL_MIN)) + 16} fontSize={8.5} fill="#6b6862" textAnchor="middle" fontFamily="ui-monospace,monospace">global min</text>
+        <text x={sx(GLOBAL_MIN)} y={sy(f(GLOBAL_MIN)) + 16} fontSize={11} fill="#6b6862" textAnchor="middle" fontFamily="ui-monospace,monospace">global min</text>
         <circle cx={sx(LOCAL_MIN)} cy={sy(f(LOCAL_MIN))} r={3} fill="none" stroke="#1a1a1a" strokeWidth={1.2} />
-        <text x={sx(LOCAL_MIN)} y={sy(f(LOCAL_MIN)) - 9} fontSize={8.5} fill="#6b6862" textAnchor="middle" fontFamily="ui-monospace,monospace">local min</text>
+        <text x={sx(LOCAL_MIN)} y={sy(f(LOCAL_MIN)) - 9} fontSize={11} fill="#6b6862" textAnchor="middle" fontFamily="ui-monospace,monospace">local min</text>
 
         {/* descent trail */}
         {state.history.length > 1 && (

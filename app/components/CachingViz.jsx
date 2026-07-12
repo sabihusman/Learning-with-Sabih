@@ -127,6 +127,7 @@ export default function CachingViz() {
       readouts={readouts}
       tryThis="Watch key E arrive. It evicts the key that turns out to be needed again just two requests later, forcing a second trip to the origin. Which key would you have evicted instead? The cache only knows what was used recently; it cannot see that a key is about to be used again. That gap between recent and soon is why no single eviction policy wins every time."
     >
+      <div className={styles.scroll}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -275,6 +276,7 @@ export default function CachingViz() {
           </text>
         </g>
       </svg>
+      </div>
 
       <p className={styles.caption}>
         The cache holds a real least-recently-used structure, capacity 3, and the hits,

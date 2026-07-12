@@ -48,9 +48,9 @@ function HeaderCell({ col, left }) {
   const color = keyColor(col.role)
   return (
     <g>
-      <text x={left} y={SRC_TOP + 12} fontSize={9.5} fill={col.role ? color : FADE} fontFamily={MONO} fontWeight={col.role ? 700 : 400} letterSpacing="0.03em">{col.label}</text>
+      <text x={left} y={SRC_TOP + 12} fontSize={13} fill={col.role ? color : FADE} fontFamily={MONO} fontWeight={col.role ? 700 : 400} letterSpacing="0.03em">{col.label}</text>
       {col.role ? <rect x={left} y={SRC_TOP + 17} width={17} height={11} rx={2} fill={color} /> : null}
-      {col.role ? <text x={left + 8.5} y={SRC_TOP + 25.5} fontSize={8} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">{col.role}</text> : null}
+      {col.role ? <text x={left + 8.5} y={SRC_TOP + 25.5} fontSize={11} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">{col.role}</text> : null}
     </g>
   )
 }
@@ -60,7 +60,7 @@ function Table({ x, cols, rows, title, active, onHover, onPin }) {
   const left = (ci) => colX(x, cols, ci) + 8
   return (
     <g>
-      <text x={x} y={SRC_TOP - 18} fontSize={12} fill={INK} fontFamily={MONO} fontWeight="bold">{title}</text>
+      <text x={x} y={SRC_TOP - 18} fontSize={16} fill={INK} fontFamily={MONO} fontWeight="bold">{title}</text>
       {cols.map((c, ci) => (
         <HeaderCell key={`h-${c.key}`} col={c} left={left(ci)} />
       ))}
@@ -76,7 +76,7 @@ function Table({ x, cols, rows, title, active, onHover, onPin }) {
           <g key={row[cols[0].key]} className={styles.row} style={{ cursor: 'pointer' }} {...handlers}>
             <rect x={x} y={rowTop(ri)} width={totalW} height={ROW_H} fill={rowFill(on, ri)} stroke={on ? ACCENT : '#eceae3'} strokeWidth={on ? 1.2 : 0.5} />
             {cols.map((c, ci) => (
-              <text key={c.key} x={left(ci)} y={rowTop(ri) + ROW_H / 2 + 3.5} fontSize={10.5} fill={c.role ? keyColor(c.role) : INK} fontFamily={MONO} fontWeight={c.role ? 700 : 400}>{row[c.key]}</text>
+              <text key={c.key} x={left(ci)} y={rowTop(ri) + ROW_H / 2 + 3.5} fontSize={14} fill={c.role ? keyColor(c.role) : INK} fontFamily={MONO} fontWeight={c.role ? 700 : 400}>{row[c.key]}</text>
             ))}
           </g>
         )

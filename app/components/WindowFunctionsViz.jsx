@@ -119,7 +119,7 @@ export default function WindowFunctionsViz() {
             key={`h-${c.key}`}
             x={COL_X[ci] + 8}
             y={TABLE_TOP + 15}
-            fontSize={9}
+            fontSize={11}
             fill={c.key === activeCol ? ACCENT : FADE}
             fontFamily={MONO}
             letterSpacing="0.03em"
@@ -172,7 +172,7 @@ export default function WindowFunctionsViz() {
                     <text
                       x={COL_X[ci] + 8}
                       y={r.y + ROW_H / 2 + 3.5}
-                      fontSize={10.5}
+                      fontSize={13}
                       fill={INK}
                       fontFamily={MONO}
                       fontWeight={700}
@@ -200,7 +200,7 @@ export default function WindowFunctionsViz() {
                   key={c.key}
                   x={COL_X[ci] + 8}
                   y={r.y + ROW_H / 2 + 3.5}
-                  fontSize={10.5}
+                  fontSize={13}
                   fill={isActive ? ACCENT : INK}
                   fontFamily={MONO}
                   fontWeight={isActive ? 700 : 400}

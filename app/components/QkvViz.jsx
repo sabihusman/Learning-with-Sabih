@@ -95,12 +95,12 @@ export default function QkvViz() {
         aria-label="Each word shows a Query, Key, and Value vector as small cells. Picking a word compares its Query against every Key to produce match weights, then blends the Values into an output."
       >
         {/* column headers */}
-        <text x={LABEL_X} y={TOP - 12} fontSize={9.5} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">word</text>
-        <text x={Q_X} y={TOP - 12} fontSize={9.5} fill={Q_COLOR} fontFamily={MONO} fontWeight={700}>Q query</text>
-        <text x={K_X} y={TOP - 12} fontSize={9.5} fill={K_COLOR} fontFamily={MONO} fontWeight={700}>K key</text>
-        <text x={V_X} y={TOP - 12} fontSize={9.5} fill={V_COLOR} fontFamily={MONO} fontWeight={700}>V value</text>
+        <text x={LABEL_X} y={TOP - 12} fontSize={11} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">word</text>
+        <text x={Q_X} y={TOP - 12} fontSize={11} fill={Q_COLOR} fontFamily={MONO} fontWeight={700}>Q query</text>
+        <text x={K_X} y={TOP - 12} fontSize={11} fill={K_COLOR} fontFamily={MONO} fontWeight={700}>K key</text>
+        <text x={V_X} y={TOP - 12} fontSize={11} fill={V_COLOR} fontFamily={MONO} fontWeight={700}>V value</text>
         {picked != null && (
-          <text x={MATCH_X} y={TOP - 12} fontSize={9.5} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
+          <text x={MATCH_X} y={TOP - 12} fontSize={11} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
             match (Q . K)
           </text>
         )}
@@ -122,7 +122,7 @@ export default function QkvViz() {
                 stroke={isPicked ? V_COLOR : 'transparent'}
                 strokeWidth={1}
               />
-              <text x={LABEL_X} y={y + CELL - 2} fontSize={11} fill={INK} fontFamily={MONO} fontWeight={isPicked ? 700 : 400}>
+              <text x={LABEL_X} y={y + CELL - 2} fontSize={13} fill={INK} fontFamily={MONO} fontWeight={isPicked ? 700 : 400}>
                 {w.label}
               </text>
               <VecCells x={Q_X} y={y} vec={w.q} color={Q_COLOR} boxed={isPicked} />
@@ -142,7 +142,7 @@ export default function QkvViz() {
                     fill={K_COLOR}
                     opacity={0.35 + m.weight * 0.65}
                   />
-                  <text x={MATCH_X + BAR_MAX + 6} y={y + CELL - 2} fontSize={10} fill={INK} fontFamily={MONO} fontWeight={700}>
+                  <text x={MATCH_X + BAR_MAX + 6} y={y + CELL - 2} fontSize={12} fill={INK} fontFamily={MONO} fontWeight={700}>
                     {`${Math.round(m.weight * 100)}%`}
                   </text>
                 </g>
@@ -154,11 +154,11 @@ export default function QkvViz() {
         {/* output: the picked word's Value blend */}
         {out && (
           <g>
-            <text x={LABEL_X} y={OUT_LABEL_Y} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
+            <text x={LABEL_X} y={OUT_LABEL_Y} fontSize={12} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
               {`output for "${labelOf(picked)}"  =  weighted blend of Values`}
             </text>
             <VecCells x={V_X} y={OUT_ROW_Y} vec={out} color={V_COLOR} boxed />
-            <text x={V_X - 26} y={OUT_ROW_Y + CELL - 2} fontSize={11} fill={INK} fontFamily={MONO}>
+            <text x={V_X - 26} y={OUT_ROW_Y + CELL - 2} fontSize={13} fill={INK} fontFamily={MONO}>
               {'→'}
             </text>
           </g>

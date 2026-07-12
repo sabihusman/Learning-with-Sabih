@@ -34,7 +34,7 @@ function EncodingStrip({ selected }) {
   const vec = peVector(selected, D_MODEL)
   return (
     <g>
-      <text x={STRIP_X} y={ENC_LABEL_Y} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
+      <text x={STRIP_X} y={ENC_LABEL_Y} fontSize={13.5} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
         {`encoding for position ${selected} (d_model = ${D_MODEL})`}
       </text>
       {vec.map((val, dim) => (
@@ -53,7 +53,7 @@ function EncodingStrip({ selected }) {
           <text
             x={STRIP_X + dim * (CELL + CELL_GAP) + CELL / 2}
             y={ENC_ROW_Y + CELL + 11}
-            fontSize={7.5}
+            fontSize={10}
             fill={FADE}
             fontFamily={MONO}
             textAnchor="middle"
@@ -73,7 +73,7 @@ function SimilarityStrip({ selected, positions, onSelect }) {
   const span = maxSim - minSim || 1
   return (
     <g>
-      <text x={STRIP_X} y={SIM_LABEL_Y} fontSize={10} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
+      <text x={STRIP_X} y={SIM_LABEL_Y} fontSize={13.5} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
         {`similarity of every position's encoding to position ${selected}`}
       </text>
       {positions.map((p, i) => {
@@ -95,7 +95,7 @@ function SimilarityStrip({ selected, positions, onSelect }) {
             <text
               x={STRIP_X + i * (CELL + CELL_GAP) + CELL / 2}
               y={POS_LABEL_Y}
-              fontSize={9.5}
+              fontSize={13}
               fill={isSelected ? INK : FADE}
               fontFamily={MONO}
               fontWeight={isSelected ? 700 : 400}
@@ -153,10 +153,10 @@ function WaveRow({ pairIndex, selected }) {
   return (
     <g>
       <line x1={WAVE_PAD_X} y1={midY} x2={WAVE_VB_W - WAVE_PAD_X} y2={midY} stroke="#e2e0d8" strokeWidth={1} />
-      <text x={0} y={rowTop + 10} fontSize={9.5} fill={FADE} fontFamily={MONO}>
+      <text x={0} y={rowTop + 10} fontSize={13} fill={FADE} fontFamily={MONO}>
         {`pair ${pairIndex}`}
       </text>
-      <text x={0} y={rowTop + 21} fontSize={8} fill={FADE} fontFamily={MONO}>
+      <text x={0} y={rowTop + 21} fontSize={11} fill={FADE} fontFamily={MONO}>
         {`dims ${pairIndex * 2},${pairIndex * 2 + 1}`}
       </text>
       <path d={pathFor(pairIndex, 'sin', rowTop)} fill="none" stroke={SIN_COLOR} strokeWidth={1.6} />
@@ -164,7 +164,7 @@ function WaveRow({ pairIndex, selected }) {
       <line x1={selX} y1={rowTop} x2={selX} y2={rowTop + WAVE_ROW_H - 8} stroke={INK} strokeWidth={1} strokeDasharray="2,2" opacity={0.55} />
       <circle cx={selX} cy={yOf(rowTop, selSin)} r={3.4} fill={SIN_COLOR} stroke="#fff" strokeWidth={1} />
       <circle cx={selX} cy={yOf(rowTop, selCos)} r={3.4} fill={COS_COLOR} stroke="#fff" strokeWidth={1} />
-      <text x={WAVE_VB_W} y={rowTop + 10} fontSize={8} fill={FADE} fontFamily={MONO} textAnchor="end">
+      <text x={WAVE_VB_W} y={rowTop + 10} fontSize={11} fill={FADE} fontFamily={MONO} textAnchor="end">
         {`period ≈ ${periodLabel} pos`}
       </text>
     </g>
