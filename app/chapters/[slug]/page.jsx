@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { SECTIONS, SECTION_ORDER } from '../../topicList'
+import { SECTIONS, SECTION_ORDER, pluralTopics } from '../../topicList'
 import { colorForSection, sectionSlug, SECTION_BLURBS } from '../../sectionColors'
 import styles from './page.module.css'
 
@@ -30,7 +30,6 @@ export default async function ChapterPage({ params }) {
   if (!section) notFound()
 
   const color = colorForSection(section.name)
-  const count = section.topics.length
 
   return (
     <main className={styles.main} style={{ '--chapter-color': color }}>
@@ -40,7 +39,7 @@ export default async function ChapterPage({ params }) {
 
       <header className={styles.header}>
         <span className={styles.countPill}>
-          {count} {count === 1 ? 'topic' : 'topics'}
+          {pluralTopics(section.topics.length)}
         </span>
         <h1 className={styles.title}>{section.name}</h1>
         <p className={styles.blurb}>{SECTION_BLURBS[section.name]}</p>

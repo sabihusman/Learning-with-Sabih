@@ -20,4 +20,6 @@ This is why the readout at the end of the figure matters: two references, one he
 
 A note on accuracy: this is the standard conceptual model, and it is the right way to reason about Java code. Real JVMs are allowed to optimize behind the scenes, for example allocating an object elsewhere when they can prove the object never escapes a method. Those optimizations never change what your code observes, so the model shown here is what you should trust when reading and writing code.
 
+## Two references, one object
+
 <ConstructorsHeapViz />

@@ -5,7 +5,7 @@
 export const SECTION_COLORS = {
   'AI and ML': { color: '#c0392b' },
   'Algorithms and Data Structures': { color: '#2f6f7e' },
-  'Databases and SQL': { color: '#9c6b1e' },
+  'Databases and SQL': { color: '#8f621c' },
   'Systems and Networking': { color: '#1f6f5c' },
   'Object-Oriented Programming': { color: '#7b4b78' },
   'Data and Compression': { color: '#46628f' },
@@ -38,8 +38,6 @@ export const SECTION_BLURBS = {
   'Object-Oriented Programming': 'Classes, inheritance and polymorphism as moving diagrams, not definitions.',
   'Data and Compression': 'Drag probabilities and watch a Huffman code chase the entropy floor.',
 }
-
-export default SECTION_COLORS
 
 // Guard: every SECTION_ORDER entry must have a color. Enforced by
 // e2e/section-colors-logic.spec.ts (which imports SECTION_ORDER from

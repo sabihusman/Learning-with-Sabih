@@ -20,4 +20,6 @@ The same basic idea, using a hash to decide where something goes, also scales up
 
 The hash function in the figure is a simple teaching example: it just adds up the character codes of the key and wraps that around the table size. Real hash functions are far more complex and are designed to scatter keys much more evenly than this one does. The placement, collisions, and load factor shown are all computed for real from that simple hash; the table is kept small so collisions are easy to see.
 
+## Watching collisions stack up
+
 <HashTableViz />

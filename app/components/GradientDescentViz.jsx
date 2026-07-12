@@ -383,6 +383,7 @@ export default function GradientDescentViz() {
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '0 auto', touchAction: 'none' }}
+        role="img"
         aria-label="Loss curve of a 1D double-well function. Drag the red point along the curve while paused to set the starting position, then run gradient descent."
       >
         <defs>

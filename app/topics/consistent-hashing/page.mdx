@@ -20,4 +20,6 @@ The rough rule is that adding one node to a ring of n moves about 1/n of the key
 
 The hash is a real FNV-1a hash, and every ring position, owner, and remap count is computed from it, not scripted. This figure uses one point per node to keep the ring readable. Real systems give each physical node many positions on the ring, called virtual nodes, so keys spread more evenly and no single node gets unlucky with a big arc. The "about 1/n of keys move" result is an expectation that a simple one-point-per-node ring like this one only approximates; with fourteen keys and a few nodes you see the shape of the idea, not a precise ratio.
 
+## Adding a node to the ring
+
 <ConsistentHashingViz />

@@ -83,6 +83,12 @@ export const SECTIONS = SECTION_ORDER.map((name) => ({
   topics: TOPICS.filter((topic) => topic.section === name),
 }))
 
+// Shared "N topic(s)" pluralization, used by both the contents-page chapter cards
+// and the chapter view header so the wording never drifts between the two.
+export function pluralTopics(count) {
+  return `${count} ${count === 1 ? 'topic' : 'topics'}`
+}
+
 // The previous/next topic for a given slug, treating the 38-topic list as one
 // sequence that crosses section boundaries. Either side is null at the ends.
 export function neighbors(slug) {

@@ -230,7 +230,7 @@ export default function BigOViz() {
         log scale so all six fit.
       </p>
       <div className={styles.curveCard}>
-        <svg viewBox={`0 0 ${W} ${H}`} className={styles.svg} aria-label="Operation count versus input size n for six complexity classes, on a log scale. A dashed marker tracks the current n.">
+        <svg viewBox={`0 0 ${W} ${H}`} className={styles.svg} role="img" aria-label="Operation count versus input size n for six complexity classes, on a log scale. A dashed marker tracks the current n.">
           <text x={12} y={padT + plotH / 2} fontFamily="ui-monospace, monospace" fontSize="9" fill="var(--fade)" textAnchor="middle" transform={`rotate(-90 12 ${padT + plotH / 2})`}>
             ops (log)
           </text>

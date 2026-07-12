@@ -16,4 +16,6 @@ The line the gap traces is not a matter of finding a smarter per-symbol code. Hu
 
 Honesty notes. The alphabet here is tiny and contrived, four symbols with hand-picked default probabilities. What is real is the math on top: Shannon entropy is computed live from the current probabilities, the Huffman code is built live by the standard algorithm of repeatedly merging the two lowest-probability nodes, and the average code length is a weighted sum over the code lengths the figure actually shows. Moving a slider renormalizes the others proportionally, using a tested function, so the table always sums to 1 without any display trick. And note the scope of the bound. Huffman is optimal among per-symbol prefix codes; the "you cannot beat entropy" limit shown here is the per-symbol limit, not an absolute floor on all compression. Real compressors do better by taking advantage of context and longer-range structure between symbols, which this figure does not model.
 
+## Watching the gap close
+
 <EntropyCompressionViz />

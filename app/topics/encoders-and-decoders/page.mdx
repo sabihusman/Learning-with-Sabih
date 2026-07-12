@@ -22,4 +22,6 @@ Some models are encoder-only, good at understanding. Some are decoder-only, good
 
 The grid shows what each position is allowed to look at, the masking rule, not the actual attention weights. The rule is real and computed live: in decoder mode a word can see a column only if that column is at or before its own position. This masking is the core difference between encoders and decoders. Real models also differ in other ways, like how a decoder can additionally attend to an encoder's output in translation, which this single grid does not show.
 
+## What the grid shows
+
 <EncoderDecoderViz />

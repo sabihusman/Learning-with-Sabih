@@ -18,4 +18,6 @@ Least connections is not magic, only better informed. Its glance at queue depth 
 
 Honesty notes. This simulation is deliberately simplified: each server works one request at a time so queues are visible, the stream and durations are hand-built so the two policies diverge on screen, and dropped means dropped, while real balancers health-check servers before sending, retry or drain requests off a dying one, and often add weights or hashing to the decision. The simulation itself is real: a deterministic tick function processes every request, and every readout is computed from its state.
 
+## Routing the same 16 requests
+
 <LoadBalancingViz />

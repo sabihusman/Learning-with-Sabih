@@ -20,4 +20,6 @@ One honesty note about the steps. Textbooks list a second normal form between 1N
 
 Normalization has a cost, which is why it is a choice and not a law: the three-table shape needs joins to reassemble what the wide table showed on one row. Analytics systems often denormalize deliberately, accepting redundancy for read speed. But that trade is safe only when you make it knowingly, from a normalized starting point, not when a table grew wide by accident.
 
+## Splitting the wide table
+
 <NormalizationViz />
