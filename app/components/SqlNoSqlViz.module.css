@@ -55,7 +55,8 @@
 
 .panel {
   flex: 1 1 340px;
-  min-width: 300px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .panelTag {

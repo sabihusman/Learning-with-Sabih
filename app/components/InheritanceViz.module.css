@@ -33,6 +33,7 @@
 
 .stageScroll {
   flex: 1 1 460px;
+  min-width: 0;
   overflow-x: auto;
 }
 
@@ -200,7 +201,8 @@
 /* ── member detail panel ─────────────────────────────────────────────────── */
 .detail {
   flex: 1 1 210px;
-  min-width: 200px;
+  min-width: 0;
+  max-width: 100%;
   border: 1px solid var(--rule);
   border-radius: 8px;
   background: #faf9f6;

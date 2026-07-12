@@ -4,8 +4,16 @@
    stream row reads left to right as a timeline. Colors stay in the site family:
    ink / fade / accent, plus the ok-green and error-red already used elsewhere. */
 
+/* The figure is a single wide timeline (12-key stream) plus the cache and origin
+   below it. On a phone, scaling the whole SVG down to fit would shrink the labels
+   below legibility, so keep a min-width floor and let this wrapper scroll instead. */
+.scroll {
+  overflow-x: auto;
+}
+
 .svg {
   width: 100%;
+  min-width: 400px;
   max-width: 480px;
   height: auto;
   display: block;
