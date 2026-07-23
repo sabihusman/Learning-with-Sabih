@@ -8,8 +8,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
-    // reference / scratch files at repo root that are not part of the app
-    'study-guide-demo.jsx',
+    // historical reference files that are not part of the app
+    'archive/**',
     // Playwright e2e tests + reports are linted by Playwright/tsc, not next lint
     'e2e/**',
     'playwright.config.ts',
