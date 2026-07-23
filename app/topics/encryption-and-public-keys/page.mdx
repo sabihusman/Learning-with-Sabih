@@ -6,21 +6,41 @@ export const metadata = {
 
 # Encryption and Public Keys
 
-*Placeholder prose. Final prose is written separately after the figure is verified.*
+Two people want to exchange a message over a channel anyone can read.
+Scrambling the message is the easy part. The hard part is the key: if both
+sides need the same secret key to scramble and unscramble, how do you deliver
+that key over the same open channel without everyone else reading it too? This
+is the key distribution problem, and for most of history it meant couriers,
+sealed envelopes, and meetings in person.
 
-Symmetric encryption uses one shared secret to lock and unlock a message, which
-leaves a bootstrapping problem: the secret itself cannot be shared safely over
-an open wire. Public-key cryptography solves this with a matched pair of keys,
-a public key anyone may have and a private key that is never shared.
+## Two keys instead of one
 
-Lock a message with someone's public key and only their private key opens it.
-Flip the roles and you get signing: lock with your private key, and anyone
-holding your public key can open it, which proves the message came from you.
+Public-key cryptography removes the shared secret. Each person holds a pair of
+keys that are mathematically linked: a public key they hand out freely, and a
+private key they never share. What one key locks, only its partner unlocks.
 
-## Lock it, then try the keys
+To send Bob a message, you lock it with Bob's public key. Anyone can have that
+key; it only locks. From that moment the message is ciphertext, and the only
+key that opens it is Bob's private key, which has never left Bob. Lock with the
+wrong person's public key and their partner key opens it instead; apply the
+wrong private key and you get garbage, not the message.
+
+## Flipping the keys: signatures
+
+The pair works in both directions, and the reverse direction solves a
+different problem: proving who wrote a message. Lock a message with your
+private key and anyone holding your public key can open it. That sounds
+useless for secrecy, everyone has your public key, but that is the point. If
+your public key opens it, only your private key could have locked it, and only
+you hold that. The message is not hidden; it is signed.
+
+## What the demo shows
+
+Type a message and choose whose public key locks it, then try each private key
+on the ciphertext: the matching one recovers the message and the other
+produces garbage. The Sign toggle swaps the roles, lock with a private key,
+verify with the matching public key. The scrambling itself is a toy, see the
+note below the figure, but the lock-and-key logic it acts out is the real
+idea.
 
 <EncryptionViz />
-
-*Placeholder prose continues. The sections above and below the figure will be
-expanded with the mechanism walkthrough and the signing beat once the figure is
-approved.*
