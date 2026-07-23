@@ -67,18 +67,27 @@ global one.
 
 ## Why the starting point matters
 
-Plain gradient descent only ever moves downhill, so it cannot climb over the
-ridge at x ≈ 0.118 that separates the two valleys. Whichever side of that ridge
-you start on is the valley you end up in.
+Every step points downhill: the update always moves against the slope. With a
+small learning rate that means the point can never cross the ridge at x ≈ 0.118
+that separates the two valleys. Whichever side of the ridge you start on is the
+valley you end up in.
 
-Start the demo on the right, at x = 2.4, and run it. The point rolls left and
-down until the slope flattens at x ≈ 1.939, then stops. That is the local
-minimum. It settles there even though a deeper, better minimum exists in the
-left valley, because reaching the left valley would require going uphill first
-and gradient descent never does that.
+Start the demo on the right, at x = 2.4, and run it at the default learning
+rate. The point rolls left and down until the slope flattens at x ≈ 1.939, then
+stops. That is the local minimum. It settles there even though a deeper, better
+minimum exists in the left valley, because at a small learning rate each step
+is too short to climb the ridge, and the loss falls at every single step.
 
 Now switch to Start left, at x = -2.4, and run again. This time the point
 settles at x ≈ -2.056, the global minimum.
+
+The learning rate changes all of this. A step points downhill, but a large step
+can land uphill by overshooting the valley floor. Raise the slider past the
+careful range and the point starts to bounce, landing higher than it left. Push
+it further and the bounces grow until the steps blow up and the demo reports
+Diverged. At the highest rates the point can even be flung across the ridge it
+could never walk over. Smooth, guaranteed descent is a property of small steps,
+not of gradient descent itself.
 
 This is the central limitation the demo is built to show: gradient descent
 finds a minimum near where it begins, not necessarily the best minimum overall.
@@ -94,4 +103,6 @@ The dashed grey trail records every previous position. The filled black dot
 marks the global minimum and the hollow black ring marks the local minimum.
 Use **Play** to run the optimization, **Step** to advance one iteration at a
 time and watch the readouts, and **Start left** or **Start right** to choose
-which valley the point begins in.
+which valley the point begins in. Drag the red point while paused to set the
+starting position. The learning rate slider sets the step size: small rates
+descend smoothly, large ones overshoot, oscillate, and can diverge.
