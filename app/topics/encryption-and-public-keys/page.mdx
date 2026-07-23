@@ -1,0 +1,26 @@
+import EncryptionViz from '@/app/components/EncryptionViz'
+
+export const metadata = {
+  title: 'Encryption and Public Keys - Learning with Sabih',
+}
+
+# Encryption and Public Keys
+
+*Placeholder prose. Final prose is written separately after the figure is verified.*
+
+Symmetric encryption uses one shared secret to lock and unlock a message, which
+leaves a bootstrapping problem: the secret itself cannot be shared safely over
+an open wire. Public-key cryptography solves this with a matched pair of keys,
+a public key anyone may have and a private key that is never shared.
+
+Lock a message with someone's public key and only their private key opens it.
+Flip the roles and you get signing: lock with your private key, and anyone
+holding your public key can open it, which proves the message came from you.
+
+## Lock it, then try the keys
+
+<EncryptionViz />
+
+*Placeholder prose continues. The sections above and below the figure will be
+expanded with the mechanism walkthrough and the signing beat once the figure is
+approved.*
