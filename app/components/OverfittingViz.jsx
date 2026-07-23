@@ -60,7 +60,7 @@ const ALL_ERRORS = Array.from({ length: MAX_DEG - MIN_DEG + 1 }, (_, i) => {
   const coef = fitPolynomial(TRAIN, degree)
   return { degree, train: mse(coef, TRAIN), test: mse(coef, TEST) }
 })
-const BEST = ALL_ERRORS.reduce((a, b) => (b.test < a.test ? b : a))
+const BEST = ALL_ERRORS.reduce((a, b) => (b.test < a.test ? b : a), ALL_ERRORS[0])
 
 const U_H = 210
 const U_PAD_L = 46
@@ -84,7 +84,8 @@ const uyPx = (err) =>
   )
 
 function errPath(key) {
-  return `M${ALL_ERRORS.map((e) => `${uxPx(e.degree).toFixed(2)},${uyPx(e[key]).toFixed(2)}`).join(' L')}`
+  const pts = ALL_ERRORS.map((e) => uxPx(e.degree).toFixed(2) + ',' + uyPx(e[key]).toFixed(2))
+  return 'M' + pts.join(' L')
 }
 const TRAIN_PATH = errPath('train')
 const TEST_PATH = errPath('test')
