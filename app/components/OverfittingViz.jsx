@@ -52,6 +52,45 @@ function truthPath(samples = 240) {
 }
 const TRUTH_PATH = truthPath()
 
+// ── U-curve companion panel ───────────────────────────────────────────────────
+// Train/test error for every degree, computed once with the same fit the main
+// panel uses (14 tiny least-squares solves, well under a millisecond).
+const ALL_ERRORS = Array.from({ length: MAX_DEG - MIN_DEG + 1 }, (_, i) => {
+  const degree = MIN_DEG + i
+  const coef = fitPolynomial(TRAIN, degree)
+  return { degree, train: mse(coef, TRAIN), test: mse(coef, TEST) }
+})
+const BEST = ALL_ERRORS.reduce((a, b) => (b.test < a.test ? b : a), ALL_ERRORS[0])
+
+const U_H = 210
+const U_PAD_L = 46
+const U_PAD_R = 20
+const U_PAD_T = 16
+const U_PAD_B = 34
+const U_PLOT_W = VB_W - U_PAD_L - U_PAD_R
+const U_PLOT_H = U_H - U_PAD_T - U_PAD_B
+
+// Errors span ~0.007 to ~0.16 (a factor of ~23), so a log scale keeps both the
+// training-error drop and the test-error U readable in one panel.
+const ERR_LO = 0.005
+const ERR_HI = 0.2
+// Coords are rounded to 2dp so server-prerendered and client-hydrated values match
+// exactly; the log10 of a computed error can differ in its last float digit between
+// Node and the browser (same reason the main panel rounds its point coords).
+const uxPx = (degree) => Number((U_PAD_L + ((degree - MIN_DEG) / (MAX_DEG - MIN_DEG)) * U_PLOT_W).toFixed(2))
+const uyPx = (err) =>
+  Number(
+    (U_PAD_T + (1 - (Math.log10(err) - Math.log10(ERR_LO)) / (Math.log10(ERR_HI) - Math.log10(ERR_LO))) * U_PLOT_H).toFixed(2),
+  )
+
+function errPath(key) {
+  const pts = ALL_ERRORS.map((e) => uxPx(e.degree).toFixed(2) + ',' + uyPx(e[key]).toFixed(2))
+  return 'M' + pts.join(' L')
+}
+const TRAIN_PATH = errPath('train')
+const TEST_PATH = errPath('test')
+const ERR_TICKS = [0.01, 0.03, 0.1]
+
 function regimeClass(name) {
   if (name === 'good fit') return styles.regimeGood
   if (name === 'overfitting') return styles.regimeOver
@@ -144,10 +183,53 @@ export default function OverfittingViz() {
         <span>wiggly (chases the training points) →</span>
       </div>
 
+      <svg
+        viewBox={`0 0 ${VB_W} ${U_H}`}
+        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '14px auto 0', background: PAPER, borderRadius: 6 }}
+        aria-label="Training and test error plotted against polynomial degree. Training error falls as degree rises; test error falls then rises again in a U shape. Dots mark the current slider degree on both curves, and the test-error minimum is flagged as the best fit."
+      >
+        {/* log-scale error gridlines */}
+        {ERR_TICKS.map((tv) => (
+          <g key={`et-${tv}`}>
+            <line x1={U_PAD_L} y1={uyPx(tv)} x2={U_PAD_L + U_PLOT_W} y2={uyPx(tv)} stroke="#d4d0c8" strokeWidth={1} strokeDasharray="2 3" />
+            <text x={U_PAD_L - 6} y={uyPx(tv) + 3} fontSize={11} fill={FADE} fontFamily={MONO} textAnchor="end">{tv}</text>
+          </g>
+        ))}
+
+        {/* degree axis */}
+        {ALL_ERRORS.map((e) => (
+          <text key={`dt-${e.degree}`} x={uxPx(e.degree)} y={U_H - U_PAD_B + 16} fontSize={10.5} fill={e.degree === deg ? INK : FADE} fontFamily={MONO} textAnchor="middle" fontWeight={e.degree === deg ? 700 : 400}>{e.degree}</text>
+        ))}
+        <text x={U_PAD_L + U_PLOT_W / 2} y={U_H - 4} fontSize={11} fill={FADE} fontFamily={MONO} textAnchor="middle">polynomial degree</text>
+        <text x={12} y={U_PAD_T + U_PLOT_H / 2} fontSize={11} fill={FADE} fontFamily={MONO} textAnchor="middle" transform={`rotate(-90 12 ${U_PAD_T + U_PLOT_H / 2})`}>error (log)</text>
+
+        {/* current-degree guide line */}
+        <line x1={uxPx(deg)} y1={U_PAD_T} x2={uxPx(deg)} y2={U_PAD_T + U_PLOT_H} stroke={ACCENT} strokeWidth={1} strokeDasharray="3 3" opacity={0.6} />
+
+        {/* error curves: same fit as the main panel, run over every degree */}
+        <path d={TRAIN_PATH} fill="none" stroke={TEAL} strokeWidth={2} />
+        <path d={TEST_PATH} fill="none" stroke={GREEN} strokeWidth={2} />
+
+        {/* test-error minimum, flagged */}
+        <circle cx={uxPx(BEST.degree)} cy={uyPx(BEST.test)} r={7} fill="none" stroke={GREEN} strokeWidth={1.4} strokeDasharray="2 2" />
+        <text x={uxPx(BEST.degree)} y={uyPx(BEST.test) + 22} fontSize={11} fill={GREEN} fontFamily={MONO} textAnchor="middle" fontWeight={700}>best (degree {BEST.degree})</text>
+
+        {/* dots marking the current slider degree on both curves */}
+        <circle data-testid="ucurve-train-dot" cx={uxPx(deg).toFixed(2)} cy={uyPx(trainErr).toFixed(2)} r={4.5} fill={TEAL} stroke="#fff" strokeWidth={1.2} />
+        <circle data-testid="ucurve-test-dot" cx={uxPx(deg).toFixed(2)} cy={uyPx(testErr).toFixed(2)} r={4.5} fill={GREEN} stroke="#fff" strokeWidth={1.2} />
+
+        {/* legend */}
+        <g transform={`translate(${U_PAD_L + 8}, ${U_PAD_T + 6})`}>
+          <line x1={0} y1={4} x2={12} y2={4} stroke={TEAL} strokeWidth={2} /><text x={17} y={7} fontSize={11.5} fill={INK} fontFamily={MONO}>training error</text>
+          <line x1={0} y1={18} x2={12} y2={18} stroke={GREEN} strokeWidth={2} /><text x={17} y={21} fontSize={11.5} fill={INK} fontFamily={MONO}>test error</text>
+        </g>
+      </svg>
+
       <p className={styles.note}>
         Real polynomial least-squares fit over a fixed, seeded dataset (16 training + 6 held-out test points around a
         gentle sine curve plus noise). No ML library; the curve and both errors are recomputed from scratch on each
-        slider tick.
+        slider tick. The lower panel runs the same fit at every degree and plots both errors on a log scale; the
+        flagged minimum is computed, not hand-picked.
       </p>
     </Figure>
   )
