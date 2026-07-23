@@ -322,3 +322,12 @@ Three named laws with genuine mechanisms and figure fits. Chapter placement vari
 - **Teaches:** decision time grows logarithmically with the number of choices: T = a + b log2(n+1). Why menus with fewer options feel faster, and why log, not linear: doubling choices adds a constant, not double the time.
 - **Figure:** a live reaction-time experiment. The user clicks a highlighted target among n options; their own measured times get plotted against n, with the log curve overlaid. The user is the dataset.
 - **Constraint:** the user's measured data is real (say so); the fitted curve is illustrative unless enough trials exist. Scope note: this is HCI, adjacent to the guide's current register, placement decision deferred.
+
+### Transformer block internals
+
+Fills the verified gap between the existing attention topics and the full architecture: residual connections, layer norm, and the FFN appear nowhere in the codebase (confirmed by grep). Placement decided: new topic slotted between Transformers and Multi-Head Attention (topic 14) and Encoders and Decoders (topic 15) in AI and ML.
+
+**N15. Inside a transformer block**
+- **Teaches:** attention is only part of the repeating unit. One block is attention, then add and norm, then a position-wise feed-forward network, then add and norm again, stacked N times. Residual connections let the signal skip past each sublayer so deep stacks stay trainable; layer norm keeps activations at a stable scale; the FFN transforms each position independently between attention steps. The common intuition, attention mixes information across positions while the FFN processes each position, is presented as intuition, not mechanism.
+- **Figure:** one block drawn as a pipeline with a token vector flowing through. Toggle the residual connection off and watch the signal degrade through a stacked run; toggle layer norm off and watch activation scale drift. The current sublayer highlights as the vector passes.
+- **Constraint:** the degradation behavior must be either real computation or clearly labeled illustration, decided at build time and reflected accurately in the honesty note. Slot between topics 14 and 15; this shifts the numbering of every topic from Encoders and Decoders onward, so the build must update topicList.js as single source of truth and let numbers flow from it, never retyped.
