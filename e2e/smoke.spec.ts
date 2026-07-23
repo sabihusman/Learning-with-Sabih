@@ -58,6 +58,7 @@ const TOPICS = [
   { slug: 'deadlock', name: 'Deadlock' },
   { slug: 'tcp-and-udp', name: 'TCP and UDP' },
   { slug: 'dns', name: 'DNS' },
+  { slug: 'encryption-and-public-keys', name: 'Encryption and Public Keys' },
   { slug: 'classes-and-objects', name: 'Classes and Objects' },
   { slug: 'constructors-and-the-heap', name: 'Constructors and the Heap' },
   { slug: 'encapsulation', name: 'Encapsulation' },

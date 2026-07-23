@@ -1,0 +1,171 @@
+.wrap {
+  max-width: 600px;
+  margin: 0 auto;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.msgLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+  margin-bottom: 12px;
+}
+
+.msgInput {
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 13px;
+  color: #1a1a1a;
+  background: #f7f6f2;
+  border: 1px solid #d4d0c8;
+  border-radius: 4px;
+  padding: 6px 9px;
+}
+
+.msgInput:focus {
+  outline: 2px solid #c0392b;
+  outline-offset: 1px;
+}
+
+.parties {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.party {
+  flex: 1;
+  min-width: 0;
+  background: #f7f6f2;
+  border: 1px solid #e7e3da;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.partyName {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.keyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.key {
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.publicKey {
+  background: #d8e6d8;
+  color: #1f6f5c;
+}
+
+.privateKey {
+  background: #fbeeec;
+  color: #c0392b;
+}
+
+.keyNote {
+  font-size: 9.5px;
+  color: #9b9892;
+}
+
+.stepLabel {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+  margin: 10px 0 6px;
+}
+
+.btnRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.keyBtn {
+  font-family: inherit;
+  font-size: 12px;
+  color: #1a1a1a;
+  background: #f7f6f2;
+  border: 1px solid #d4d0c8;
+  border-radius: 4px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.keyBtn:hover {
+  border-color: #9b9892;
+}
+
+.keyBtnActive {
+  background: #1a1a1a;
+  color: #f7f6f2;
+  border-color: #1a1a1a;
+}
+
+.stage {
+  margin-top: 10px;
+}
+
+.stageLabel {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+  margin-bottom: 3px;
+}
+
+.cipher {
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #f7f6f2;
+  border: 1px solid #e7e3da;
+  border-radius: 4px;
+  padding: 8px 10px;
+  min-height: 1.4em;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.recovered {
+  border-color: #1f6f5c;
+  background: #d8e6d8;
+  color: #1f6f5c;
+}
+
+.garbage {
+  border-color: #c0392b;
+  background: #fbeeec;
+  color: #c0392b;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
+
+@media (max-width: 600px) {
+  .parties {
+    flex-direction: column;
+  }
+}
