@@ -1,0 +1,3719 @@
+{
+  "users": [
+    {
+      "user_id": 1,
+      "signup_date": "2025-02-15",
+      "country": "GB",
+      "plan": "pro"
+    },
+    {
+      "user_id": 2,
+      "signup_date": "2025-01-23",
+      "country": "FR",
+      "plan": "pro"
+    },
+    {
+      "user_id": 3,
+      "signup_date": "2025-02-22",
+      "country": "GB",
+      "plan": "free"
+    },
+    {
+      "user_id": 4,
+      "signup_date": "2025-02-09",
+      "country": "GB",
+      "plan": "free"
+    },
+    {
+      "user_id": 5,
+      "signup_date": "2025-01-08",
+      "country": "US",
+      "plan": "pro"
+    },
+    {
+      "user_id": 6,
+      "signup_date": "2025-01-20",
+      "country": "ES",
+      "plan": "free"
+    },
+    {
+      "user_id": 7,
+      "signup_date": "2025-02-10",
+      "country": "FR",
+      "plan": "free"
+    },
+    {
+      "user_id": 8,
+      "signup_date": "2025-02-19",
+      "country": "ES",
+      "plan": "free"
+    },
+    {
+      "user_id": 9,
+      "signup_date": "2025-02-03",
+      "country": "CA",
+      "plan": "pro"
+    },
+    {
+      "user_id": 10,
+      "signup_date": "2025-03-02",
+      "country": "US",
+      "plan": "free"
+    },
+    {
+      "user_id": 11,
+      "signup_date": "2025-01-16",
+      "country": "IN",
+      "plan": "free"
+    },
+    {
+      "user_id": 12,
+      "signup_date": "2025-01-15",
+      "country": "FR",
+      "plan": "free"
+    },
+    {
+      "user_id": 13,
+      "signup_date": "2025-01-27",
+      "country": "GB",
+      "plan": "pro"
+    },
+    {
+      "user_id": 14,
+      "signup_date": "2025-01-12",
+      "country": "JP",
+      "plan": "free"
+    },
+    {
+      "user_id": 15,
+      "signup_date": "2025-02-13",
+      "country": "BR",
+      "plan": "free"
+    },
+    {
+      "user_id": 16,
+      "signup_date": "2025-02-21",
+      "country": "MX",
+      "plan": "free"
+    },
+    {
+      "user_id": 17,
+      "signup_date": "2025-01-30",
+      "country": "GB",
+      "plan": "free"
+    },
+    {
+      "user_id": 18,
+      "signup_date": "2025-02-28",
+      "country": "CA",
+      "plan": "free"
+    },
+    {
+      "user_id": 19,
+      "signup_date": "2025-01-29",
+      "country": "CA",
+      "plan": "pro"
+    },
+    {
+      "user_id": 20,
+      "signup_date": "2025-01-10",
+      "country": "US",
+      "plan": "free"
+    },
+    {
+      "user_id": 21,
+      "signup_date": "2025-02-24",
+      "country": "BR",
+      "plan": "free"
+    },
+    {
+      "user_id": 22,
+      "signup_date": "2025-03-01",
+      "country": "FR",
+      "plan": "free"
+    },
+    {
+      "user_id": 23,
+      "signup_date": "2025-01-30",
+      "country": "BR",
+      "plan": "free"
+    },
+    {
+      "user_id": 24,
+      "signup_date": "2025-02-28",
+      "country": "JP",
+      "plan": "pro"
+    },
+    {
+      "user_id": 25,
+      "signup_date": "2025-01-28",
+      "country": "FR",
+      "plan": "free"
+    },
+    {
+      "user_id": 26,
+      "signup_date": "2025-02-19",
+      "country": "GB",
+      "plan": "free"
+    },
+    {
+      "user_id": 27,
+      "signup_date": "2025-01-16",
+      "country": "ES",
+      "plan": "free"
+    },
+    {
+      "user_id": 28,
+      "signup_date": "2025-01-16",
+      "country": "MX",
+      "plan": "free"
+    },
+    {
+      "user_id": 29,
+      "signup_date": "2025-02-15",
+      "country": "ES",
+      "plan": "pro"
+    },
+    {
+      "user_id": 30,
+      "signup_date": "2025-01-26",
+      "country": "US",
+      "plan": "pro"
+    },
+    {
+      "user_id": 31,
+      "signup_date": "2025-01-08",
+      "country": "JP",
+      "plan": "free"
+    },
+    {
+      "user_id": 32,
+      "signup_date": "2025-01-10",
+      "country": "FR",
+      "plan": "free"
+    },
+    {
+      "user_id": 33,
+      "signup_date": "2025-02-11",
+      "country": "JP",
+      "plan": "pro"
+    },
+    {
+      "user_id": 34,
+      "signup_date": "2025-02-06",
+      "country": "IN",
+      "plan": "free"
+    },
+    {
+      "user_id": 35,
+      "signup_date": "2025-02-16",
+      "country": "MX",
+      "plan": "pro"
+    },
+    {
+      "user_id": 36,
+      "signup_date": "2025-01-14",
+      "country": "FR",
+      "plan": "free"
+    },
+    {
+      "user_id": 37,
+      "signup_date": "2025-02-09",
+      "country": "BR",
+      "plan": "free"
+    },
+    {
+      "user_id": 38,
+      "signup_date": "2025-02-02",
+      "country": "CA",
+      "plan": "free"
+    },
+    {
+      "user_id": 39,
+      "signup_date": "2025-01-20",
+      "country": "DE",
+      "plan": "free"
+    },
+    {
+      "user_id": 40,
+      "signup_date": "2025-01-11",
+      "country": "US",
+      "plan": "free"
+    },
+    {
+      "user_id": 41,
+      "signup_date": "2025-01-15",
+      "country": "DE",
+      "plan": "free"
+    },
+    {
+      "user_id": 42,
+      "signup_date": "2025-02-02",
+      "country": "CA",
+      "plan": "pro"
+    },
+    {
+      "user_id": 43,
+      "signup_date": "2025-01-30",
+      "country": "CA",
+      "plan": "free"
+    },
+    {
+      "user_id": 44,
+      "signup_date": "2025-02-08",
+      "country": "BR",
+      "plan": "free"
+    },
+    {
+      "user_id": 45,
+      "signup_date": "2025-03-02",
+      "country": "US",
+      "plan": "free"
+    },
+    {
+      "user_id": 46,
+      "signup_date": "2025-01-13",
+      "country": "ES",
+      "plan": "free"
+    },
+    {
+      "user_id": 47,
+      "signup_date": "2025-02-24",
+      "country": "JP",
+      "plan": "pro"
+    },
+    {
+      "user_id": 48,
+      "signup_date": "2025-02-02",
+      "country": "DE",
+      "plan": "free"
+    },
+    {
+      "user_id": 49,
+      "signup_date": "2025-02-21",
+      "country": "BR",
+      "plan": "free"
+    },
+    {
+      "user_id": 50,
+      "signup_date": "2025-02-23",
+      "country": "DE",
+      "plan": "free"
+    }
+  ],
+  "sessions": [
+    {
+      "session_id": 1,
+      "user_id": 5,
+      "started_at": "2025-01-10 07:37:35"
+    },
+    {
+      "session_id": 2,
+      "user_id": 31,
+      "started_at": "2025-01-11 08:35:15"
+    },
+    {
+      "session_id": 3,
+      "user_id": 14,
+      "started_at": "2025-01-12 07:29:39"
+    },
+    {
+      "session_id": 4,
+      "user_id": 20,
+      "started_at": "2025-01-12 20:51:42"
+    },
+    {
+      "session_id": 5,
+      "user_id": 32,
+      "started_at": "2025-01-12 21:39:52"
+    },
+    {
+      "session_id": 6,
+      "user_id": 40,
+      "started_at": "2025-01-13 19:17:48"
+    },
+    {
+      "session_id": 7,
+      "user_id": 36,
+      "started_at": "2025-01-15 20:24:57"
+    },
+    {
+      "session_id": 8,
+      "user_id": 46,
+      "started_at": "2025-01-16 11:27:11"
+    },
+    {
+      "session_id": 9,
+      "user_id": 27,
+      "started_at": "2025-01-16 16:18:13"
+    },
+    {
+      "session_id": 10,
+      "user_id": 12,
+      "started_at": "2025-01-16 19:07:56"
+    },
+    {
+      "session_id": 11,
+      "user_id": 11,
+      "started_at": "2025-01-17 09:38:04"
+    },
+    {
+      "session_id": 12,
+      "user_id": 41,
+      "started_at": "2025-01-17 14:41:04"
+    },
+    {
+      "session_id": 13,
+      "user_id": 28,
+      "started_at": "2025-01-17 22:50:57"
+    },
+    {
+      "session_id": 14,
+      "user_id": 31,
+      "started_at": "2025-01-19 21:08:51"
+    },
+    {
+      "session_id": 15,
+      "user_id": 39,
+      "started_at": "2025-01-20 09:41:27"
+    },
+    {
+      "session_id": 16,
+      "user_id": 6,
+      "started_at": "2025-01-20 14:04:57"
+    },
+    {
+      "session_id": 17,
+      "user_id": 20,
+      "started_at": "2025-01-20 19:55:02"
+    },
+    {
+      "session_id": 18,
+      "user_id": 12,
+      "started_at": "2025-01-21 09:26:42"
+    },
+    {
+      "session_id": 19,
+      "user_id": 2,
+      "started_at": "2025-01-23 17:31:01"
+    },
+    {
+      "session_id": 20,
+      "user_id": 30,
+      "started_at": "2025-01-26 10:49:27"
+    },
+    {
+      "session_id": 21,
+      "user_id": 5,
+      "started_at": "2025-01-26 14:00:04"
+    },
+    {
+      "session_id": 22,
+      "user_id": 6,
+      "started_at": "2025-01-26 17:04:32"
+    },
+    {
+      "session_id": 23,
+      "user_id": 13,
+      "started_at": "2025-01-29 14:16:25"
+    },
+    {
+      "session_id": 24,
+      "user_id": 14,
+      "started_at": "2025-01-29 15:08:59"
+    },
+    {
+      "session_id": 25,
+      "user_id": 20,
+      "started_at": "2025-01-29 15:10:50"
+    },
+    {
+      "session_id": 26,
+      "user_id": 17,
+      "started_at": "2025-01-30 07:21:49"
+    },
+    {
+      "session_id": 27,
+      "user_id": 28,
+      "started_at": "2025-01-30 09:18:32"
+    },
+    {
+      "session_id": 28,
+      "user_id": 43,
+      "started_at": "2025-01-30 12:19:06"
+    },
+    {
+      "session_id": 29,
+      "user_id": 25,
+      "started_at": "2025-01-30 16:42:26"
+    },
+    {
+      "session_id": 30,
+      "user_id": 46,
+      "started_at": "2025-02-01 09:17:56"
+    },
+    {
+      "session_id": 31,
+      "user_id": 19,
+      "started_at": "2025-02-01 11:59:59"
+    },
+    {
+      "session_id": 32,
+      "user_id": 39,
+      "started_at": "2025-02-01 21:11:03"
+    },
+    {
+      "session_id": 33,
+      "user_id": 42,
+      "started_at": "2025-02-02 07:15:12"
+    },
+    {
+      "session_id": 34,
+      "user_id": 23,
+      "started_at": "2025-02-02 10:24:57"
+    },
+    {
+      "session_id": 35,
+      "user_id": 9,
+      "started_at": "2025-02-03 08:41:34"
+    },
+    {
+      "session_id": 36,
+      "user_id": 2,
+      "started_at": "2025-02-03 18:56:53"
+    },
+    {
+      "session_id": 37,
+      "user_id": 38,
+      "started_at": "2025-02-05 12:53:29"
+    },
+    {
+      "session_id": 38,
+      "user_id": 6,
+      "started_at": "2025-02-06 11:46:59"
+    },
+    {
+      "session_id": 39,
+      "user_id": 14,
+      "started_at": "2025-02-07 09:56:15"
+    },
+    {
+      "session_id": 40,
+      "user_id": 9,
+      "started_at": "2025-02-07 09:59:48"
+    },
+    {
+      "session_id": 41,
+      "user_id": 42,
+      "started_at": "2025-02-07 11:15:08"
+    },
+    {
+      "session_id": 42,
+      "user_id": 6,
+      "started_at": "2025-02-08 15:42:31"
+    },
+    {
+      "session_id": 43,
+      "user_id": 14,
+      "started_at": "2025-02-08 16:10:28"
+    },
+    {
+      "session_id": 44,
+      "user_id": 13,
+      "started_at": "2025-02-08 16:29:20"
+    },
+    {
+      "session_id": 45,
+      "user_id": 34,
+      "started_at": "2025-02-08 17:20:57"
+    },
+    {
+      "session_id": 46,
+      "user_id": 39,
+      "started_at": "2025-02-09 19:20:13"
+    },
+    {
+      "session_id": 47,
+      "user_id": 17,
+      "started_at": "2025-02-10 09:56:44"
+    },
+    {
+      "session_id": 48,
+      "user_id": 9,
+      "started_at": "2025-02-10 12:24:00"
+    },
+    {
+      "session_id": 49,
+      "user_id": 40,
+      "started_at": "2025-02-10 15:53:05"
+    },
+    {
+      "session_id": 50,
+      "user_id": 4,
+      "started_at": "2025-02-10 16:25:42"
+    },
+    {
+      "session_id": 51,
+      "user_id": 44,
+      "started_at": "2025-02-10 19:25:45"
+    },
+    {
+      "session_id": 52,
+      "user_id": 17,
+      "started_at": "2025-02-11 15:10:47"
+    },
+    {
+      "session_id": 53,
+      "user_id": 37,
+      "started_at": "2025-02-12 22:00:22"
+    },
+    {
+      "session_id": 54,
+      "user_id": 20,
+      "started_at": "2025-02-13 14:12:52"
+    },
+    {
+      "session_id": 55,
+      "user_id": 7,
+      "started_at": "2025-02-13 14:50:30"
+    },
+    {
+      "session_id": 56,
+      "user_id": 19,
+      "started_at": "2025-02-13 20:01:11"
+    },
+    {
+      "session_id": 57,
+      "user_id": 40,
+      "started_at": "2025-02-14 07:47:34"
+    },
+    {
+      "session_id": 58,
+      "user_id": 38,
+      "started_at": "2025-02-14 07:58:25"
+    },
+    {
+      "session_id": 59,
+      "user_id": 46,
+      "started_at": "2025-02-14 14:48:29"
+    },
+    {
+      "session_id": 60,
+      "user_id": 33,
+      "started_at": "2025-02-14 21:16:48"
+    },
+    {
+      "session_id": 61,
+      "user_id": 15,
+      "started_at": "2025-02-15 07:42:52"
+    },
+    {
+      "session_id": 62,
+      "user_id": 2,
+      "started_at": "2025-02-15 14:03:15"
+    },
+    {
+      "session_id": 63,
+      "user_id": 32,
+      "started_at": "2025-02-15 20:53:58"
+    },
+    {
+      "session_id": 64,
+      "user_id": 29,
+      "started_at": "2025-02-16 16:14:51"
+    },
+    {
+      "session_id": 65,
+      "user_id": 27,
+      "started_at": "2025-02-16 17:29:28"
+    },
+    {
+      "session_id": 66,
+      "user_id": 19,
+      "started_at": "2025-02-17 12:51:51"
+    },
+    {
+      "session_id": 67,
+      "user_id": 35,
+      "started_at": "2025-02-17 13:04:26"
+    },
+    {
+      "session_id": 68,
+      "user_id": 1,
+      "started_at": "2025-02-17 13:09:23"
+    },
+    {
+      "session_id": 69,
+      "user_id": 32,
+      "started_at": "2025-02-18 21:57:10"
+    },
+    {
+      "session_id": 70,
+      "user_id": 8,
+      "started_at": "2025-02-19 14:12:12"
+    },
+    {
+      "session_id": 71,
+      "user_id": 46,
+      "started_at": "2025-02-19 15:39:51"
+    },
+    {
+      "session_id": 72,
+      "user_id": 46,
+      "started_at": "2025-02-20 22:29:27"
+    },
+    {
+      "session_id": 73,
+      "user_id": 14,
+      "started_at": "2025-02-21 10:04:34"
+    },
+    {
+      "session_id": 74,
+      "user_id": 26,
+      "started_at": "2025-02-21 11:12:26"
+    },
+    {
+      "session_id": 75,
+      "user_id": 3,
+      "started_at": "2025-02-22 11:08:42"
+    },
+    {
+      "session_id": 76,
+      "user_id": 9,
+      "started_at": "2025-02-22 12:26:31"
+    },
+    {
+      "session_id": 77,
+      "user_id": 15,
+      "started_at": "2025-02-23 11:16:07"
+    },
+    {
+      "session_id": 78,
+      "user_id": 15,
+      "started_at": "2025-02-23 11:17:18"
+    },
+    {
+      "session_id": 79,
+      "user_id": 16,
+      "started_at": "2025-02-23 13:43:40"
+    },
+    {
+      "session_id": 80,
+      "user_id": 46,
+      "started_at": "2025-02-23 15:20:54"
+    },
+    {
+      "session_id": 81,
+      "user_id": 29,
+      "started_at": "2025-02-23 21:26:56"
+    },
+    {
+      "session_id": 82,
+      "user_id": 36,
+      "started_at": "2025-02-24 07:54:56"
+    },
+    {
+      "session_id": 83,
+      "user_id": 44,
+      "started_at": "2025-02-24 09:37:44"
+    },
+    {
+      "session_id": 84,
+      "user_id": 12,
+      "started_at": "2025-02-24 14:37:38"
+    },
+    {
+      "session_id": 85,
+      "user_id": 12,
+      "started_at": "2025-02-25 17:59:16"
+    },
+    {
+      "session_id": 86,
+      "user_id": 21,
+      "started_at": "2025-02-26 16:52:50"
+    },
+    {
+      "session_id": 87,
+      "user_id": 8,
+      "started_at": "2025-02-27 21:51:55"
+    },
+    {
+      "session_id": 88,
+      "user_id": 16,
+      "started_at": "2025-02-28 09:40:27"
+    },
+    {
+      "session_id": 89,
+      "user_id": 18,
+      "started_at": "2025-02-28 18:37:35"
+    },
+    {
+      "session_id": 90,
+      "user_id": 22,
+      "started_at": "2025-03-01 10:56:16"
+    },
+    {
+      "session_id": 91,
+      "user_id": 28,
+      "started_at": "2025-03-01 17:05:52"
+    },
+    {
+      "session_id": 92,
+      "user_id": 23,
+      "started_at": "2025-03-02 07:33:59"
+    },
+    {
+      "session_id": 93,
+      "user_id": 45,
+      "started_at": "2025-03-02 08:22:34"
+    },
+    {
+      "session_id": 94,
+      "user_id": 33,
+      "started_at": "2025-03-02 15:49:49"
+    },
+    {
+      "session_id": 95,
+      "user_id": 24,
+      "started_at": "2025-03-02 17:42:54"
+    },
+    {
+      "session_id": 96,
+      "user_id": 37,
+      "started_at": "2025-03-02 20:31:01"
+    },
+    {
+      "session_id": 97,
+      "user_id": 29,
+      "started_at": "2025-03-03 11:01:02"
+    },
+    {
+      "session_id": 98,
+      "user_id": 17,
+      "started_at": "2025-03-03 20:35:00"
+    },
+    {
+      "session_id": 99,
+      "user_id": 2,
+      "started_at": "2025-03-04 09:05:46"
+    },
+    {
+      "session_id": 100,
+      "user_id": 21,
+      "started_at": "2025-03-04 15:22:41"
+    },
+    {
+      "session_id": 101,
+      "user_id": 37,
+      "started_at": "2025-03-04 19:54:57"
+    },
+    {
+      "session_id": 102,
+      "user_id": 33,
+      "started_at": "2025-03-04 21:04:45"
+    },
+    {
+      "session_id": 103,
+      "user_id": 10,
+      "started_at": "2025-03-04 21:18:27"
+    },
+    {
+      "session_id": 104,
+      "user_id": 8,
+      "started_at": "2025-03-06 15:29:15"
+    },
+    {
+      "session_id": 105,
+      "user_id": 18,
+      "started_at": "2025-03-06 18:13:43"
+    },
+    {
+      "session_id": 106,
+      "user_id": 29,
+      "started_at": "2025-03-06 22:39:54"
+    },
+    {
+      "session_id": 107,
+      "user_id": 42,
+      "started_at": "2025-03-07 15:49:23"
+    },
+    {
+      "session_id": 108,
+      "user_id": 42,
+      "started_at": "2025-03-08 10:36:13"
+    },
+    {
+      "session_id": 109,
+      "user_id": 10,
+      "started_at": "2025-03-09 08:37:30"
+    },
+    {
+      "session_id": 110,
+      "user_id": 23,
+      "started_at": "2025-03-09 13:23:27"
+    },
+    {
+      "session_id": 111,
+      "user_id": 9,
+      "started_at": "2025-03-09 13:55:25"
+    },
+    {
+      "session_id": 112,
+      "user_id": 23,
+      "started_at": "2025-03-11 13:16:02"
+    },
+    {
+      "session_id": 113,
+      "user_id": 37,
+      "started_at": "2025-03-11 14:31:14"
+    },
+    {
+      "session_id": 114,
+      "user_id": 7,
+      "started_at": "2025-03-12 13:06:06"
+    },
+    {
+      "session_id": 115,
+      "user_id": 21,
+      "started_at": "2025-03-12 19:21:17"
+    },
+    {
+      "session_id": 116,
+      "user_id": 7,
+      "started_at": "2025-03-13 18:27:26"
+    },
+    {
+      "session_id": 117,
+      "user_id": 18,
+      "started_at": "2025-03-13 20:08:02"
+    },
+    {
+      "session_id": 118,
+      "user_id": 16,
+      "started_at": "2025-03-13 22:16:57"
+    },
+    {
+      "session_id": 119,
+      "user_id": 21,
+      "started_at": "2025-03-14 14:01:42"
+    },
+    {
+      "session_id": 120,
+      "user_id": 7,
+      "started_at": "2025-03-15 08:43:41"
+    },
+    {
+      "session_id": 121,
+      "user_id": 29,
+      "started_at": "2025-03-15 22:25:15"
+    },
+    {
+      "session_id": 122,
+      "user_id": 34,
+      "started_at": "2025-03-16 09:08:09"
+    },
+    {
+      "session_id": 123,
+      "user_id": 22,
+      "started_at": "2025-03-16 15:02:06"
+    },
+    {
+      "session_id": 124,
+      "user_id": 35,
+      "started_at": "2025-03-18 17:34:29"
+    },
+    {
+      "session_id": 125,
+      "user_id": 4,
+      "started_at": "2025-03-18 21:07:15"
+    },
+    {
+      "session_id": 126,
+      "user_id": 18,
+      "started_at": "2025-03-19 10:22:49"
+    },
+    {
+      "session_id": 127,
+      "user_id": 26,
+      "started_at": "2025-03-19 12:39:36"
+    },
+    {
+      "session_id": 128,
+      "user_id": 33,
+      "started_at": "2025-03-20 22:40:15"
+    },
+    {
+      "session_id": 129,
+      "user_id": 18,
+      "started_at": "2025-03-23 18:57:59"
+    },
+    {
+      "session_id": 130,
+      "user_id": 10,
+      "started_at": "2025-03-24 13:03:37"
+    },
+    {
+      "session_id": 131,
+      "user_id": 44,
+      "started_at": "2025-03-24 14:06:44"
+    },
+    {
+      "session_id": 132,
+      "user_id": 15,
+      "started_at": "2025-03-24 16:59:42"
+    },
+    {
+      "session_id": 133,
+      "user_id": 4,
+      "started_at": "2025-03-26 18:28:57"
+    },
+    {
+      "session_id": 134,
+      "user_id": 7,
+      "started_at": "2025-03-27 10:03:25"
+    },
+    {
+      "session_id": 135,
+      "user_id": 3,
+      "started_at": "2025-03-28 12:16:33"
+    },
+    {
+      "session_id": 136,
+      "user_id": 8,
+      "started_at": "2025-03-29 21:08:27"
+    },
+    {
+      "session_id": 137,
+      "user_id": 29,
+      "started_at": "2025-03-31 13:45:44"
+    },
+    {
+      "session_id": 138,
+      "user_id": 21,
+      "started_at": "2025-04-01 19:43:53"
+    },
+    {
+      "session_id": 139,
+      "user_id": 45,
+      "started_at": "2025-04-01 22:06:27"
+    },
+    {
+      "session_id": 140,
+      "user_id": 45,
+      "started_at": "2025-04-02 18:04:32"
+    },
+    {
+      "session_id": 141,
+      "user_id": 3,
+      "started_at": "2025-04-05 20:13:59"
+    },
+    {
+      "session_id": 142,
+      "user_id": 10,
+      "started_at": "2025-04-07 12:03:32"
+    },
+    {
+      "session_id": 143,
+      "user_id": 10,
+      "started_at": "2025-04-09 08:47:20"
+    },
+    {
+      "session_id": 144,
+      "user_id": 10,
+      "started_at": "2025-04-10 22:09:12"
+    },
+    {
+      "session_id": 145,
+      "user_id": 22,
+      "started_at": "2025-04-12 20:22:46"
+    },
+    {
+      "session_id": 146,
+      "user_id": 45,
+      "started_at": "2025-04-16 17:00:54"
+    }
+  ],
+  "events": [
+    {
+      "event_id": 1,
+      "session_id": 1,
+      "user_id": 5,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-10 07:38:02"
+    },
+    {
+      "event_id": 2,
+      "session_id": 1,
+      "user_id": 5,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-10 07:38:26"
+    },
+    {
+      "event_id": 3,
+      "session_id": 1,
+      "user_id": 5,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-10 07:38:26"
+    },
+    {
+      "event_id": 4,
+      "session_id": 1,
+      "user_id": 5,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-10 07:39:18"
+    },
+    {
+      "event_id": 5,
+      "session_id": 1,
+      "user_id": 5,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-10 07:40:06"
+    },
+    {
+      "event_id": 6,
+      "session_id": 1,
+      "user_id": 5,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-10 07:40:46"
+    },
+    {
+      "event_id": 7,
+      "session_id": 2,
+      "user_id": 31,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-11 08:35:35"
+    },
+    {
+      "event_id": 8,
+      "session_id": 2,
+      "user_id": 31,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-11 08:36:13"
+    },
+    {
+      "event_id": 9,
+      "session_id": 2,
+      "user_id": 31,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-11 08:36:23"
+    },
+    {
+      "event_id": 10,
+      "session_id": 2,
+      "user_id": 31,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-11 08:36:43"
+    },
+    {
+      "event_id": 11,
+      "session_id": 3,
+      "user_id": 14,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-12 07:29:57"
+    },
+    {
+      "event_id": 12,
+      "session_id": 4,
+      "user_id": 20,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-12 20:52:16"
+    },
+    {
+      "event_id": 13,
+      "session_id": 4,
+      "user_id": 20,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-12 20:52:47"
+    },
+    {
+      "event_id": 14,
+      "session_id": 5,
+      "user_id": 32,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-12 21:40:09"
+    },
+    {
+      "event_id": 15,
+      "session_id": 5,
+      "user_id": 32,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-12 21:40:56"
+    },
+    {
+      "event_id": 16,
+      "session_id": 6,
+      "user_id": 40,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-13 19:18:24"
+    },
+    {
+      "event_id": 17,
+      "session_id": 6,
+      "user_id": 40,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-13 19:19:04"
+    },
+    {
+      "event_id": 18,
+      "session_id": 6,
+      "user_id": 40,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-13 19:19:30"
+    },
+    {
+      "event_id": 19,
+      "session_id": 6,
+      "user_id": 40,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-13 19:20:14"
+    },
+    {
+      "event_id": 20,
+      "session_id": 7,
+      "user_id": 36,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-15 20:25:07"
+    },
+    {
+      "event_id": 21,
+      "session_id": 8,
+      "user_id": 46,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-16 11:27:48"
+    },
+    {
+      "event_id": 22,
+      "session_id": 9,
+      "user_id": 27,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-16 16:18:28"
+    },
+    {
+      "event_id": 23,
+      "session_id": 9,
+      "user_id": 27,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-16 16:18:44"
+    },
+    {
+      "event_id": 24,
+      "session_id": 10,
+      "user_id": 12,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-16 19:08:36"
+    },
+    {
+      "event_id": 25,
+      "session_id": 11,
+      "user_id": 11,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-17 09:38:25"
+    },
+    {
+      "event_id": 26,
+      "session_id": 12,
+      "user_id": 41,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-17 14:41:25"
+    },
+    {
+      "event_id": 27,
+      "session_id": 12,
+      "user_id": 41,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-17 14:41:42"
+    },
+    {
+      "event_id": 28,
+      "session_id": 12,
+      "user_id": 41,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-17 14:42:32"
+    },
+    {
+      "event_id": 29,
+      "session_id": 13,
+      "user_id": 28,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-17 22:51:03"
+    },
+    {
+      "event_id": 30,
+      "session_id": 13,
+      "user_id": 28,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-17 22:51:16"
+    },
+    {
+      "event_id": 31,
+      "session_id": 13,
+      "user_id": 28,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-17 22:52:01"
+    },
+    {
+      "event_id": 32,
+      "session_id": 14,
+      "user_id": 31,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-19 21:08:54"
+    },
+    {
+      "event_id": 33,
+      "session_id": 15,
+      "user_id": 39,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-20 09:41:58"
+    },
+    {
+      "event_id": 34,
+      "session_id": 15,
+      "user_id": 39,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-20 09:42:19"
+    },
+    {
+      "event_id": 35,
+      "session_id": 15,
+      "user_id": 39,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-20 09:43:19"
+    },
+    {
+      "event_id": 36,
+      "session_id": 15,
+      "user_id": 39,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-20 09:44:15"
+    },
+    {
+      "event_id": 37,
+      "session_id": 15,
+      "user_id": 39,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-20 09:45:22"
+    },
+    {
+      "event_id": 38,
+      "session_id": 16,
+      "user_id": 6,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-20 14:05:03"
+    },
+    {
+      "event_id": 39,
+      "session_id": 16,
+      "user_id": 6,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-20 14:05:27"
+    },
+    {
+      "event_id": 40,
+      "session_id": 16,
+      "user_id": 6,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-20 14:05:37"
+    },
+    {
+      "event_id": 41,
+      "session_id": 17,
+      "user_id": 20,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-20 19:55:31"
+    },
+    {
+      "event_id": 42,
+      "session_id": 18,
+      "user_id": 12,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-21 09:26:59"
+    },
+    {
+      "event_id": 43,
+      "session_id": 18,
+      "user_id": 12,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-21 09:27:35"
+    },
+    {
+      "event_id": 44,
+      "session_id": 18,
+      "user_id": 12,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-21 09:27:59"
+    },
+    {
+      "event_id": 45,
+      "session_id": 18,
+      "user_id": 12,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-21 09:28:59"
+    },
+    {
+      "event_id": 46,
+      "session_id": 19,
+      "user_id": 2,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-23 17:31:40"
+    },
+    {
+      "event_id": 47,
+      "session_id": 20,
+      "user_id": 30,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-26 10:49:36"
+    },
+    {
+      "event_id": 48,
+      "session_id": 20,
+      "user_id": 30,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-26 10:49:52"
+    },
+    {
+      "event_id": 49,
+      "session_id": 21,
+      "user_id": 5,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-26 14:00:12"
+    },
+    {
+      "event_id": 50,
+      "session_id": 21,
+      "user_id": 5,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-26 14:00:21"
+    },
+    {
+      "event_id": 51,
+      "session_id": 21,
+      "user_id": 5,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-26 14:01:42"
+    },
+    {
+      "event_id": 52,
+      "session_id": 22,
+      "user_id": 6,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-26 17:04:37"
+    },
+    {
+      "event_id": 53,
+      "session_id": 22,
+      "user_id": 6,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-26 17:05:26"
+    },
+    {
+      "event_id": 54,
+      "session_id": 22,
+      "user_id": 6,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-26 17:06:26"
+    },
+    {
+      "event_id": 55,
+      "session_id": 22,
+      "user_id": 6,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-26 17:07:04"
+    },
+    {
+      "event_id": 56,
+      "session_id": 23,
+      "user_id": 13,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-29 14:17:05"
+    },
+    {
+      "event_id": 57,
+      "session_id": 23,
+      "user_id": 13,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-29 14:17:20"
+    },
+    {
+      "event_id": 58,
+      "session_id": 23,
+      "user_id": 13,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-29 14:18:06"
+    },
+    {
+      "event_id": 59,
+      "session_id": 23,
+      "user_id": 13,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-29 14:18:29"
+    },
+    {
+      "event_id": 60,
+      "session_id": 24,
+      "user_id": 14,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-29 15:09:12"
+    },
+    {
+      "event_id": 61,
+      "session_id": 25,
+      "user_id": 20,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-29 15:11:29"
+    },
+    {
+      "event_id": 62,
+      "session_id": 25,
+      "user_id": 20,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-29 15:11:50"
+    },
+    {
+      "event_id": 63,
+      "session_id": 25,
+      "user_id": 20,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-29 15:12:14"
+    },
+    {
+      "event_id": 64,
+      "session_id": 26,
+      "user_id": 17,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-30 07:22:24"
+    },
+    {
+      "event_id": 65,
+      "session_id": 26,
+      "user_id": 17,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-30 07:23:01"
+    },
+    {
+      "event_id": 66,
+      "session_id": 26,
+      "user_id": 17,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-30 07:23:35"
+    },
+    {
+      "event_id": 67,
+      "session_id": 26,
+      "user_id": 17,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-30 07:24:07"
+    },
+    {
+      "event_id": 68,
+      "session_id": 27,
+      "user_id": 28,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-30 09:18:36"
+    },
+    {
+      "event_id": 69,
+      "session_id": 27,
+      "user_id": 28,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-30 09:18:44"
+    },
+    {
+      "event_id": 70,
+      "session_id": 27,
+      "user_id": 28,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-30 09:19:44"
+    },
+    {
+      "event_id": 71,
+      "session_id": 27,
+      "user_id": 28,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-30 09:20:25"
+    },
+    {
+      "event_id": 72,
+      "session_id": 28,
+      "user_id": 43,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-30 12:19:26"
+    },
+    {
+      "event_id": 73,
+      "session_id": 29,
+      "user_id": 25,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-30 16:42:40"
+    },
+    {
+      "event_id": 74,
+      "session_id": 29,
+      "user_id": 25,
+      "event": "topic_opened",
+      "occurred_at": "2025-01-30 16:43:13"
+    },
+    {
+      "event_id": 75,
+      "session_id": 29,
+      "user_id": 25,
+      "event": "interactive_used",
+      "occurred_at": "2025-01-30 16:43:35"
+    },
+    {
+      "event_id": 76,
+      "session_id": 29,
+      "user_id": 25,
+      "event": "topic_completed",
+      "occurred_at": "2025-01-30 16:45:01"
+    },
+    {
+      "event_id": 77,
+      "session_id": 30,
+      "user_id": 46,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-01 09:18:04"
+    },
+    {
+      "event_id": 78,
+      "session_id": 30,
+      "user_id": 46,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-01 09:18:37"
+    },
+    {
+      "event_id": 79,
+      "session_id": 30,
+      "user_id": 46,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-01 09:19:24"
+    },
+    {
+      "event_id": 80,
+      "session_id": 30,
+      "user_id": 46,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-01 09:20:21"
+    },
+    {
+      "event_id": 81,
+      "session_id": 31,
+      "user_id": 19,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-01 12:00:20"
+    },
+    {
+      "event_id": 82,
+      "session_id": 31,
+      "user_id": 19,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-01 12:00:48"
+    },
+    {
+      "event_id": 83,
+      "session_id": 32,
+      "user_id": 39,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-01 21:11:35"
+    },
+    {
+      "event_id": 84,
+      "session_id": 32,
+      "user_id": 39,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-01 21:11:43"
+    },
+    {
+      "event_id": 85,
+      "session_id": 32,
+      "user_id": 39,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-01 21:12:37"
+    },
+    {
+      "event_id": 86,
+      "session_id": 32,
+      "user_id": 39,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-01 21:12:42"
+    },
+    {
+      "event_id": 87,
+      "session_id": 33,
+      "user_id": 42,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-02 07:15:49"
+    },
+    {
+      "event_id": 88,
+      "session_id": 33,
+      "user_id": 42,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-02 07:16:21"
+    },
+    {
+      "event_id": 89,
+      "session_id": 33,
+      "user_id": 42,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-02 07:16:49"
+    },
+    {
+      "event_id": 90,
+      "session_id": 34,
+      "user_id": 23,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-02 10:25:28"
+    },
+    {
+      "event_id": 91,
+      "session_id": 35,
+      "user_id": 9,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-03 08:42:12"
+    },
+    {
+      "event_id": 92,
+      "session_id": 35,
+      "user_id": 9,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-03 08:43:01"
+    },
+    {
+      "event_id": 93,
+      "session_id": 35,
+      "user_id": 9,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-03 08:44:26"
+    },
+    {
+      "event_id": 94,
+      "session_id": 36,
+      "user_id": 2,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-03 18:57:11"
+    },
+    {
+      "event_id": 95,
+      "session_id": 36,
+      "user_id": 2,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-03 18:57:24"
+    },
+    {
+      "event_id": 96,
+      "session_id": 36,
+      "user_id": 2,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-03 18:57:55"
+    },
+    {
+      "event_id": 97,
+      "session_id": 36,
+      "user_id": 2,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-03 18:58:14"
+    },
+    {
+      "event_id": 98,
+      "session_id": 36,
+      "user_id": 2,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-03 18:59:18"
+    },
+    {
+      "event_id": 99,
+      "session_id": 38,
+      "user_id": 6,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-06 11:47:11"
+    },
+    {
+      "event_id": 100,
+      "session_id": 38,
+      "user_id": 6,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-06 11:47:45"
+    },
+    {
+      "event_id": 101,
+      "session_id": 38,
+      "user_id": 6,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-06 11:48:06"
+    },
+    {
+      "event_id": 102,
+      "session_id": 38,
+      "user_id": 6,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-06 11:49:04"
+    },
+    {
+      "event_id": 103,
+      "session_id": 38,
+      "user_id": 6,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-06 11:50:07"
+    },
+    {
+      "event_id": 104,
+      "session_id": 39,
+      "user_id": 14,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-07 09:56:42"
+    },
+    {
+      "event_id": 105,
+      "session_id": 39,
+      "user_id": 14,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-07 09:56:57"
+    },
+    {
+      "event_id": 106,
+      "session_id": 40,
+      "user_id": 9,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-07 09:59:59"
+    },
+    {
+      "event_id": 107,
+      "session_id": 41,
+      "user_id": 42,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-07 11:15:37"
+    },
+    {
+      "event_id": 108,
+      "session_id": 41,
+      "user_id": 42,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-07 11:15:59"
+    },
+    {
+      "event_id": 109,
+      "session_id": 41,
+      "user_id": 42,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-07 11:16:56"
+    },
+    {
+      "event_id": 110,
+      "session_id": 41,
+      "user_id": 42,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-07 11:18:16"
+    },
+    {
+      "event_id": 111,
+      "session_id": 42,
+      "user_id": 6,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-08 15:43:05"
+    },
+    {
+      "event_id": 112,
+      "session_id": 42,
+      "user_id": 6,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-08 15:43:17"
+    },
+    {
+      "event_id": 113,
+      "session_id": 42,
+      "user_id": 6,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-08 15:43:43"
+    },
+    {
+      "event_id": 114,
+      "session_id": 43,
+      "user_id": 14,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-08 16:11:00"
+    },
+    {
+      "event_id": 115,
+      "session_id": 44,
+      "user_id": 13,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-08 16:29:38"
+    },
+    {
+      "event_id": 116,
+      "session_id": 44,
+      "user_id": 13,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-08 16:30:17"
+    },
+    {
+      "event_id": 117,
+      "session_id": 44,
+      "user_id": 13,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-08 16:30:48"
+    },
+    {
+      "event_id": 118,
+      "session_id": 44,
+      "user_id": 13,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-08 16:30:55"
+    },
+    {
+      "event_id": 119,
+      "session_id": 44,
+      "user_id": 13,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-08 16:31:48"
+    },
+    {
+      "event_id": 120,
+      "session_id": 45,
+      "user_id": 34,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-08 17:21:09"
+    },
+    {
+      "event_id": 121,
+      "session_id": 45,
+      "user_id": 34,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-08 17:21:46"
+    },
+    {
+      "event_id": 122,
+      "session_id": 46,
+      "user_id": 39,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-09 19:20:22"
+    },
+    {
+      "event_id": 123,
+      "session_id": 47,
+      "user_id": 17,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-10 09:57:20"
+    },
+    {
+      "event_id": 124,
+      "session_id": 48,
+      "user_id": 9,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-10 12:24:12"
+    },
+    {
+      "event_id": 125,
+      "session_id": 48,
+      "user_id": 9,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-10 12:24:26"
+    },
+    {
+      "event_id": 126,
+      "session_id": 48,
+      "user_id": 9,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-10 12:24:35"
+    },
+    {
+      "event_id": 127,
+      "session_id": 48,
+      "user_id": 9,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-10 12:25:23"
+    },
+    {
+      "event_id": 128,
+      "session_id": 48,
+      "user_id": 9,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-10 12:26:47"
+    },
+    {
+      "event_id": 129,
+      "session_id": 49,
+      "user_id": 40,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-10 15:53:13"
+    },
+    {
+      "event_id": 130,
+      "session_id": 49,
+      "user_id": 40,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-10 15:53:37"
+    },
+    {
+      "event_id": 131,
+      "session_id": 50,
+      "user_id": 4,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-10 16:26:09"
+    },
+    {
+      "event_id": 132,
+      "session_id": 50,
+      "user_id": 4,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-10 16:26:32"
+    },
+    {
+      "event_id": 133,
+      "session_id": 51,
+      "user_id": 44,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-10 19:26:19"
+    },
+    {
+      "event_id": 134,
+      "session_id": 51,
+      "user_id": 44,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-10 19:26:56"
+    },
+    {
+      "event_id": 135,
+      "session_id": 51,
+      "user_id": 44,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-10 19:27:41"
+    },
+    {
+      "event_id": 136,
+      "session_id": 52,
+      "user_id": 17,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-11 15:11:04"
+    },
+    {
+      "event_id": 137,
+      "session_id": 53,
+      "user_id": 37,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-12 22:00:31"
+    },
+    {
+      "event_id": 138,
+      "session_id": 54,
+      "user_id": 20,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-13 14:13:01"
+    },
+    {
+      "event_id": 139,
+      "session_id": 54,
+      "user_id": 20,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-13 14:13:32"
+    },
+    {
+      "event_id": 140,
+      "session_id": 54,
+      "user_id": 20,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-13 14:13:38"
+    },
+    {
+      "event_id": 141,
+      "session_id": 54,
+      "user_id": 20,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-13 14:14:20"
+    },
+    {
+      "event_id": 142,
+      "session_id": 54,
+      "user_id": 20,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-13 14:15:10"
+    },
+    {
+      "event_id": 143,
+      "session_id": 55,
+      "user_id": 7,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-13 14:50:42"
+    },
+    {
+      "event_id": 144,
+      "session_id": 55,
+      "user_id": 7,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-13 14:51:30"
+    },
+    {
+      "event_id": 145,
+      "session_id": 56,
+      "user_id": 19,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-13 20:01:19"
+    },
+    {
+      "event_id": 146,
+      "session_id": 57,
+      "user_id": 40,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-14 07:47:52"
+    },
+    {
+      "event_id": 147,
+      "session_id": 57,
+      "user_id": 40,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-14 07:48:11"
+    },
+    {
+      "event_id": 148,
+      "session_id": 57,
+      "user_id": 40,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-14 07:48:48"
+    },
+    {
+      "event_id": 149,
+      "session_id": 58,
+      "user_id": 38,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-14 07:58:57"
+    },
+    {
+      "event_id": 150,
+      "session_id": 58,
+      "user_id": 38,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-14 07:59:18"
+    },
+    {
+      "event_id": 151,
+      "session_id": 59,
+      "user_id": 46,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-14 14:49:00"
+    },
+    {
+      "event_id": 152,
+      "session_id": 60,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-14 21:17:10"
+    },
+    {
+      "event_id": 153,
+      "session_id": 60,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-14 21:17:40"
+    },
+    {
+      "event_id": 154,
+      "session_id": 60,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-14 21:17:59"
+    },
+    {
+      "event_id": 155,
+      "session_id": 60,
+      "user_id": 33,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-14 21:18:28"
+    },
+    {
+      "event_id": 156,
+      "session_id": 61,
+      "user_id": 15,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-15 07:43:19"
+    },
+    {
+      "event_id": 157,
+      "session_id": 62,
+      "user_id": 2,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-15 14:03:36"
+    },
+    {
+      "event_id": 158,
+      "session_id": 62,
+      "user_id": 2,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-15 14:03:40"
+    },
+    {
+      "event_id": 159,
+      "session_id": 63,
+      "user_id": 32,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-15 20:54:18"
+    },
+    {
+      "event_id": 160,
+      "session_id": 63,
+      "user_id": 32,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-15 20:54:21"
+    },
+    {
+      "event_id": 161,
+      "session_id": 64,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-16 16:14:57"
+    },
+    {
+      "event_id": 162,
+      "session_id": 64,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-16 16:15:31"
+    },
+    {
+      "event_id": 163,
+      "session_id": 65,
+      "user_id": 27,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-16 17:29:45"
+    },
+    {
+      "event_id": 164,
+      "session_id": 65,
+      "user_id": 27,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-16 17:30:10"
+    },
+    {
+      "event_id": 165,
+      "session_id": 65,
+      "user_id": 27,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-16 17:30:27"
+    },
+    {
+      "event_id": 166,
+      "session_id": 66,
+      "user_id": 19,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-17 12:52:02"
+    },
+    {
+      "event_id": 167,
+      "session_id": 66,
+      "user_id": 19,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-17 12:52:11"
+    },
+    {
+      "event_id": 168,
+      "session_id": 67,
+      "user_id": 35,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-17 13:04:48"
+    },
+    {
+      "event_id": 169,
+      "session_id": 67,
+      "user_id": 35,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-17 13:05:19"
+    },
+    {
+      "event_id": 170,
+      "session_id": 67,
+      "user_id": 35,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-17 13:05:32"
+    },
+    {
+      "event_id": 171,
+      "session_id": 67,
+      "user_id": 35,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-17 13:06:30"
+    },
+    {
+      "event_id": 172,
+      "session_id": 68,
+      "user_id": 1,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-17 13:09:34"
+    },
+    {
+      "event_id": 173,
+      "session_id": 69,
+      "user_id": 32,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-18 21:57:36"
+    },
+    {
+      "event_id": 174,
+      "session_id": 69,
+      "user_id": 32,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-18 21:58:12"
+    },
+    {
+      "event_id": 175,
+      "session_id": 69,
+      "user_id": 32,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-18 21:58:27"
+    },
+    {
+      "event_id": 176,
+      "session_id": 69,
+      "user_id": 32,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-18 21:59:33"
+    },
+    {
+      "event_id": 177,
+      "session_id": 69,
+      "user_id": 32,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-18 22:00:15"
+    },
+    {
+      "event_id": 178,
+      "session_id": 70,
+      "user_id": 8,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-19 14:12:36"
+    },
+    {
+      "event_id": 179,
+      "session_id": 70,
+      "user_id": 8,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-19 14:12:46"
+    },
+    {
+      "event_id": 180,
+      "session_id": 70,
+      "user_id": 8,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-19 14:13:39"
+    },
+    {
+      "event_id": 181,
+      "session_id": 71,
+      "user_id": 46,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-19 15:40:19"
+    },
+    {
+      "event_id": 182,
+      "session_id": 71,
+      "user_id": 46,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-19 15:40:57"
+    },
+    {
+      "event_id": 183,
+      "session_id": 71,
+      "user_id": 46,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-19 15:41:02"
+    },
+    {
+      "event_id": 184,
+      "session_id": 71,
+      "user_id": 46,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-19 15:41:23"
+    },
+    {
+      "event_id": 185,
+      "session_id": 72,
+      "user_id": 46,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-20 22:29:46"
+    },
+    {
+      "event_id": 186,
+      "session_id": 73,
+      "user_id": 14,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-21 10:05:00"
+    },
+    {
+      "event_id": 187,
+      "session_id": 73,
+      "user_id": 14,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-21 10:05:09"
+    },
+    {
+      "event_id": 188,
+      "session_id": 75,
+      "user_id": 3,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-22 11:09:20"
+    },
+    {
+      "event_id": 189,
+      "session_id": 75,
+      "user_id": 3,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-22 11:10:06"
+    },
+    {
+      "event_id": 190,
+      "session_id": 75,
+      "user_id": 3,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-22 11:10:49"
+    },
+    {
+      "event_id": 191,
+      "session_id": 75,
+      "user_id": 3,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-22 11:12:17"
+    },
+    {
+      "event_id": 192,
+      "session_id": 76,
+      "user_id": 9,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-22 12:26:42"
+    },
+    {
+      "event_id": 193,
+      "session_id": 76,
+      "user_id": 9,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-22 12:27:18"
+    },
+    {
+      "event_id": 194,
+      "session_id": 76,
+      "user_id": 9,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-22 12:28:31"
+    },
+    {
+      "event_id": 195,
+      "session_id": 77,
+      "user_id": 15,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 11:16:39"
+    },
+    {
+      "event_id": 196,
+      "session_id": 77,
+      "user_id": 15,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-23 11:17:28"
+    },
+    {
+      "event_id": 197,
+      "session_id": 77,
+      "user_id": 15,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-23 11:18:07"
+    },
+    {
+      "event_id": 198,
+      "session_id": 77,
+      "user_id": 15,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-23 11:18:31"
+    },
+    {
+      "event_id": 199,
+      "session_id": 78,
+      "user_id": 15,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 11:17:27"
+    },
+    {
+      "event_id": 200,
+      "session_id": 78,
+      "user_id": 15,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 11:18:01"
+    },
+    {
+      "event_id": 201,
+      "session_id": 79,
+      "user_id": 16,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 13:44:00"
+    },
+    {
+      "event_id": 202,
+      "session_id": 79,
+      "user_id": 16,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 13:44:05"
+    },
+    {
+      "event_id": 203,
+      "session_id": 79,
+      "user_id": 16,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 13:44:31"
+    },
+    {
+      "event_id": 204,
+      "session_id": 79,
+      "user_id": 16,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-23 13:44:51"
+    },
+    {
+      "event_id": 205,
+      "session_id": 80,
+      "user_id": 46,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 15:21:20"
+    },
+    {
+      "event_id": 206,
+      "session_id": 80,
+      "user_id": 46,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-23 15:21:47"
+    },
+    {
+      "event_id": 207,
+      "session_id": 80,
+      "user_id": 46,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-23 15:21:55"
+    },
+    {
+      "event_id": 208,
+      "session_id": 80,
+      "user_id": 46,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-23 15:22:15"
+    },
+    {
+      "event_id": 209,
+      "session_id": 81,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 21:27:28"
+    },
+    {
+      "event_id": 210,
+      "session_id": 81,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 21:27:36"
+    },
+    {
+      "event_id": 211,
+      "session_id": 81,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-23 21:27:52"
+    },
+    {
+      "event_id": 212,
+      "session_id": 82,
+      "user_id": 36,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-24 07:55:00"
+    },
+    {
+      "event_id": 213,
+      "session_id": 82,
+      "user_id": 36,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-24 07:55:06"
+    },
+    {
+      "event_id": 214,
+      "session_id": 83,
+      "user_id": 44,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-24 09:37:55"
+    },
+    {
+      "event_id": 215,
+      "session_id": 84,
+      "user_id": 12,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-24 14:38:16"
+    },
+    {
+      "event_id": 216,
+      "session_id": 84,
+      "user_id": 12,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-24 14:39:16"
+    },
+    {
+      "event_id": 217,
+      "session_id": 84,
+      "user_id": 12,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-24 14:40:37"
+    },
+    {
+      "event_id": 218,
+      "session_id": 84,
+      "user_id": 12,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-24 14:40:42"
+    },
+    {
+      "event_id": 219,
+      "session_id": 85,
+      "user_id": 12,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-25 17:59:28"
+    },
+    {
+      "event_id": 220,
+      "session_id": 86,
+      "user_id": 21,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-26 16:53:04"
+    },
+    {
+      "event_id": 221,
+      "session_id": 86,
+      "user_id": 21,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-26 16:53:17"
+    },
+    {
+      "event_id": 222,
+      "session_id": 86,
+      "user_id": 21,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-26 16:53:22"
+    },
+    {
+      "event_id": 223,
+      "session_id": 86,
+      "user_id": 21,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-26 16:54:42"
+    },
+    {
+      "event_id": 224,
+      "session_id": 86,
+      "user_id": 21,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-26 16:55:28"
+    },
+    {
+      "event_id": 225,
+      "session_id": 87,
+      "user_id": 8,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-27 21:52:14"
+    },
+    {
+      "event_id": 226,
+      "session_id": 87,
+      "user_id": 8,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-27 21:52:52"
+    },
+    {
+      "event_id": 227,
+      "session_id": 87,
+      "user_id": 8,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-27 21:53:04"
+    },
+    {
+      "event_id": 228,
+      "session_id": 88,
+      "user_id": 16,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-28 09:40:53"
+    },
+    {
+      "event_id": 229,
+      "session_id": 88,
+      "user_id": 16,
+      "event": "interactive_used",
+      "occurred_at": "2025-02-28 09:41:30"
+    },
+    {
+      "event_id": 230,
+      "session_id": 88,
+      "user_id": 16,
+      "event": "topic_completed",
+      "occurred_at": "2025-02-28 09:42:59"
+    },
+    {
+      "event_id": 231,
+      "session_id": 89,
+      "user_id": 18,
+      "event": "topic_opened",
+      "occurred_at": "2025-02-28 18:38:07"
+    },
+    {
+      "event_id": 232,
+      "session_id": 90,
+      "user_id": 22,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-01 10:56:49"
+    },
+    {
+      "event_id": 233,
+      "session_id": 91,
+      "user_id": 28,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-01 17:06:01"
+    },
+    {
+      "event_id": 234,
+      "session_id": 91,
+      "user_id": 28,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-01 17:06:10"
+    },
+    {
+      "event_id": 235,
+      "session_id": 91,
+      "user_id": 28,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-01 17:06:20"
+    },
+    {
+      "event_id": 236,
+      "session_id": 91,
+      "user_id": 28,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-01 17:06:41"
+    },
+    {
+      "event_id": 237,
+      "session_id": 92,
+      "user_id": 23,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-02 07:34:39"
+    },
+    {
+      "event_id": 238,
+      "session_id": 92,
+      "user_id": 23,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-02 07:35:22"
+    },
+    {
+      "event_id": 239,
+      "session_id": 93,
+      "user_id": 45,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-02 08:23:04"
+    },
+    {
+      "event_id": 240,
+      "session_id": 93,
+      "user_id": 45,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-02 08:24:03"
+    },
+    {
+      "event_id": 241,
+      "session_id": 93,
+      "user_id": 45,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-02 08:24:49"
+    },
+    {
+      "event_id": 242,
+      "session_id": 94,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-02 15:50:05"
+    },
+    {
+      "event_id": 243,
+      "session_id": 94,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-02 15:50:35"
+    },
+    {
+      "event_id": 244,
+      "session_id": 94,
+      "user_id": 33,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-02 15:51:01"
+    },
+    {
+      "event_id": 245,
+      "session_id": 95,
+      "user_id": 24,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-02 17:43:03"
+    },
+    {
+      "event_id": 246,
+      "session_id": 95,
+      "user_id": 24,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-02 17:43:24"
+    },
+    {
+      "event_id": 247,
+      "session_id": 95,
+      "user_id": 24,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-02 17:44:29"
+    },
+    {
+      "event_id": 248,
+      "session_id": 96,
+      "user_id": 37,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-02 20:31:09"
+    },
+    {
+      "event_id": 249,
+      "session_id": 96,
+      "user_id": 37,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-02 20:32:01"
+    },
+    {
+      "event_id": 250,
+      "session_id": 96,
+      "user_id": 37,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-02 20:32:13"
+    },
+    {
+      "event_id": 251,
+      "session_id": 97,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-03 11:01:40"
+    },
+    {
+      "event_id": 252,
+      "session_id": 97,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-03 11:02:18"
+    },
+    {
+      "event_id": 253,
+      "session_id": 97,
+      "user_id": 29,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-03 11:02:45"
+    },
+    {
+      "event_id": 254,
+      "session_id": 98,
+      "user_id": 17,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-03 20:35:30"
+    },
+    {
+      "event_id": 255,
+      "session_id": 98,
+      "user_id": 17,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-03 20:35:36"
+    },
+    {
+      "event_id": 256,
+      "session_id": 98,
+      "user_id": 17,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-03 20:35:57"
+    },
+    {
+      "event_id": 257,
+      "session_id": 99,
+      "user_id": 2,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 09:06:25"
+    },
+    {
+      "event_id": 258,
+      "session_id": 99,
+      "user_id": 2,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-04 09:07:00"
+    },
+    {
+      "event_id": 259,
+      "session_id": 99,
+      "user_id": 2,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-04 09:08:16"
+    },
+    {
+      "event_id": 260,
+      "session_id": 100,
+      "user_id": 21,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 15:23:01"
+    },
+    {
+      "event_id": 261,
+      "session_id": 101,
+      "user_id": 37,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 19:55:35"
+    },
+    {
+      "event_id": 262,
+      "session_id": 101,
+      "user_id": 37,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 19:56:13"
+    },
+    {
+      "event_id": 263,
+      "session_id": 101,
+      "user_id": 37,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-04 19:57:11"
+    },
+    {
+      "event_id": 264,
+      "session_id": 101,
+      "user_id": 37,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-04 19:58:00"
+    },
+    {
+      "event_id": 265,
+      "session_id": 101,
+      "user_id": 37,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-04 19:58:44"
+    },
+    {
+      "event_id": 266,
+      "session_id": 102,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 21:05:10"
+    },
+    {
+      "event_id": 267,
+      "session_id": 102,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 21:05:13"
+    },
+    {
+      "event_id": 268,
+      "session_id": 102,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 21:05:27"
+    },
+    {
+      "event_id": 269,
+      "session_id": 103,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 21:18:55"
+    },
+    {
+      "event_id": 270,
+      "session_id": 103,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-04 21:19:02"
+    },
+    {
+      "event_id": 271,
+      "session_id": 103,
+      "user_id": 10,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-04 21:19:08"
+    },
+    {
+      "event_id": 272,
+      "session_id": 103,
+      "user_id": 10,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-04 21:20:01"
+    },
+    {
+      "event_id": 273,
+      "session_id": 104,
+      "user_id": 8,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-06 15:29:39"
+    },
+    {
+      "event_id": 274,
+      "session_id": 104,
+      "user_id": 8,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-06 15:30:04"
+    },
+    {
+      "event_id": 275,
+      "session_id": 105,
+      "user_id": 18,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-06 18:13:51"
+    },
+    {
+      "event_id": 276,
+      "session_id": 105,
+      "user_id": 18,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-06 18:13:57"
+    },
+    {
+      "event_id": 277,
+      "session_id": 105,
+      "user_id": 18,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-06 18:14:05"
+    },
+    {
+      "event_id": 278,
+      "session_id": 105,
+      "user_id": 18,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-06 18:14:53"
+    },
+    {
+      "event_id": 279,
+      "session_id": 105,
+      "user_id": 18,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-06 18:15:52"
+    },
+    {
+      "event_id": 280,
+      "session_id": 106,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-06 22:40:25"
+    },
+    {
+      "event_id": 281,
+      "session_id": 106,
+      "user_id": 29,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-06 22:41:02"
+    },
+    {
+      "event_id": 282,
+      "session_id": 106,
+      "user_id": 29,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-06 22:41:43"
+    },
+    {
+      "event_id": 283,
+      "session_id": 107,
+      "user_id": 42,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-07 15:50:03"
+    },
+    {
+      "event_id": 284,
+      "session_id": 107,
+      "user_id": 42,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-07 15:50:37"
+    },
+    {
+      "event_id": 285,
+      "session_id": 107,
+      "user_id": 42,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-07 15:50:56"
+    },
+    {
+      "event_id": 286,
+      "session_id": 107,
+      "user_id": 42,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-07 15:51:01"
+    },
+    {
+      "event_id": 287,
+      "session_id": 108,
+      "user_id": 42,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-08 10:36:29"
+    },
+    {
+      "event_id": 288,
+      "session_id": 109,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-09 08:37:51"
+    },
+    {
+      "event_id": 289,
+      "session_id": 109,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-09 08:38:14"
+    },
+    {
+      "event_id": 290,
+      "session_id": 109,
+      "user_id": 10,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-09 08:38:46"
+    },
+    {
+      "event_id": 291,
+      "session_id": 109,
+      "user_id": 10,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-09 08:39:20"
+    },
+    {
+      "event_id": 292,
+      "session_id": 111,
+      "user_id": 9,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-09 13:55:50"
+    },
+    {
+      "event_id": 293,
+      "session_id": 111,
+      "user_id": 9,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-09 13:55:57"
+    },
+    {
+      "event_id": 294,
+      "session_id": 111,
+      "user_id": 9,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-09 13:56:29"
+    },
+    {
+      "event_id": 295,
+      "session_id": 111,
+      "user_id": 9,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-09 13:57:14"
+    },
+    {
+      "event_id": 296,
+      "session_id": 111,
+      "user_id": 9,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-09 13:58:32"
+    },
+    {
+      "event_id": 297,
+      "session_id": 112,
+      "user_id": 23,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-11 13:16:30"
+    },
+    {
+      "event_id": 298,
+      "session_id": 113,
+      "user_id": 37,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-11 14:31:24"
+    },
+    {
+      "event_id": 299,
+      "session_id": 113,
+      "user_id": 37,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-11 14:31:39"
+    },
+    {
+      "event_id": 300,
+      "session_id": 113,
+      "user_id": 37,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-11 14:32:35"
+    },
+    {
+      "event_id": 301,
+      "session_id": 114,
+      "user_id": 7,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-12 13:06:32"
+    },
+    {
+      "event_id": 302,
+      "session_id": 114,
+      "user_id": 7,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-12 13:06:52"
+    },
+    {
+      "event_id": 303,
+      "session_id": 114,
+      "user_id": 7,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-12 13:07:24"
+    },
+    {
+      "event_id": 304,
+      "session_id": 115,
+      "user_id": 21,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-12 19:21:45"
+    },
+    {
+      "event_id": 305,
+      "session_id": 116,
+      "user_id": 7,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-13 18:27:43"
+    },
+    {
+      "event_id": 306,
+      "session_id": 116,
+      "user_id": 7,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-13 18:28:07"
+    },
+    {
+      "event_id": 307,
+      "session_id": 117,
+      "user_id": 18,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-13 20:08:12"
+    },
+    {
+      "event_id": 308,
+      "session_id": 117,
+      "user_id": 18,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-13 20:09:06"
+    },
+    {
+      "event_id": 309,
+      "session_id": 117,
+      "user_id": 18,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-13 20:10:33"
+    },
+    {
+      "event_id": 310,
+      "session_id": 118,
+      "user_id": 16,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-13 22:17:15"
+    },
+    {
+      "event_id": 311,
+      "session_id": 118,
+      "user_id": 16,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-13 22:17:24"
+    },
+    {
+      "event_id": 312,
+      "session_id": 118,
+      "user_id": 16,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-13 22:18:07"
+    },
+    {
+      "event_id": 313,
+      "session_id": 118,
+      "user_id": 16,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-13 22:18:21"
+    },
+    {
+      "event_id": 314,
+      "session_id": 118,
+      "user_id": 16,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-13 22:18:48"
+    },
+    {
+      "event_id": 315,
+      "session_id": 119,
+      "user_id": 21,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-14 14:02:16"
+    },
+    {
+      "event_id": 316,
+      "session_id": 119,
+      "user_id": 21,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-14 14:02:48"
+    },
+    {
+      "event_id": 317,
+      "session_id": 119,
+      "user_id": 21,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-14 14:03:27"
+    },
+    {
+      "event_id": 318,
+      "session_id": 120,
+      "user_id": 7,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-15 08:44:20"
+    },
+    {
+      "event_id": 319,
+      "session_id": 121,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-15 22:25:38"
+    },
+    {
+      "event_id": 320,
+      "session_id": 121,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-15 22:26:01"
+    },
+    {
+      "event_id": 321,
+      "session_id": 121,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-15 22:26:13"
+    },
+    {
+      "event_id": 322,
+      "session_id": 121,
+      "user_id": 29,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-15 22:26:58"
+    },
+    {
+      "event_id": 323,
+      "session_id": 121,
+      "user_id": 29,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-15 22:27:10"
+    },
+    {
+      "event_id": 324,
+      "session_id": 122,
+      "user_id": 34,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-16 09:08:16"
+    },
+    {
+      "event_id": 325,
+      "session_id": 122,
+      "user_id": 34,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-16 09:08:24"
+    },
+    {
+      "event_id": 326,
+      "session_id": 122,
+      "user_id": 34,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-16 09:09:51"
+    },
+    {
+      "event_id": 327,
+      "session_id": 123,
+      "user_id": 22,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-16 15:02:14"
+    },
+    {
+      "event_id": 328,
+      "session_id": 123,
+      "user_id": 22,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-16 15:02:49"
+    },
+    {
+      "event_id": 329,
+      "session_id": 123,
+      "user_id": 22,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-16 15:03:44"
+    },
+    {
+      "event_id": 330,
+      "session_id": 124,
+      "user_id": 35,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-18 17:35:08"
+    },
+    {
+      "event_id": 331,
+      "session_id": 125,
+      "user_id": 4,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-18 21:07:48"
+    },
+    {
+      "event_id": 332,
+      "session_id": 125,
+      "user_id": 4,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-18 21:08:21"
+    },
+    {
+      "event_id": 333,
+      "session_id": 125,
+      "user_id": 4,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-18 21:08:32"
+    },
+    {
+      "event_id": 334,
+      "session_id": 126,
+      "user_id": 18,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-19 10:22:57"
+    },
+    {
+      "event_id": 335,
+      "session_id": 126,
+      "user_id": 18,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-19 10:23:32"
+    },
+    {
+      "event_id": 336,
+      "session_id": 127,
+      "user_id": 26,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-19 12:40:07"
+    },
+    {
+      "event_id": 337,
+      "session_id": 128,
+      "user_id": 33,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-20 22:40:28"
+    },
+    {
+      "event_id": 338,
+      "session_id": 128,
+      "user_id": 33,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-20 22:40:57"
+    },
+    {
+      "event_id": 339,
+      "session_id": 128,
+      "user_id": 33,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-20 22:41:28"
+    },
+    {
+      "event_id": 340,
+      "session_id": 129,
+      "user_id": 18,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-23 18:58:05"
+    },
+    {
+      "event_id": 341,
+      "session_id": 129,
+      "user_id": 18,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-23 18:58:29"
+    },
+    {
+      "event_id": 342,
+      "session_id": 129,
+      "user_id": 18,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-23 18:59:17"
+    },
+    {
+      "event_id": 343,
+      "session_id": 129,
+      "user_id": 18,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-23 19:00:46"
+    },
+    {
+      "event_id": 344,
+      "session_id": 130,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-24 13:03:49"
+    },
+    {
+      "event_id": 345,
+      "session_id": 130,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-24 13:04:13"
+    },
+    {
+      "event_id": 346,
+      "session_id": 130,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-24 13:04:21"
+    },
+    {
+      "event_id": 347,
+      "session_id": 131,
+      "user_id": 44,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-24 14:07:09"
+    },
+    {
+      "event_id": 348,
+      "session_id": 131,
+      "user_id": 44,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-24 14:07:56"
+    },
+    {
+      "event_id": 349,
+      "session_id": 131,
+      "user_id": 44,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-24 14:08:26"
+    },
+    {
+      "event_id": 350,
+      "session_id": 131,
+      "user_id": 44,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-24 14:08:41"
+    },
+    {
+      "event_id": 351,
+      "session_id": 132,
+      "user_id": 15,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-24 17:00:09"
+    },
+    {
+      "event_id": 352,
+      "session_id": 133,
+      "user_id": 4,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-26 18:29:08"
+    },
+    {
+      "event_id": 353,
+      "session_id": 134,
+      "user_id": 7,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-27 10:04:01"
+    },
+    {
+      "event_id": 354,
+      "session_id": 134,
+      "user_id": 7,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-27 10:04:09"
+    },
+    {
+      "event_id": 355,
+      "session_id": 135,
+      "user_id": 3,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-28 12:16:59"
+    },
+    {
+      "event_id": 356,
+      "session_id": 135,
+      "user_id": 3,
+      "event": "interactive_used",
+      "occurred_at": "2025-03-28 12:17:17"
+    },
+    {
+      "event_id": 357,
+      "session_id": 135,
+      "user_id": 3,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-28 12:17:46"
+    },
+    {
+      "event_id": 358,
+      "session_id": 135,
+      "user_id": 3,
+      "event": "topic_completed",
+      "occurred_at": "2025-03-28 12:18:19"
+    },
+    {
+      "event_id": 359,
+      "session_id": 136,
+      "user_id": 8,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-29 21:08:39"
+    },
+    {
+      "event_id": 360,
+      "session_id": 136,
+      "user_id": 8,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-29 21:08:46"
+    },
+    {
+      "event_id": 361,
+      "session_id": 136,
+      "user_id": 8,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-29 21:09:07"
+    },
+    {
+      "event_id": 362,
+      "session_id": 137,
+      "user_id": 29,
+      "event": "topic_opened",
+      "occurred_at": "2025-03-31 13:46:21"
+    },
+    {
+      "event_id": 363,
+      "session_id": 138,
+      "user_id": 21,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-01 19:43:58"
+    },
+    {
+      "event_id": 364,
+      "session_id": 138,
+      "user_id": 21,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-01 19:44:22"
+    },
+    {
+      "event_id": 365,
+      "session_id": 139,
+      "user_id": 45,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-01 22:06:54"
+    },
+    {
+      "event_id": 366,
+      "session_id": 139,
+      "user_id": 45,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-01 22:07:06"
+    },
+    {
+      "event_id": 367,
+      "session_id": 139,
+      "user_id": 45,
+      "event": "interactive_used",
+      "occurred_at": "2025-04-01 22:08:00"
+    },
+    {
+      "event_id": 368,
+      "session_id": 139,
+      "user_id": 45,
+      "event": "interactive_used",
+      "occurred_at": "2025-04-01 22:08:44"
+    },
+    {
+      "event_id": 369,
+      "session_id": 140,
+      "user_id": 45,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-02 18:05:03"
+    },
+    {
+      "event_id": 370,
+      "session_id": 140,
+      "user_id": 45,
+      "event": "interactive_used",
+      "occurred_at": "2025-04-02 18:05:54"
+    },
+    {
+      "event_id": 371,
+      "session_id": 140,
+      "user_id": 45,
+      "event": "topic_completed",
+      "occurred_at": "2025-04-02 18:06:35"
+    },
+    {
+      "event_id": 372,
+      "session_id": 141,
+      "user_id": 3,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-05 20:14:30"
+    },
+    {
+      "event_id": 373,
+      "session_id": 141,
+      "user_id": 3,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-05 20:14:47"
+    },
+    {
+      "event_id": 374,
+      "session_id": 141,
+      "user_id": 3,
+      "event": "interactive_used",
+      "occurred_at": "2025-04-05 20:15:43"
+    },
+    {
+      "event_id": 375,
+      "session_id": 142,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-07 12:03:47"
+    },
+    {
+      "event_id": 376,
+      "session_id": 142,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-07 12:04:13"
+    },
+    {
+      "event_id": 377,
+      "session_id": 142,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-07 12:04:52"
+    },
+    {
+      "event_id": 378,
+      "session_id": 143,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-09 08:47:41"
+    },
+    {
+      "event_id": 379,
+      "session_id": 144,
+      "user_id": 10,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-10 22:09:41"
+    },
+    {
+      "event_id": 380,
+      "session_id": 145,
+      "user_id": 22,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-12 20:22:57"
+    },
+    {
+      "event_id": 381,
+      "session_id": 145,
+      "user_id": 22,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-12 20:23:16"
+    },
+    {
+      "event_id": 382,
+      "session_id": 145,
+      "user_id": 22,
+      "event": "interactive_used",
+      "occurred_at": "2025-04-12 20:23:44"
+    },
+    {
+      "event_id": 383,
+      "session_id": 146,
+      "user_id": 45,
+      "event": "topic_opened",
+      "occurred_at": "2025-04-16 17:01:30"
+    }
+  ]
+}

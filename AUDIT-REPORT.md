@@ -224,6 +224,7 @@ None. No figure is broken or teaching its topic incorrectly; the site's floor is
 **R10. embeddings — use the existing `CLUSTERS` palette** to color points by cluster, making the grouping legible before any click. The palette already exists, unused.
 **R11. Honesty-note sweep** — add the missing one-to-three-sentence notes on the nine pages listed in §4.3, prioritizing composition-vs-inheritance, and soften the dns caption.
 **R12. Hygiene sweep** — the dead imports/exports, duplicated constants, and misleading comments in §4.4, plus sorting's partial-run "Last run" label and ClassesObjectsViz's setState-in-updater.
+**R13. gradient-descent — prose fix for the learning-rate slider.** The prose states the point "never goes uphill" and always settles in the nearest valley, but never mentions the demo's learning-rate slider or its Diverged state; the "never goes uphill" framing is only true at low learning rates, since a large step can overshoot the ridge or diverge outright. Add a sentence or two acknowledging the slider and what happens at high learning rates.
 
 ---
 
