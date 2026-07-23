@@ -269,3 +269,56 @@ These are scoped topic candidates from a scoping pass, ranked by figure strength
 - Image and lossy compression: real gap next to the existing Huffman topic (60), distinct build, not yet scoped.
 
 Ranking noted in the doc: encryption and buffering are the cleanest builds; network stack is richest but densest; VM/container/serverless carries the product-facts constraint.
+
+### Proposed new chapter: Building AI Agents
+
+Six topics forming a new chapter on agentic AI engineering. Register is current industry practice, younger and faster-moving than the rest of the guide; prose must anchor on mechanisms and use current term names lightly so topics age well. Chapter arc: loop, context, memory, tools, guardrails, measurement.
+
+**N6. The agent loop**
+- **Teaches:** what separates an agent from a chatbot. A chatbot answers in one pass; an agent runs a cycle, perceive, reason, act, observe, repeat, until a termination condition says done. The harness is the scaffolding around that loop: tools, constraints, verification.
+- **Figure:** step a toy agent through the loop on a small task (e.g. "find the largest file"). Each step shows the four phases and the state changing. Then break it: remove the termination condition and watch it loop forever with an iteration counter climbing; add a max-iterations guard and watch it stop.
+- **Constraint:** mechanism-first prose. Use "the agent loop" as the primary name; mention "harness" and "loop engineering" once as current industry terms, not as load-bearing vocabulary.
+
+**N7. Context engineering**
+- **Teaches:** the context window as a finite resource. Everything the model knows at inference time must fit in the window: instructions, history, tool results, retrieved documents. The craft is choosing what goes in, what gets summarized, what gets evicted, and what gets fetched on demand instead of front-loaded.
+- **Figure:** a visible window with a token budget. Feed a multi-turn task; watch the window fill. When it overflows, choose a strategy, truncate oldest, summarize, or retrieve-on-demand, and watch what the model can and cannot see change, with a task that fails when the needed fact was evicted.
+- **Constraint:** no model-specific window sizes in prose (they change). The budget in the figure is illustrative, honesty note required.
+
+**N8. Agent memory**
+- **Teaches:** the context window is short-term memory; anything that must survive the session needs an external store. The three-tier taxonomy: episodic (what happened), semantic (what is true), procedural (how to do things). The read-before-reasoning, write-after-acting pattern, and the core tradeoff: in-window is instant but costly and finite; external is durable but adds retrieval latency and relevance error.
+- **Figure:** an agent across two sessions. Session one, it learns a fact. Toggle memory off: session two, it is forgotten. Toggle on: watch the write at session end and the read at session start, with the fact landing in the right tier.
+- **Constraint:** taxonomy is stable (borrowed from decades-old cognitive science); implementation specifics (vector stores, specific products) stay out of prose.
+
+**N9. Tools and orchestration**
+- **Teaches:** tools are the agent's hands, each a named action with defined inputs, and what the agent can do is exactly its tool list. Then patterns for structuring the work: one agent with tools, a router dispatching to specialists, parallel workers, a pipeline.
+- **Figure:** same task run under two or three patterns; the call graph lights up differently (single agent doing everything sequentially vs router fanning out to parallel workers), with step count and a toy cost comparison.
+- **Constraint:** pattern names vary by vendor; describe the shapes, name them generically.
+
+**N10. Guardrails and the human in the loop**
+- **Teaches:** full autonomy is rarely right. Permissions define what an agent may do (allow/deny lists, scoped access); approval gates define when a human must confirm. The autonomy dial: more autonomy is faster and riskier.
+- **Figure:** a toy agent with a task touching safe and dangerous actions (read file vs delete file vs send email). Drag an autonomy threshold: watch actions auto-execute, queue for approval, or get blocked. At full autonomy, a destructive action slips through, the payoff moment.
+- **Constraint:** keep it conceptual; this is about the design pattern, not a security how-to.
+
+**N11. Evals and observability**
+- **Teaches:** agents fail in ways single responses do not, so you measure at two levels: did the task succeed (evals), and what actually happened inside (tracing). A trace is a tree of spans: LLM calls, tool calls, sub-steps, each with latency and token cost.
+- **Figure:** two panels. Left: run a toy agent against a 10-task eval set, watch pass/fail; change one tool description, re-run, watch the score move. Right: click into one run's trace tree, expand spans, find where the time and tokens went.
+- **Constraint:** scores and costs in the figure are illustrative, honesty note required.
+
+### Laws and principles candidates
+
+Three named laws with genuine mechanisms and figure fits. Chapter placement varies per item.
+
+**N12. Brooks's Law**
+- **Teaches:** adding people to a late software project makes it later. The mechanism: communication channels grow as n(n-1)/2 while each person's output stays roughly flat, so coordination overhead eventually swamps added capacity. Plus ramp-up cost: new people subtract time from existing ones before contributing.
+- **Figure:** a team-size slider. Watch the channel graph draw itself (every pair a line, count climbing quadratically), next to a bar of total output that rises, flattens, then falls as overhead grows. A second toggle adds the ramp-up penalty mid-project.
+- **Constraint:** the output curve is illustrative (there is no one true formula for productivity), honesty note required; the channel count n(n-1)/2 is exact math.
+
+**N13. Goodhart's Law**
+- **Teaches:** when a measure becomes a target, it stops being a good measure. The mechanism: optimizing a proxy diverges from the true goal wherever the two are not identical. This is the intuition behind reward hacking and metric gaming.
+- **Figure:** a toy optimizer chasing a proxy metric while the true goal is plotted alongside. Early on both rise together; keep optimizing and watch them split, proxy climbing, true goal falling. A slider controls how correlated proxy and goal are; at perfect correlation they never split.
+- **Constraint:** cross-link to RLHF (topic 16) and the future Evals topic in prose; the optimizer and metrics are illustrative, honesty note required.
+
+**N14. Hick's Law**
+- **Teaches:** decision time grows logarithmically with the number of choices: T = a + b log2(n+1). Why menus with fewer options feel faster, and why log, not linear: doubling choices adds a constant, not double the time.
+- **Figure:** a live reaction-time experiment. The user clicks a highlighted target among n options; their own measured times get plotted against n, with the log curve overlaid. The user is the dataset.
+- **Constraint:** the user's measured data is real (say so); the fitted curve is illustrative unless enough trials exist. Scope note: this is HCI, adjacent to the guide's current register, placement decision deferred.
