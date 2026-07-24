@@ -260,6 +260,7 @@ These are scoped topic candidates from a scoping pass, ranked by figure strength
 - **Teaches:** what a protocol is, the layered model where each layer wraps the one below with its own header, and switch (forwards by MAC within a network) vs router (forwards by IP between networks).
 - **Figure:** a message descending application to transport to network to link, each layer wrapping a header like nested envelopes, then a switch forwarding locally and a router hopping between networks, then unwrapping back up.
 - **Constraint:** densest candidate. Build as one focused topic with the envelope-wrapping as the spine; split routing into its own later topic only if the figure gets crowded.
+- **Status:** built, PR #133, as "Network Stack and Routing". Placed at the end of Systems and Networking, now topic 55.
 
 **N4. VMs, containers, and serverless: the compute-abstraction spectrum** (new topic, Systems and Networking).
 - **Teaches:** the same app three ways along a spectrum of how much you manage vs how much is shared. VM (full guest OS), container (shared host kernel), serverless (you supply only the function, scales to zero).
@@ -272,7 +273,7 @@ These are scoped topic candidates from a scoping pass, ranked by figure strength
 
 **Parking lot (verify before scoping, do not build):**
 - A2A vs MCP: viable figure (vertical model-to-tools vs horizontal agent-to-agent), but AI-tooling register not CS fundamentals, and carries a staleness cost. Scheduled last. Note: MCP is Anthropic's protocol; prose must stay neutral on the merits.
-- Image and lossy compression: real gap next to the existing Huffman topic (62), distinct build, not yet scoped.
+- Image and lossy compression: real gap next to the existing Huffman topic (63), distinct build, not yet scoped.
 - Chapter quizzes: parked. If revisited, pilot on the OOP section first.
 
 Ranking noted in the doc: encryption and buffering are the cleanest builds; network stack is richest but densest; VM/container/serverless carries the product-facts constraint.
