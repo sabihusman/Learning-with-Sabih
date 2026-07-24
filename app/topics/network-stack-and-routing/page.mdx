@@ -1,0 +1,22 @@
+import NetworkStackViz from '@/app/components/NetworkStackViz'
+
+export const metadata = {
+  title: 'Network Stack and Routing - Learning with Sabih',
+}
+
+# Network Stack and Routing
+
+*Placeholder prose. Final prose is written separately against the committed figure.*
+
+A message crossing a network is wrapped in layers: the payload inside a layer 3
+header carrying the end-to-end addresses, inside a layer 2 header carrying the
+addresses for one link. Switches forward within a network by reading layer 2;
+routers join networks by reading layer 3, and they rewrite the layer 2 header
+at every crossing while the layer 3 addresses ride through unchanged.
+
+## Walk a packet through
+
+<NetworkStackViz />
+
+*Placeholder prose continues. The mechanism walkthrough will be written once
+the figure is approved.*
