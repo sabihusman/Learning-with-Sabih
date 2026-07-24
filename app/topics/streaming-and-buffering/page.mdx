@@ -6,16 +6,45 @@ export const metadata = {
 
 # Streaming and Buffering
 
-*Placeholder prose. Final prose is written separately after the figure is verified.*
+When you stream a video, the network does not deliver it at the steady rate
+the screen plays it. The network is bursty: fast for a moment, slow the next,
+sometimes gone. Playback is the opposite: it needs the next second of video
+every second, without fail. The buffer is the cushion between these two
+rhythms, a small reserve of downloaded-but-unplayed video that absorbs the
+mismatch.
 
-A network delivers data in irregular bursts, but a video must play at a
-perfectly steady rate. The playback buffer is the cushion between the two: the
-network fills it at whatever rate it can manage, playback drains it at exactly
-realtime, and the video only stalls when the cushion runs dry.
+## Filling faster than draining
 
-## Fill it, drain it, stall it
+While the network delivers faster than playback consumes, the buffer grows:
+you are downloading ahead. This is why a video often plays smoothly through
+brief slowdowns you never notice, the dip was paid for out of the reserve, not
+out of your viewing.
+
+## The stall
+
+Drop the network below the playback rate and the arithmetic turns: the buffer
+drains, second by second, until it hits zero. At that moment there is nothing
+left to play, and playback stalls. This is the buffering wheel. Note what it
+means: a stall is not caused by the moment the network got slow, it is caused
+by the reserve running out afterward. The slowdown happened earlier; the
+buffer told you the stall was coming before it arrived.
+
+## Recovery
+
+The network does not need to be fast for playback to resume, it only needs to
+refill a small reserve first. That is why the wheel spins for a few seconds
+even after the connection recovers: the player is deliberately rebuilding a
+cushion before it risks playing again, rather than resuming instantly and
+stalling right back.
+
+## What the demo shows
+
+Press play and the buffer fills from the network at the rate you set on the
+slider, while playback drains it at a steady rate. Drag the network speed
+below the playback rate mid-play and watch the reserve shrink, hit zero, and
+stall; restore the speed and watch it refill to the resume threshold before
+playback continues. Every state you see falls out of one piece of arithmetic,
+what came in minus what played out, see the note below the figure for what
+this toy leaves out.
 
 <StreamingBufferViz />
-
-*Placeholder prose continues. The mechanism walkthrough and the recovery beat
-will be written once the figure is approved.*
