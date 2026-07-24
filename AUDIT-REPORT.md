@@ -270,7 +270,7 @@ These are scoped topic candidates from a scoping pass, ranked by figure strength
 
 **Parking lot (verify before scoping, do not build):**
 - A2A vs MCP: viable figure (vertical model-to-tools vs horizontal agent-to-agent), but AI-tooling register not CS fundamentals, and carries a staleness cost. Scheduled last. Note: MCP is Anthropic's protocol; prose must stay neutral on the merits.
-- Image and lossy compression: real gap next to the existing Huffman topic (60), distinct build, not yet scoped.
+- Image and lossy compression: real gap next to the existing Huffman topic (62), distinct build, not yet scoped.
 - Chapter quizzes: parked. If revisited, pilot on the OOP section first.
 
 Ranking noted in the doc: encryption and buffering are the cleanest builds; network stack is richest but densest; VM/container/serverless carries the product-facts constraint.
