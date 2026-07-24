@@ -34,7 +34,7 @@ network and a separate address on each side.
 
 Send from Host A to Host B and the packet never reaches the router. Both hosts
 sit in the same network, so the switch alone can finish the job. It reads the
-layer 2 header, sees which port leads to the destination, and forwards the
+layer 2 header, sees the destination is one of its own, and forwards the
 frame. The layer 3 header is present the whole time and nobody looks at it.
 
 That is the whole job of a switch. It moves traffic inside one network and it
