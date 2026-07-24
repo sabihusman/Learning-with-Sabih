@@ -1,0 +1,257 @@
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.panelTitle {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+  margin-bottom: 8px;
+}
+
+/* ── encapsulation panel ── */
+.encapPanel {
+  background: #faf9f6;
+  border: 1px solid #e2e0d8;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+
+.rewriteBadge {
+  display: inline-block;
+  background: #c0392b;
+  color: #f7f6f2;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.encapRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.headerBox {
+  border: 1.5px solid #d4d0c8;
+  border-radius: 5px;
+  padding: 6px 8px;
+  min-width: 0;
+}
+
+.l2Box {
+  background: #eef3f4;
+  border-color: #2f6f7e;
+  flex: 1;
+}
+
+.l3Box {
+  background: #e6f2ec;
+  border-color: #1f6f5c;
+  margin-top: 6px;
+}
+
+.payloadBox {
+  background: #f6e7c8;
+  border-color: #b8860b;
+  margin-top: 6px;
+}
+
+.stripped {
+  opacity: 0.55;
+  border-style: dashed;
+  flex: 0 1 auto;
+}
+
+.freshL2 {
+  border-width: 2.5px;
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px #fbecea;
+}
+
+.reading {
+  outline: 3px solid #c0392b;
+  outline-offset: 1px;
+}
+
+.headerLabel {
+  font-size: 9.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #6b6862;
+  margin-bottom: 2px;
+}
+
+.headerFields {
+  font-size: 12px;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+/* ── delivery map ── */
+.map {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-bottom: 14px;
+  min-width: 0;
+}
+
+.network {
+  flex: 1;
+  min-width: 0;
+  background: #faf9f6;
+  border: 1px solid #e2e0d8;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.netLabel {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9b9892;
+  margin-bottom: 6px;
+}
+
+.hostRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.device {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: #f7f6f2;
+  border: 1.5px solid #d4d0c8;
+  border-radius: 5px;
+  padding: 6px 8px;
+}
+
+.deviceActive {
+  border-color: #c0392b;
+  background: #fbecea;
+}
+
+.switchBox {
+  background: #eef3f4;
+}
+
+.routerBox {
+  flex: 0 0 172px;
+  align-self: center;
+  background: #e6f2ec;
+}
+
+.deviceName {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.addr {
+  font-size: 10px;
+  color: #6b6862;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.packet {
+  position: absolute;
+  top: -9px;
+  right: -4px;
+  background: #c0392b;
+  color: #f7f6f2;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 1px 7px;
+  border-radius: 8px;
+}
+
+/* ── pickers ── */
+.pickers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pickerGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pickerLabel {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+  min-width: 3.2rem;
+}
+
+.pickBtn {
+  font-family: inherit;
+  font-size: 12px;
+  color: #1a1a1a;
+  background: #f7f6f2;
+  border: 1px solid #d4d0c8;
+  border-radius: 4px;
+  padding: 4px 11px;
+  cursor: pointer;
+}
+
+.pickBtn:hover:enabled {
+  border-color: #9b9892;
+}
+
+.pickBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pickBtnActive {
+  background: #1a1a1a;
+  color: #f7f6f2;
+  border-color: #1a1a1a;
+}
+
+.note {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
+
+@media (max-width: 600px) {
+  .map {
+    flex-direction: column;
+  }
+
+  .routerBox {
+    flex-basis: auto;
+    align-self: stretch;
+  }
+
+  .encapRow {
+    flex-direction: column;
+  }
+}

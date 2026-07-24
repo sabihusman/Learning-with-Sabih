@@ -1,0 +1,78 @@
+import NetworkStackViz from '@/app/components/NetworkStackViz'
+
+export const metadata = {
+  title: 'Network Stack and Routing - Learning with Sabih',
+}
+
+# Network Stack and Routing
+
+Send a message across a network and it does not travel as one lump. It gets
+wrapped, and each wrapper is addressed to a different distance.
+
+The innermost part is the payload, the thing you actually meant to send. Around
+it goes a layer 3 header holding the address of the machine that should
+eventually receive it. Around that goes a layer 2 header holding the address of
+the next device on this one physical link, and nothing further.
+
+Layer 2 is commonly called the link layer and layer 3 the network layer, but
+the numbers are enough to follow what happens next.
+
+The split matters because the two headers answer different questions. Layer 3
+answers "where is this ultimately going." Layer 2 answers "who hands it along
+next." One stays fixed for the whole trip. The other is replaced at every
+boundary.
+
+## Walk a packet through
+
+<NetworkStackViz />
+
+## Two networks, two jobs
+
+The map below the headers has two small networks. Each has its own switch and
+its own block of addresses. One router sits between them, with a foot in each
+network and a separate address on each side.
+
+Send from Host A to Host B and the packet never reaches the router. Both hosts
+sit in the same network, so the switch alone can finish the job. It reads the
+layer 2 header, sees the destination is one of its own, and forwards the
+frame. The layer 3 header is present the whole time and nobody looks at it.
+
+That is the whole job of a switch. It moves traffic inside one network and it
+never needs to know that any other network exists.
+
+## The rewrite
+
+Send from Host A to Host C and the picture changes at one specific moment.
+
+Host A wraps the payload as before, but the layer 2 header on the first leg is
+not addressed to Host C. It is addressed to the router's near-side interface,
+because that is the only device on this network that can help. Layer 3 still
+carries Host C's address, unchanged.
+
+The near switch forwards it to the router, reading layer 2 and nothing else.
+
+Then the router does the thing this whole topic exists to show. It reads the
+layer 3 header to learn the final destination. It throws the layer 2 header
+away. It writes a brand new one, this time addressed from its own far-side
+interface to Host C. The layer 3 addresses are not touched.
+
+Step to that hop and compare the two layer 2 boxes. The old one is struck
+through and gone. The new one carries different addresses on both sides. The
+layer 3 box inside it reads exactly what it read at the start.
+
+The far switch then forwards the rewritten frame the same way the near switch
+did, and Host C strips both headers and reads the payload.
+
+## Why it is built this way
+
+The layer 2 address only has to be unique and meaningful on one link. It gets
+thrown away the moment the packet leaves that link, so nobody has to coordinate
+those addresses across the whole internet.
+
+The layer 3 address does the opposite. It stays fixed end to end, which means a
+sender only needs to know one address for a destination that might be twenty
+networks away, and every router along the path reads that same address to make
+its own local decision about where to send it next.
+
+Every boundary crossing is a fresh layer 2 header wrapped around a layer 3
+header that has not changed since it was written.
