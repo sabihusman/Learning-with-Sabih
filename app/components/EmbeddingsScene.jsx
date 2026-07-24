@@ -8,7 +8,7 @@
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Text, Billboard, Line } from '@react-three/drei'
-import { WORDS, ACCENT, INK, FADE, PAPER } from './embeddingsData'
+import { WORDS, CLUSTERS, ACCENT, INK, FADE, PAPER } from './embeddingsData'
 
 const byId = (id) => WORDS.find((w) => w.id === id)
 
@@ -31,7 +31,9 @@ function WordPoint({ word, state, onSelect }) {
   const [hovered, setHovered] = useState(false)
   // state: 'selected' | 'neighbor' | 'dim' | 'normal'
   const radius = pointRadius(state)
-  const color = state === 'selected' || state === 'neighbor' ? ACCENT : INK
+  // Base color is the word's cluster color, so the four groups read as groups
+  // before any click; selection keeps the site's accent red.
+  const color = state === 'selected' || state === 'neighbor' ? ACCENT : CLUSTERS[word.group]
   const opacity = state === 'dim' ? 0.25 : 1
   const labelColor = labelColorFor(state)
 
