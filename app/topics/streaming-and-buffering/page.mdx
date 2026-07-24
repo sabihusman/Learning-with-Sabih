@@ -1,0 +1,21 @@
+import StreamingBufferViz from '@/app/components/StreamingBufferViz'
+
+export const metadata = {
+  title: 'Streaming and Buffering - Learning with Sabih',
+}
+
+# Streaming and Buffering
+
+*Placeholder prose. Final prose is written separately after the figure is verified.*
+
+A network delivers data in irregular bursts, but a video must play at a
+perfectly steady rate. The playback buffer is the cushion between the two: the
+network fills it at whatever rate it can manage, playback drains it at exactly
+realtime, and the video only stalls when the cushion runs dry.
+
+## Fill it, drain it, stall it
+
+<StreamingBufferViz />
+
+*Placeholder prose continues. The mechanism walkthrough and the recovery beat
+will be written once the figure is approved.*
