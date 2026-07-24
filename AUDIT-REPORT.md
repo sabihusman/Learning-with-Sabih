@@ -40,6 +40,8 @@ The audit brief expected **53 topics across 5 sections** (AI and ML 17, Algorith
 
 ## 3. Per-topic findings
 
+Topic numbers in this section are from the pinned 2026-07-09 snapshot in the doc header (commit `fe1e74a`) and may not match current numbering; topics added since then have shifted later numbers. The status lines in section 5 and the candidate list use current numbers from `topicList.js`.
+
 Ratings: **strong / adequate / weak**. "Clean" means no findings under that heading. Findings worth action are **bolded**.
 
 ### AI and ML (topics 1–17)
@@ -203,7 +205,7 @@ None. No figure is broken or teaching its topic incorrectly; the site's floor is
 
 ### Medium
 
-**R1. overfitting — draw the U-curve.** Add a companion panel plotting train and test error vs degree (two line curves, computed by running the existing `fitPolynomial`/`mse` over all degrees — already sub-millisecond), with a dot marking the current slider degree and the test-error minimum flagged. The topic's central diagram currently exists only as two numbers the reader must scrub through and hold in memory; drawing it converts the figure's biggest weakness into its payoff, and incidentally justifies the hand-authored "regime" badge against the actual computed minimum.
+**R1. overfitting — draw the U-curve.** Add a companion panel plotting train and test error vs degree (two line curves, computed by running the existing `fitPolynomial`/`mse` over all degrees — already sub-millisecond), with a dot marking the current slider degree and the test-error minimum flagged. The topic's central diagram currently exists only as two numbers the reader must scrub through and hold in memory; drawing it converts the figure's biggest weakness into its payoff, and incidentally justifies the hand-authored "regime" badge against the actual computed minimum. **Resolved:** PR #126. The computed test-error minimum (degree 4) landed inside the hand-authored "good fit" badge range, confirming the badge.
 
 **R2. funnel-analysis — add a cohort dimension.** A control to slice the funnel by `plan` (pro vs free) or signup month, recomputing the three COUNT(DISTINCT) step counts live from the joined tables (the seed data already links sessions to users). The user toggles a cohort and watches bars and conversion rates recompute, discovering that different cohorts leak at different steps — turning "the biggest drop is the best place to investigate" from told to experienced, and exercising the CTE-with-filters point in the prose. Currently the section's weakest interaction (one toggle).
 
@@ -224,7 +226,9 @@ None. No figure is broken or teaching its topic incorrectly; the site's floor is
 **R10. embeddings — use the existing `CLUSTERS` palette** to color points by cluster, making the grouping legible before any click. The palette already exists, unused.
 **R11. Honesty-note sweep** — add the missing one-to-three-sentence notes on the nine pages listed in §4.3, prioritizing composition-vs-inheritance, and soften the dns caption.
 **R12. Hygiene sweep** — the dead imports/exports, duplicated constants, and misleading comments in §4.4, plus sorting's partial-run "Last run" label and ClassesObjectsViz's setState-in-updater.
-**R13. gradient-descent — prose fix for the learning-rate slider.** The prose states the point "never goes uphill" and always settles in the nearest valley, but never mentions the demo's learning-rate slider or its Diverged state; the "never goes uphill" framing is only true at low learning rates, since a large step can overshoot the ridge or diverge outright. Add a sentence or two acknowledging the slider and what happens at high learning rates.
+**R13. gradient-descent — prose fix for the learning-rate slider.** The prose states the point "never goes uphill" and always settles in the nearest valley, but never mentions the demo's learning-rate slider or its Diverged state; the "never goes uphill" framing is only true at low learning rates, since a large step can overshoot the ridge or diverge outright. Add a sentence or two acknowledging the slider and what happens at high learning rates. **Resolved:** PR #127.
+
+**R14 (candidate, not yet accepted into the ranked list). Elapsed-time integration sweep for animating figures.** Background tabs throttle setInterval to about one tick per second, so any figure that assumes a fixed tick length runs slow when its tab is hidden. Audit all animating figures for this and switch them to integrating over measured elapsed wall-clock time where it matters. StreamingBufferViz already integrates over measured elapsed time capped at 1s and is the reference implementation.
 
 ---
 
@@ -244,11 +248,13 @@ These are scoped topic candidates from a scoping pass, ranked by figure strength
 - **Teaches:** why symmetric encryption cannot share its own secret over an open wire, and how a public/private key pair solves it. Second beat: signing (encrypt with private, verify with public).
 - **Figure:** two parties each with a shareable public lock and a private key. Encrypt with a chosen public key, watch it scramble, unlock only with the matching private key. Wrong key stays scrambled. Toggle for signing mode.
 - **Constraint:** strictly conceptual. Illustrative scrambling only, clearly marked in an honesty note. No real algorithm internals or implementation guidance.
+- **Status:** built, PR #129. Placed at the end of Systems and Networking, now topic 53.
 
 **N2. How streaming works: buffering** (new topic, Systems and Networking).
 - **Teaches:** the buffer as a cushion between a variable network and steady playback; stalls happen when the buffer drains to zero.
 - **Figure:** a buffer bar filling from the network and draining at playback rate. Drag network speed down mid-play, watch it deplete, hit zero, stall, then recover. Optional adaptive-bitrate beat.
 - **Note:** pairs with the existing caching topic (same fast-cushion-over-slow-source intuition).
+- **Status:** built, PRs #130 and #131. #130 shipped the figure, #131 applied the final prose. Now topic 54. The optional adaptive-bitrate beat was skipped to keep the one-bar story.
 
 **N3. The network stack: protocols, layers, routers vs switches** (new topic, Systems and Networking).
 - **Teaches:** what a protocol is, the layered model where each layer wraps the one below with its own header, and switch (forwards by MAC within a network) vs router (forwards by IP between networks).
@@ -266,7 +272,8 @@ These are scoped topic candidates from a scoping pass, ranked by figure strength
 
 **Parking lot (verify before scoping, do not build):**
 - A2A vs MCP: viable figure (vertical model-to-tools vs horizontal agent-to-agent), but AI-tooling register not CS fundamentals, and carries a staleness cost. Scheduled last. Note: MCP is Anthropic's protocol; prose must stay neutral on the merits.
-- Image and lossy compression: real gap next to the existing Huffman topic (60), distinct build, not yet scoped.
+- Image and lossy compression: real gap next to the existing Huffman topic (62), distinct build, not yet scoped.
+- Chapter quizzes: parked. If revisited, pilot on the OOP section first.
 
 Ranking noted in the doc: encryption and buffering are the cleanest builds; network stack is richest but densest; VM/container/serverless carries the product-facts constraint.
 
