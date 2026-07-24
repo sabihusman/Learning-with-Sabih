@@ -40,6 +40,8 @@ The audit brief expected **53 topics across 5 sections** (AI and ML 17, Algorith
 
 ## 3. Per-topic findings
 
+Topic numbers in this section are from the pinned 2026-07-09 snapshot in the doc header (commit `fe1e74a`) and may not match current numbering; topics added since then have shifted later numbers. The status lines in section 5 and the candidate list use current numbers from `topicList.js`.
+
 Ratings: **strong / adequate / weak**. "Clean" means no findings under that heading. Findings worth action are **bolded**.
 
 ### AI and ML (topics 1–17)
