@@ -47,3 +47,8 @@ In the figure below, send one `activate()` call to a row of different robots all
 ## One call, many robots
 
 <PolymorphismViz />
+
+The dispatch is real: which behavior runs is looked up from the object's
+actual type at call time, which is why shuffling the robots moves the
+behavior with them. The behaviors themselves, the animations and messages for
+each type, are hand-authored and deterministic.
