@@ -70,10 +70,7 @@ jobs:
             ./out/ \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/study-guide/"
 
-      - name: Verify deployment (expect HTTP 200 and matching stamp)
-        env:
-          # Passed via env rather than expanded in the run block (Sonar S7636).
-          SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      - name: Verify deployment (expect HTTP 200)
         run: |
           # SITE_DOMAIN is a raw IP that redirects http -> https (301) and serves an
           # IP-scoped TLS cert, which public CAs do not issue, so strict validation cannot
@@ -81,21 +78,31 @@ jobs:
           # against our own raw-IP host, not a trust check. Follow redirects (-L) and
           # require the final response to be 200. Still strict on the code: any non-200
           # fails the deploy. (Proper fix later: a real domain + valid cert, then drop -k.)
-          code=$(curl -sS -L -k -o /dev/null -w "%{http_code}" "https://$SITE_DOMAIN/") # NOSONAR -k is the documented IP-cert tradeoff above
+          code=$(curl -sS -L -k -o /dev/null -w "%{http_code}" "https://${{ secrets.SITE_DOMAIN }}/")
           echo "Final HTTP status (after redirects): $code"
           if [ "$code" != "200" ]; then
             echo "ERROR: expected 200, got $code"
             exit 1
           fi
 
-          # Correctness gate: the stamp served by the site must be the SHA this
-          # run deployed. Catches any run that overwrote the tree with a
-          # different commit (the rsync --delete race this workflow used to have).
+      - name: Verify deploy stamp (via SSH)
+        env:
+          # Passed via env rather than expanded in the run block (Sonar S7636).
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          # Correctness gate: the stamp on the server must be the SHA this run
+          # deployed. Catches any run that overwrote the tree with a different
+          # commit (the rsync --delete race this workflow used to have). Read
+          # over the already-verified SSH channel rather than HTTPS so no TLS
+          # exception is needed; the homepage check above covers the serving
+          # path from the same web root.
           deployed=$(git rev-parse HEAD)
-          served=$(curl -sS -L -k "https://$SITE_DOMAIN/deploy-stamp.txt" | tr -d '[:space:]') # NOSONAR -k is the documented IP-cert tradeoff above
+          served=$(ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" \
+            cat /var/www/study-guide/deploy-stamp.txt | tr -d '[:space:]')
           echo "Deployed SHA: $deployed"
           echo "Served stamp: $served"
           if [ "$served" != "$deployed" ]; then
-            echo "ERROR: served stamp does not match the deployed SHA"
+            echo "ERROR: server stamp does not match the deployed SHA"
             exit 1
           fi
