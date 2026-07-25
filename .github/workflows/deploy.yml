@@ -9,7 +9,11 @@ on:
 permissions:
   contents: read
 
-# Cancel any in-flight deploy when a new push lands
+# Cancel any in-flight deploy when a new push lands. Serialization alone does
+# not guarantee ordering (GitHub docs: runs in a group are processed by wait
+# time, "ordering is not guaranteed"), which is why the checkout below builds
+# the tip of main rather than the triggering commit: every run converges on
+# the same tree, so a stale-triggered run can never rsync-delete newer files.
 concurrency:
   group: deploy
   cancel-in-progress: true
@@ -19,7 +23,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Build the CURRENT tip of main, not github.sha. Two pushes landing close
+      # together each trigger a run; whichever run executes last would otherwise
+      # deploy its own (possibly older) commit and wipe the newer files via
+      # rsync --delete. Deploying the tip makes every run idempotent.
       - uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Log the deployed commit
+        run: |
+          echo "Deploying tip of main: $(git rev-parse HEAD)"
 
       - uses: actions/setup-node@v5
         with:
@@ -32,6 +46,13 @@ jobs:
       - name: Build static export
         run: npm run build
         # emits ./out
+
+      - name: Write deploy stamp
+        run: |
+          # The deployed SHA, served as a static file at the site root. The
+          # verify step below reads it back so the run fails unless the tree
+          # being served is the tree this run shipped.
+          git rev-parse HEAD > out/deploy-stamp.txt
 
       - name: Write SSH private key
         run: |
@@ -49,7 +70,7 @@ jobs:
             ./out/ \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/study-guide/"
 
-      - name: Verify deployment (expect HTTP 200)
+      - name: Verify deployment (expect HTTP 200 and matching stamp)
         run: |
           # SITE_DOMAIN is a raw IP that redirects http -> https (301) and serves an
           # IP-scoped TLS cert, which public CAs do not issue, so strict validation cannot
@@ -61,5 +82,17 @@ jobs:
           echo "Final HTTP status (after redirects): $code"
           if [ "$code" != "200" ]; then
             echo "ERROR: expected 200, got $code"
+            exit 1
+          fi
+
+          # Correctness gate: the stamp served by the site must be the SHA this
+          # run deployed. Catches any run that overwrote the tree with a
+          # different commit (the rsync --delete race this workflow used to have).
+          deployed=$(git rev-parse HEAD)
+          served=$(curl -sS -L -k "https://${{ secrets.SITE_DOMAIN }}/deploy-stamp.txt" | tr -d '[:space:]')
+          echo "Deployed SHA: $deployed"
+          echo "Served stamp: $served"
+          if [ "$served" != "$deployed" ]; then
+            echo "ERROR: served stamp does not match the deployed SHA"
             exit 1
           fi
