@@ -106,3 +106,8 @@ time and watch the readouts, and **Start left** or **Start right** to choose
 which valley the point begins in. Drag the red point while paused to set the
 starting position. The learning rate slider sets the step size: small rates
 descend smoothly, large ones overshoot, oscillate, and can diverge.
+
+The loss curve is a hand-picked toy function, one dimensional so the walk
+stays visible. Everything else is computed from it for real: the slope, every
+step of the update rule, the settling, and the divergence at high learning
+rates all come from evaluating f and its derivative live, nothing is scripted.

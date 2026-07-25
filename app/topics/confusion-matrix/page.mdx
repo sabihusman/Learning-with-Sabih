@@ -26,3 +26,8 @@ There is no setting that makes both perfect when spam and real mail overlap in s
 ## Choosing a threshold
 
 <ConfusionMatrixViz />
+
+The 50 emails are synthetic: a seeded generator draws two overlapping score
+distributions, so the dataset is identical on every visit. Every count in the
+matrix, and every precision and recall value, is computed live from those
+points as the threshold moves.

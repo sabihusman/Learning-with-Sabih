@@ -36,3 +36,7 @@ In the figure below, click classes in a small robot family tree to see own vs in
 ## Climbing the lookup chain
 
 <InheritanceViz />
+
+The robot class tree is hand-authored, but the lookup is not: every walk you
+watch is a real climb up the parent pointers, and the own, inherited, or
+overridden tag on each member is resolved by that same logic, not typed in.
