@@ -45,6 +45,19 @@ test('why-models-struggle-with-math: user-supplied operands stay exact and degra
   await expect(aInput).toHaveValue('27')
   await expect(bInput).toHaveValue('14')
 
+  // The default operands (27, 14) land on a correct prediction under the
+  // blur formula: verify the "match" branch, including the visual badge,
+  // before touching the inputs at all.
+  const predictPanel = page.locator('section', { hasText: 'How a language model does it' })
+  for (let i = 0; i < 3; i += 1) await step.click()
+  await expect(computed).toHaveText('378')
+  await expect(predicted).toHaveText('378')
+  await expect(verdict).toHaveText('match')
+  await expect(predictPanel.getByText('correct this time')).toBeVisible()
+  await expect(predictPanel.getByText('plausible, but wrong')).toHaveCount(0)
+
+  await reset.click()
+
   // Large operands (near the 1-999 cap): the compute side must still land on
   // the exact product, however many steps it takes, while a 6-digit answer's
   // later digits are blurry enough that the model's argmax comes out wrong.
