@@ -3,186 +3,172 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import {
-  TYPE,
-  CHECKLIST,
-  LAST_STEP,
-  mustImplement,
-  canTake,
-} from './abstractInterfaceData'
+import { DEFAULTS, evaluate, buildDefinition } from './abstractInterfaceData'
 import styles from './AbstractInterfaceViz.module.css'
 
-const PLAY_MS = 1300
-
-// ── SVG geometry ────────────────────────────────────────────────────────────────
-const VB_W = 470
-const ROWS_TOP = 46
-const ROW_H = 42
-const ROW_H_TALL = 58 // rows that carry an extra sub-line (count, instantiate)
-const MARK_X = 10
-const TEXT_X = 34
-
-const VERDICT = {
-  yes: { glyph: '✓', color: '#1f8a5b' }, // check
-  no: { glyph: '✗', color: '#c0392b' }, // cross
-  partial: { glyph: '~', color: '#b8860b' },
-  one: { glyph: '1', color: '#46617e' },
-  many: { glyph: '∞', color: '#46617e' }, // infinity
+// Renders one code panel from a `lines` array of { code, comment, hot, dim,
+// error }. Lines are plain strings, never parsed as JSX.
+function CodePanel({ title, lines, ariaLabel }) {
+  return (
+    <pre className={styles.code} aria-label={ariaLabel}>
+      <div className={styles.codeTitle}>{title}</div>
+      {lines.map((ln, i) => (
+        <code
+          key={`${ln.code}-${i}`}
+          className={`${styles.codeLine} ${ln.hot ? styles.codeHot : ''} ${ln.dim ? styles.codeDim : ''} ${
+            ln.error ? styles.codeError : ''
+          } ${ln.strike ? styles.strike : ''}`}
+        >
+          {ln.code}
+          {ln.comment ? <span className={styles.comment}>{`  ${ln.comment}`}</span> : null}
+        </code>
+      ))}
+    </pre>
+  )
 }
-
-// Precompute each row's y and height so the taller rows (with a sub-line) get room.
-function rowLayout() {
-  let y = ROWS_TOP
-  return CHECKLIST.map((row) => {
-    const tall = Boolean(row.subAbstract || row.strikeCode)
-    const h = tall ? ROW_H_TALL : ROW_H
-    const top = y
-    y += h
-    return { top, h, tall }
-  })
-}
-const LAYOUT = rowLayout()
-const VB_H = ROWS_TOP + LAYOUT.reduce((s, r) => s + r.h, 0) + 6
 
 export default function AbstractInterfaceViz() {
-  const [mode, setMode] = useState('abstract')
-  const [step, setStep] = useState(0)
-  const [playing, setPlaying] = useState(false)
+  const [kind, setKind] = useState(DEFAULTS.kind)
+  const [implementsDoJob, setImplementsDoJob] = useState(DEFAULTS.implementsDoJob)
+  const [hasBattery, setHasBattery] = useState(DEFAULTS.hasBattery)
+  const [takesAlarmed, setTakesAlarmed] = useState(DEFAULTS.takesAlarmed)
+  const [hasChargeBody, setHasChargeBody] = useState(DEFAULTS.hasChargeBody)
+  const [triedNew, setTriedNew] = useState(DEFAULTS.triedNew)
 
-  const done = step >= LAST_STEP
-  const isPlaying = playing && !done
+  const state = { kind, implementsDoJob, hasBattery, takesAlarmed, hasChargeBody, triedNew }
+  const verdict = evaluate(state)
+  const { robotLines, guardBotLines, newLine } = buildDefinition(state)
 
-  const svgRef = useRef(null)
+  const verdictRef = useRef(null)
 
-  // Auto-advance with setInterval (never a rAF/anime chain) so play keeps progressing
-  // in a backgrounded tab. Keyed on `done` so it tears down when the checklist finishes;
-  // the effect body only sets/clears the interval, never setState directly.
+  // Cosmetic flourish only: fade the verdict in when it changes. Pure
+  // animation, no state change, no onComplete chaining.
   useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+    if (verdictRef.current) {
+      animate(verdictRef.current, { opacity: [0.3, 1], duration: 280, ease: 'outQuad' })
+    }
+  }, [verdict.compiles, verdict.message])
 
-  // Cosmetic flourish only: when the mode flips, fade the checklist column in so the
-  // switched verdicts register. Pure animation, no state change.
-  useEffect(() => {
-    if (!svgRef.current) return
-    const col = svgRef.current.querySelector('[data-verdicts]')
-    if (col) animate(col, { opacity: [0.35, 1], duration: 320, ease: 'outQuad' })
-  }, [mode])
+  const isDefault =
+    kind === DEFAULTS.kind &&
+    implementsDoJob === DEFAULTS.implementsDoJob &&
+    hasBattery === DEFAULTS.hasBattery &&
+    takesAlarmed === DEFAULTS.takesAlarmed &&
+    hasChargeBody === DEFAULTS.hasChargeBody &&
+    triedNew === DEFAULTS.triedNew
 
-  const onStep = () => setStep((s) => Math.min(LAST_STEP, s + 1))
   const reset = () => {
-    setPlaying(false)
-    setStep(0)
+    setKind(DEFAULTS.kind)
+    setImplementsDoJob(DEFAULTS.implementsDoJob)
+    setHasBattery(DEFAULTS.hasBattery)
+    setTakesAlarmed(DEFAULTS.takesAlarmed)
+    setHasChargeBody(DEFAULTS.hasChargeBody)
+    setTriedNew(DEFAULTS.triedNew)
   }
-  // Toggling the contract kind keeps the current step, so you can stop on a row (e.g.
-  // row 4) and flip modes to watch just that verdict change.
-  const toggleMode = () => setMode((m) => (m === 'abstract' ? 'interface' : 'abstract'))
 
-  const modeLabel = mode === 'abstract' ? 'abstract class Robot' : 'interface Robot'
-  const take = canTake(mode)
-
-  const controls = [
-    { label: mode === 'abstract' ? 'abstract class' : 'interface', onClick: toggleMode, active: mode === 'interface' },
-    { label: 'Step', onClick: onStep, variant: 'primary', disabled: done },
-    { label: isPlaying ? 'Pause' : 'Play', onClick: () => setPlaying((p) => !p), disabled: done },
-    { label: 'Reset', onClick: reset, disabled: step === 0 },
-  ]
+  const controls = [{ label: 'Reset', onClick: reset, disabled: isDefault }]
 
   const readouts = [
-    { label: 'must implement', value: mustImplement(mode) },
-    { label: 'extend / implement', value: take.value },
-    { label: 'row', value: `${step} / ${LAST_STEP}` },
+    { label: 'contract', value: kind === 'abstract' ? 'abstract class' : 'interface' },
+    { label: 'GuardBot', value: `${kind === 'abstract' ? 'extends' : 'implements'} ${takesAlarmed ? 'Robot, Alarmed' : 'Robot'}` },
+    { label: 'verdict', value: verdict.compiles ? 'compiles' : 'does not compile' },
   ]
-
-  const status =
-    step === 0
-      ? 'Press Step to reveal what this kind of contract can and cannot carry.'
-      : mode === 'abstract'
-        ? CHECKLIST[step - 1].statusAbstract
-        : CHECKLIST[step - 1].statusInterface
 
   return (
     <Figure
       eyebrow="Abstract classes and interfaces"
-      title="Two kinds of contract"
+      title="Build GuardBot against a contract"
       controls={controls}
-      status={status}
+      status={verdict.message}
       readouts={readouts}
-      tryThis="Step through the checklist for an abstract class, then use the toggle to switch the same Robot to an interface and watch the verdicts change. Pause on row 4: an abstract class can only be extended by one class, but a class can implement many interfaces, so GuardBot can implement Robot and Alarmed at once. Both kinds force implementers to provide doJob(), and neither can be created with new. The difference is what else the contract is allowed to carry."
+      tryThis="Every toggle below is live: nothing to step through. Start by removing doJob() from GuardBot and watch the compile error name it. Switch to interface and add battery back: it compiles, because an interface field is a constant every implementer shares, not per-object state. Switch back to abstract class and turn on Alarmed: extending two classes is illegal, but the same toggle in interface mode is fine, because a class can implement any number of interfaces. Press try new Robot() any time to see why neither kind of contract can be instantiated directly."
     >
-      <div className={styles.layout}>
-        {/* The Robot type definition, changing with the mode. Lines are strings so the
-            braces and comments are never parsed as JSX. */}
-        <pre className={styles.code} aria-label={`${modeLabel} definition`}>
-          {TYPE[mode].lines.map((ln, i) => (
-            <code
-              key={`${ln.code}-${i}`}
-              className={`${styles.codeLine} ${ln.hot ? styles.codeHot : ''} ${ln.dim ? styles.codeDim : ''}`}
-            >
-              {ln.code}
-              {ln.comment ? <span className={styles.comment}>{`  ${ln.comment}`}</span> : null}
-            </code>
-          ))}
-        </pre>
-
-        <svg
-          ref={svgRef}
-          viewBox={`0 0 ${VB_W} ${VB_H}`}
-          className={styles.svg}
-          role="img"
-          aria-label={`Contract comparison for ${modeLabel}. Must implement ${mustImplement(mode)} method; a class can take on ${take.value} ${take.word}. ${status}`}
+      <div className={styles.controlRow}>
+        <span className={styles.controlLabel}>contract kind</span>
+        <button
+          type="button"
+          onClick={() => setKind('abstract')}
+          aria-pressed={kind === 'abstract'}
+          className={`${styles.toggle} ${kind === 'abstract' ? styles.toggleOn : ''}`}
         >
-          <text x={MARK_X} y={26} className={styles.header}>
-            {modeLabel}
-          </text>
-          <line x1={MARK_X} y1={34} x2={VB_W - 10} y2={34} stroke="#e2e0d8" strokeWidth={1} />
+          Abstract class
+        </button>
+        <button
+          type="button"
+          onClick={() => setKind('interface')}
+          aria-pressed={kind === 'interface'}
+          className={`${styles.toggle} ${kind === 'interface' ? styles.toggleOn : ''}`}
+        >
+          Interface
+        </button>
+      </div>
 
-          <g data-verdicts>
-            {CHECKLIST.map((row, i) => {
-              const revealed = i < step
-              const lay = LAYOUT[i]
-              const v = row[mode]
-              const mark = VERDICT[v.verdict]
-              const sub = mode === 'abstract' ? row.subAbstract : row.subInterface
-              const y = lay.top
-              return (
-                <g key={row.id} opacity={revealed ? 1 : 0.28}>
-                  <text x={MARK_X} y={y + 14} className={styles.mark} fill={mark.color}>
-                    {mark.glyph}
-                  </text>
-                  <text x={TEXT_X} y={y + 14} className={styles.label}>
-                    {row.label}
-                  </text>
-                  <text x={TEXT_X} y={y + 30} className={styles.note} fill={mark.color}>
-                    {v.note}
-                  </text>
-                  {/* row 4: the concrete implementer declaration for this mode */}
-                  {sub && (
-                    <text x={TEXT_X} y={y + 46} className={styles.sub}>
-                      {sub}
-                    </text>
-                  )}
-                  {/* row 5: the simulated does-not-compile instantiation */}
-                  {row.strikeCode && (
-                    <text x={TEXT_X} y={y + 46} className={styles.strikeRow}>
-                      <tspan className={styles.strike}>{row.strikeCode}</tspan>
-                      <tspan className={styles.doesNotCompile}>{'  does not compile'}</tspan>
-                    </text>
-                  )}
-                </g>
-              )
-            })}
-          </g>
-        </svg>
+      <div className={styles.controlRow}>
+        <span className={styles.controlLabel}>GuardBot</span>
+        <button
+          type="button"
+          onClick={() => setImplementsDoJob((v) => !v)}
+          aria-pressed={implementsDoJob}
+          className={`${styles.toggle} ${implementsDoJob ? styles.toggleOn : ''}`}
+        >
+          {implementsDoJob ? 'implements doJob()' : 'doJob() missing'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setTakesAlarmed((v) => !v)}
+          aria-pressed={takesAlarmed}
+          className={`${styles.toggle} ${takesAlarmed ? styles.toggleOn : ''}`}
+        >
+          {takesAlarmed ? 'also takes Alarmed' : 'Robot only'}
+        </button>
+      </div>
+
+      <div className={styles.controlRow}>
+        <span className={styles.controlLabel}>Robot contract</span>
+        <button
+          type="button"
+          onClick={() => setHasBattery((v) => !v)}
+          aria-pressed={hasBattery}
+          className={`${styles.toggle} ${hasBattery ? styles.toggleOn : ''}`}
+        >
+          {hasBattery ? 'battery field: yes' : 'battery field: no'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setHasChargeBody((v) => !v)}
+          aria-pressed={hasChargeBody}
+          className={`${styles.toggle} ${hasChargeBody ? styles.toggleOn : ''}`}
+        >
+          {hasChargeBody ? 'charge() body: yes' : 'charge() body: no'}
+        </button>
+      </div>
+
+      <div className={styles.controlRow}>
+        <button type="button" onClick={() => setTriedNew(true)} disabled={triedNew} className={styles.tryNewBtn}>
+          try new Robot()
+        </button>
+      </div>
+
+      <div className={styles.panels}>
+        <CodePanel title="Robot (the contract)" lines={robotLines} ariaLabel="The Robot contract definition" />
+        <CodePanel
+          title="GuardBot (the implementer)"
+          lines={newLine ? [...guardBotLines, newLine] : guardBotLines}
+          ariaLabel="The GuardBot class definition"
+        />
+      </div>
+
+      <div
+        ref={verdictRef}
+        className={`${styles.verdict} ${verdict.compiles ? styles.verdictOk : styles.verdictError}`}
+      >
+        <span className={styles.verdictBadge}>{verdict.compiles ? '✓ compiles' : '✗ does not compile'}</span>
       </div>
 
       <p className={styles.caption}>
-        The must-implement count and the extend-or-implement limit are read from the type
-        definition for the current mode, not typed in per row, so the readouts always match
-        the contract shown. The checklist is a fixed, deterministic sequence; the
-        does-not-compile row is simulated, not a live compiler.
+        Every verdict above is computed from the same rule function against the toggles you set; nothing is
+        hand-typed per combination. The &quot;does not compile&quot; cases are simulated, the same treatment as the
+        Encapsulation figure: nothing is compiled in your browser.
       </p>
     </Figure>
   )
