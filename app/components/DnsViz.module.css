@@ -48,6 +48,35 @@
   cursor: not-allowed;
 }
 
+.sliderLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  max-width: 600px;
+  margin: 0 auto 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b9892;
+}
+
+.sliderValue {
+  color: #1a1a1a;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+.slider {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 14px;
+  accent-color: #c0392b;
+  cursor: pointer;
+}
+
 .svg {
   width: 100%;
   max-width: 600px;

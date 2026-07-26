@@ -15,12 +15,29 @@
 // Whether a lookup is a cache MISS (the full 8-step chain) or a cache HIT
 // (2 steps: ask the resolver, get the cached answer back) depends only on
 // whether state.cache is populated when the lookup starts, so the whole run
-// is a pure function of (state, action): step(), lookup(), expireCache(),
+// is a pure function of (state, action): step(), lookup(), tickTtl(),
 // reset(). Every readout is derived from that state, never hand-tracked.
 
 export const DOMAIN = 'app.example.com'
 export const ANSWER_IP = '192.0.2.42'
+
+// Legacy fixed TTL, kept only because the honesty caption in DnsViz.jsx
+// still quotes it in prose (R3 replaced the mechanic with a live TTL
+// control; the caption text is a separate prose change, tracked in the R3
+// PR description, not applied here).
 export const ANSWER_TTL = 300
+
+// TTL is a control the learner sets (R3): how long, in seconds, a fresh
+// answer stays cached before the entry ages out on its own.
+export const TTL_MIN = 5
+export const TTL_MAX = 600
+export const TTL_DEFAULT = 10
+export const TTL_STEP = 5
+
+// TTL countdown cadence (setInterval period, ms). Each tick integrates over
+// measured wall-clock elapsed time (capped at 1s), not this nominal period,
+// so the countdown stays correct in a backgrounded tab.
+export const TTL_TICK_MS = 1000
 
 // The five service boxes, left to right in the figure.
 export const BOXES = ['device', 'resolver', 'root', 'tld', 'auth']
@@ -33,7 +50,10 @@ function missQueue() {
     { tick: 4, kind: 'query', from: 'resolver', to: 'tld', label: `${DOMAIN}?`, ask: true },
     { tick: 5, kind: 'referral', from: 'tld', to: 'resolver', label: "referral: ask example.com's authoritative servers", ask: false },
     { tick: 6, kind: 'query', from: 'resolver', to: 'auth', label: `${DOMAIN}?`, ask: true },
-    { tick: 7, kind: 'answer', from: 'auth', to: 'resolver', label: `answer: ${ANSWER_IP} (ttl ${ANSWER_TTL})`, ask: false, caches: true },
+    // Label has no ttl baked in: step() fills the live slider value in when
+    // this event actually fires, since that is when a real authoritative
+    // server would stamp the TTL onto the answer.
+    { tick: 7, kind: 'answer', from: 'auth', to: 'resolver', label: `answer: ${ANSWER_IP}`, ask: false, caches: true },
     { tick: 8, kind: 'answer', from: 'resolver', to: 'device', label: `answer: ${ANSWER_IP}`, ask: false },
   ]
 }
@@ -65,14 +85,17 @@ export function isDone(state) {
 }
 
 // Advance one tick: process the next event in the fixed queue. Pure.
-export function step(state) {
+// ttlSeconds is the learner's current TTL-slider value; it is only used if
+// this tick is the one that caches an answer.
+export function step(state, ttlSeconds) {
   if (isDone(state)) return state
   const s = { ...state, lastEvent: null }
   const e = s.queue[s.cursor]
   s.cursor = s.cursor + 1
   s.lastEvent = { ...e }
   if (e.caches) {
-    s.cache = { ip: ANSWER_IP, ttl: ANSWER_TTL }
+    s.cache = { ip: ANSWER_IP, ttl: ttlSeconds, remaining: ttlSeconds }
+    s.lastEvent = { ...e, label: `answer: ${ANSWER_IP} (ttl ${ttlSeconds}s)` }
   }
   return s
 }
@@ -83,11 +106,15 @@ export function lookup(state) {
   return buildState(state.cache)
 }
 
-// Simulate the cache entry aging out: the answer is gone, so the next
-// lookup() call will walk the full chain again. Does not touch the run
-// currently on screen.
-export function expireCache(state) {
-  return { ...state, cache: null }
+// Age the cached entry by dtSec of real elapsed time. Once remaining hits
+// zero the entry is gone, the same as a real resolver dropping an expired
+// record; the next lookup() call then walks the full chain again. Pure, so
+// the component supplies dtSec already capped at 1s per tick.
+export function tickTtl(state, dtSec) {
+  if (!state.cache) return state
+  const remaining = Math.max(0, state.cache.remaining - dtSec)
+  if (remaining <= 0) return { ...state, cache: null }
+  return { ...state, cache: { ...state.cache, remaining } }
 }
 
 // Full reset: clear the cache and start over from an empty resolver, as if

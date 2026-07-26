@@ -7,11 +7,16 @@ import {
   DOMAIN,
   ANSWER_IP,
   ANSWER_TTL,
+  TTL_MIN,
+  TTL_MAX,
+  TTL_DEFAULT,
+  TTL_STEP,
+  TTL_TICK_MS,
   BOXES,
   initialState,
   step,
   lookup,
-  expireCache,
+  tickTtl,
   reset,
   isDone,
   serversAsked,
@@ -77,19 +82,44 @@ const arcDip = (distance) => 16 + distance * 14
 export default function DnsViz() {
   const [state, setState] = useState(() => initialState())
   const [playing, setPlaying] = useState(false)
+  const [ttlSeconds, setTtlSeconds] = useState(TTL_DEFAULT)
   const svgRef = useRef(null)
 
   const done = isDone(state)
   const isPlaying = playing && !done
+
+  // The playback and TTL intervals read the live slider value through a ref
+  // so dragging mid-run does not tear down and restart either timer.
+  const ttlRef = useRef(TTL_DEFAULT)
+  useEffect(() => {
+    ttlRef.current = ttlSeconds
+  }, [ttlSeconds])
 
   // Auto-advance with setInterval (never a rAF/anime chain). Keyed on `done`
   // so it tears down when the run finishes; the effect body only sets/clears
   // the timer.
   useEffect(() => {
     if (!playing || done) return undefined
-    const id = setInterval(() => setState((s) => (isDone(s) ? s : step(s))), PLAY_MS)
+    const id = setInterval(() => setState((s) => (isDone(s) ? s : step(s, ttlRef.current))), PLAY_MS)
     return () => clearInterval(id)
   }, [playing, done])
+
+  // The cached entry ages in real wall-clock time, independent of Play/Step:
+  // a real TTL counts down whether or not anyone is watching the chain
+  // animate. Each tick integrates the elapsed time actually measured
+  // (capped at 1s), so a backgrounded tab does not throw the countdown off.
+  const hasCache = Boolean(state.cache)
+  useEffect(() => {
+    if (!hasCache) return undefined
+    let last = performance.now()
+    const id = window.setInterval(() => {
+      const now = performance.now()
+      const dt = Math.min((now - last) / 1000, 1)
+      last = now
+      setState((s) => tickTtl(s, dt))
+    }, TTL_TICK_MS)
+    return () => window.clearInterval(id)
+  }, [hasCache])
 
   // Cosmetic flourish only: pulse the elements marked data-pulse (the two
   // boxes currently talking, and the message token). Pure animation, no
@@ -101,13 +131,12 @@ export default function DnsViz() {
     animate(nodes, { opacity: [0.4, 1], duration: 450, ease: 'outQuad' })
   }, [state.cursor, state.lastEvent])
 
-  const onStep = () => setState((s) => (isDone(s) ? s : step(s)))
+  const onStep = () => setState((s) => (isDone(s) ? s : step(s, ttlRef.current)))
   const doReset = () => {
     setPlaying(false)
     setState((s) => reset(s))
   }
   const doLookup = () => setState((s) => (isDone(s) ? lookup(s) : s))
-  const doExpire = () => setState((s) => (isDone(s) && s.cache ? expireCache(s) : s))
 
   const controls = [
     { label: 'Step', onClick: onStep, variant: 'primary', disabled: done },
@@ -115,10 +144,11 @@ export default function DnsViz() {
     { label: 'Reset', onClick: doReset, disabled: state.cursor === 0 && !state.cache },
   ]
 
+  const cacheRemaining = state.cache ? Math.ceil(state.cache.remaining) : null
   const readouts = [
     { label: 'servers asked', value: serversAsked(state) },
     { label: 'steps', value: `${stepsTaken(state)}/${totalSteps(state)}` },
-    { label: 'cache', value: state.cache ? `${DOMAIN} = ${state.cache.ip} (ttl ${state.cache.ttl}s)` : 'empty' },
+    { label: 'cache', value: state.cache ? `${DOMAIN} = ${state.cache.ip} (ttl ${cacheRemaining}s left)` : 'empty' },
   ]
 
   const asked = askedBoxes(state)
@@ -139,17 +169,30 @@ export default function DnsViz() {
         <button type="button" className={styles.btn} onClick={doLookup} disabled={!done}>
           Look up again
         </button>
-        <button type="button" className={styles.btn} onClick={doExpire} disabled={!done || !state.cache}>
-          Expire cache (TTL)
-        </button>
       </div>
+
+      <label className={styles.sliderLabel} htmlFor="dns-ttl">
+        <span>TTL (server-set cache lifetime)</span>
+        <span className={styles.sliderValue}>{ttlSeconds}s</span>
+      </label>
+      <input
+        id="dns-ttl"
+        className={styles.slider}
+        type="range"
+        min={TTL_MIN}
+        max={TTL_MAX}
+        step={TTL_STEP}
+        value={ttlSeconds}
+        onChange={(e) => setTtlSeconds(Number(e.target.value))}
+        aria-label="TTL in seconds: how long the resolver keeps a fresh answer cached before it must ask again"
+      />
 
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
         role="img"
-        aria-label={`Resolving ${DOMAIN}. ${serversAsked(state)} servers asked so far, step ${stepsTaken(state)} of ${totalSteps(state)}. Cache is ${state.cache ? `${DOMAIN} equals ${state.cache.ip}, ttl ${state.cache.ttl} seconds` : 'empty'}.`}
+        aria-label={`Resolving ${DOMAIN}. ${serversAsked(state)} servers asked so far, step ${stepsTaken(state)} of ${totalSteps(state)}. Cache is ${state.cache ? `${DOMAIN} equals ${state.cache.ip}, ${cacheRemaining} seconds left on its ttl` : 'empty'}.`}
       >
         <text x={VB_W / 2} y={TITLE_Y} fontSize={8.5} fill={FADE} fontFamily={MONO} letterSpacing="0.1em" textAnchor="middle">
           {`RESOLVING ${DOMAIN.toUpperCase()}`}
@@ -238,7 +281,7 @@ export default function DnsViz() {
           strokeDasharray={state.cache ? undefined : '3 3'}
         />
         <text x={CACHE_X + CACHE_W / 2} y={CACHE_Y + CACHE_H / 2 + 4} fontSize={9.5} fill={state.cache ? OK : FADE} fontFamily={MONO} fontWeight={state.cache ? 700 : 400} textAnchor="middle">
-          {state.cache ? `${DOMAIN} = ${state.cache.ip}  (ttl ${state.cache.ttl}s)` : 'empty'}
+          {state.cache ? `${DOMAIN} = ${state.cache.ip}  (ttl ${cacheRemaining}s left)` : 'empty'}
         </text>
       </svg>
 
@@ -286,7 +329,7 @@ function statusFor(state) {
   }
   if (e.kind === 'answer') {
     if (e.to === 'resolver') {
-      return `${capName(e.from)} holds the actual record and answers: ${ANSWER_IP}, TTL ${ANSWER_TTL}s. The resolver caches it immediately.`
+      return `${capName(e.from)} holds the actual record and answers: ${ANSWER_IP}, TTL ${state.cache.ttl}s. The resolver caches it immediately.`
     }
     return `The resolver hands the answer back to your device: ${ANSWER_IP}.`
   }

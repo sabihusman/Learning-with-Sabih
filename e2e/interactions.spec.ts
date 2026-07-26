@@ -270,20 +270,24 @@ test('tcp-and-udp: protocol toggle and loss slider are keyboard reachable', asyn
   await expect(step).toBeEnabled()
 })
 
-test('dns: a second lookup hits cache, and expiring it forces a cold walk again', async ({ page }) => {
+test('dns: a second lookup hits cache, and a real TTL expiry forces a cold walk again', async ({ page }) => {
   await page.goto('/topics/dns/')
   const step = page.getByRole('button', { name: 'Step' })
   const lookupAgain = page.getByRole('button', { name: 'Look up again' })
-  const expireCache = page.getByRole('button', { name: 'Expire cache (TTL)' })
+  const ttlSlider = page.getByRole('slider', { name: /TTL in seconds/ })
   const serversAsked = readoutValue(page, 'servers asked')
   const steps = readoutValue(page, 'steps')
   const cache = readoutValue(page, 'cache')
 
+  // Drive the TTL to its minimum so the real countdown expires quickly.
+  await ttlSlider.focus()
+  await page.keyboard.press('Home')
+  await expect(ttlSlider).toHaveValue('5')
+
   await expect(cache).toHaveText('empty')
-  // Real buttons, but gated: nothing to look up again or expire until the
-  // first run (cold, 8 steps) completes.
+  // Real button, but gated: nothing to look up again until the first run
+  // (cold, 8 steps) completes.
   await expect(lookupAgain).toBeDisabled()
-  await expect(expireCache).toBeDisabled()
 
   for (let i = 0; i < 8; i += 1) await step.click()
   await expect(serversAsked).toHaveText('4')
@@ -300,10 +304,10 @@ test('dns: a second lookup hits cache, and expiring it forces a cold walk again'
   await expect(serversAsked).toHaveText('1')
   await expect(steps).toHaveText('2/2')
 
-  // Expiring the cache and looking up again forces the full 8-step chain.
-  await expireCache.focus()
-  await page.keyboard.press('Enter')
-  await expect(cache).toHaveText('empty')
+  // The countdown is a real setInterval driven by measured wall-clock time,
+  // not a scripted teleport: wait past the 5s TTL and the cache empties on
+  // its own, no button press.
+  await expect(cache).toHaveText('empty', { timeout: 8000 })
   await lookupAgain.click()
   await expect(steps).toHaveText('0/8')
 })
