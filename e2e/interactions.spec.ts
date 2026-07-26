@@ -32,6 +32,26 @@ test('gradient-descent: clicking Step advances the x readout', async ({ page }) 
   await expect(x).not.toHaveText(before)
 })
 
+test('attention: the heatmap has 10 rows, and clicking a row updates the shared selection', async ({ page }) => {
+  await page.goto('/topics/attention/')
+  const selectedReadout = readoutValue(page, 'selected')
+  const topLinksReadout = readoutValue(page, 'top links')
+  await expect(selectedReadout).toHaveText('—')
+
+  // One row-hit target per word, exposed as a button (the heatmap's rows are
+  // SVG rects with an explicit role, not native <button> elements).
+  const rows = page.getByRole('button', { name: /Show outgoing attention from/ })
+  await expect(rows).toHaveCount(10)
+
+  // Clicking the "it" row (the coreference headline case) sets the same
+  // `selected` state AttentionScene reads, so the shared readouts update.
+  const itRow = page.getByRole('button', { name: 'Show outgoing attention from "it"' })
+  await itRow.click()
+  await expect(selectedReadout).toHaveText('it')
+  await expect(topLinksReadout).toContainText('animal')
+  await expect(itRow).toHaveAttribute('aria-pressed', 'true')
+})
+
 test('why-models-struggle-with-math: user-supplied operands stay exact and degrade the model, count preset unchanged', async ({ page }) => {
   await page.goto('/topics/why-models-struggle-with-math/')
   const computed = readoutValue(page, 'computed')

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import Figure from './Figure'
 import { WORDS, SENTENCE, topLinks } from './attentionData'
+import AttentionHeatmap from './AttentionHeatmap'
 
 // three.js / R3F load ONLY here, client-side, on this route. ssr:false keeps the
 // 3D scene out of the static export and out of every other page's bundle. The
@@ -60,6 +61,7 @@ export default function AttentionViz() {
         'Drag to orbit the sentence and scroll to zoom. Click a word to draw its attention links to the rest; thicker and brighter links mean stronger attention. Click "it" and watch the strongest link reach back to "animal", the thing "it" refers to. These weights are hand-set to show the idea, not computed.'
       }
     >
+      <AttentionHeatmap selected={selected} onSelect={setSelected} />
       <AttentionScene selected={selected} onSelect={setSelected} />
     </Figure>
   )

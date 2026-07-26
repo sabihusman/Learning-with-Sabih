@@ -1,0 +1,28 @@
+/* The heatmap is sized to fit at 375px directly (viewBox ~370x370, capped at
+   380px wide); overflow-x: auto is a safety net only, not the primary
+   mobile strategy. */
+.wrap {
+  overflow-x: auto;
+  margin-bottom: 14px;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.rowHit {
+  cursor: pointer;
+}
+
+.rowHit:hover {
+  fill: rgba(192, 57, 43, 0.06);
+}
+
+.rowHit:focus-visible {
+  outline: 2px solid #c0392b;
+  outline-offset: -2px;
+}
