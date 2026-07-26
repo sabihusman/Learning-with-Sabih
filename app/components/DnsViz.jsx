@@ -6,7 +6,6 @@ import Figure from './Figure'
 import {
   DOMAIN,
   ANSWER_IP,
-  ANSWER_TTL,
   TTL_MIN,
   TTL_MAX,
   TTL_DEFAULT,
@@ -292,8 +291,9 @@ export default function DnsViz() {
         Root and TLD each stand in for the many real server instances at that
         tier, and the referral chain here is abbreviated to one server per
         tier; a real lookup can also involve CNAME redirects this figure
-        skips. The answer, {ANSWER_IP} with a {ANSWER_TTL} second TTL, is from
-        the documentation-only TEST-NET-1 range (RFC 5737). The counts above are read from the run. The referral chain itself is a
+        skips. The answer, {ANSWER_IP}, is from the documentation-only
+        TEST-NET-1 range (RFC 5737); its TTL is whatever the slider above is
+        set to, not a number the real example.com would actually choose. The counts above are read from the run. The referral chain itself is a
         fixed script rather than something the resolver computes, so each
         run replays a set walk while the counters stay derived from what
         that run processes.

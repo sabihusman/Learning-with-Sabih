@@ -21,12 +21,6 @@
 export const DOMAIN = 'app.example.com'
 export const ANSWER_IP = '192.0.2.42'
 
-// Legacy fixed TTL, kept only because the honesty caption in DnsViz.jsx
-// still quotes it in prose (R3 replaced the mechanic with a live TTL
-// control; the caption text is a separate prose change, tracked in the R3
-// PR description, not applied here).
-export const ANSWER_TTL = 300
-
 // TTL is a control the learner sets (R3): how long, in seconds, a fresh
 // answer stays cached before the entry ages out on its own.
 export const TTL_MIN = 5
