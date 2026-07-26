@@ -32,6 +32,49 @@ test('gradient-descent: clicking Step advances the x readout', async ({ page }) 
   await expect(x).not.toHaveText(before)
 })
 
+test('why-models-struggle-with-math: user-supplied operands stay exact and degrade the model, count preset unchanged', async ({ page }) => {
+  await page.goto('/topics/why-models-struggle-with-math/')
+  const computed = readoutValue(page, 'computed')
+  const predicted = readoutValue(page, 'predicted')
+  const verdict = readoutValue(page, 'verdict')
+  const step = page.getByRole('button', { name: 'Step', exact: true })
+  const reset = page.getByRole('button', { name: 'Reset' })
+  const aInput = page.getByRole('spinbutton', { name: /First operand/ })
+  const bInput = page.getByRole('spinbutton', { name: /Second operand/ })
+
+  await expect(aInput).toHaveValue('27')
+  await expect(bInput).toHaveValue('14')
+
+  // Large operands (near the 1-999 cap): the compute side must still land on
+  // the exact product, however many steps it takes, while a 6-digit answer's
+  // later digits are blurry enough that the model's argmax comes out wrong.
+  await aInput.fill('999')
+  await bInput.fill('999')
+  for (let i = 0; i < 6; i += 1) await step.click()
+  await expect(computed).toHaveText('998001')
+  await expect(predicted).not.toHaveText('998001')
+  await expect(verdict).toHaveText('model is wrong')
+
+  // Out-of-range and invalid input never reaches the compute side: a value
+  // above the cap clamps on change (no blur needed), and clearing the field
+  // snaps back to the last committed value on blur rather than going empty.
+  await reset.click()
+  await aInput.fill('5000')
+  await expect(aInput).toHaveValue('999')
+  await aInput.fill('')
+  await aInput.blur()
+  await expect(aInput).toHaveValue('999')
+
+  // The letter-counting preset is untouched by R7: still a fixed, hand-
+  // authored example that undercounts the same way as before.
+  await page.getByRole('button', { name: 'count "s"', exact: true }).click()
+  await expect(computed).toHaveText('…')
+  for (let i = 0; i < 4; i += 1) await step.click()
+  await expect(computed).toHaveText('4')
+  await expect(predicted).toHaveText('3')
+  await expect(verdict).toHaveText('model is wrong')
+})
+
 test('embeddings: clicking a word updates the nearest readout', async ({ page }) => {
   await page.goto('/topics/embeddings/')
   const canvas = page.locator('figure canvas')

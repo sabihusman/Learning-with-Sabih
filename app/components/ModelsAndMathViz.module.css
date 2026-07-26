@@ -11,6 +11,50 @@
   margin-bottom: 1rem;
 }
 
+.operandsRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.operandLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.operandInput {
+  width: 4.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.3rem 0.4rem;
+  text-align: center;
+}
+
+.operandInput:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.operandTimes {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--fade);
+  padding-bottom: 0.4rem;
+}
+
 .columns {
   display: flex;
   gap: 1rem;
