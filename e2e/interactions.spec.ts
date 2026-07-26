@@ -112,6 +112,33 @@ test('joins: switching the join type changes the result row-count status', async
   await expect(status).not.toHaveText(before)
 })
 
+test('funnel-analysis: switching cohort recomputes counts, cohort size, and SQL', async ({ page }) => {
+  await page.goto('/topics/funnel-analysis/')
+  const opened = readoutValue(page, 'topic_opened')
+  await expect(opened).toBeVisible()
+  const openedBefore = (await opened.textContent())?.trim() ?? ''
+
+  const cohortSize = page.getByText(/^n=\d+ users$/)
+  await expect(cohortSize).toHaveText('n=50 users')
+
+  // Mar 2025 is a deliberately thin cohort (3 users, 13 sessions): switching
+  // to it should shrink both the step counts and the cohort-size readout,
+  // and the SQL should grow the JOIN + WHERE filter that picking a cohort adds.
+  await page.getByRole('button', { name: 'Mar 2025', exact: true }).click()
+  await expect(opened).not.toHaveText(openedBefore)
+  await expect(opened).toHaveText('13')
+  await expect(cohortSize).toHaveText('n=3 users')
+
+  const sql = page.locator('figure pre')
+  await expect(sql).toContainText('JOIN users u')
+  await expect(sql).toContainText("u.signup_date >= '2025-03-01'")
+
+  // Switching back to All users restores the original counts.
+  await page.getByRole('button', { name: 'All users', exact: true }).click()
+  await expect(opened).toHaveText(openedBefore)
+  await expect(cohortSize).toHaveText('n=50 users')
+})
+
 test('group-by: switching the grouping column and aggregate updates the result', async ({ page }) => {
   await page.goto('/topics/group-by/')
   const groupBy = readoutValue(page, 'group by')
