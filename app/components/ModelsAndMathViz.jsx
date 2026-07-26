@@ -3,7 +3,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { PRESETS, getPreset, computeSteps, modelPicks, modelAnswer } from './modelsAndMathData'
+import {
+  MULT_MIN,
+  MULT_MAX,
+  MULT_DEFAULT_A,
+  MULT_DEFAULT_B,
+  parseOperand,
+  clampOperand,
+  COUNT_PRESET,
+  computeSteps,
+  getPredict,
+  modelPicks,
+  modelAnswer,
+} from './modelsAndMathData'
 import { INK, FADE, ACCENT, MONO } from './vizPalette'
 import styles from './ModelsAndMathViz.module.css'
 
@@ -34,12 +46,50 @@ function DistChart({ candidates, picked }) {
 }
 
 export default function ModelsAndMathViz() {
-  const [presetId, setPresetId] = useState('mult')
+  const [mode, setMode] = useState('mult')
   const [step, setStep] = useState(0)
 
-  const preset = getPreset(presetId)
+  // Operand state is always a valid clamped integer; the *Text state is only
+  // what the two inputs display, so a field can sit empty or mid-edit without
+  // ever pushing an invalid value into computeSteps.
+  const [a, setA] = useState(MULT_DEFAULT_A)
+  const [b, setB] = useState(MULT_DEFAULT_B)
+  const [aText, setAText] = useState(String(MULT_DEFAULT_A))
+  const [bText, setBText] = useState(String(MULT_DEFAULT_B))
+
+  // Clamping happens on change, not just on blur: an out-of-range value like
+  // "5000" snaps its field straight to "999" as soon as it parses, rather
+  // than lingering out of range until the reader looks away.
+  const commitOperand = (raw, setNum, setText) => {
+    const parsed = parseOperand(raw)
+    if (parsed == null) return false
+    const clamped = clampOperand(parsed)
+    setNum(clamped)
+    setText(String(clamped))
+    return true
+  }
+  const onAChange = (e) => {
+    const raw = e.target.value
+    setAText(raw)
+    if (commitOperand(raw, setA, setAText)) setStep(0)
+  }
+  const onBChange = (e) => {
+    const raw = e.target.value
+    setBText(raw)
+    if (commitOperand(raw, setB, setBText)) setStep(0)
+  }
+  // On blur, snap the field back to the last committed value: an empty or
+  // invalid draft never lingers on screen once the reader looks away.
+  const onABlur = () => setAText(String(a))
+  const onBBlur = () => setBText(String(b))
+
+  const preset = useMemo(
+    () => (mode === 'count' ? COUNT_PRESET : { kind: 'mult', prompt: `${a} × ${b} = ?`, a, b }),
+    [mode, a, b]
+  )
   const comp = useMemo(() => computeSteps(preset), [preset])
-  const picks = useMemo(() => modelPicks(preset), [preset])
+  const predict = useMemo(() => getPredict(preset, comp), [preset, comp])
+  const picks = useMemo(() => modelPicks(predict), [predict])
   const totalSteps = Math.max(comp.steps.length, picks.length)
 
   const compShown = comp.steps.slice(0, Math.min(step, comp.steps.length))
@@ -47,10 +97,11 @@ export default function ModelsAndMathViz() {
   const calcDone = step >= comp.steps.length
   const modelDone = step >= picks.length
   const bothDone = calcDone && modelDone
+  const modelCorrect = bothDone && modelAnswer(predict) === String(comp.total)
 
   // distribution for the most recently predicted token (kept visible once done)
   const activeIdx = step >= 1 ? Math.min(step, picks.length) - 1 : -1
-  const activeDist = activeIdx >= 0 ? preset.predict[activeIdx] : null
+  const activeDist = activeIdx >= 0 ? predict[activeIdx] : null
 
   const lastChipRef = useRef(null)
 
@@ -61,22 +112,23 @@ export default function ModelsAndMathViz() {
     if (modelShown.length > 0 && lastChipRef.current) {
       animate(lastChipRef.current, { scale: [0.4, 1], opacity: [0, 1], duration: 360, ease: 'outBack' })
     }
-  }, [modelShown.length, presetId])
+  }, [modelShown.length, mode])
 
-  const selectPreset = (id) => {
-    setPresetId(id)
+  const selectMode = (id) => {
+    setMode(id)
     setStep(0)
   }
 
   const controls = [
-    ...PRESETS.map((p) => ({ label: p.label, onClick: () => selectPreset(p.id), active: presetId === p.id })),
+    { label: 'Multiply', onClick: () => selectMode('mult'), active: mode === 'mult' },
+    { label: COUNT_PRESET.label, onClick: () => selectMode('count'), active: mode === 'count' },
     { label: 'Step', onClick: () => setStep((s) => Math.min(s + 1, totalSteps)), variant: 'primary', disabled: bothDone },
     { label: 'Reset', onClick: () => setStep(0), disabled: step === 0 },
   ]
 
   const predictedStr = modelShown.join('')
   const status = bothDone
-    ? `The calculator computed ${comp.total}. The model predicted ${modelAnswer(preset)}: plausible, but wrong.`
+    ? `The calculator computed ${comp.total}. The model predicted ${modelAnswer(predict)}: ${modelCorrect ? 'correct this time' : 'plausible, but wrong'}.`
     : step === 0
       ? 'Press Step to run both sides one token at a time'
       : `Step ${step} of ${totalSteps}`
@@ -84,7 +136,7 @@ export default function ModelsAndMathViz() {
   const readouts = [
     { label: 'computed', value: calcDone ? comp.total : '…' },
     { label: 'predicted', value: predictedStr ? predictedStr + (modelDone ? '' : '…') : '…' },
-    { label: 'verdict', value: bothDone ? (String(comp.total) === modelAnswer(preset) ? 'match' : 'model is wrong') : '—' },
+    { label: 'verdict', value: bothDone ? (modelCorrect ? 'match' : 'model is wrong') : '—' },
   ]
 
   return (
@@ -97,6 +149,42 @@ export default function ModelsAndMathViz() {
       tryThis="Pick a problem and press Step. The left side runs the real algorithm in plain JavaScript and is always right. The right side imitates a language model: at each step it predicts the next answer token from a probability over likely tokens and commits the most likely one, with no arithmetic underneath. Watch it land on a plausible but wrong answer, and notice where it was nearly a coin flip. The probabilities here are hand-authored to illustrate the behavior, not drawn from a real model; the computation on the left, however, is genuinely correct."
     >
       <div className={styles.prompt}>{preset.prompt}</div>
+
+      {mode === 'mult' && (
+        <div className={styles.operandsRow}>
+          <label className={styles.operandLabel}>
+            <span>a</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={MULT_MIN}
+              max={MULT_MAX}
+              step={1}
+              value={aText}
+              onChange={onAChange}
+              onBlur={onABlur}
+              className={styles.operandInput}
+              aria-label={`First operand, an integer from ${MULT_MIN} to ${MULT_MAX}`}
+            />
+          </label>
+          <span className={styles.operandTimes} aria-hidden="true">×</span>
+          <label className={styles.operandLabel}>
+            <span>b</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={MULT_MIN}
+              max={MULT_MAX}
+              step={1}
+              value={bText}
+              onChange={onBChange}
+              onBlur={onBBlur}
+              className={styles.operandInput}
+              aria-label={`Second operand, an integer from ${MULT_MIN} to ${MULT_MAX}`}
+            />
+          </label>
+        </div>
+      )}
 
       <div className={styles.columns}>
         {/* COMPUTE SIDE (genuinely correct) */}
@@ -161,8 +249,11 @@ export default function ModelsAndMathViz() {
           )}
 
           {modelDone && (
-            <div className={`${styles.result} ${styles.wrong}`}>
-              = {modelAnswer(preset)} <span className={styles.badge}>&#10007; plausible, but wrong</span>
+            <div className={`${styles.result} ${modelCorrect ? styles.correct : styles.wrong}`}>
+              = {modelAnswer(predict)}{' '}
+              <span className={styles.badge}>
+                {modelCorrect ? <>&#10003; correct this time</> : <>&#10007; plausible, but wrong</>}
+              </span>
             </div>
           )}
         </section>
