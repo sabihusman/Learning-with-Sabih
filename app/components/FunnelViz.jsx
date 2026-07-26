@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Figure from './Figure'
-import { STEPS, STEP_STATS, TOTAL_SESSIONS, OVERALL_RATE, fmtPct, buildSql } from './funnelData'
+import { STEP_EVENTS, COHORTS, computeFunnel, fmtPct, buildSql } from './funnelData'
 import styles from './FunnelViz.module.css'
 
 const INK = '#1a1a1a'
@@ -22,24 +22,32 @@ const BAR_H = 50
 const GAP = 46
 const MAX_BAR_W = 440
 
-const maxCount = STEPS[0].count
-const barW = (count) => (count / maxCount) * MAX_BAR_W
 const barTop = (i) => TOP + i * (BAR_H + GAP)
-const VB_H = barTop(STEPS.length - 1) + BAR_H + 26
+const VB_H = barTop(STEP_EVENTS.length - 1) + BAR_H + 26
 
 export default function FunnelViz() {
   const [showDropoff, setShowDropoff] = useState(false)
+  const [cohortId, setCohortId] = useState('all')
+
+  const funnel = computeFunnel(cohortId)
+  const { steps, stepStats, totalSessions, overallRate, cohortSize } = funnel
+  const cohortLabel = COHORTS.find((c) => c.id === cohortId).label
+
+  // Bars scale against this cohort's own widest step, so a thin cohort's bars
+  // are never dwarfed by counts that belong to a different slice.
+  const maxCount = steps[0].count
+  const barW = (count) => (maxCount === 0 ? 0 : (count / maxCount) * MAX_BAR_W)
 
   const controls = [
     { label: showDropoff ? 'Hide drop-off' : 'Show drop-off', onClick: () => setShowDropoff((d) => !d), active: showDropoff },
   ]
   const readouts = [
-    { label: 'topic_opened', value: STEPS[0].count },
-    { label: 'interactive_used', value: STEPS[1].count },
-    { label: 'topic_completed', value: STEPS[2].count },
-    { label: 'overall completion', value: fmtPct(OVERALL_RATE) },
+    { label: 'topic_opened', value: steps[0].count },
+    { label: 'interactive_used', value: steps[1].count },
+    { label: 'topic_completed', value: steps[2].count },
+    { label: 'overall completion', value: fmtPct(overallRate) },
   ]
-  const status = `${STEPS[2].count} of ${TOTAL_SESSIONS} sessions completed (${fmtPct(OVERALL_RATE)})`
+  const status = `${steps[2].count} of ${totalSessions} sessions completed (${fmtPct(overallRate)})`
 
   return (
     <Figure
@@ -53,16 +61,16 @@ export default function FunnelViz() {
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         style={{ width: '100%', maxWidth: 560, height: 'auto', display: 'block', margin: '0 auto' }}
-        aria-label="A three-step conversion funnel: topic_opened 143, interactive_used 77, topic_completed 45, with step-to-step conversion percentages and optional drop-off."
+        aria-label={`${cohortLabel}: a three-step conversion funnel: topic_opened ${steps[0].count}, interactive_used ${steps[1].count}, topic_completed ${steps[2].count}, with step-to-step conversion percentages and optional drop-off.`}
       >
-        {STEP_STATS.map((s, i) => {
+        {stepStats.map((s, i) => {
           const w = barW(s.count)
           const x = CENTER_X - w / 2
           const top = barTop(i)
           const prevW = s.prevCount == null ? w : barW(s.prevCount)
           const ghostX = CENTER_X - prevW / 2
           return (
-            <g key={s.event}>
+            <g key={`${cohortId}-${s.event}`}>
               {/* drop-off wings: the previous step's width behind this bar */}
               {showDropoff && s.dropped != null && s.dropped > 0 && (
                 <g className={styles.dropoff} key={`ghost-${showDropoff}-${s.event}`}>
@@ -114,6 +122,23 @@ export default function FunnelViz() {
         })}
       </svg>
 
+      {/* cohort selector: one dimension at a time, no combinable filters */}
+      <div className={styles.controlRow}>
+        <span className={styles.controlLabel}>cohort</span>
+        {COHORTS.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => setCohortId(c.id)}
+            aria-pressed={cohortId === c.id}
+            className={`${styles.toggle} ${cohortId === c.id ? styles.toggleOn : ''}`}
+          >
+            {c.label}
+          </button>
+        ))}
+        <span className={styles.cohortSize}>{`n=${cohortSize} users`}</span>
+      </div>
+
       {/* SQL: one CTE of distinct sessions per step, then count each */}
       <pre
         style={{
@@ -129,7 +154,7 @@ export default function FunnelViz() {
           overflowX: 'auto',
         }}
       >
-        {buildSql()}
+        {buildSql(cohortId)}
       </pre>
 
       <p className={styles.note}>
