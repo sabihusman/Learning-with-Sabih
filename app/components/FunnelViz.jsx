@@ -56,7 +56,7 @@ export default function FunnelViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Each bar is the number of distinct sessions that reached a step: a session counts at a step if it ever fired that event. The percentages between bars are step-to-step conversion (interactive_used over topic_opened, then topic_completed over interactive_used), and the overall completion rate is the final step over all 146 sessions. Turn on drop-off to see how many sessions are lost at each step. The SQL builds one set of distinct sessions per step, then counts each."
+      tryThis="Each bar is the number of distinct sessions that reached a step: a session counts at a step if it ever fired that event. The percentages between bars are step-to-step conversion (interactive_used over topic_opened, then topic_completed over interactive_used), and the overall completion rate is the final step over every session in the selected cohort. Turn on drop-off to see how many sessions are lost at each step, then switch cohorts and watch where each group leaks. The SQL builds one set of distinct sessions per step, then counts each."
     >
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
