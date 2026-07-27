@@ -1,112 +1,119 @@
-// Hand-authored deterministic scenario for "Two kinds of contract". A Robot type with
-// two implementers (CleanerBot, GuardBot) is shown as either an abstract class or an
-// interface, and a five-row checklist compares what each kind of contract can carry.
+// Data and rules for "Two kinds of contract" (R6): the reader builds GuardBot
+// against either an abstract class or an interface contract and the figure
+// computes whether it compiles. Every rule below is verified against the
+// official Oracle Java Tutorial / JLS, not memory:
 //
-// Every fact here is verified against the official Oracle Java Tutorial, not memory:
-//   - Abstract classes can declare non-static, non-final fields and concrete methods.
-//     https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html
-//   - Interface fields are implicitly public static final (so no instance state), and
-//     interface bodies can contain abstract, default, and static methods.
+//   - A concrete subclass that does not implement an inherited abstract
+//     method fails to compile (the class itself would have to be declared
+//     abstract instead). https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html
+//   - Interface fields are implicitly public, static, and final: a shared
+//     constant, not per-instance state. Declaring one is NOT an error.
 //     https://docs.oracle.com/javase/tutorial/java/IandI/interfaceDef.html
-//   - A class extends one class but implements any number of interfaces; neither an
-//     abstract class nor an interface can be instantiated. (abstract.html)
+//   - A class extends only one class (abstract or not) but can implement any
+//     number of interfaces. https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html
+//   - An interface method with a body needs the `default` keyword (Java 8+).
+//     https://docs.oracle.com/javase/tutorial/java/IandI/defaultmethods.html
+//   - Neither an abstract class nor an interface can be instantiated with a
+//     plain `new`. JLS 15.9.1: a class instance creation expression's type
+//     "must denote a class that is accessible, non-abstract"; an interface
+//     identifier does not satisfy that at all. https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.9
 //
-// Readouts are DERIVED from the members below, never hand-typed per step.
+// One control has NO effect on the verdict, by design (confirmed, not
+// guessed): whether the contract's charge() has a working body. It only
+// changes what the contract's own definition looks like (whether charge()
+// is part of the contract at all, and whether it needs the `default`
+// keyword in interface mode); no combination of it with anything else here
+// produces a compile error, so it never appears in evaluate().
 
-// The Robot type definition in each mode. `code` is the line; `comment` is a trailing
-// faded note; `hot` marks a line worth highlighting. Stored as strings so nothing here
-// is parsed as JSX.
-export const TYPE = {
-  abstract: {
-    keyword: 'abstract class',
-    lines: [
-      { code: 'abstract class Robot {' },
-      { code: '    int battery = 100;', comment: '// state: allowed', hot: true },
-      { code: '    void charge() { battery = 100; }', comment: '// implemented: allowed', hot: true },
-      { code: '    abstract void doJob();', comment: '// subclass MUST implement', hot: true },
-      { code: '}' },
-      { code: '' },
-      { code: 'class CleanerBot extends Robot { void doJob() {...} }' },
-      { code: 'class GuardBot   extends Robot { void doJob() {...} }' },
-    ],
-    // members drive the "must implement" readout: methods with impl:false are forced.
-    members: [
-      { name: 'battery', kind: 'field', impl: true },
-      { name: 'charge', kind: 'method', impl: true },
-      { name: 'doJob', kind: 'method', impl: false },
-    ],
-    take: { value: '1', word: 'one class' }, // a class extends only one class
-  },
-  interface: {
-    keyword: 'interface',
-    lines: [
-      { code: 'interface Robot {' },
-      { code: '    void doJob();', comment: '// implementer MUST implement', hot: true },
-      { code: '    // fields are public static final:', dim: true },
-      { code: '    // no instance state', dim: true, hot: true },
-      { code: '}' },
-      { code: '' },
-      { code: 'class CleanerBot implements Robot { ... }' },
-      { code: 'class GuardBot   implements Robot, Alarmed { ... }' },
-    ],
-    members: [{ name: 'doJob', kind: 'method', impl: false }],
-    take: { value: 'many', word: 'interfaces' }, // implement any number of interfaces
-  },
+export const DEFAULTS = {
+  kind: 'abstract', // 'abstract' | 'interface'
+  implementsDoJob: true,
+  hasBattery: true,
+  takesAlarmed: false,
+  hasChargeBody: true,
+  triedNew: false,
 }
 
-// The comparison checklist, revealed one row per step. Each row carries a per-mode
-// verdict and a teaching status line. `verdict` drives the marker; `note` is the short
-// label shown beside it.
-//   verdicts: 'yes' | 'no' | 'partial' | 'one' | 'many'
-export const CHECKLIST = [
-  {
-    id: 'force',
-    label: 'Force implementers to provide doJob()',
-    abstract: { verdict: 'yes', note: 'YES' },
-    interface: { verdict: 'yes', note: 'YES' },
-    statusAbstract: 'An abstract method has no body, so every concrete subclass must implement doJob().',
-    statusInterface: 'An interface method is abstract by default, so every implementer must provide doJob().',
-  },
-  {
-    id: 'state',
-    label: 'Carry state (a battery field)',
-    abstract: { verdict: 'yes', note: 'YES' },
-    interface: { verdict: 'no', note: 'NO' },
-    statusAbstract: 'An abstract class is a class, so it can hold instance fields like battery.',
-    statusInterface: 'Interface fields are implicitly public static final, so an interface carries no instance state.',
-  },
-  {
-    id: 'behavior',
-    label: 'Provide implemented behavior (charge())',
-    abstract: { verdict: 'yes', note: 'YES' },
-    interface: { verdict: 'partial', note: 'only as a default method' },
-    statusAbstract: 'An abstract class can define ordinary methods with bodies, like charge().',
-    statusInterface: 'An interface can provide a body too, but only as a default method, marked with the default keyword.',
-  },
-  {
-    id: 'count',
-    label: 'How many can one class take on',
-    abstract: { verdict: 'one', note: 'ONE' },
-    interface: { verdict: 'many', note: 'MANY' },
-    subAbstract: 'class GuardBot extends Robot',
-    subInterface: 'class GuardBot implements Robot, Alarmed',
-    statusAbstract: 'A class extends only one class, so it can inherit from just one abstract class.',
-    statusInterface: 'A class can implement any number of interfaces, so GuardBot implements Robot and Alarmed.',
-  },
-  {
-    id: 'instantiate',
-    label: 'Instantiate directly with new Robot()',
-    abstract: { verdict: 'no', note: 'NO' },
-    interface: { verdict: 'no', note: 'NO' },
-    strikeCode: 'new Robot()',
-    statusAbstract: 'An abstract class cannot be instantiated. new Robot() does not compile.',
-    statusInterface: 'An interface cannot be instantiated either. new Robot() does not compile.',
-  },
-]
+// The single rule function every verdict is derived from. Priority order is
+// a design choice (not a Java fact): attempting `new Robot()` always wins,
+// then an illegal second parent, then a missing required method, then the
+// interface-field note last since it is informational, not an error.
+export function evaluate({ kind, implementsDoJob, hasBattery, takesAlarmed, triedNew }) {
+  const isAbstract = kind === 'abstract'
+  const contractName = isAbstract ? 'abstract class Robot' : 'interface Robot'
 
-export const LAST_STEP = CHECKLIST.length // 5
+  if (triedNew) {
+    return {
+      compiles: false,
+      message: `new Robot() does not compile: Robot is ${isAbstract ? 'abstract' : 'an interface'} and cannot be instantiated.`,
+    }
+  }
+  if (isAbstract && takesAlarmed) {
+    return {
+      compiles: false,
+      message: 'class GuardBot extends Robot, Alarmed does not compile: a class can extend only one class.',
+    }
+  }
+  if (!implementsDoJob) {
+    return {
+      compiles: false,
+      message: `GuardBot does not compile: it does not implement doJob(), required by ${contractName}.`,
+    }
+  }
+  if (!isAbstract && hasBattery) {
+    return {
+      compiles: true,
+      message:
+        'GuardBot compiles. Note: battery is implicitly public static final, a constant shared by every implementer, not per-object state.',
+    }
+  }
+  return { compiles: true, message: 'GuardBot compiles.' }
+}
 
-// Derived readouts, computed from the members / take rules above so they cannot drift.
-export const mustImplement = (mode) =>
-  TYPE[mode].members.filter((m) => m.kind === 'method' && !m.impl).length
-export const canTake = (mode) => TYPE[mode].take
+// Builds the displayed Robot / GuardBot definitions from the same live
+// state, so the code shown always matches the toggles (nothing hand-typed
+// per combination). `error` flags a line that is itself illegal to write;
+// `strike` flags an expression that fails when used, mirroring the
+// Encapsulation figure's existing "does not compile" treatment.
+export function buildDefinition({ kind, implementsDoJob, hasBattery, takesAlarmed, hasChargeBody, triedNew }) {
+  const isAbstract = kind === 'abstract'
+
+  const robotLines = [{ code: `${isAbstract ? 'abstract class' : 'interface'} Robot {` }]
+  if (hasBattery) {
+    robotLines.push(
+      isAbstract
+        ? { code: '    int battery = 100;', comment: '// instance state: allowed', hot: true }
+        : { code: '    int battery = 100;', comment: '// implicitly public static final', hot: true }
+    )
+  }
+  if (hasChargeBody) {
+    // The body only references battery when that field actually exists on the
+    // contract, so the displayed code never reads a field that is not there.
+    const body = (hasBattery && isAbstract) ? '{ battery = 100; }' : '{ /* recharge */ }'
+    robotLines.push(
+      isAbstract
+        ? { code: `    void charge() ${body}`, comment: '// implemented: allowed', hot: true }
+        : { code: `    default void charge() ${body}`, comment: '// default method, Java 8+', hot: true }
+    )
+  }
+  robotLines.push(
+    isAbstract
+      ? { code: '    abstract void doJob();', comment: '// implementer MUST implement', hot: true }
+      : { code: '    void doJob();', comment: '// implementer MUST implement', hot: true }
+  )
+  robotLines.push({ code: '}' })
+
+  const parentKeyword = isAbstract ? 'extends' : 'implements'
+  const parents = takesAlarmed ? 'Robot, Alarmed' : 'Robot'
+  const guardBotLines = [
+    { code: `class GuardBot ${parentKeyword} ${parents} {`, error: isAbstract && takesAlarmed },
+    implementsDoJob
+      ? { code: '    void doJob() { ... }' }
+      : { code: '    // doJob() not implemented', dim: true },
+    { code: '}' },
+  ]
+
+  const newLine = triedNew ? { code: 'new Robot();', strike: true } : null
+
+  return { robotLines, guardBotLines, newLine }
+}

@@ -1,18 +1,85 @@
-/* "Two kinds of contract": abstract class vs interface. Reuses the OOP section's
-   mono/rule vocabulary; a mono type definition on the left and an SVG checklist of
-   what each contract can carry on the right. */
+/* "Build GuardBot against a contract": six live toggles compute whether
+   GuardBot compiles against an abstract class or interface Robot. Reuses the
+   OOP section's mono/rule vocabulary and the site's toggle-pill convention
+   (same classes as FunnelViz/GroupByViz's cohort/group-by rows). */
 
-.layout {
+.controlRow {
   display: flex;
-  align-items: flex-start;
-  gap: 1.1rem;
+  align-items: center;
+  gap: 8px;
   flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-/* ── type definition ─────────────────────────────────────────────────────── */
+.controlLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+  white-space: nowrap;
+}
+
+.toggle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.toggle:hover {
+  background: #ece9e1;
+}
+
+.toggleOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.toggleOn:hover {
+  background: #1a1a1a;
+}
+
+.tryNewBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  background: #fbeeec;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.tryNewBtn:hover {
+  background: #f6dcd8;
+}
+
+.tryNewBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── code panels ─────────────────────────────────────────────────────────── */
+.panels {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
 .code {
-  flex: 0 1 auto;
-  min-width: 0;
+  flex: 1 1 260px;
+  min-width: 240px;
   max-width: 100%;
   margin: 0;
   padding: 0.75rem 0.9rem;
@@ -23,6 +90,15 @@
   flex-direction: column;
   gap: 0.1rem;
   overflow-x: auto;
+}
+
+.codeTitle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 0.35rem;
 }
 
 .codeLine {
@@ -44,69 +120,43 @@
   color: var(--fade);
 }
 
+.codeError {
+  background: #fbeeec;
+  box-shadow: inset 2px 0 0 #c0392b;
+  color: #c0392b;
+}
+
 .comment {
   color: var(--fade);
 }
 
-/* ── SVG checklist ───────────────────────────────────────────────────────── */
-.svg {
-  flex: 1 1 380px;
-  min-width: 300px;
-  max-width: 600px;
-  height: auto;
+.strike {
+  text-decoration: line-through;
+  color: var(--fade);
 }
 
-@media (max-width: 480px) {
-  .svg {
-    min-width: 0;
-  }
+/* ── verdict ─────────────────────────────────────────────────────────────── */
+.verdict {
+  margin-top: 0.9rem;
 }
 
-.header {
+.verdictBadge {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 13px;
-  font-weight: 700;
-  fill: #2f6f8f;
-}
-
-.mark {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 15px;
-  font-weight: 700;
-  text-anchor: middle;
-}
-
-.label {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 13.5px;
-  fill: var(--ink);
-}
-
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
 }
 
-.sub {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  fill: var(--fade);
+.verdictOk .verdictBadge {
+  background: #d8e6d8;
+  color: #1f6f5c;
 }
 
-.strikeRow {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11.5px;
-}
-
-.strike {
-  fill: var(--fade);
-  text-decoration: line-through;
-}
-
-.doesNotCompile {
-  fill: var(--fade);
+.verdictError .verdictBadge {
+  background: #fbeeec;
+  color: var(--accent);
 }
 
 /* ── caption ─────────────────────────────────────────────────────────────── */
