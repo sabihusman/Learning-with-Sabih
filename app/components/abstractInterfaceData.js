@@ -89,7 +89,7 @@ export function buildDefinition({ kind, implementsDoJob, hasBattery, takesAlarme
   if (hasChargeBody) {
     // The body only references battery when that field actually exists on the
     // contract, so the displayed code never reads a field that is not there.
-    const body = hasBattery ? '{ battery = 100; }' : '{ /* recharge */ }'
+    const body = (hasBattery && isAbstract) ? '{ battery = 100; }' : '{ /* recharge */ }'
     robotLines.push(
       isAbstract
         ? { code: `    void charge() ${body}`, comment: '// implemented: allowed', hot: true }

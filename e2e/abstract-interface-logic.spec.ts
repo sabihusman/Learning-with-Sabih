@@ -131,6 +131,20 @@ test('buildDefinition: hasChargeBody toggles whether charge() appears in the con
   expect(interfaceCharge.robotLines.some((l) => l.code.includes('default void charge()'))).toBe(true)
 })
 
+test('buildDefinition: interface mode never shows an assignment to battery, since interface fields are implicitly final', () => {
+  for (const hasBattery of BOOL) {
+    const def = buildDefinition({ ...DEFAULTS, kind: 'interface', hasBattery, hasChargeBody: true })
+    const chargeLine = def.robotLines.find((l) => l.code.includes('charge()'))
+    expect(chargeLine?.code, JSON.stringify({ hasBattery })).not.toContain('battery = 100')
+  }
+
+  // Abstract mode is unaffected: battery is a real mutable instance field
+  // there, so the assignment is legal and must still be shown.
+  const abstractWithBattery = buildDefinition({ ...DEFAULTS, kind: 'abstract', hasBattery: true, hasChargeBody: true })
+  const abstractChargeLine = abstractWithBattery.robotLines.find((l) => l.code.includes('charge()'))
+  expect(abstractChargeLine?.code).toContain('battery = 100')
+})
+
 test('buildDefinition: battery field is present only when toggled on, with a constant comment in interface mode', () => {
   const abstractBattery = buildDefinition({ ...DEFAULTS, kind: 'abstract', hasBattery: true })
   expect(abstractBattery.robotLines.some((l) => l.code.includes('int battery'))).toBe(true)
