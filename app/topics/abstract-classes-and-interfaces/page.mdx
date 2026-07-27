@@ -10,18 +10,18 @@ Inheritance and polymorphism showed what a subclass receives and how one call ca
 
 An abstract class is a partial class. It can hold real state, like a `battery` field, and real behavior, like a working `charge()` method. But it can also leave a method abstract, a signature with no body, and that is the demand: any concrete subclass must implement `doJob()` or it will not compile. An abstract class says "here is what all Robots share, and here is what each of you must fill in."
 
-An interface strips the contract down further. It names the methods an implementer must provide and, in its pure form, nothing else. It carries no instance state: a field declared in an interface is implicitly a constant, not per-object data, so there is no `battery` that each robot carries around. An interface says only "whatever you are, you can do this."
+An interface strips the contract down further. It names the methods an implementer must provide and, in its pure form, nothing else. It carries no instance state, so there is no `battery` that each robot carries around. An interface says only "whatever you are, you can do this."
 
-That thinness is what buys the interface its superpower. A class can extend only one class, abstract or not, because inheriting state and behavior from two parents creates conflicts. But a class can implement any number of interfaces, because promising to provide methods conflicts with nothing. In the figure, `GuardBot` can be a `Robot` and `Alarmed` at the same time, but only in interface mode.
+That thinness is what buys the interface its superpower. A class can extend only one class, abstract or not, because inheriting state and behavior from two parents creates conflicts. But a class can implement any number of interfaces, because promising to provide methods conflicts with nothing. In the figure, `GuardBot` can take `Alarmed` alongside `Robot`, but only in interface mode.
 
-The line has blurred in one place. Since Java 8, interfaces can carry default methods, implemented behavior that implementers inherit unless they override it. That is why the figure marks the "provides behavior" row as partial for interfaces rather than a plain no. The state row is the one that stays absolute: interfaces still cannot hold per-object fields.
+The line has blurred in one place. Since Java 8, interfaces can carry default methods, implemented behavior that implementers inherit unless they override it. Turn on the `charge()` body and watch the contract: in abstract class mode the method is written plainly, and in interface mode the same method needs the `default` keyword. That keyword is the marker that says implementers get this body for free.
 
-Both kinds of contract share one restriction: neither can be instantiated. `new Robot()` does not compile in either mode, because a contract is not a thing, it is a shape for things.
+The state rule is the one that stays absolute. Add the `battery` field in interface mode and it still compiles, but the figure attaches a note: the field is implicitly a constant shared by every implementer, not per-object data. You can see the consequence inside `charge()`. In abstract class mode its body sets `battery`. In interface mode it cannot, because a constant cannot be reassigned, so the body does something else.
+
+Both kinds of contract share one last restriction: neither can be instantiated. Press try `new Robot()` in either mode and the same thing happens, because a contract is not a thing, it is a shape for things.
 
 A rough rule for choosing: use an abstract class when the implementers are close relatives that share state and code, and an interface when unrelated classes just need to make the same promise.
 
-One note on the figure: the "does not compile" row is simulated, the same treatment as the Encapsulation figure. It shows what the Java compiler would reject; nothing is compiled in your browser.
-
-## Choosing a contract
+## Building against a contract
 
 <AbstractInterfaceViz />

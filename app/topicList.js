@@ -65,7 +65,7 @@ Object-Oriented Programming|57|Constructors and the Heap|Trace new step by step 
 Object-Oriented Programming|58|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
 Object-Oriented Programming|59|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
 Object-Oriented Programming|60|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
-Object-Oriented Programming|61|Abstract Classes and Interfaces|Toggle a Robot type between an abstract class and an interface, and watch a checklist compare what each kind of contract can force, carry, and be extended by|abstract-classes-and-interfaces
+Object-Oriented Programming|61|Abstract Classes and Interfaces|Build GuardBot against a Robot contract, switch the contract between an abstract class and an interface, and see live whether each choice compiles|abstract-classes-and-interfaces
 Object-Oriented Programming|62|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
 Data and Compression|63|Entropy and Compression|Drag four symbol probabilities and watch a real Huffman code chase Shannon's entropy floor, closing the gap only at powers of one-half|entropy-and-compression
 `
