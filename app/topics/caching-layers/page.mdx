@@ -1,0 +1,15 @@
+import CachingLayersViz from '@/app/components/CachingLayersViz'
+
+export const metadata = {
+  title: 'Caching layers - Learning with Sabih',
+}
+
+# Caching layers
+
+{/* TODO: placeholder prose. The real prose is supplied in chat and applied to this branch before merge. Honesty constraints for the prose: the three cache layers are real LRU structures (capacities 2, 3, 4) run over a fixed hand-authored 24-read stream; every serve location, count, and eviction is computed, never scripted; the per-layer latency figures are authored labels for scale, not measured timing; caches start empty and warm up emergently as the stream plays; real stacks are vastly larger and vary per layer. */}
+
+Placeholder: reads check the browser cache, then the CDN, then Redis, and only on a full miss does the database answer, writing a copy back into every layer on the way up.
+
+## Watching the stack warm up
+
+<CachingLayersViz />

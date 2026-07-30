@@ -1,0 +1,29 @@
+/* "Reads fall through the stack": a fixed read stream at the top, then four
+   layers stacked closest-first (BROWSER, CDN, REDIS, DATABASE). Same Systems
+   and Networking vocabulary as the Caching figure: reads are small labeled
+   tokens, layers are service boxes with mono headers. Colors stay in the site
+   family: ink / fade / accent, ok-green, and the amber fetched tone. */
+
+/* The stream renders as two rows of 12 tokens and the stack below is tall, so
+   keep a min-width floor for label legibility and let this wrapper scroll on a
+   phone instead of shrinking the SVG. */
+.scroll {
+  overflow-x: auto;
+}
+
+.svg {
+  width: 100%;
+  min-width: 400px;
+  max-width: 600px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
