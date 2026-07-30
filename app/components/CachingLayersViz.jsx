@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import {
   LAYERS,
   DB_ID,
@@ -15,6 +16,12 @@ import {
 } from './cachingLayersData'
 import styles from './CachingLayersViz.module.css'
 
+// Baseline durations at 1x. Every timing in the figure (Play tick, fast-run
+// tick, and every animation keyframe) is divided by the shared animation-speed
+// multiplier (animationSpeed.js), so 0.5x runs everything twice as slow in
+// lockstep and 1.5x speeds everything up. Because the whole sequence and the
+// tick scale by the same factor, the per-step sequence (longest path ~610ms at
+// 1x) fits inside one Play tick (700ms at 1x) at every speed.
 const PLAY_MS = 700
 const FAST_MS = 250
 
@@ -78,6 +85,7 @@ export default function CachingLayersViz() {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [fastRun, setFastRun] = useState(false)
+  const speed = useAnimationSpeed()
 
   const state = STATES[step]
   const done = step >= LAST_STEP
@@ -87,21 +95,31 @@ export default function CachingLayersViz() {
   const dotRef = useRef(null)
   const pulseRef = useRef(null)
 
+  // The animation effect below is keyed on step alone (re-running it on a speed
+  // change would replay the current step's motion), so it reads the multiplier
+  // through a ref kept in sync here.
+  const speedRef = useRef(1)
+  useEffect(() => {
+    speedRef.current = speed
+  }, [speed])
+
   // Play: auto-advance with setInterval (never a rAF/anime chain). The effect
   // body only sets and clears the interval; setState happens only in the tick.
+  // speed is a dependency, so changing it mid-Play swaps the interval for the
+  // new cadence: the pending tick is re-timed, no step is skipped or doubled.
   useEffect(() => {
     if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), PLAY_MS)
+    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), PLAY_MS / speed)
     return () => clearInterval(id)
-  }, [playing, done])
+  }, [playing, done, speed])
 
   // Run remaining: the same state path, just on a faster interval. Same house
   // pattern; pressing the button again or Reset clears fastRun and tears down.
   useEffect(() => {
     if (!fastRun || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), FAST_MS)
+    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), FAST_MS / speed)
     return () => clearInterval(id)
-  }, [fastRun, done])
+  }, [fastRun, done, speed])
 
   // Cosmetic per-step motion: the read dot falls from the stream strip to the
   // serving layer and settles with a small bounce; on a database serve a
@@ -112,6 +130,9 @@ export default function CachingLayersViz() {
   useEffect(() => {
     if (step === 0) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    // Every duration and delay is a baseline value divided by the current speed
+    // multiplier; nothing is timed outside this scaling.
+    const ms = (v) => v / speedRef.current
     const frame = STATES[step]
     const dot = dotRef.current
     if (dot) {
@@ -119,24 +140,24 @@ export default function CachingLayersViz() {
       const dy = serveY - STREAM_BOTTOM
       animate(dot, {
         translateY: [
-          { to: dy + 5, duration: 300, ease: 'inQuad' },
-          { to: dy - 3, duration: 90, ease: 'outQuad' },
-          { to: dy, duration: 70, ease: 'inOutQuad' },
+          { to: dy + 5, duration: ms(300), ease: 'inQuad' },
+          { to: dy - 3, duration: ms(90), ease: 'outQuad' },
+          { to: dy, duration: ms(70), ease: 'inOutQuad' },
         ],
         opacity: [
-          { to: 1, duration: 40 },
-          { to: 1, duration: 320 },
-          { to: 0, duration: 140, delay: 40 },
+          { to: 1, duration: ms(40) },
+          { to: 1, duration: ms(320) },
+          { to: 0, duration: ms(140), delay: ms(40) },
         ],
       })
     }
     const pulse = pulseRef.current
     if (pulse) {
       animate(pulse, {
-        translateY: [{ to: WIRE_Y.browser - DB_TOP, duration: 210, ease: 'outQuad', delay: 380 }],
+        translateY: [{ to: WIRE_Y.browser - DB_TOP, duration: ms(210), ease: 'outQuad', delay: ms(380) }],
         opacity: [
-          { to: 1, duration: 50, delay: 380 },
-          { to: 0, duration: 120 },
+          { to: 1, duration: ms(50), delay: ms(380) },
+          { to: 0, duration: ms(120) },
         ],
       })
     }
@@ -186,6 +207,7 @@ export default function CachingLayersViz() {
       eyebrow="Caching Layers"
       title="Reads fall through the stack"
       controls={controls}
+      speedControl
       status={statusFor(state)}
       readouts={readouts}
       tryThis="Step through the first few reads and watch everything fall to the database while the caches are cold. Then watch the same keys come back: each copy written on the way up lets the next read stop higher, and by the second half most reads never get past the browser or the CDN. Watch read 12, a one-off key: it pushes the hot key out of the CDN, and the very next read of that key has to fall all the way down to Redis to find it."

@@ -36,3 +36,28 @@ test('wires, beads, and database tint derive from STATES at every step', async (
     )
   }
 })
+
+test('speed chips: stepping stays one state per press at 0.5x, Reset keeps the selection', async ({ page }) => {
+  await page.goto('/topics/caching-layers/')
+  const aria = () => page.locator('svg[aria-label^="Caching layers"]').getAttribute('aria-label')
+
+  // The shared animation-speed chips render in the Figure bar; 1x (Normal) is
+  // the default.
+  const half = page.getByRole('button', { name: 'Half speed', exact: true })
+  await expect(page.getByRole('button', { name: 'Normal', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await half.click()
+  await expect(half).toHaveAttribute('aria-pressed', 'true')
+
+  // Speed is animation pacing only: manual Step still advances exactly one
+  // precomputed state per press.
+  const stepButton = page.getByRole('button', { name: 'Step', exact: true })
+  await stepButton.click()
+  expect(await aria()).toContain('read 1 of')
+  await stepButton.click()
+  expect(await aria()).toContain('read 2 of')
+
+  // Reset returns to step 0 but does not change the chosen speed.
+  await page.getByRole('button', { name: 'Reset', exact: true }).click()
+  expect(await aria()).toContain('read 0 of')
+  await expect(half).toHaveAttribute('aria-pressed', 'true')
+})

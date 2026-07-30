@@ -1,4 +1,5 @@
 import styles from './Figure.module.css'
+import AnimationSpeedControl from './AnimationSpeedControl'
 
 /**
  * Presentational chrome that every interaction plugs into.
@@ -27,6 +28,10 @@ import styles from './Figure.module.css'
  * status?   string                      one-line status shown beside controls
  * readouts? Array<{ label: string, value: string | number }>
  * tryThis?  string                      callout text in the left-border aside
+ * speedControl? boolean                 opt in to the shared animation-speed
+ *                                       chips (animationSpeed.js) in the bar;
+ *                                       static figures omit it and render
+ *                                       exactly as before
  */
 export default function Figure({
   eyebrow,
@@ -36,6 +41,7 @@ export default function Figure({
   status,
   readouts,
   tryThis,
+  speedControl,
 }) {
   return (
     <figure className={styles.figure}>
@@ -47,7 +53,7 @@ export default function Figure({
       {/* Render the bar when there are controls OR a status line. Some figures pass
           a status but no controls (e.g. overfitting, temperature, select-where-case);
           without this the status was silently dropped. */}
-      {((controls && controls.length > 0) || status) && (
+      {((controls && controls.length > 0) || status || speedControl) && (
         <div className={styles.controlsBar}>
           {controls &&
             controls.map((c) => (
@@ -63,6 +69,7 @@ export default function Figure({
                 {c.label}
               </button>
             ))}
+          {speedControl && <AnimationSpeedControl />}
           {status && <span className={styles.status}>{status}</span>}
         </div>
       )}

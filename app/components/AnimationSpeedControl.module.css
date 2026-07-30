@@ -1,0 +1,49 @@
+/* Compact animation-speed chips, same chrome vocabulary as FontSizeControl:
+   fixed sizes, mono label, quiet outline buttons with a filled active state.
+   Wider than the S/M/L squares because the labels are "1.5x" style. */
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.btn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--fade);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.btn:hover {
+  color: var(--ink);
+  border-color: var(--fade);
+}
+
+.active {
+  color: var(--paper);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.active:hover {
+  color: var(--paper);
+  border-color: var(--ink);
+}
