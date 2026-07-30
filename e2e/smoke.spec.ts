@@ -49,6 +49,7 @@ const TOPICS = [
   { slug: 'concurrency', name: 'Concurrency' },
   { slug: 'isolation-levels', name: 'Isolation Levels' },
   { slug: 'caching', name: 'Caching' },
+  { slug: 'caching-layers', name: 'Caching Layers' },
   { slug: 'percentiles-and-tail-latency', name: 'Percentiles and Tail Latency' },
   { slug: 'load-balancing', name: 'Load Balancing' },
   { slug: 'cap-theorem', name: 'CAP Theorem' },
