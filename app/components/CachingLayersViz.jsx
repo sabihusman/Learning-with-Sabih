@@ -124,7 +124,7 @@ export default function CachingLayersViz() {
       controls={controls}
       status={statusFor(state)}
       readouts={readouts}
-      tryThis="Step through the first few reads and watch everything fall to the database while the caches are cold. Then watch the same keys come back: each copy written on the way up lets the next read stop higher, and by the second half most reads never get past the browser or the CDN. Watch read 22, a one-off key: it evicts useful entries in every layer, and the very next read of the hot key has to fall all the way to Redis again."
+      tryThis="Step through the first few reads and watch everything fall to the database while the caches are cold. Then watch the same keys come back: each copy written on the way up lets the next read stop higher, and by the second half most reads never get past the browser or the CDN. Watch read 12, a one-off key: it pushes the hot key out of the CDN, and the very next read of that key has to fall all the way down to Redis to find it."
     >
       <div className={styles.scroll}>
       <svg

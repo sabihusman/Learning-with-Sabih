@@ -6,10 +6,18 @@ export const metadata = {
 
 # Caching layers
 
-{/* TODO: placeholder prose. The real prose is supplied in chat and applied to this branch before merge. Honesty constraints for the prose: the three cache layers are real LRU structures (capacities 2, 3, 4) run over a fixed hand-authored 24-read stream; every serve location, count, and eviction is computed, never scripted; the per-layer latency figures are authored labels for scale, not measured timing; caches start empty and warm up emergently as the stream plays; real stacks are vastly larger and vary per layer. */}
+The Caching topic showed one cache making decisions: what to keep, what to evict, what a miss costs. Real systems do not run one cache. They run several, stacked between the user and the database, and a read checks the closest one first.
 
-Placeholder: reads check the browser cache, then the CDN, then Redis, and only on a full miss does the database answer, writing a copy back into every layer on the way up.
+The stack in the figure has four layers. The browser cache lives on the device itself. A CDN holds copies at the network edge, close to users. Redis sits next to the application servers. And at the bottom is the database, the source of truth, which always has the answer and always pays the most to give it.
 
-## Watching the stack warm up
+A read falls through the stack. It checks the browser first, then the CDN, then Redis, and stops at the first layer that has a copy. Only a miss everywhere reaches the database. Then the answer climbs back up, and each layer it passes keeps a copy, so the same read next time stops earlier. This also happens on partial hits: when Redis serves a read, the layers above it get a copy on the way out too.
+
+That is why the figure starts cold. Every cache begins empty, so the first reads all fall straight through and the database answers everything. Watch the counters as the stream plays: the database works hard early, then the layers fill, and later reads bounce off the top of the stack. Nobody flips a switch from cold to warm. The caches earn it.
+
+Each layer is small, so eviction still bites. A one-off key can push a popular key out of a small upper layer, and the next read for the popular key has to fall deeper to find it again. Layered caching does not remove the eviction problem from the previous topic. It just gives a missed key more places to be caught before the database pays.
+
+Two honesty notes. The read stream is authored for teaching, with a hot key, some medium ones, and a few one-offs, but every outcome you see is computed by running real caches over that stream; nothing is scripted per read. The latency labels on the layers are illustration, typical orders of magnitude, not measurements.
+
+## Running reads through the stack
 
 <CachingLayersViz />
