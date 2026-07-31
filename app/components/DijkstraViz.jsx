@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import styles from './DijkstraViz.module.css'
 import { NODES, EDGES, NODE_IDS, nodePos, GRAPH_VIEWBOX } from './graphData'
 
@@ -88,11 +89,13 @@ export default function DijkstraViz() {
   // Auto-advance with setInterval (never requestAnimationFrame) so it keeps progressing
   // in a backgrounded tab. Keyed on `done` so it tears down at the end and on `total` so
   // it rebinds when the source changes; no setState in the effect body.
+  const speed = useAnimationSpeed()
+
   useEffect(() => {
     if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
+    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS / speed)
     return () => clearInterval(id)
-  }, [playing, done, total])
+  }, [playing, done, total, speed])
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -159,6 +162,7 @@ export default function DijkstraViz() {
       eyebrow="Graphs"
       title="Dijkstra's shortest path"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Pick a source, then step. Each step finalizes the nearest unfinalized node and relaxes its edges, lowering a neighbour's tentative distance only when a cheaper route is found. The finalized set grows from the source outward. When every node is finalized, click any node to trace its shortest path back to the source and read its total cost."

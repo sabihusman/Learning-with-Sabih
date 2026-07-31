@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import styles from './BinarySearchViz.module.css'
 
 // Fixed, deterministic sorted set. 15 cells so the worst case is exactly
@@ -61,11 +62,13 @@ export default function BinarySearchViz() {
   // Auto-advance: setInterval, never requestAnimationFrame, so it keeps progressing in
   // a backgrounded tab. Keyed on search.status so it tears the interval down the moment
   // the search finishes (status leaves 'searching'); no setState in the effect body.
+  const speed = useAnimationSpeed()
+
   useEffect(() => {
     if (!playing || !searching) return undefined
-    const id = setInterval(() => setSearch((s) => stepSearch(s, target)), PLAY_MS)
+    const id = setInterval(() => setSearch((s) => stepSearch(s, target)), PLAY_MS / speed)
     return () => clearInterval(id)
-  }, [playing, searching, target])
+  }, [playing, searching, target, speed])
 
   const onStep = () => setSearch((s) => stepSearch(s, target))
   const reset = () => {
@@ -111,6 +114,7 @@ export default function BinarySearchViz() {
       eyebrow="Searching"
       title="Binary search"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Click a cell to pick a target, then Step. Binary search checks the middle of the active range and throws away the half that cannot contain the target, so the search space halves every comparison. Watch lo and hi close in while the eliminated cells grey out. Compare the two readouts: binary search finishes in a handful of comparisons where a linear scan would check far more. Try the missing value to see the search end in not-found."

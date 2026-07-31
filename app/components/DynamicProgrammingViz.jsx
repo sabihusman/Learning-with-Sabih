@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import styles from './DynamicProgrammingViz.module.css'
 
 const MIN_N = 4
@@ -96,11 +97,13 @@ export default function DynamicProgrammingViz() {
   // Auto-advance with setInterval (never requestAnimationFrame) so it keeps progressing
   // in a backgrounded tab. Keyed on `done` so it tears down at the end and on the tree
   // identity so it rebinds when n or the mode changes; no setState in the effect body.
+  const speed = useAnimationSpeed()
+
   useEffect(() => {
     if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
+    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS / speed)
     return () => clearInterval(id)
-  }, [playing, done, total])
+  }, [playing, done, total, speed])
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -146,6 +149,7 @@ export default function DynamicProgrammingViz() {
       eyebrow="Optimization"
       title="Dynamic programming"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Compute the same Fibonacci number both ways. Naive recursion rebuilds the same subproblems again and again, so equal-coloured nodes repeat all over the tree. Switch to Memoized: each subproblem is computed once and every later appearance becomes a cache hit, not a whole subtree. Compare the two call counts, the lean tree does the same job with a fraction of the work."

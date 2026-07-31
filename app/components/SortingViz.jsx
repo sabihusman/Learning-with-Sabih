@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import styles from './SortingViz.module.css'
 
 // Fixed, deterministic shuffled start: a permutation of 1..14, hardcoded (never
@@ -148,11 +149,13 @@ export default function SortingViz() {
   // in a backgrounded tab. Keyed on `done` so the interval tears down when the sort
   // finishes and on `last` so it rebinds when the algorithm changes; no setState in the
   // effect body, only interval cleanup. Any bar glide is a CSS transition, not here.
+  const speed = useAnimationSpeed()
+
   useEffect(() => {
     if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(last, s + 1)), PLAY_MS)
+    const id = setInterval(() => setStep((s) => Math.min(last, s + 1)), PLAY_MS / speed)
     return () => clearInterval(id)
-  }, [playing, done, last])
+  }, [playing, done, last, speed])
 
   // snapshot the current run into "last run" memory so two algorithms can be compared
   const snapshot = () => {
@@ -193,6 +196,7 @@ export default function SortingViz() {
       eyebrow="Sorting"
       title="Sorting"
       controls={controls}
+      speedControl
       status={f.note}
       readouts={readouts}
       tryThis="Pick an algorithm and step or play through it. Watch the compared bars light up and the array settle into order. The teaching move: run Bubble sort to the end and note its comparisons, then switch to Merge sort (same starting bars) and compare. The slow sort does far more comparisons than the fast one on identical input."

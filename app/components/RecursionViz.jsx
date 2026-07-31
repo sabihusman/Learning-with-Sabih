@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import CallStackPanel from './CallStackPanel'
 import styles from './RecursionViz.module.css'
 
@@ -66,11 +67,13 @@ export default function RecursionViz() {
   // in a backgrounded tab. Keyed on `done` so the interval tears down the moment the
   // solve finishes, and on `disks` so it rebinds to the new total; no setState in the
   // effect body, only interval cleanup.
+  const speed = useAnimationSpeed()
+
   useEffect(() => {
     if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
+    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS / speed)
     return () => clearInterval(id)
-  }, [playing, done, total])
+  }, [playing, done, total, speed])
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -119,6 +122,7 @@ export default function RecursionViz() {
       eyebrow="Recursion"
       title="Recursion and the call stack"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Step through the solve. Each move is one disk; watch the call stack on the right grow as the recursion descends to move a small disk, then shrink as those calls return so a larger disk can move. The deepest the stack ever gets equals the disk count, and the total number of moves is exactly two to the power of the disks, minus one."
