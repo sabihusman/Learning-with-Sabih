@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './DijkstraViz.module.css'
 import { NODES, EDGES, NODE_IDS, nodePos, GRAPH_VIEWBOX } from './graphData'
 
@@ -86,16 +86,10 @@ export default function DijkstraViz() {
   const done = step >= total
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never requestAnimationFrame) so it keeps progressing
-  // in a backgrounded tab. Keyed on `done` so it tears down at the end and on `total` so
-  // it rebinds when the source changes; no setState in the effect body.
-  const speed = useAnimationSpeed()
-
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS / speed)
-    return () => clearInterval(id)
-  }, [playing, done, total, speed])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier. The tick closure always sees the current total.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(total, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {

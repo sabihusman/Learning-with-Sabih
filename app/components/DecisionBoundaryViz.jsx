@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useReducer, useRef } from 'react'
+import { useReducer, useRef } from 'react'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './DecisionBoundaryViz.module.css'
 import {
   INITIAL_POINTS,
@@ -62,19 +62,11 @@ export default function DecisionBoundaryViz() {
   const [state, dispatch] = useReducer(reducer, initialState)
   const svgRef = useRef(null)
   const draggingIdRef = useRef(null)
-  const speed = useAnimationSpeed()
-
-  // Training cadence: a real setInterval, not rAF. Each tick is a fixed
-  // batch of gradient steps; the run always stops after exactly TOTAL_ITERS
-  // steps. No synchronous setState in the effect body: the interval callback
-  // is the only place that dispatches. The tick length divides by the shared
-  // animation-speed multiplier; changing speed mid-run swaps the interval for
-  // the new cadence with no tick skipped or doubled.
-  useEffect(() => {
-    if (!state.running) return undefined
-    const id = window.setInterval(() => dispatch({ type: 'TICK' }), TICK_MS / speed)
-    return () => window.clearInterval(id)
-  }, [state.running, speed])
+  // Training cadence through the shared paced-interval hook: a real setInterval,
+  // not rAF. Each tick is a fixed batch of gradient steps; the run always stops
+  // after exactly TOTAL_ITERS steps, and the shared animation-speed multiplier
+  // paces the ticks (a mid-run change re-times the next tick).
+  usePacedInterval(state.running, TICK_MS, () => dispatch({ type: 'TICK' }))
 
   const pointerToWorld = (clientX, clientY) => {
     const rect = svgRef.current.getBoundingClientRect()
