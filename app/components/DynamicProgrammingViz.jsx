@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './DynamicProgrammingViz.module.css'
 
 const MIN_N = 4
@@ -93,14 +94,10 @@ export default function DynamicProgrammingViz() {
   const done = step >= total
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never requestAnimationFrame) so it keeps progressing
-  // in a backgrounded tab. Keyed on `done` so it tears down at the end and on the tree
-  // identity so it rebinds when n or the mode changes; no setState in the effect body.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, total])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier. The tick closure always sees the current total.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(total, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -146,6 +143,7 @@ export default function DynamicProgrammingViz() {
       eyebrow="Optimization"
       title="Dynamic programming"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Compute the same Fibonacci number both ways. Naive recursion rebuilds the same subproblems again and again, so equal-coloured nodes repeat all over the tree. Switch to Memoized: each subproblem is computed once and every later appearance becomes a cache hit, not a whole subtree. Compare the two call counts, the lean tree does the same job with a fraction of the work."

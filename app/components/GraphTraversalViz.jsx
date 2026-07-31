@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './GraphTraversalViz.module.css'
 import { NODES, EDGES, nodePos, buildAdjacency, GRAPH_VIEWBOX } from './graphData'
 
@@ -49,14 +50,10 @@ export default function GraphTraversalViz() {
   const done = step >= total
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never requestAnimationFrame) so it keeps progressing
-  // in a backgrounded tab. Keyed on `done` so it tears down at the end and on `total` so
-  // it rebinds when the algorithm or start node changes; no setState in the effect body.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, total])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier. The tick closure always sees the current total.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(total, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -113,6 +110,7 @@ export default function GraphTraversalViz() {
       eyebrow="Graphs"
       title="Graph traversal"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Pick BFS or DFS, click a node to start, and step. Watch the side panel: BFS drives the visits with a queue (first in, first out), DFS with a stack (last in, first out). That single choice is the whole difference. Run both from the same start and compare the visit-order numbers filling the nodes: BFS fans out level by level, DFS dives down one path before backtracking."

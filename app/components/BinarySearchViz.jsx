@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './BinarySearchViz.module.css'
 
 // Fixed, deterministic sorted set. 15 cells so the worst case is exactly
@@ -58,14 +59,11 @@ export default function BinarySearchViz() {
   const searching = search.status === 'searching'
   const isPlaying = playing && searching
 
-  // Auto-advance: setInterval, never requestAnimationFrame, so it keeps progressing in
-  // a backgrounded tab. Keyed on search.status so it tears the interval down the moment
-  // the search finishes (status leaves 'searching'); no setState in the effect body.
-  useEffect(() => {
-    if (!playing || !searching) return undefined
-    const id = setInterval(() => setSearch((s) => stepSearch(s, target)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, searching, target])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing while the search is live, paced by
+  // the shared animation-speed multiplier. The tick closure always sees the
+  // current target.
+  usePacedInterval(playing && searching, PLAY_MS, () => setSearch((s) => stepSearch(s, target)))
 
   const onStep = () => setSearch((s) => stepSearch(s, target))
   const reset = () => {
@@ -111,6 +109,7 @@ export default function BinarySearchViz() {
       eyebrow="Searching"
       title="Binary search"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Click a cell to pick a target, then Step. Binary search checks the middle of the active range and throws away the half that cannot contain the target, so the search space halves every comparison. Watch lo and hi close in while the eliminated cells grey out. Compare the two readouts: binary search finishes in a handful of comparisons where a linear scan would check far more. Try the missing value to see the search end in not-found."

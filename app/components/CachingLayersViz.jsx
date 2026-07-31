@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
 import { useAnimationSpeed } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import {
   LAYERS,
   DB_ID,
@@ -103,23 +104,11 @@ export default function CachingLayersViz() {
     speedRef.current = speed
   }, [speed])
 
-  // Play: auto-advance with setInterval (never a rAF/anime chain). The effect
-  // body only sets and clears the interval; setState happens only in the tick.
-  // speed is a dependency, so changing it mid-Play swaps the interval for the
-  // new cadence: the pending tick is re-timed, no step is skipped or doubled.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), PLAY_MS / speed)
-    return () => clearInterval(id)
-  }, [playing, done, speed])
-
-  // Run remaining: the same state path, just on a faster interval. Same house
-  // pattern; pressing the button again or Reset clears fastRun and tears down.
-  useEffect(() => {
-    if (!fastRun || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), FAST_MS / speed)
-    return () => clearInterval(id)
-  }, [fastRun, done, speed])
+  // Play and Run remaining both advance through the shared paced-interval hook
+  // (setInterval, never a rAF/anime chain), the same state path at two
+  // cadences; a mid-Play speed change re-times the next tick.
+  usePacedInterval(isPlaying, PLAY_MS, () => setStep((s) => Math.min(LAST_STEP, s + 1)))
+  usePacedInterval(isFastRunning, FAST_MS, () => setStep((s) => Math.min(LAST_STEP, s + 1)))
 
   // Cosmetic per-step motion: the read dot falls from the stream strip to the
   // serving layer and settles with a small bounce; on a database serve a

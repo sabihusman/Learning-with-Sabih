@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './LinkedListArrayViz.module.css'
 
 // One fixed, deterministic value set held by BOTH structures, so the array and the
@@ -136,14 +137,10 @@ export default function LinkedListArrayViz() {
   const aDone = step >= aStates.length - 1
   const lDone = step >= lStates.length - 1
 
-  // Auto-advance with setInterval (never requestAnimationFrame) so it keeps progressing
-  // in a backgrounded tab. Keyed on `done` so it tears down at the end and on `total`
-  // so it rebinds when the operation changes; no setState in the effect body.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total - 1, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, total])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier. The tick closure always sees the current total.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(total - 1, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(total - 1, s + 1))
   const reset = () => {
@@ -192,6 +189,7 @@ export default function LinkedListArrayViz() {
       eyebrow="Data structures"
       title="Linked list vs array"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Run the same operation on both structures and read the costs. Insert at front: the array shifts every element while the list just repoints the head. Access by index: the array jumps straight to the cell while the list walks node by node. Neither structure wins everywhere, that is the whole point: pick the one whose cheap operations match what you do most."

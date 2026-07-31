@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './BinarySearchTreeViz.module.css'
 
 const BALANCED = [4, 2, 6, 1, 3, 5, 7] // insert order that fills both sides evenly -> short tree
@@ -91,14 +92,10 @@ export default function BinarySearchTreeViz() {
 
   const walking = !!anim && anim.step < anim.path.length - 1
 
-  // Auto-advance the walk with setInterval (never requestAnimationFrame) so it keeps
-  // progressing in a backgrounded tab. Keyed on `walking` so it tears down when the
-  // walk reaches its last node; no setState in the effect body, only interval cleanup.
-  useEffect(() => {
-    if (!walking) return undefined
-    const id = setInterval(() => setAnim((a) => (a && a.step < a.path.length - 1 ? { ...a, step: a.step + 1 } : a)), WALK_MS)
-    return () => clearInterval(id)
-  }, [walking])
+  // Auto-advance the walk through the shared paced-interval hook (setInterval,
+  // never requestAnimationFrame): gated on walking, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(walking, WALK_MS, () => setAnim((a) => (a && a.step < a.path.length - 1 ? { ...a, step: a.step + 1 } : a)))
 
   const { pos, edges } = useMemo(() => layoutTree(tree), [tree])
   const height = heightOf(tree)
@@ -179,6 +176,7 @@ export default function BinarySearchTreeViz() {
       eyebrow="Trees"
       title="Binary search trees"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Load the balanced preset, then the degenerate one: both hold the same seven values, but the sorted insert order collapses the tree into a straight line. Search a value in each and compare the comparison counts. A short tree finds a value in a few steps; the collapsed line has to walk almost every node, the worst case that ties back to Big-O."
