@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer, useRef } from 'react'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import styles from './DecisionBoundaryViz.module.css'
 import {
   INITIAL_POINTS,
@@ -61,16 +62,19 @@ export default function DecisionBoundaryViz() {
   const [state, dispatch] = useReducer(reducer, initialState)
   const svgRef = useRef(null)
   const draggingIdRef = useRef(null)
+  const speed = useAnimationSpeed()
 
   // Training cadence: a real setInterval, not rAF. Each tick is a fixed
   // batch of gradient steps; the run always stops after exactly TOTAL_ITERS
   // steps. No synchronous setState in the effect body: the interval callback
-  // is the only place that dispatches.
+  // is the only place that dispatches. The tick length divides by the shared
+  // animation-speed multiplier; changing speed mid-run swaps the interval for
+  // the new cadence with no tick skipped or doubled.
   useEffect(() => {
     if (!state.running) return undefined
-    const id = window.setInterval(() => dispatch({ type: 'TICK' }), TICK_MS)
+    const id = window.setInterval(() => dispatch({ type: 'TICK' }), TICK_MS / speed)
     return () => window.clearInterval(id)
-  }, [state.running])
+  }, [state.running, speed])
 
   const pointerToWorld = (clientX, clientY) => {
     const rect = svgRef.current.getBoundingClientRect()
@@ -154,6 +158,7 @@ export default function DecisionBoundaryViz() {
       eyebrow="Classification"
       title="The line that learning draws"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Drag one point deep into the other class's territory and watch the boundary chase it. The line rotates to compromise, but if the point can no longer be separated by any straight line, the misclassified count stops at 1 and stays there, because a straight line cannot always be accommodated. That is a feature, not a failure: the Overfitting topic is about what happens when a model refuses to make that compromise."

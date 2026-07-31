@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import { DOMAIN_NAME, DATASET, PROMPTS } from './fineTuningData'
 import styles from './FineTuningViz.module.css'
 
@@ -22,6 +23,16 @@ export default function FineTuningViz() {
   const answerRefs = useRef({})
   const tunedChipRef = useRef(null)
 
+  // Shared animation-speed multiplier. The training interval is created in the
+  // run() handler (not an effect), so the multiplier is captured when a run
+  // starts; the flourish effects read it through a ref so a speed change never
+  // replays them (same pattern as CachingLayersViz).
+  const speed = useAnimationSpeed()
+  const speedRef = useRef(1)
+  useEffect(() => {
+    speedRef.current = speed
+  }, [speed])
+
   useEffect(() => () => clearInterval(timerRef.current), [])
 
   // Fade each domain answer in as it specializes. The answer text is already swapped
@@ -32,14 +43,14 @@ export default function FineTuningViz() {
       if (!isRowTuned(p, phase, progress) || flippedRef.current.has(p.id)) return
       flippedRef.current.add(p.id)
       const node = answerRefs.current[p.id]
-      if (node) animate(node, { opacity: [0.15, 1], translateX: [-10, 0], duration: 420, ease: 'outQuad' })
+      if (node) animate(node, { opacity: [0.15, 1], translateX: [-10, 0], duration: 420 / speedRef.current, ease: 'outQuad' })
     })
   }, [phase, progress])
 
   // Pop the "fine-tuned" chip when training completes.
   useEffect(() => {
     if (phase === 'tuned' && tunedChipRef.current) {
-      animate(tunedChipRef.current, { scale: [0.6, 1], duration: 380, ease: 'outBack' })
+      animate(tunedChipRef.current, { scale: [0.6, 1], duration: 380 / speedRef.current, ease: 'outBack' })
     }
   }, [phase])
 
@@ -57,7 +68,7 @@ export default function FineTuningViz() {
         }
         return next
       })
-    }, TICK_MS)
+    }, TICK_MS / speed)
   }
 
   const reset = () => {
@@ -94,6 +105,7 @@ export default function FineTuningViz() {
       eyebrow="Fine-tuning"
       title="Specializing a general model on domain data"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Press Fine-tune on domain data. A general base model is trained a little further on a small labeled set of support examples, and its answers to the domain prompts shift from generic to specialized, one at a time. Notice the two general-knowledge prompts: their answers do not change, because fine-tuning specializes behavior without erasing what the base model already knows. Reset to compare before and after. The answers here are hand-authored to show the behavior; no real model is being trained."

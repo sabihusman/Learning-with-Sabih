@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
 import { COMPANY, KB, KB_BY_ID, QUERIES, TOP_K, ranked, retrievedIds } from './ragData'
 import styles from './RagViz.module.css'
 
@@ -44,12 +45,20 @@ export default function RagViz() {
   const rankedChunks = ranked(query)
   const contextRef = useRef(null)
 
+  // Shared animation-speed multiplier, read through a ref so a speed change
+  // never replays the current flourish (same pattern as CachingLayersViz).
+  const speed = useAnimationSpeed()
+  const speedRef = useRef(1)
+  useEffect(() => {
+    speedRef.current = speed
+  }, [speed])
+
   // anime: when the prompt is assembled (augment), slide the retrieved context in, so
   // "the chunks are inserted into the prompt" reads as a real move. Reveal is
   // state-driven; this only decorates, so it is fine if rAF is throttled.
   useEffect(() => {
     if (stage >= 2 && contextRef.current) {
-      animate(contextRef.current, { opacity: [0.2, 1], translateY: [-8, 0], duration: 420, ease: 'outQuad' })
+      animate(contextRef.current, { opacity: [0.2, 1], translateY: [-8, 0], duration: 420 / speedRef.current, ease: 'outQuad' })
     }
   }, [stage, queryId])
 
@@ -83,6 +92,7 @@ export default function RagViz() {
       eyebrow="Retrieval"
       title="Retrieval-augmented generation, step by step"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Pick a question about a fictional company, then step through the pipeline. Retrieve embeds the question and scores every chunk by similarity, lighting up the most relevant ones. Augment drops those chunks into the prompt as context. Generate answers from that context. Compare the two answers at the end: the bare model answers from memory and can be confidently wrong, while the RAG answer is grounded in the retrieved text. Try the voice-control question, whose answer is a made-up product detail no model could have memorized. The scores and answers here are hand-authored to show the behavior; the retrieve, augment, generate pipeline is the real architecture."
