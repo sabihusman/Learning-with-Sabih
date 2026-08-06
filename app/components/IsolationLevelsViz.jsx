@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './IsolationLevelsViz.module.css'
 import { LEVELS, PHENOMENA, buildTimeline } from './isolationData'
 
@@ -53,13 +54,10 @@ export default function IsolationLevelsViz() {
   const f = step > 0 ? frames[step - 1] : null
   const isPlaying = playing && !done
 
-  // Auto-advance. Keyed on done/total so it tears down at the end and rebinds when the
-  // level or phenomenon swaps the timeline. No setState in the effect body.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, total])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(total, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -107,6 +105,7 @@ export default function IsolationLevelsViz() {
       eyebrow="Transactions"
       title="Isolation levels: what each one lets through"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Pick an isolation level and a phenomenon, then step through the two-transaction timeline to see whether PostgreSQL lets the phenomenon happen or prevents it. Try Non-repeatable read at Read Committed (it occurs), then raise the level to Repeatable Read (prevented). Two cells are marked PG stricter here: Dirty read at Read Uncommitted, and Phantom read at Repeatable Read. There the SQL standard allows the phenomenon but PostgreSQL prevents it anyway. Serialization anomaly is only prevented at Serializable, where PostgreSQL aborts one transaction rather than let the rule break."

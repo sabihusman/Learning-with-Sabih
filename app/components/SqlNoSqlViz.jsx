@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import {
   USERS,
   PLANS,
@@ -65,13 +66,10 @@ export default function SqlNoSqlViz() {
   const done = step >= lastStep
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never a rAF/anime chain); tears down when the trace
-  // finishes. The effect body only sets/clears the interval, never setState directly.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(lastStep, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, lastStep])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(lastStep, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(lastStep, s + 1))
   const reset = () => {
@@ -203,6 +201,7 @@ export default function SqlNoSqlViz() {
       eyebrow="SQL vs NoSQL modeling"
       title="Same data, two shapes"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Run the first query, then the second, and watch the winner flip. Fetching everything about one user is cheaper in the document shape, because the data that is read together is stored together. Changing a shared fact is cheaper in the relational shape, because it is stored once instead of copied into every document. Neither shape is better in general; the right one depends on how you read and write the data."

@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import {
   actionsFor,
   initialState,
@@ -103,22 +105,24 @@ export default function DeadlockViz() {
   const deadlocked = isDeadlocked(state)
   const idle = state.threads.A.pc === 0 && state.threads.B.pc === 0
 
-  // Auto-advance with setInterval (never requestAnimationFrame), so a backgrounded tab
-  // still catches up on resume. Keyed on done/deadlocked/mode so it tears down the
-  // instant either terminal condition is reached and rebinds when the mode toggle
-  // resets the run; each tick reads fresh state through the functional setState
-  // updater. No setState in the effect body itself.
+  // Shared animation-speed multiplier, read by the flourish effect through a
+  // ref so a speed change never replays the current flourish (batch-1 pattern).
+  const speed = useAnimationSpeed()
+  const speedRef = useRef(1)
   useEffect(() => {
-    if (!playing || done || deadlocked) return undefined
-    const id = setInterval(() => {
-      setRun((prev) => {
-        if (isDone(prev.state) || isDeadlocked(prev.state)) return prev
-        const threadId = AUTO_PATTERN[prev.tick % AUTO_PATTERN.length]
-        return { state: applyStep(prev.state, threadId), tick: prev.tick + 1 }
-      })
-    }, PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, deadlocked, mode])
+    speedRef.current = speed
+  }, [speed])
+
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done or deadlock, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done && !deadlocked, PLAY_MS, () =>
+    setRun((prev) => {
+      if (isDone(prev.state) || isDeadlocked(prev.state)) return prev
+      const threadId = AUTO_PATTERN[prev.tick % AUTO_PATTERN.length]
+      return { state: applyStep(prev.state, threadId), tick: prev.tick + 1 }
+    }),
+  )
 
   // Cosmetic flourish only: pulse the cycle edges once when a deadlock first appears.
   // Pure animation, no state change; the cycle itself is drawn from state above.
@@ -128,7 +132,7 @@ export default function DeadlockViz() {
     if (edges.length === 0) return
     animate(edges, {
       opacity: [1, 0.3, 1],
-      duration: 550,
+      duration: 550 / speedRef.current,
       ease: 'inOutQuad',
     })
   }, [deadlocked])
@@ -190,6 +194,7 @@ export default function DeadlockViz() {
       eyebrow="Deadlock"
       title="Two threads, two locks, a wait-for graph"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="In opposite-order mode, step A once, then B once, then keep stepping, and watch the wait-for graph close into a loop with a deadlock label. Notice both threads freeze and no step is allowed. Now switch to same-order mode and try the same thing. One thread waits on a single lock, the other finishes, and the loop never closes."

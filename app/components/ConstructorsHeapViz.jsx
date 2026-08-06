@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeed } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import {
   CODE_LINES,
   STATES,
@@ -45,14 +47,18 @@ export default function ConstructorsHeapViz() {
 
   const svgRef = useRef(null)
 
-  // Auto-advance with setInterval (never a rAF/anime chain) so play keeps progressing
-  // in a backgrounded tab. Keyed on `done` so it tears down the instant the trace
-  // finishes; the effect body only sets/clears the interval, no direct setState.
+  // Shared animation-speed multiplier, read by the flourish effect through a
+  // ref so a speed change never replays the current flourish (batch-1 pattern).
+  const speed = useAnimationSpeed()
+  const speedRef = useRef(1)
   useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+    speedRef.current = speed
+  }, [speed])
+
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(LAST_STEP, s + 1)))
 
   // Cosmetic flourish only: when the field mutates on the final step, pulse both
   // arrows to make "same object, two names" land. Pure animation, no state change.
@@ -62,7 +68,7 @@ export default function ConstructorsHeapViz() {
     if (nodes.length === 0) return
     animate(nodes, {
       opacity: [1, 0.35, 1],
-      duration: 620,
+      duration: 620 / speedRef.current,
       ease: 'inOutQuad',
     })
   }, [step, state.highlight])
@@ -93,6 +99,7 @@ export default function ConstructorsHeapViz() {
       eyebrow="Constructors"
       title="One object, two names"
       controls={controls}
+      speedControl
       status={state.status}
       readouts={readouts}
       tryThis="Step to the end. Why did a.name change when the code never touched a? Because b = a copied the reference, not the object: both variables name the same box on the heap, so a change through either is a change to the one object."

@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import {
   flatRows,
   oneNFRows,
@@ -84,13 +85,10 @@ export default function NormalizationViz() {
   const done = step >= LAST_STEP
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never a rAF/anime chain); tears down when done. The
-  // effect body only sets/clears the interval, never setState directly.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(LAST_STEP, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(LAST_STEP, s + 1))
   const reset = () => {
@@ -261,6 +259,7 @@ export default function NormalizationViz() {
       eyebrow="Normalization"
       title="One table becomes three"
       controls={controls}
+      speedControl
       status={STATUS[step]}
       readouts={readouts}
       tryThis="Run the price update in step 3, then again in step 5, and compare what can go wrong. In the wide table the pro price is copied onto every pro row, so changing it in one place leaves the other copies stale and the data contradicts itself. After the split, plan_price lives once in the plans table, so the same update touches a single cell and there is no copy left to disagree. That is what normalizing buys you: each fact in exactly one place."

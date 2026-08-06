@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './AtomicityViz.module.css'
 
 // Fixed starting numbers. Everything below is real integer arithmetic on these, so a
@@ -138,14 +139,10 @@ export default function AtomicityViz() {
   const f = step > 0 ? frames[step - 1] : null
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never requestAnimationFrame) so the sequence keeps
-  // progressing in a backgrounded tab. Keyed on `done`/`total` so it tears down at the
-  // end and rebinds when the fail toggle swaps the script. No setState in the body.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, total])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(total, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -203,6 +200,7 @@ export default function AtomicityViz() {
       eyebrow="Transactions"
       title="A transfer is all-or-nothing"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Run it with fail after debit off: step through BEGIN, the debit, the credit, and COMMIT. A drops to 60, B rises to 40, and the total briefly reads 60 between the debit and the credit before COMMIT settles it back to 100. Now turn fail after debit on and step again. The debit runs, then the failure hits before the credit, so the total briefly reads 60, money that has left A and reached no one. Watch ROLLBACK undo the debit and restore A to 100, with the total back to 100."
