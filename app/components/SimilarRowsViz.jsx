@@ -23,6 +23,9 @@ const STAGES = [
   { title: 'Ranked neighbours', blurb: 'Tokens that share rows get PPMI-weighted vectors; a row is the mean of its token vectors; neighbours rank by cosine.' },
 ]
 
+// Display order for token chips: plain code-unit comparison, locale-independent
+const byToken = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
+
 const COL_LABELS = {
   contract: 'contract type',
   payment: 'payment method',
@@ -173,7 +176,7 @@ export default function SimilarRowsViz() {
             <li key={r.id} className={styles.bagRow}>
               {rowButton(i, r.id)}
               <span className={styles.bagTokens}>
-                {[...model.bags[i]].sort().map((t) => (
+                {[...model.bags[i]].sort(byToken).map((t) => (
                   <span key={t} className={styles.token}>
                     {t}
                   </span>
@@ -191,7 +194,7 @@ export default function SimilarRowsViz() {
             <span className={styles.anchorLabel}>neighbours of</span>
             {rowButton(selected, ROWS[selected].id)}
             <span className={styles.bagTokens}>
-              {[...model.bags[selected]].sort().map((t) => (
+              {[...model.bags[selected]].sort(byToken).map((t) => (
                 <span key={t} className={styles.token}>
                   {t}
                 </span>
@@ -208,7 +211,7 @@ export default function SimilarRowsViz() {
                 </span>
                 <span className={styles.cosNum}>{e.cos.toFixed(3)}</span>
                 <span className={styles.bagTokens}>
-                  {[...model.bags[e.j]].sort().map((t) => (
+                  {[...model.bags[e.j]].sort(byToken).map((t) => (
                     <span key={t} className={`${styles.token} ${model.bags[selected].includes(t) ? styles.tokenShared : ''}`}>
                       {t}
                     </span>
