@@ -1,0 +1,270 @@
+/* "From a churn table to ranked similar rows": a five-stage pipeline over one
+   authored 16-row table. HTML table and lists rather than SVG (same family as
+   the RAG and SQL figures); toggle pills follow the site convention. Static on
+   change: no timers, no animation. */
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.controlLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+  white-space: nowrap;
+}
+
+.toggle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 999px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background: #ece9e1;
+}
+
+.toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.toggleOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.toggleOn:hover {
+  background: #1a1a1a;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 430px;
+  border-collapse: collapse;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+}
+
+.table th {
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+  border-bottom: 1px solid #d8d4cc;
+  padding: 4px 8px 4px 4px;
+  vertical-align: top;
+}
+
+.kind {
+  display: block;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 9px;
+  color: #1f6f5c;
+  margin-top: 1px;
+}
+
+.kindExcluded {
+  color: #c0392b;
+}
+
+.table td {
+  border-bottom: 1px solid #eceae2;
+  padding: 3px 8px 3px 4px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.colExcluded {
+  opacity: 0.38;
+}
+
+.trSelected td {
+  background: #f6efe7;
+}
+
+.rowBtn {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid #d8d4cc;
+  border-radius: 5px;
+  padding: 1px 7px;
+  cursor: pointer;
+}
+
+.rowBtn:hover {
+  background: #ece9e1;
+}
+
+.rowSelected {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.rowSelected:hover {
+  background: #1a1a1a;
+}
+
+.token {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 10.5px;
+  border: 1px solid #d8d4cc;
+  border-radius: 999px;
+  padding: 1px 8px;
+  background: #ffffff;
+  white-space: nowrap;
+}
+
+.tokenShared {
+  background: #e6f2ec;
+  border-color: #1f6f5c;
+}
+
+.rawValue {
+  color: var(--fade);
+  font-size: 9px;
+}
+
+.binLegend {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: #faf9f6;
+  border: 1px solid #e2e0d8;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 10px 0 0;
+}
+
+.bags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.bagRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bagTokens {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ranking {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.anchorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d8d4cc;
+  margin-bottom: 8px;
+}
+
+.anchorLabel {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.neighbours {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.neighbourRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  opacity: 0.62;
+}
+
+.topThree {
+  opacity: 1;
+}
+
+.rank {
+  width: 16px;
+  text-align: right;
+  font-size: 10px;
+  color: var(--fade);
+}
+
+.cosBarWrap {
+  width: 90px;
+  height: 7px;
+  border-radius: 4px;
+  background: #eceae2;
+  overflow: hidden;
+  flex: none;
+}
+
+.cosBar {
+  display: block;
+  height: 100%;
+  background: #1f6f5c;
+}
+
+.cosNum {
+  font-size: 10.5px;
+  width: 40px;
+  color: var(--ink);
+}
+
+.legendNote {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 9.5px;
+  color: var(--fade);
+  margin: 8px 0 0;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}

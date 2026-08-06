@@ -1,0 +1,15 @@
+import SimilarRowsViz from '@/app/components/SimilarRowsViz'
+
+export const metadata = {
+  title: 'Finding similar rows - Learning with Sabih',
+}
+
+# Finding similar rows
+
+{/* TODO: placeholder prose. The real prose is supplied in chat after the owner reviews the reported rankings, and lands on this branch before merge. Honesty constraints for the prose: the 16-row churn table is authored and frozen; the identifier column is excluded from the model; quantile bins, vocabulary, co-occurrence, PPMI (log base 2), row vectors (mean of token PPMI rows), and every cosine are computed live; clusters are never labelled in the data; real systems train a neural network to learn such vectors, and co-occurrence with PPMI is a simplified stand-in reaching a similar shape of result by a cruder route; no accuracy or model-quality claim. */}
+
+Placeholder: a small customer table is tokenized, rows become bags of tokens, and co-occurrence turns each row into a vector, so the database can rank which customers look alike.
+
+## From table to ranked neighbours
+
+<SimilarRowsViz />
