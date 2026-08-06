@@ -25,6 +25,7 @@ const TOPICS = [
   { slug: 'temperature', name: 'Temperature and Sampling' },
   { slug: 'beam-search', name: 'Beam Search vs Greedy Decoding' },
   { slug: 'rag', name: 'RAG (Retrieval-Augmented Generation)' },
+  { slug: 'quantization', name: 'Quantization' },
   { slug: 'big-o', name: 'Big-O and Time Complexity' },
   { slug: 'binary-search', name: 'Binary Search' },
   { slug: 'recursion', name: 'Recursion and the Call Stack' },

@@ -1,0 +1,71 @@
+/* "Weights snapping to a quantization grid": ~120 authored weights on a value
+   axis in four index-group bands, a real symmetric quantizer's grid over them,
+   and a red connector per weight whose length IS the rounding error. Static on
+   change: no timers, no animation. Toggle pills follow the site convention
+   (AbstractInterfaceViz/FunnelViz control rows). */
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.controlLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+  white-space: nowrap;
+}
+
+.toggle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  background: #f4f2ec;
+  border: 1px solid #d8d4cc;
+  border-radius: 999px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background: #ece9e1;
+}
+
+.toggleOn {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #f7f5f0;
+}
+
+.toggleOn:hover {
+  background: #1a1a1a;
+}
+
+/* Dense vertical figure; keep a min-width floor for the tiny grid lines and
+   let the wrapper scroll on a phone instead of shrinking below legibility. */
+.scroll {
+  overflow-x: auto;
+}
+
+.svg {
+  width: 100%;
+  min-width: 400px;
+  max-width: 600px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9b9892;
+  margin: 14px 0 0;
+}
