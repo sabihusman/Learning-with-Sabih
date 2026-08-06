@@ -24,7 +24,7 @@ AI and ML|16|RLHF|Pick the answers you prefer and watch your feedback reshape th
 AI and ML|17|Temperature and Sampling|Move a temperature slider and watch the next-word distribution sharpen or flatten|temperature
 AI and ML|18|Beam Search vs Greedy Decoding|Watch greedy decoding lock onto the locally best token while beam search keeps a wider set of candidates alive and finds a more probable sequence overall|beam-search
 AI and ML|19|RAG (Retrieval-Augmented Generation)|Retrieve relevant document chunks by similarity, drop them into the prompt, and watch the model answer from real sources instead of memory|rag
-AI and ML|20|Quantization|Placeholder description, final wording lands with the prose commit|quantization
+AI and ML|20|Quantization|Drop the bit width and watch every weight snap to a coarser grid|quantization
 Algorithms and Data Structures|21|Big-O and Time Complexity|Race six real algorithms and watch operation counts split apart as the input grows, from constant time to exponential|big-o
 Algorithms and Data Structures|22|Binary Search|Halve a sorted array each comparison to find a value, and watch how few steps it takes next to a linear scan|binary-search
 Algorithms and Data Structures|23|Recursion and the Call Stack|Solve Towers of Hanoi one move at a time and watch the call stack push and pop as the recursion descends and returns|recursion

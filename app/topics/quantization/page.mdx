@@ -6,10 +6,30 @@ export const metadata = {
 
 # Quantization
 
-{/* TODO: placeholder prose. The real prose is supplied in chat, written against the reported 16-state numbers, and applied to this branch before merge. Honesty constraints for the prose: the 120 weights (plus one authored outlier at 2.68) are frozen literals; the symmetric quantizer, every scale, error, and size readout are computed live; levels are 2^b - 1 because the symmetric grid keeps zero exact (INT2 = three levels: negative, zero, positive); the 7B size is storage only, assuming FP16 group scales; the figure reports representation error only and makes no model-quality claim. */}
+A trained model is a large pile of numbers. Each weight is stored at some precision, and precision costs memory. Quantization is the decision to store those numbers less precisely on purpose, so the model fits somewhere it otherwise would not.
 
-Placeholder: a fixed set of model weights snaps to a quantization grid; fewer bits means fewer levels, longer snapping distances, and a smaller model file.
+The figure holds a fixed set of weights and draws the grid they are allowed to land on. Pick a bit width and the grid redraws. Each weight snaps to the nearest line, and the connector shows how far it moved. That distance is the error you are trading away.
 
-## Snapping weights to a grid
+The scheme here is symmetric, which means the grid is centred on an exact zero and spreads evenly in both directions. Keeping zero exact costs one level. Four bits gives fifteen usable levels rather than sixteen. At two bits you are down to three: negative, zero, positive. The readout shows the real count, and it matches the lines you can see.
+
+At eight bits the grid is fine enough that the snapping is invisible. Drop to four and the movement becomes obvious. By two bits the grid dominates the picture and the original shape of the weights is mostly gone.
+
+## Where it breaks
+
+Turn on the outlier. One weight sits far out past the others, and the scale has to stretch to reach it. Every ordinary weight now lands on a much coarser grid, and the error climbs sharply. Nothing about those weights changed. They are paying for a neighbour.
+
+This is why outliers matter more in quantization than their count suggests. A single value can degrade every value that shares its scale.
+
+## Splitting the scale
+
+Switch to per group. The weights are cut into four blocks and each block gets its own scale. The blocks without the outlier go back to exactly the grid they had before, and only the block containing it stays coarse.
+
+That is the honest shape of the fix. Grouping does not remove the damage, it contains it. The outlier still ruins its own block.
+
+Grouping also costs something. Each block needs its own scale stored alongside it, so the real bytes per weight sits above the number the bit width suggests. The size readout shows the difference.
+
+## What the readouts are
+
+Every number here is computed from the weights on screen. The figure measures how far each weight had to move, and nothing else. It says nothing about whether the model would still work at a given bit width. That question depends on the model, the task, and which parts of the network you quantize, and no figure at this scale can answer it.
 
 <QuantizationViz />
