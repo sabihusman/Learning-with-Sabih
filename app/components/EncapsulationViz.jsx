@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { useAnimationSpeedRef } from './animationSpeed'
 import { usePacedInterval } from './usePacedInterval'
 import {
   ACTIONS,
@@ -58,13 +58,9 @@ export default function EncapsulationViz() {
 
   const balanceRef = useRef(null)
 
-  // Shared animation-speed multiplier, read by the flourish effect through a
-  // ref so a speed change never replays the current flourish (batch-1 pattern).
-  const speed = useAnimationSpeed()
-  const speedRef = useRef(1)
-  useEffect(() => {
-    speedRef.current = speed
-  }, [speed])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
 
   // Auto-advance through the shared paced-interval hook (setInterval, never
   // requestAnimationFrame): gated on playing until done, paced by the shared
@@ -79,7 +75,7 @@ export default function EncapsulationViz() {
       duration: 380 / speedRef.current,
       ease: 'outQuad',
     })
-  }, [step, mode])
+  }, [step, mode, speedRef])
 
   const onStep = () => setStep((s) => Math.min(LAST_STEP, s + 1))
   const reset = () => {

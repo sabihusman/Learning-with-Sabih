@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { useAnimationSpeedRef } from './animationSpeed'
 import {
   MULT_MIN,
   MULT_MAX,
@@ -106,13 +106,9 @@ export default function ModelsAndMathViz() {
 
   const lastChipRef = useRef(null)
 
-  // Shared animation-speed multiplier, read through a ref so a speed change
-  // never replays the current flourish (same pattern as CachingLayersViz).
-  const speed = useAnimationSpeed()
-  const speedRef = useRef(1)
-  useEffect(() => {
-    speedRef.current = speed
-  }, [speed])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
 
   // anime.js v4: pop the just-committed guess token in, so the "the model commits a
   // token" moment reads as a guess landing. Reveal is state-driven (this only
@@ -121,7 +117,7 @@ export default function ModelsAndMathViz() {
     if (modelShown.length > 0 && lastChipRef.current) {
       animate(lastChipRef.current, { scale: [0.4, 1], opacity: [0, 1], duration: 360 / speedRef.current, ease: 'outBack' })
     }
-  }, [modelShown.length, mode])
+  }, [modelShown.length, mode, speedRef])
 
   const selectMode = (id) => {
     setMode(id)

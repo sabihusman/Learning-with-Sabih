@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { useAnimationSpeedRef } from './animationSpeed'
 import { COMPANY, KB, KB_BY_ID, QUERIES, TOP_K, ranked, retrievedIds } from './ragData'
 import styles from './RagViz.module.css'
 
@@ -45,13 +45,9 @@ export default function RagViz() {
   const rankedChunks = ranked(query)
   const contextRef = useRef(null)
 
-  // Shared animation-speed multiplier, read through a ref so a speed change
-  // never replays the current flourish (same pattern as CachingLayersViz).
-  const speed = useAnimationSpeed()
-  const speedRef = useRef(1)
-  useEffect(() => {
-    speedRef.current = speed
-  }, [speed])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
 
   // anime: when the prompt is assembled (augment), slide the retrieved context in, so
   // "the chunks are inserted into the prompt" reads as a real move. Reveal is
@@ -60,7 +56,7 @@ export default function RagViz() {
     if (stage >= 2 && contextRef.current) {
       animate(contextRef.current, { opacity: [0.2, 1], translateY: [-8, 0], duration: 420 / speedRef.current, ease: 'outQuad' })
     }
-  }, [stage, queryId])
+  }, [stage, queryId, speedRef])
 
   const pickQuery = (id) => {
     setQueryId(id)

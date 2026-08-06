@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { useAnimationSpeedRef } from './animationSpeed'
 import { usePacedInterval } from './usePacedInterval'
 import {
   DEFAULT_LOSS_PCT,
@@ -79,13 +79,9 @@ export default function TcpUdpViz() {
   const isPlaying = playing && !done
   const isUdp = state.protocol === 'UDP'
 
-  // Shared animation-speed multiplier, read by the flourish effect through a
-  // ref so a speed change never replays the current flourish (batch-1 pattern).
-  const speed = useAnimationSpeed()
-  const speedRef = useRef(1)
-  useEffect(() => {
-    speedRef.current = speed
-  }, [speed])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
 
   // Auto-advance through the shared paced-interval hook (setInterval, never
   // requestAnimationFrame): gated on playing until done, paced by the shared
@@ -99,7 +95,7 @@ export default function TcpUdpViz() {
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
     animate(nodes, { opacity: [0.4, 1], duration: 450 / speedRef.current, ease: 'outQuad' })
-  }, [state.cursor, state.lastEvent])
+  }, [state.cursor, state.lastEvent, speedRef])
 
   const onStep = () => setState((s) => (isDone(s) ? s : step(s)))
   const doReset = () => {

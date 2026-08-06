@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { useAnimationSpeedRef } from './animationSpeed'
 import { usePacedInterval } from './usePacedInterval'
 import {
   actionsFor,
@@ -105,13 +105,9 @@ export default function DeadlockViz() {
   const deadlocked = isDeadlocked(state)
   const idle = state.threads.A.pc === 0 && state.threads.B.pc === 0
 
-  // Shared animation-speed multiplier, read by the flourish effect through a
-  // ref so a speed change never replays the current flourish (batch-1 pattern).
-  const speed = useAnimationSpeed()
-  const speedRef = useRef(1)
-  useEffect(() => {
-    speedRef.current = speed
-  }, [speed])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
 
   // Auto-advance through the shared paced-interval hook (setInterval, never
   // requestAnimationFrame): gated on playing until done or deadlock, paced by the shared
@@ -135,7 +131,7 @@ export default function DeadlockViz() {
       duration: 550 / speedRef.current,
       ease: 'inOutQuad',
     })
-  }, [deadlocked])
+  }, [deadlocked, speedRef])
 
   const stepManual = (threadId) => {
     setRun((prev) => ({ state: applyStep(prev.state, threadId), tick: prev.tick }))
