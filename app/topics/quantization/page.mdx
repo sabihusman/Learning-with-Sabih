@@ -1,0 +1,15 @@
+import QuantizationViz from '@/app/components/QuantizationViz'
+
+export const metadata = {
+  title: 'Quantization - Learning with Sabih',
+}
+
+# Quantization
+
+{/* TODO: placeholder prose. The real prose is supplied in chat, written against the reported 16-state numbers, and applied to this branch before merge. Honesty constraints for the prose: the 120 weights (plus one authored outlier at 2.68) are frozen literals; the symmetric quantizer, every scale, error, and size readout are computed live; levels are 2^b - 1 because the symmetric grid keeps zero exact (INT2 = three levels: negative, zero, positive); the 7B size is storage only, assuming FP16 group scales; the figure reports representation error only and makes no model-quality claim. */}
+
+Placeholder: a fixed set of model weights snaps to a quantization grid; fewer bits means fewer levels, longer snapping distances, and a smaller model file.
+
+## Snapping weights to a grid
+
+<QuantizationViz />

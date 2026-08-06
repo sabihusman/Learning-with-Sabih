@@ -24,51 +24,52 @@ AI and ML|16|RLHF|Pick the answers you prefer and watch your feedback reshape th
 AI and ML|17|Temperature and Sampling|Move a temperature slider and watch the next-word distribution sharpen or flatten|temperature
 AI and ML|18|Beam Search vs Greedy Decoding|Watch greedy decoding lock onto the locally best token while beam search keeps a wider set of candidates alive and finds a more probable sequence overall|beam-search
 AI and ML|19|RAG (Retrieval-Augmented Generation)|Retrieve relevant document chunks by similarity, drop them into the prompt, and watch the model answer from real sources instead of memory|rag
-Algorithms and Data Structures|20|Big-O and Time Complexity|Race six real algorithms and watch operation counts split apart as the input grows, from constant time to exponential|big-o
-Algorithms and Data Structures|21|Binary Search|Halve a sorted array each comparison to find a value, and watch how few steps it takes next to a linear scan|binary-search
-Algorithms and Data Structures|22|Recursion and the Call Stack|Solve Towers of Hanoi one move at a time and watch the call stack push and pop as the recursion descends and returns|recursion
-Algorithms and Data Structures|23|Sorting|Step three real sorts through the same fixed array and compare how many comparisons and moves the slow and fast ones take|sorting
-Algorithms and Data Structures|24|Linked List vs Array|Run the same operation on both structures and count the real shifts, walks, and pointer rewrites each one costs|linked-list-vs-array
-Algorithms and Data Structures|25|Hash Tables|Hash keys into buckets by a visible character-code rule, watch collisions chain up, and track load factor live|hash-tables
-Algorithms and Data Structures|26|Binary Search Trees|Insert and search values down a tree, then watch a sorted insert order collapse it into a slow straight line|binary-search-trees
-Algorithms and Data Structures|27|Graph Traversal (BFS and DFS)|Walk one graph two ways and watch the only real difference, a queue versus a stack, reorder the visits|graph-traversal
-Algorithms and Data Structures|28|Dijkstra's Shortest Path|Lock in the nearest node and relax its edges until every shortest distance from a source is found, then trace any path|dijkstra
-Algorithms and Data Structures|29|Dynamic Programming|Compute Fibonacci naively and watch the call tree explode with repeated work, then memoize and see it collapse|dynamic-programming
-Databases and SQL|30|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
-Databases and SQL|31|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
-Databases and SQL|32|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
-Databases and SQL|33|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
-Databases and SQL|34|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
-Databases and SQL|35|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
-Databases and SQL|36|Indexes|Run the same query with the index off then on, and watch rows examined collapse from the whole table to a handful|indexes
-Databases and SQL|37|Query Planning|Slide selectivity to watch the planner flip between an index and a full scan, then compare a good and a bad join order|query-planning
-Databases and SQL|38|Normalization|Watch one wide table that stores each fact many times step into first normal form, hit an update anomaly, then split into three linked tables so every fact lives in exactly one place|normalization
-Databases and SQL|39|SQL vs NoSQL Modeling|Model the same users, plans, and orders as normalized tables and as one document per user, then run three queries and watch which shape touches fewer places as the access pattern changes|sql-vs-nosql-modeling
-Databases and SQL|40|Atomicity|Transfer money between two accounts as one transaction, trigger a failure between the debit and the credit, and watch the rollback restore the balances so the total never changes|atomicity
-Databases and SQL|41|Concurrency|Run two transactions that both add to one balance, watch a stale read make an update vanish, then switch on locking so the second waits and the total comes out right|concurrency
-Databases and SQL|42|Isolation Levels|Turn the isolation dial and pick a concurrency phenomenon, then watch a two-transaction timeline show whether PostgreSQL lets it happen or prevents it|isolation-levels
-Systems and Networking|43|Caching|Feed a fixed request stream through a real least-recently-used cache of three slots and watch hits skip the slow origin while each miss fetches a key and evicts the one used longest ago|caching
-Systems and Networking|44|Caching Layers|Watch reads fall through a browser cache, a CDN, and Redis before the database answers, each answer copied back up the stack until the warmed layers catch almost everything|caching-layers
-Systems and Networking|45|Percentiles and Tail Latency|Drag a percentile handle across a fixed sample of 60 request latencies and watch the mean sit far below p99, because a handful of slow tail requests drag the average up while most requests never see them|percentiles-and-tail-latency
-Systems and Networking|46|Load Balancing|Send one fixed request stream through a balancer to three servers and watch round robin pile long requests onto one server while least connections keeps them level, then kill a server mid-run and see which policy copes|load-balancing
-Systems and Networking|47|CAP Theorem|Replicate one key across two nodes, cut the network between them, and choose: refuse writes to stay consistent or serve both sides and let the copies diverge, the tradeoff a partition forces|cap-theorem
-Systems and Networking|48|Sharding|Pick a partition key and watch rows hash into shards, then see a low-cardinality key pile most rows onto one hot shard|sharding
-Systems and Networking|49|Consistent Hashing|Place keys on a hash ring, then add a node and watch only a small slice of keys move, while plain hash-mod-N would reshuffle almost everything|consistent-hashing
-Systems and Networking|50|Race Conditions and Locks|Step two threads through a shared balance by hand or on auto-play, watch a bad interleaving lose an update, then turn on a lock and try to break it again|race-conditions
-Systems and Networking|51|Deadlock|Two threads, two locks, grabbed in opposite orders, and watch the wait-for graph close into a circular deadlock, then switch to one lock order and see it become impossible|deadlock
-Systems and Networking|52|TCP and UDP|Send the same 8 packets across an identical lossy channel and watch UDP finish fast with permanent gaps while TCP detects each drop, resends it, and holds arrivals out of order until the gap behind them fills in|tcp-and-udp
-Systems and Networking|53|DNS|Resolve a name through root, TLD, and authoritative servers, watching each one hand back a referral instead of an answer, then look it up again and watch the cached answer skip the whole chain|dns
-Systems and Networking|54|Encryption and Public Keys|Lock a message with someone's public key and see that only their private key opens it, then flip the keys to sign|encryption-and-public-keys
-Systems and Networking|55|Streaming and Buffering|Watch a playback buffer fill from a variable network and drain at a steady rate, then drop the network speed and see the stall coming before it happens|streaming-and-buffering
-Systems and Networking|56|Network Stack and Routing|Walk a packet through two switched networks joined by a router and watch the layer 2 header get rewritten at the crossing while the layer 3 addresses ride through unchanged|network-stack-and-routing
-Object-Oriented Programming|57|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
-Object-Oriented Programming|58|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
-Object-Oriented Programming|59|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
-Object-Oriented Programming|60|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
-Object-Oriented Programming|61|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
-Object-Oriented Programming|62|Abstract Classes and Interfaces|Build GuardBot against a Robot contract, switch the contract between an abstract class and an interface, and see live whether each choice compiles|abstract-classes-and-interfaces
-Object-Oriented Programming|63|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
-Data and Compression|64|Entropy and Compression|Drag four symbol probabilities and watch a real Huffman code chase Shannon's entropy floor, closing the gap only at powers of one-half|entropy-and-compression
+AI and ML|20|Quantization|Placeholder description, final wording lands with the prose commit|quantization
+Algorithms and Data Structures|21|Big-O and Time Complexity|Race six real algorithms and watch operation counts split apart as the input grows, from constant time to exponential|big-o
+Algorithms and Data Structures|22|Binary Search|Halve a sorted array each comparison to find a value, and watch how few steps it takes next to a linear scan|binary-search
+Algorithms and Data Structures|23|Recursion and the Call Stack|Solve Towers of Hanoi one move at a time and watch the call stack push and pop as the recursion descends and returns|recursion
+Algorithms and Data Structures|24|Sorting|Step three real sorts through the same fixed array and compare how many comparisons and moves the slow and fast ones take|sorting
+Algorithms and Data Structures|25|Linked List vs Array|Run the same operation on both structures and count the real shifts, walks, and pointer rewrites each one costs|linked-list-vs-array
+Algorithms and Data Structures|26|Hash Tables|Hash keys into buckets by a visible character-code rule, watch collisions chain up, and track load factor live|hash-tables
+Algorithms and Data Structures|27|Binary Search Trees|Insert and search values down a tree, then watch a sorted insert order collapse it into a slow straight line|binary-search-trees
+Algorithms and Data Structures|28|Graph Traversal (BFS and DFS)|Walk one graph two ways and watch the only real difference, a queue versus a stack, reorder the visits|graph-traversal
+Algorithms and Data Structures|29|Dijkstra's Shortest Path|Lock in the nearest node and relax its edges until every shortest distance from a source is found, then trace any path|dijkstra
+Algorithms and Data Structures|30|Dynamic Programming|Compute Fibonacci naively and watch the call tree explode with repeated work, then memoize and see it collapse|dynamic-programming
+Databases and SQL|31|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
+Databases and SQL|32|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
+Databases and SQL|33|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
+Databases and SQL|34|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
+Databases and SQL|35|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
+Databases and SQL|36|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
+Databases and SQL|37|Indexes|Run the same query with the index off then on, and watch rows examined collapse from the whole table to a handful|indexes
+Databases and SQL|38|Query Planning|Slide selectivity to watch the planner flip between an index and a full scan, then compare a good and a bad join order|query-planning
+Databases and SQL|39|Normalization|Watch one wide table that stores each fact many times step into first normal form, hit an update anomaly, then split into three linked tables so every fact lives in exactly one place|normalization
+Databases and SQL|40|SQL vs NoSQL Modeling|Model the same users, plans, and orders as normalized tables and as one document per user, then run three queries and watch which shape touches fewer places as the access pattern changes|sql-vs-nosql-modeling
+Databases and SQL|41|Atomicity|Transfer money between two accounts as one transaction, trigger a failure between the debit and the credit, and watch the rollback restore the balances so the total never changes|atomicity
+Databases and SQL|42|Concurrency|Run two transactions that both add to one balance, watch a stale read make an update vanish, then switch on locking so the second waits and the total comes out right|concurrency
+Databases and SQL|43|Isolation Levels|Turn the isolation dial and pick a concurrency phenomenon, then watch a two-transaction timeline show whether PostgreSQL lets it happen or prevents it|isolation-levels
+Systems and Networking|44|Caching|Feed a fixed request stream through a real least-recently-used cache of three slots and watch hits skip the slow origin while each miss fetches a key and evicts the one used longest ago|caching
+Systems and Networking|45|Caching Layers|Watch reads fall through a browser cache, a CDN, and Redis before the database answers, each answer copied back up the stack until the warmed layers catch almost everything|caching-layers
+Systems and Networking|46|Percentiles and Tail Latency|Drag a percentile handle across a fixed sample of 60 request latencies and watch the mean sit far below p99, because a handful of slow tail requests drag the average up while most requests never see them|percentiles-and-tail-latency
+Systems and Networking|47|Load Balancing|Send one fixed request stream through a balancer to three servers and watch round robin pile long requests onto one server while least connections keeps them level, then kill a server mid-run and see which policy copes|load-balancing
+Systems and Networking|48|CAP Theorem|Replicate one key across two nodes, cut the network between them, and choose: refuse writes to stay consistent or serve both sides and let the copies diverge, the tradeoff a partition forces|cap-theorem
+Systems and Networking|49|Sharding|Pick a partition key and watch rows hash into shards, then see a low-cardinality key pile most rows onto one hot shard|sharding
+Systems and Networking|50|Consistent Hashing|Place keys on a hash ring, then add a node and watch only a small slice of keys move, while plain hash-mod-N would reshuffle almost everything|consistent-hashing
+Systems and Networking|51|Race Conditions and Locks|Step two threads through a shared balance by hand or on auto-play, watch a bad interleaving lose an update, then turn on a lock and try to break it again|race-conditions
+Systems and Networking|52|Deadlock|Two threads, two locks, grabbed in opposite orders, and watch the wait-for graph close into a circular deadlock, then switch to one lock order and see it become impossible|deadlock
+Systems and Networking|53|TCP and UDP|Send the same 8 packets across an identical lossy channel and watch UDP finish fast with permanent gaps while TCP detects each drop, resends it, and holds arrivals out of order until the gap behind them fills in|tcp-and-udp
+Systems and Networking|54|DNS|Resolve a name through root, TLD, and authoritative servers, watching each one hand back a referral instead of an answer, then look it up again and watch the cached answer skip the whole chain|dns
+Systems and Networking|55|Encryption and Public Keys|Lock a message with someone's public key and see that only their private key opens it, then flip the keys to sign|encryption-and-public-keys
+Systems and Networking|56|Streaming and Buffering|Watch a playback buffer fill from a variable network and drain at a steady rate, then drop the network speed and see the stall coming before it happens|streaming-and-buffering
+Systems and Networking|57|Network Stack and Routing|Walk a packet through two switched networks joined by a router and watch the layer 2 header get rewritten at the crossing while the layer 3 addresses ride through unchanged|network-stack-and-routing
+Object-Oriented Programming|58|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
+Object-Oriented Programming|59|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
+Object-Oriented Programming|60|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
+Object-Oriented Programming|61|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
+Object-Oriented Programming|62|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
+Object-Oriented Programming|63|Abstract Classes and Interfaces|Build GuardBot against a Robot contract, switch the contract between an abstract class and an interface, and see live whether each choice compiles|abstract-classes-and-interfaces
+Object-Oriented Programming|64|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
+Data and Compression|65|Entropy and Compression|Drag four symbol probabilities and watch a real Huffman code chase Shannon's entropy floor, closing the gap only at powers of one-half|entropy-and-compression
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Systems and Networking', 'Object-Oriented Programming', 'Data and Compression']
