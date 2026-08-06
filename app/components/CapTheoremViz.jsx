@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import {
   OPS,
   CHOICES,
@@ -72,13 +74,14 @@ export default function CapTheoremViz() {
   const disagree = state.a !== state.b
   const conflict = hasConflict(state)
 
-  // Auto-advance with setInterval (never a rAF/anime chain). Keyed on `done` so it
-  // tears down when the sequence finishes; the effect body only sets/clears the timer.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setState((s) => (isDone(s) ? s : step(s))), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
+
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setState((s) => (isDone(s) ? s : step(s))))
 
   // Cosmetic flourish only: pulse the elements marked data-pulse (the acting node and,
   // on a healthy write, the replication token). Pure animation, no state change.
@@ -86,8 +89,8 @@ export default function CapTheoremViz() {
     if (!state.lastOp || !svgRef.current) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
-    animate(nodes, { opacity: [0.4, 1], duration: 500, ease: 'outQuad' })
-  }, [state.opIndex, state.lastOp])
+    animate(nodes, { opacity: [0.4, 1], duration: 500 / speedRef.current, ease: 'outQuad' })
+  }, [state.opIndex, state.lastOp, speedRef])
 
   const onStep = () => setState((s) => (isDone(s) ? s : step(s)))
   const doReset = () => {
@@ -124,6 +127,7 @@ export default function CapTheoremViz() {
       eyebrow="CAP theorem"
       title="Two copies, one truth"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Run the sequence three ways and watch which readout pays. Healthy link: nothing pays, both nodes end at 3. Partitioned and preferring consistency: every operation is refused, the count climbs to 6, but the data never diverges. Partitioned and preferring availability: nothing is refused, yet the nodes drift to 2 and 3 and the divergence count hits 6. Then heal the link after the availability run and see the conflict it left behind."

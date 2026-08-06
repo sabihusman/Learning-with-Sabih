@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import {
   ACTIONS,
   LAST_STEP,
@@ -56,24 +58,24 @@ export default function EncapsulationViz() {
 
   const balanceRef = useRef(null)
 
-  // Auto-advance with setInterval (never a rAF/anime chain) so play keeps progressing
-  // in a backgrounded tab. Keyed on `done` so it tears down when the run finishes; the
-  // effect body only sets/clears the interval, never setState directly.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
+
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(LAST_STEP, s + 1)))
 
   // Cosmetic flourish only: flash the balance figure when it changes. Pure animation.
   useEffect(() => {
     if (step === 0 || !balanceRef.current) return
     animate(balanceRef.current, {
       opacity: [0.3, 1],
-      duration: 380,
+      duration: 380 / speedRef.current,
       ease: 'outQuad',
     })
-  }, [step, mode])
+  }, [step, mode, speedRef])
 
   const onStep = () => setStep((s) => Math.min(LAST_STEP, s + 1))
   const reset = () => {
@@ -119,6 +121,7 @@ export default function EncapsulationViz() {
       eyebrow="Encapsulation"
       title="The object defends itself"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Run the same three outside actions in both modes. With a public field, every write lands, including a direct assignment that forces the balance negative, so the account cannot protect its one rule. Switch to a private field with withdraw(), replay, and watch the object refuse the writes it must not allow: the direct assignment no longer compiles, and the overdraw is turned away by the guard. That is encapsulation, an object defending its own invariants."

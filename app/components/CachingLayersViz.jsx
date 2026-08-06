@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { useAnimationSpeedRef } from './animationSpeed'
 import { usePacedInterval } from './usePacedInterval'
 import {
   LAYERS,
@@ -86,8 +86,6 @@ export default function CachingLayersViz() {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [fastRun, setFastRun] = useState(false)
-  const speed = useAnimationSpeed()
-
   const state = STATES[step]
   const done = step >= LAST_STEP
   const isPlaying = playing && !done
@@ -98,11 +96,8 @@ export default function CachingLayersViz() {
 
   // The animation effect below is keyed on step alone (re-running it on a speed
   // change would replay the current step's motion), so it reads the multiplier
-  // through a ref kept in sync here.
-  const speedRef = useRef(1)
-  useEffect(() => {
-    speedRef.current = speed
-  }, [speed])
+  // through the stable ref at fire time.
+  const speedRef = useAnimationSpeedRef()
 
   // Play and Run remaining both advance through the shared paced-interval hook
   // (setInterval, never a rAF/anime chain), the same state path at two
@@ -150,7 +145,7 @@ export default function CachingLayersViz() {
         ],
       })
     }
-  }, [step])
+  }, [step, speedRef])
 
   const onStep = () => setStep((s) => Math.min(LAST_STEP, s + 1))
   const togglePlay = () => {

@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import {
   STREAM,
   CAPACITY,
@@ -74,14 +76,14 @@ export default function CachingViz() {
 
   const svgRef = useRef(null)
 
-  // Auto-advance with setInterval (never a rAF/anime chain) so play keeps running in
-  // a backgrounded tab. Keyed on `done` so it tears down the instant the stream ends;
-  // the effect body only sets/clears the interval, never setState directly.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(LAST_STEP, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
+
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(LAST_STEP, s + 1)))
 
   // Cosmetic flourish only: pulse the elements marked data-pulse (the current cache
   // slot and, on a miss, the origin fetch arrow) so each step's action registers.
@@ -90,8 +92,8 @@ export default function CachingViz() {
     if (step === 0 || !svgRef.current) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
-    animate(nodes, { opacity: [0.4, 1], duration: 520, ease: 'outQuad' })
-  }, [step])
+    animate(nodes, { opacity: [0.4, 1], duration: 520 / speedRef.current, ease: 'outQuad' })
+  }, [step, speedRef])
 
   const onStep = () => setStep((s) => Math.min(LAST_STEP, s + 1))
   const reset = () => {
@@ -123,6 +125,7 @@ export default function CachingViz() {
       eyebrow="Caching"
       title="The cache remembers"
       controls={controls}
+      speedControl
       status={statusFor(state)}
       readouts={readouts}
       tryThis="Watch key E arrive. It evicts the key that turns out to be needed again just two requests later, forcing a second trip to the origin. Which key would you have evicted instead? The cache only knows what was used recently; it cannot see that a key is about to be used again. That gap between recent and soon is why no single eviction policy wins every time."

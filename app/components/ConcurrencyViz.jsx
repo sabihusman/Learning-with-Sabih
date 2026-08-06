@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './ConcurrencyViz.module.css'
 
 // Two transactions, T1 and T2, both add INC to the same shared balance. The correct
@@ -175,14 +176,10 @@ export default function ConcurrencyViz() {
   const f = step > 0 ? run.frames[step - 1] : null
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never requestAnimationFrame) so the interleaving keeps
-  // progressing in a backgrounded tab. Keyed on done/total so it tears down at the end and
-  // rebinds when the mode toggle swaps the script. No setState in the effect body.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, total])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(total, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -231,6 +228,7 @@ export default function ConcurrencyViz() {
       eyebrow="Transactions"
       title="Two transactions, one balance, a lost update"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Both T1 and T2 add 50 to a balance that starts at 100, so the right answer is 200. With No protection, step through one bad interleaving: T1 and T2 both read 100, T1 writes 150, then T2 writes 150 from the stale 100 it read, overwriting T1. One update is lost and the balance ends at 150. Switch to With locking and step again: T2 has to wait until T1 commits, then reads the updated 150 and writes 200. This is one specific ordering chosen to make the bug visible; in a real system it is timing-dependent and does not always happen, which is what makes it dangerous."

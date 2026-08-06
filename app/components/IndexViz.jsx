@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import styles from './IndexViz.module.css'
 import { ROWS, INDEX, N, QUERIES, buildFrames, queryLabel, querySql } from './indexData'
 
@@ -83,15 +84,10 @@ export default function IndexViz() {
   const f = step > 0 ? frames[step - 1] : null
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never requestAnimationFrame) so stepping keeps
-  // progressing in a backgrounded tab. Keyed on `done` so it tears down at the end and
-  // on the frame identity so it rebinds when the query or index toggle changes; no
-  // setState in the effect body.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setStep((s) => Math.min(total, s + 1)), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, total])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setStep((s) => Math.min(total, s + 1)))
 
   const onStep = () => setStep((s) => Math.min(total, s + 1))
   const reset = () => {
@@ -138,6 +134,7 @@ export default function IndexViz() {
       eyebrow="Indexing"
       title="How an index turns a full scan into a jump"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Run a query with the index off: the engine does a full scan, checking every row top to bottom, and rows examined climbs to the whole table. Turn the index on and run the same query: it binary-searches the sorted index, jumps almost straight to the match, and rows examined stays tiny. Pick a between query to watch the B-tree find the range start and then walk the sorted order, something an exact-match structure could not do. Click any row to search its value."

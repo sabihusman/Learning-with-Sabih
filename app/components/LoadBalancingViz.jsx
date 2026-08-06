@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import {
   STREAM,
   POLICIES,
@@ -67,13 +69,14 @@ export default function LoadBalancingViz() {
   const done = isDone(state)
   const isPlaying = playing && !done
 
-  // Auto-advance with setInterval (never a rAF/anime chain). Keyed on `done` so it
-  // tears down when the run finishes; the effect body only sets/clears the interval.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setState((s) => (isDone(s) ? s : tick(s))), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
+
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setState((s) => (isDone(s) ? s : tick(s))))
 
   // Cosmetic flourish only: pulse the arrow and server the last request was routed
   // to, so each dispatch registers. Pure animation, no state change.
@@ -81,8 +84,8 @@ export default function LoadBalancingViz() {
     if (!state.lastAssign || !svgRef.current) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
-    animate(nodes, { opacity: [0.35, 1], duration: 480, ease: 'outQuad' })
-  }, [state.tick, state.lastAssign])
+    animate(nodes, { opacity: [0.35, 1], duration: 480 / speedRef.current, ease: 'outQuad' })
+  }, [state.tick, state.lastAssign, speedRef])
 
   const onStep = () => setState((s) => (isDone(s) ? s : tick(s)))
   const reset = () => {
@@ -128,6 +131,7 @@ export default function LoadBalancingViz() {
       eyebrow="Load balancing"
       title="One door, many servers"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Run the whole stream once under Round robin and watch max load climb to 4 on one server while the others sit near idle. Reset, switch to Least connections, and run the same stream: max load never passes 2. Then try killing server 2 partway through each run. Round robin keeps feeding its dead slot's neighbours until one is buried; least connections just routes around the gap."

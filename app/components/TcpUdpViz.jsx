@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
 import {
   DEFAULT_LOSS_PCT,
   MAX_LOSS_PCT,
@@ -77,14 +79,14 @@ export default function TcpUdpViz() {
   const isPlaying = playing && !done
   const isUdp = state.protocol === 'UDP'
 
-  // Auto-advance with setInterval (never a rAF/anime chain). Keyed on `done` so
-  // it tears down when the run finishes; the effect body only sets/clears the
-  // timer.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setState((s) => (isDone(s) ? s : step(s))), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+  // Stable ref to the shared animation-speed multiplier: the flourish effect
+  // reads it at fire time, so a speed change never replays the flourish.
+  const speedRef = useAnimationSpeedRef()
+
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setState((s) => (isDone(s) ? s : step(s))))
 
   // Cosmetic flourish only: pulse the elements marked data-pulse (the acting
   // node and the in-flight token). Pure animation, no state change.
@@ -92,8 +94,8 @@ export default function TcpUdpViz() {
     if (!state.lastEvent || !svgRef.current) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
-    animate(nodes, { opacity: [0.4, 1], duration: 450, ease: 'outQuad' })
-  }, [state.cursor, state.lastEvent])
+    animate(nodes, { opacity: [0.4, 1], duration: 450 / speedRef.current, ease: 'outQuad' })
+  }, [state.cursor, state.lastEvent, speedRef])
 
   const onStep = () => setState((s) => (isDone(s) ? s : step(s)))
   const doReset = () => {
@@ -145,6 +147,7 @@ export default function TcpUdpViz() {
       eyebrow="TCP and UDP"
       title="Reliable, or fast"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Set loss to about 25 percent and run both protocols with the same seed. UDP finishes in 8 ticks but delivers with permanent gaps; TCP takes more ticks and more sends, and some arrived packets sit visibly held until a missing one behind them is retransmitted, but ends complete and in order. At 0 percent loss, step through both: nothing is dropped, so there is nothing to retransmit or hold, and the two protocols behave identically."

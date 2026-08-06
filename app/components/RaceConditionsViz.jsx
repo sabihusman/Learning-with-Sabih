@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
 import {
   START,
   CORRECT,
@@ -46,24 +47,18 @@ export default function RaceConditionsViz() {
   const threadB = race.threads.B
   const idle = threadA.pc === 0 && threadB.pc === 0
 
-  // Auto-advance with setInterval (never requestAnimationFrame), so a paused/backgrounded
-  // tab still catches up on resume. Keyed on done/lockEnabled/pattern so it tears down at
-  // the end and rebinds when a toggle swaps the run; each tick reads fresh state through
-  // the functional setState updater, so there is no stale-closure drift. No setState in
-  // the effect body itself.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const order = PATTERNS[pattern]
-    const id = setInterval(() => {
-      setRun((prev) => {
-        if (isDone(prev.race)) return prev
-        const threadId = order[prev.tick % order.length]
-        const stepFn = lockEnabled ? applyLockedStep : applyStep
-        return { race: stepFn(prev.race, threadId), tick: prev.tick + 1 }
-      })
-    }, PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done, lockEnabled, pattern])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // requestAnimationFrame): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () =>
+    setRun((prev) => {
+      if (isDone(prev.race)) return prev
+      const order = PATTERNS[pattern]
+      const threadId = order[prev.tick % order.length]
+      const stepFn = lockEnabled ? applyLockedStep : applyStep
+      return { race: stepFn(prev.race, threadId), tick: prev.tick + 1 }
+    }),
+  )
 
   const stepManual = (threadId) => {
     const stepFn = lockEnabled ? applyLockedStep : applyStep
@@ -134,6 +129,7 @@ export default function RaceConditionsViz() {
       eyebrow="Race Conditions"
       title="Two threads, one shared balance"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Leave the lock off and run the interleaved order. Watch both threads read 100 and one increment disappear as the balance ends at 101. Now turn the lock on and run the same order. The second thread is forced to wait, and the balance ends at 102. Try to break it by stepping manually with the lock on, and notice the other thread's buttons are disabled while one thread holds the lock."

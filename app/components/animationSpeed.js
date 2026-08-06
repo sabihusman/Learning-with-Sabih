@@ -1,6 +1,6 @@
 'use client'
 
-import { useSyncExternalStore } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
 
 // One site-wide animation-speed setting, following the FontSizeControl pattern:
 // persisted in localStorage, read through useSyncExternalStore so every mounted
@@ -55,4 +55,17 @@ export function useAnimationSpeedSetting() {
 export function useAnimationSpeed() {
   const value = useAnimationSpeedSetting()
   return SPEED_OPTIONS.find((o) => o.value === value).multiplier
+}
+
+// A stable ref whose .current always holds the multiplier, for effects that
+// must read the speed at fire time without re-running when it changes (the
+// one-shot flourish pattern: a speed change must never replay the current
+// flourish).
+export function useAnimationSpeedRef() {
+  const speed = useAnimationSpeed()
+  const ref = useRef(speed)
+  useEffect(() => {
+    ref.current = speed
+  }, [speed])
+  return ref
 }

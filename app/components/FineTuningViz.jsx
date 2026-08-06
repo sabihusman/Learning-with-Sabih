@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { useAnimationSpeed } from './animationSpeed'
+import { useAnimationSpeed, useAnimationSpeedRef } from './animationSpeed'
 import { DOMAIN_NAME, DATASET, PROMPTS } from './fineTuningData'
 import styles from './FineTuningViz.module.css'
 
@@ -28,10 +28,7 @@ export default function FineTuningViz() {
   // starts; the flourish effects read it through a ref so a speed change never
   // replays them (same pattern as CachingLayersViz).
   const speed = useAnimationSpeed()
-  const speedRef = useRef(1)
-  useEffect(() => {
-    speedRef.current = speed
-  }, [speed])
+  const speedRef = useAnimationSpeedRef()
 
   useEffect(() => () => clearInterval(timerRef.current), [])
 
@@ -45,14 +42,14 @@ export default function FineTuningViz() {
       const node = answerRefs.current[p.id]
       if (node) animate(node, { opacity: [0.15, 1], translateX: [-10, 0], duration: 420 / speedRef.current, ease: 'outQuad' })
     })
-  }, [phase, progress])
+  }, [phase, progress, speedRef])
 
   // Pop the "fine-tuned" chip when training completes.
   useEffect(() => {
     if (phase === 'tuned' && tunedChipRef.current) {
       animate(tunedChipRef.current, { scale: [0.6, 1], duration: 380 / speedRef.current, ease: 'outBack' })
     }
-  }, [phase])
+  }, [phase, speedRef])
 
   const run = () => {
     if (phase !== 'base') return
