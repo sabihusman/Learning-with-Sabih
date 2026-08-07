@@ -49,6 +49,7 @@ const TOPICS = [
   { slug: 'atomicity', name: 'Atomicity' },
   { slug: 'concurrency', name: 'Concurrency' },
   { slug: 'isolation-levels', name: 'Isolation Levels' },
+  { slug: 'finding-similar-rows', name: 'Finding Similar Rows' },
   { slug: 'caching', name: 'Caching' },
   { slug: 'caching-layers', name: 'Caching Layers' },
   { slug: 'percentiles-and-tail-latency', name: 'Percentiles and Tail Latency' },
