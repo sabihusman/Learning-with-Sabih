@@ -48,7 +48,7 @@ Databases and SQL|40|SQL vs NoSQL Modeling|Model the same users, plans, and orde
 Databases and SQL|41|Atomicity|Transfer money between two accounts as one transaction, trigger a failure between the debit and the credit, and watch the rollback restore the balances so the total never changes|atomicity
 Databases and SQL|42|Concurrency|Run two transactions that both add to one balance, watch a stale read make an update vanish, then switch on locking so the second waits and the total comes out right|concurrency
 Databases and SQL|43|Isolation Levels|Turn the isolation dial and pick a concurrency phenomenon, then watch a two-transaction timeline show whether PostgreSQL lets it happen or prevents it|isolation-levels
-Databases and SQL|44|Finding Similar Rows|Placeholder description, final wording lands with the prose commit|finding-similar-rows
+Databases and SQL|44|Finding Similar Rows|Turn each row into a bag of values and ask which rows sit closest|finding-similar-rows
 Systems and Networking|45|Caching|Feed a fixed request stream through a real least-recently-used cache of three slots and watch hits skip the slow origin while each miss fetches a key and evicts the one used longest ago|caching
 Systems and Networking|46|Caching Layers|Watch reads fall through a browser cache, a CDN, and Redis before the database answers, each answer copied back up the stack until the warmed layers catch almost everything|caching-layers
 Systems and Networking|47|Percentiles and Tail Latency|Drag a percentile handle across a fixed sample of 60 request latencies and watch the mean sit far below p99, because a handful of slow tail requests drag the average up while most requests never see them|percentiles-and-tail-latency

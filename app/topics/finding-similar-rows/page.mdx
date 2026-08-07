@@ -6,10 +6,42 @@ export const metadata = {
 
 # Finding similar rows
 
-{/* TODO: placeholder prose. The real prose is supplied in chat after the owner reviews the reported rankings, and lands on this branch before merge. Honesty constraints for the prose: the 16-row churn table is authored and frozen; the identifier column is excluded from the model; quantile bins, vocabulary, co-occurrence, PPMI (log base 2), row vectors (mean of token PPMI rows), and every cosine are computed live; clusters are never labelled in the data; real systems train a neural network to learn such vectors, and co-occurrence with PPMI is a simplified stand-in reaching a similar shape of result by a cruder route; no accuracy or model-quality claim. */}
+SQL is built on exact matching. Where the contract is month to month, where the charge is above sixty. That works when you know what you are looking for. It is less help when the question is vaguer: which other customers look like this one?
 
-Placeholder: a small customer table is tokenized, rows become bags of tokens, and co-occurrence turns each row into a vector, so the database can rank which customers look alike.
+The figure works through one way to answer that. The table is small enough to check by eye, so you can judge whether the answer it gives is the answer you would have given.
 
-## From table to ranked neighbours
+## Every value becomes a token
+
+Start by deciding what each column is. Some hold categories, some hold numbers, and some are just identifiers. The customer id is dropped, since a unique value that appears once tells you nothing about which values go together.
+
+Categories are easy. Each one becomes a token. Numbers are harder, because a charge and a slightly different charge are different values but nearly the same thing. Left alone, they would be as unrelated as a charge and a payment method. So the numbers are sorted and cut into buckets, and the bucket becomes the token.
+
+That step throws information away on purpose. Two customers with different charges can land in the same bucket, and once they do, the model cannot tell them apart. You can see this happen. Some pairs in this table score a perfect match despite having different numbers, because after bucketing their bags of tokens are identical. Nothing is broken. The model only knows what the tokens preserved.
+
+## Values that travel together
+
+Now each row is an unordered bag of tokens, and the column order stops mattering. Count how often each pair of tokens appears in the same row across the whole table, and a pattern falls out. Certain values keep showing up together.
+
+Weighting those counts gives each token a position. A token that appears alongside a particular other token far more often than chance would predict is pulled toward it. Average the tokens in a row and the row itself has a position. Rows made of values that travel together end up near each other.
+
+Pick a row and the figure ranks the rest by how close they sit.
 
 <SimilarRowsViz />
+
+## The model only knows what you feed it
+
+Switch a column off and watch the ranking move. This is the part worth spending time on.
+
+Turn off tenure and something sharp happens. A whole group of rows becomes identical, every one of them scoring a perfect match against the others. Tenure was the only column separating them. Without it their bags contain exactly the same tokens, so the model has no way to tell one from another. One column was carrying all the difference.
+
+Other columns behave differently. Drop the contract and some rows switch sides entirely, joining a group they were not close to before. The rows never changed. The question changed.
+
+This is the honest limit of the method. It has no idea what a contract or a charge means. It only knows which values occur together in the rows you gave it, and the answer it returns is a direct consequence of that choice.
+
+## Doing it in the database
+
+The reason this approach exists is where it runs. Once each row has a position, similarity is a number you can compute in a query, so the analysis stays where the data already is. Nothing is exported, no pipeline moves rows to a separate system, and anyone who can write a query can ask the question.
+
+IBM ships a version of this in Db2 for z/OS, called SQL Data Insights, which trains on your tables and adds functions like AI_SIMILARITY that you call in ordinary SQL. Other databases have taken a different route, storing vectors produced elsewhere in a dedicated column type and comparing them in the query.
+
+The table here is written by hand so the groups are visible. Everything after that is computed from it: the buckets, the counts, the weights, the positions, and every ranking. The step this figure simplifies is the one that produces the token positions. Real systems train a small neural network to learn them. This figure counts co-occurrence and weights it, which reaches a similar shape of answer by a much cruder route.
