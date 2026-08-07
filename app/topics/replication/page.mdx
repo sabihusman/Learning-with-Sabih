@@ -6,10 +6,24 @@ export const metadata = {
 
 # Replication
 
-{/* TODO: placeholder prose. The real prose is supplied in chat after the owner reviews the reported operation stream, lags, and kill outcomes, and lands on this branch before merge. Honesty constraints for the prose: the twenty-operation stream, the two replica lags (2 and 4 steps), and the starting balance are authored and frozen; every balance, arrival step, pending list, stale-read count, and loss set is computed from the step index, never typed in; there is no clock, no randomness, and no network model, so "lag" here is a fixed number of steps and not a latency; synchronous mode charges the write the full worst-case lag, which is why the same twenty operations take more steps; a write is acknowledged at issue in asynchronous mode and only on full replication in synchronous mode, which is the entire difference between losing acknowledged writes and losing only in-flight ones on failover; the figure promotes the replica that is furthest ahead and discards the old primary, where real systems use quorums rather than all-replica acknowledgement, replicate over a network whose delay varies, and can often recover a failed primary instead of throwing it away; no durability, availability, or performance claim about any real database. */}
+A database on one machine has one machine's limits. Every read and every write lands in the same place, and when that place is busy, everyone waits.
 
-Placeholder: one account balance is copied from a primary onto two replicas that each receive writes after a fixed lag, so reads routed to a replica can return an old value, and killing the primary can strand the writes that had not arrived yet.
+Replication copies the data onto more machines. Reads can now spread out: any copy can answer a question, so the work splits across all of them.
+
+Writes are different. They still go to one machine, the primary. Sending every change through a single point is what keeps them in order, so all the copies apply the same edits in the same sequence.
+
+The copies are called replicas, and they always run a little behind. When the primary takes a write, it has to send that change out, and sending takes time. For a moment the primary holds a newer value than the replicas do. A read routed to a replica in that moment gets an answer that used to be true. That gap is lag.
 
 ## Watching the lag
 
+Step through the stream. Writes land on the primary at once and reach each replica a fixed number of steps later, so one replica always trails a little further than the other. Then kill the primary and see what the promoted replica never received.
+
 <ReplicationViz />
+
+When the primary dies, a replica takes its place. The figure promotes the one that had received the most writes, since it is closest to current. Whatever had not reached it is gone. There is no other copy of those writes to restore them from.
+
+Asynchronous mode is where this bites. The primary confirmed each of those writes the instant it received them, so the client was already told they succeeded. They were acknowledged, then lost anyway.
+
+Synchronous mode closes the gap. A write is not confirmed until both replicas hold it, so nothing acknowledged can vanish in a failover. The cost shows in the step counter: every write now waits, and the same run takes longer. That wait is the price of the guarantee.
+
+One last thing, because it is easy to get wrong. A replica is not a backup. A backup is a copy from a moment in time that you keep so you can return to it. A replica is a live mirror. Delete a row on the primary and every replica deletes it too, faithfully, within moments. Replication saves you from a machine dying. It does not save you from a mistake, because it copies the mistake.
