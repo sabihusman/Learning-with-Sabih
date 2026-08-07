@@ -63,14 +63,15 @@ Systems and Networking|55|DNS|Resolve a name through root, TLD, and authoritativ
 Systems and Networking|56|Encryption and Public Keys|Lock a message with someone's public key and see that only their private key opens it, then flip the keys to sign|encryption-and-public-keys
 Systems and Networking|57|Streaming and Buffering|Watch a playback buffer fill from a variable network and drain at a steady rate, then drop the network speed and see the stall coming before it happens|streaming-and-buffering
 Systems and Networking|58|Network Stack and Routing|Walk a packet through two switched networks joined by a router and watch the layer 2 header get rewritten at the crossing while the layer 3 addresses ride through unchanged|network-stack-and-routing
-Object-Oriented Programming|59|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
-Object-Oriented Programming|60|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
-Object-Oriented Programming|61|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
-Object-Oriented Programming|62|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
-Object-Oriented Programming|63|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
-Object-Oriented Programming|64|Abstract Classes and Interfaces|Build GuardBot against a Robot contract, switch the contract between an abstract class and an interface, and see live whether each choice compiles|abstract-classes-and-interfaces
-Object-Oriented Programming|65|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
-Data and Compression|66|Entropy and Compression|Drag four symbol probabilities and watch a real Huffman code chase Shannon's entropy floor, closing the gap only at powers of one-half|entropy-and-compression
+Systems and Networking|59|Replication|Placeholder description, final wording lands with the prose commit|replication
+Object-Oriented Programming|60|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
+Object-Oriented Programming|61|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
+Object-Oriented Programming|62|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
+Object-Oriented Programming|63|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
+Object-Oriented Programming|64|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism
+Object-Oriented Programming|65|Abstract Classes and Interfaces|Build GuardBot against a Robot contract, switch the contract between an abstract class and an interface, and see live whether each choice compiles|abstract-classes-and-interfaces
+Object-Oriented Programming|66|Composition vs Inheritance|Grow an inheritance tree until it tangles, then build the same robot by snapping modules in|composition-vs-inheritance
+Data and Compression|67|Entropy and Compression|Drag four symbol probabilities and watch a real Huffman code chase Shannon's entropy floor, closing the gap only at powers of one-half|entropy-and-compression
 `
 
 export const SECTION_ORDER = ['AI and ML', 'Algorithms and Data Structures', 'Databases and SQL', 'Systems and Networking', 'Object-Oriented Programming', 'Data and Compression']
