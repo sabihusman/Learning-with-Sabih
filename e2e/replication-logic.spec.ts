@@ -135,6 +135,35 @@ test('schedule length and per-write cost match an independent expansion', () => 
   expect(totalStepsFor('sync') - totalStepsFor('async')).toBe(writeCount * MAX_LAG)
 })
 
+test('every write value is strictly greater than the one before it', () => {
+  const values = OPS.filter((o) => o.op === 'write').map((o) => o.value as number)
+  expect(values.length, 'write count').toBeGreaterThan(1)
+  expect(values[0], 'first write must be above the starting balance').toBeGreaterThan(START_BALANCE)
+  for (let i = 1; i < values.length; i += 1) {
+    expect(values[i], `write ${i + 1} (${values[i]}) must exceed write ${i} (${values[i - 1]})`).toBeGreaterThan(
+      values[i - 1],
+    )
+  }
+})
+
+test('at every kill point the promoted replica holds at least as much as the other', () => {
+  // The payoff of the failover depends on this: the replica that is furthest ahead
+  // must never show a smaller balance than a replica that is further behind. It holds
+  // because write values only rise, so more writes received means a larger number.
+  for (const m of MODES) {
+    const sched = scheduleFor(m.id)
+    for (let s = 0; s <= totalStepsFor(m.id); s += 1) {
+      const k = killAt(sched, s)
+      const others = stateAt(m.id, s).replicas.filter((r) => r.id !== k.promoted.id)
+      for (const other of others) {
+        expect(k.promotedValue, `${m.id} s${s}: promoted ${k.promoted.id} vs ${other.id}`).toBeGreaterThanOrEqual(
+          other.value,
+        )
+      }
+    }
+  }
+})
+
 test('replica lags are distinct, so one replica is always at least as fresh', () => {
   const lags = REPLICAS.map((r) => r.lag)
   expect(new Set(lags).size, 'lags must differ per replica').toBe(lags.length)
