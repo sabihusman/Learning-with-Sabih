@@ -29,6 +29,13 @@ export const START_BALANCE = 100
 // Fixed operation stream: 20 operations, writes and reads interleaved. Reads name
 // the replica they are routed to; the primary is never read in this figure, which
 // is the whole reason staleness is visible at all.
+//
+// Every write value is STRICTLY GREATER than the one before it: the account only
+// ever receives deposits. That is not decoration. It makes "further ahead" and
+// "holding a larger number" the same statement, so when a failover promotes the
+// replica that has received the most writes, the number it holds is never smaller
+// than the number the other replica holds. A balance that moved up and down would
+// let a more-behind replica show a bigger figure and muddle the payoff.
 export const OPS = [
   { op: 'write', value: 120 },
   { op: 'read', replica: 'r1' },
@@ -37,14 +44,14 @@ export const OPS = [
   { op: 'read', replica: 'r1' },
   { op: 'read', replica: 'r2' },
   { op: 'read', replica: 'r1' },
-  { op: 'write', value: 130 },
-  { op: 'write', value: 118 },
   { op: 'write', value: 160 },
+  { op: 'write', value: 175 },
+  { op: 'write', value: 195 },
   { op: 'read', replica: 'r1' },
   { op: 'read', replica: 'r2' },
   { op: 'read', replica: 'r1' },
   { op: 'read', replica: 'r2' },
-  { op: 'write', value: 205 },
+  { op: 'write', value: 240 },
   { op: 'read', replica: 'r1' },
   { op: 'read', replica: 'r2' },
   { op: 'read', replica: 'r1' },
