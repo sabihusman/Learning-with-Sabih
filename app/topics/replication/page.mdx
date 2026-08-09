@@ -16,8 +16,6 @@ The copies are called replicas, and they always run a little behind. When the pr
 
 ## Watching the lag
 
-Step through the stream. Writes land on the primary at once and reach each replica a fixed number of steps later, so one replica always trails a little further than the other. Then kill the primary and see what the promoted replica never received.
-
 <ReplicationViz />
 
 When the primary dies, a replica takes its place. The figure promotes the one that had received the most writes, since it is closest to current. Whatever had not reached it is gone. There is no other copy of those writes to restore them from.
