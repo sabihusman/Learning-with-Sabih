@@ -63,7 +63,7 @@ Systems and Networking|55|DNS|Resolve a name through root, TLD, and authoritativ
 Systems and Networking|56|Encryption and Public Keys|Lock a message with someone's public key and see that only their private key opens it, then flip the keys to sign|encryption-and-public-keys
 Systems and Networking|57|Streaming and Buffering|Watch a playback buffer fill from a variable network and drain at a steady rate, then drop the network speed and see the stall coming before it happens|streaming-and-buffering
 Systems and Networking|58|Network Stack and Routing|Walk a packet through two switched networks joined by a router and watch the layer 2 header get rewritten at the crossing while the layer 3 addresses ride through unchanged|network-stack-and-routing
-Systems and Networking|59|Replication|Placeholder description, final wording lands with the prose commit|replication
+Systems and Networking|59|Replication|One primary, two lagging replicas, and what a failover loses|replication
 Object-Oriented Programming|60|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
 Object-Oriented Programming|61|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
 Object-Oriented Programming|62|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
