@@ -178,6 +178,85 @@
   }
 }
 
+/* static code panel: the traversal loop written out. Driven only by the algo toggle,
+   never by the step index, so nothing in here highlights or moves as the figure runs.
+   Same mono face and palette variables as the rest of the component; no new font, no
+   new colors. The two marked lines get deliberately different weights: the shift/pop
+   line is the algorithmic difference and reads as primary, the neighbour-order line is
+   a supporting note. Markers sit on their own line so they stay legible on a phone,
+   and stick to the left edge if the listing has to scroll sideways. */
+.codePanel {
+  margin-top: 18px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #faf9f6;
+  padding: 10px 12px 12px;
+}
+
+.codeHead {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 8px;
+}
+
+.code {
+  overflow-x: auto;
+}
+
+/* Rows are as wide as the widest line so a sticky marker has room to stay pinned to
+   the left edge while the listing is scrolled sideways on a narrow screen. */
+.codeRow {
+  width: max-content;
+  min-width: 100%;
+}
+
+/* Scoped through .codePanel on purpose: the global prose stylesheet styles bare
+   `code` as an inline chip (tinted background, padding, 0.875em), and that selector
+   outranks a single class. These lines are a block listing, not inline code. */
+.codePanel .codeText {
+  display: block;
+  white-space: pre;
+  background: none;
+  padding: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+.markPrimary {
+  position: sticky;
+  left: 0;
+  display: block;
+  width: fit-content;
+  margin: 3px 0 5px;
+  padding: 2px 7px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: #fcf3f1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+}
+
+.markSecondary {
+  position: sticky;
+  left: 0;
+  display: block;
+  width: fit-content;
+  margin: 3px 0 5px;
+  padding: 1px 0 1px 7px;
+  border-left: 2px dotted var(--fade);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--fade);
+}
+
 .caption {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.6875rem;
