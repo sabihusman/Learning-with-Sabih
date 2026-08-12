@@ -34,6 +34,36 @@ function buildTrace(algo, start) {
   return frames
 }
 
+// ── static code panel ───────────────────────────────────────────────────────────────
+// A written-out version of the loop above. Its ONLY input is `algo`: it never reads
+// `step` or `frames`, and nothing in it highlights or advances as the traversal runs.
+// Exactly two lines change between the modes, and those two carry the markers; every
+// other line is byte-identical in both listings.
+const MARK_PRIMARY = 'the difference'
+const MARK_SECONDARY = 'so the orders compare fairly'
+
+function codeListing(algo) {
+  const bfs = algo === 'bfs'
+  return [
+    { text: 'const frontier = [start]' },
+    { text: 'const discovered = new Set([start])' },
+    { text: '' },
+    { text: 'while (frontier.length) {' },
+    { text: bfs ? '  const node = frontier.shift()' : '  const node = frontier.pop()', mark: 'primary' },
+    { text: '  visit(node)' },
+    {
+      text: bfs ? '  for (const nb of neighbours(node)) {' : '  for (const nb of [...neighbours(node)].reverse()) {',
+      mark: 'secondary',
+    },
+    { text: '    if (!discovered.has(nb)) {' },
+    { text: '      discovered.add(nb)' },
+    { text: '      frontier.push(nb)' },
+    { text: '    }' },
+    { text: '  }' },
+    { text: '}' },
+  ]
+}
+
 const NODE_FILL = { plain: '#fffefb', frontier: '#f0d49a', visited: '#3f7d68', current: '#c0392b' }
 const NODE_STROKE = { plain: '#9b9892', frontier: '#c8922e', visited: '#3f7d68', current: '#c0392b' }
 const R = 17
@@ -164,6 +194,22 @@ export default function GraphTraversalViz() {
               ))
             )}
           </div>
+        </div>
+      </div>
+
+      <div className={styles.codePanel} data-testid="traversal-code">
+        <div className={styles.codeHead}>{algo === 'bfs' ? 'BFS' : 'DFS'}</div>
+        <div className={styles.code}>
+          {codeListing(algo).map((line, i) => (
+            <div key={i} className={styles.codeRow}>
+              <code className={styles.codeText}>{line.text === '' ? ' ' : line.text}</code>
+              {line.mark && (
+                <span className={line.mark === 'primary' ? styles.markPrimary : styles.markSecondary}>
+                  {line.mark === 'primary' ? MARK_PRIMARY : MARK_SECONDARY}
+                </span>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
