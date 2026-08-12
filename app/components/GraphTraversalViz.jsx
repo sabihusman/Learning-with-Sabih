@@ -9,11 +9,15 @@ import { NODES, EDGES, nodePos, buildAdjacency, GRAPH_VIEWBOX } from './graphDat
 const PLAY_MS = 700
 const ADJ = buildAdjacency()
 
-// Real, deterministic BFS/DFS over the shared graph. Both use the SAME loop and differ
-// only in the frontier data structure: BFS dequeues the front (FIFO queue), DFS pops the
-// top (LIFO stack). Nodes are discovered (added to the frontier) once, in the fixed
-// alphabetical neighbour order, so the visit order is reproducible. Returns one frame per
-// step: frame 0 has just the start in the frontier; frame k is the state after k visits.
+// Real, deterministic BFS/DFS over the shared graph. Both use the SAME loop. The
+// algorithmic difference is the frontier data structure: BFS dequeues the front (FIFO
+// queue), DFS pops the top (LIFO stack). DFS additionally scans each node's neighbours in
+// reverse, which is presentational, not algorithmic: under LIFO, reversing the push order
+// makes nodes come OFF the frontier alphabetically, so DFS descends into a node's first
+// neighbour rather than its last. Neighbours come from buildAdjacency() in fixed
+// alphabetical order and each node is discovered once, so every run is reproducible.
+// Returns one frame per step: frame 0 has just the start in the frontier; frame k is the
+// state after k visits.
 function buildTrace(algo, start) {
   const discovered = new Set([start])
   const frontier = [start]
@@ -143,7 +147,7 @@ export default function GraphTraversalViz() {
       speedControl
       status={status}
       readouts={readouts}
-      tryThis="Pick BFS or DFS, click a node to start, and step. Watch the side panel: BFS drives the visits with a queue (first in, first out), DFS with a stack (last in, first out). That single choice is the whole difference. Run both from the same start and compare the visit-order numbers filling the nodes: BFS fans out level by level, DFS dives down one path before backtracking."
+      tryThis="Pick BFS or DFS, click a node to start, and step. Watch the side panel: BFS drives the visits with a queue (first in, first out), DFS with a stack (last in, first out). Now toggle between the two and watch the code listing instead. Almost every line holds still. The marked line is the algorithm difference, the whole of it. The second marked line is ours rather than the algorithm's: reversing the push order means DFS takes a node's neighbours off the stack alphabetically, so it descends into a node's first neighbour rather than its last. Without it the two traversals would walk the graph in opposite directions and the visit orders would be much harder to line up. Run both from the same start and read the numbers filling the nodes. BFS fans out level by level, DFS dives down one path before backtracking."
     >
       <div className={styles.algoToggle} role="group" aria-label="Traversal algorithm">
         {[['bfs', 'BFS'], ['dfs', 'DFS']].map(([k, label]) => (
@@ -215,7 +219,8 @@ export default function GraphTraversalViz() {
 
       <p className={styles.caption}>
         Both traversals are real and deterministic, run on one shared graph with a fixed neighbour order, and the panel
-        shows the actual queue or stack contents. The graph is kept small for clarity; real graphs are far larger.
+        shows the actual queue or stack contents. The listing is a trimmed version of the loop that drives this figure,
+        with the step recording left out. The graph is kept small for clarity; real graphs are far larger.
       </p>
     </Figure>
   )
