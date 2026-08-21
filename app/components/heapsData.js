@@ -31,7 +31,7 @@ const SORTED_ASC = [12, 15, 18, 23, 27, 31, 38, 42, 47, 55, 60, 66, 71, 84, 91]
 export const PRESETS = [
   { key: 'scrambled', label: 'Scrambled', values: [38, 91, 23, 60, 15, 71, 42, 12, 84, 27, 55, 18, 66, 31, 47] },
   { key: 'ascending', label: 'Ascending', values: [...SORTED_ASC] },
-  { key: 'heapAlready', label: 'Already a heap', values: [...SORTED_ASC].reverse() },
+  { key: 'heapAlready', label: 'Descending', values: [...SORTED_ASC].reverse() },
 ]
 
 // ── index math ──────────────────────────────────────────────────────────────────

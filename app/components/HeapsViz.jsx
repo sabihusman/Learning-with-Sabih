@@ -114,7 +114,7 @@ export default function HeapsViz() {
       speedControl
       status={f.note}
       readouts={readouts}
-      tryThis="Placeholder callout, final wording lands with the prose commit. Run each preset to the end and compare the swap counts: the descending preset is already a valid heap, so phase 1 does no swapping at all, while the ascending one does the most."
+      tryThis="Build with each preset and compare the swap counts. Descending takes none, because a descending array already satisfies the heap rule. Ascending takes the most, in both phases. Watch both views as you step: every swap in the tree is the same swap in the array, and the tree is only ever a picture of the indexes."
     >
       <div className={styles.heapFigure}>
         <div className={styles.controlsRow}>
@@ -228,9 +228,9 @@ export default function HeapsViz() {
         </svg>
 
         <p className={styles.caption}>
-          Placeholder caption, final wording lands with the prose commit. Both views are drawn from one array, so a
-          highlight marks the same value twice. Every comparison, swap, and counter is produced by running the real
-          algorithm, never from a stored list of frames.
+          Both phases are real. The array, the tree, the counters, and every swap are computed from the input rather
+          than replayed from a recording, and the tree and array views are drawn from the same state. The presets are
+          kept small so the tree fits on screen; real priority queues hold far more.
         </p>
       </div>
     </Figure>
