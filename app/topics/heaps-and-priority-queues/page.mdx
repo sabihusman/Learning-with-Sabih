@@ -1,0 +1,15 @@
+import HeapsViz from '@/app/components/HeapsViz'
+
+export const metadata = {
+  title: 'Heaps and priority queues - Learning with Sabih',
+}
+
+# Heaps and priority queues
+
+{/* TODO: placeholder prose. The real prose is supplied in chat after the owner reviews the reported preset arrays, heap arrays, counters, and frame counts. Honesty constraints for the prose: the three presets share one multiset of fifteen distinct values, so the swap counts differ only because the starting order differs; the tree and the array are two views of one array, not two structures; index math is 0-indexed, children of i are 2i+1 and 2i+2 and the parent is floor((i-1)/2); phase 1 is bottom-up heapify starting at floor(n/2)-1 and walking backward to 0; phase 2 swaps the root into the shrinking tail; every comparison, swap, and frame is produced by running the algorithm, never authored; the Shuffle button uses a seeded generator rather than Math.random so a given shuffle is reproducible; no claim about real priority-queue implementations, which use the same array trick but expose push and pop rather than a full sort. */}
+
+Placeholder: a max-heap is a tree that lives inside a flat array, where every parent outranks its children, and the same two operations that build it can also empty it in sorted order.
+
+## Building the heap, then taking it apart
+
+<HeapsViz />
