@@ -1,0 +1,67 @@
+/* Heaps and priority queues: a tree view above a flat array view, both drawn from
+   one snapshot so a highlight lands on the same value twice. Palette and mono face
+   match the other Algorithms figures; no new font, no new colours.
+
+   Everything is scoped through the .heapFigure parent on purpose. The global
+   .layout_prose rules style bare p and code inside a topic page, and a single class
+   loses to them on specificity, so a lone .caption rule would be overridden. */
+
+.heapFigure .controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+}
+
+.heapFigure .groupLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.heapFigure .btn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.heapFigure .btn:hover {
+  border-color: var(--ink);
+}
+
+.heapFigure .btnOn {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.heapFigure .btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.heapFigure .svg {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.heapFigure .caption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--fade);
+  background: none;
+  padding: 0;
+  margin: 0.9rem 0 0;
+}
