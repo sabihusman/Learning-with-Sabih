@@ -34,7 +34,7 @@ Algorithms and Data Structures|26|Hash Tables|Hash keys into buckets by a visibl
 Algorithms and Data Structures|27|Binary Search Trees|Insert and search values down a tree, then watch a sorted insert order collapse it into a slow straight line|binary-search-trees
 Algorithms and Data Structures|28|Graph Traversal (BFS and DFS)|Walk one graph two ways and watch the only real difference, a queue versus a stack, reorder the visits|graph-traversal
 Algorithms and Data Structures|29|Dijkstra's Shortest Path|Lock in the nearest node and relax its edges until every shortest distance from a source is found, then trace any path|dijkstra
-Algorithms and Data Structures|30|Heaps and Priority Queues|Placeholder description, final wording lands with the prose commit|heaps-and-priority-queues
+Algorithms and Data Structures|30|Heaps and Priority Queues|An array that is secretly a tree, and how it hands you the largest item every time|heaps-and-priority-queues
 Algorithms and Data Structures|31|Dynamic Programming|Compute Fibonacci naively and watch the call tree explode with repeated work, then memoize and see it collapse|dynamic-programming
 Databases and SQL|32|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
 Databases and SQL|33|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case

@@ -4,7 +4,49 @@ export const metadata = {
   title: 'Heaps and priority queues - Learning with Sabih',
 }
 
-# Heaps and priority queues
+# Heaps and Priority Queues
+
+Sometimes you do not want the items in order. You just want the biggest one, over and over, as new items keep arriving.
+
+A hospital waiting room works this way. Patients arrive, each with some urgency. The next patient called is the most urgent one waiting, not the one who arrived first. Then someone worse walks in and goes ahead of everyone. A task scheduler works this way too, and so does the frontier in the previous topic, where the next node to expand is the one with the smallest distance found so far.
+
+That is a priority queue: a collection where you add items freely and always remove the highest-priority one.
+
+## Why the obvious answers are not good enough
+
+Keep the items in an unsorted list. Adding is instant, just append. But finding the biggest means checking every single item, every time.
+
+Keep the items sorted instead. Now the biggest is right there at the end, free. But adding means finding the right slot and shifting everything after it.
+
+Both are fast at one job and slow at the other. A heap is the structure that refuses to pick.
+
+## The heap is a tree hiding in an array
+
+A binary heap is a tree with one rule: every parent is at least as large as its children. That is the whole rule. It says nothing about left versus right, and nothing about how any two siblings compare. The largest item is at the root, and beyond that the ordering is loose.
+
+That looseness is the point. A fully sorted structure is expensive to maintain. A heap maintains just enough order to answer one question fast.
+
+The tree is not built from pointers. It is stored as a flat array, and the shape is implied by arithmetic. Each item's children sit at predictable slots further along the array, and its parent sits at a predictable slot behind it. No links, no allocation, just index math.
+
+## Building it backward
+
+Given an arbitrary array, you could build a heap by inserting items one at a time. There is a better way, and it runs backward.
+
+Look at the second half of the array. Those items are leaves. They have no children, so there is nothing below them to violate the rule. Every one of them is already a valid heap, of size one. Half the work is done before you start.
+
+So you begin at the last item that does have children and sift it down: compare it against its children, swap it with the larger one if it is smaller, and keep going until it settles. Then step backward one index and repeat. Each time you sift, everything below is already a valid heap, so a single downward pass is enough.
+
+Work backward to the front and the whole array is a heap.
+
+## Emptying it
+
+Once built, taking the largest item out is easy, since it is sitting at the root. The trick is what happens next.
+
+Swap the root with the last item in the heap and shrink the heap by one. The largest value is now parked at the end of the array, outside the heap, in its final sorted position. But the item now sitting at the root came from the bottom and is almost certainly too small to be there. So sift it down until it settles.
+
+Repeat. Each round parks one more item at the tail, and the tail grows into a sorted run from the back.
+
+Empty the heap completely and the array is fully sorted. That is heapsort, and it comes free from a structure that was not built to sort anything.
 
 <HeapsViz />
 

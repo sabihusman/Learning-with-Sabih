@@ -228,9 +228,9 @@ export default function HeapsViz() {
         </svg>
 
         <p className={styles.caption}>
-          Placeholder caption, final wording lands with the prose commit. Both views are drawn from one array, so a
-          highlight marks the same value twice. Every comparison, swap, and counter is produced by running the real
-          algorithm, never from a stored list of frames.
+          Both phases are real. The array, the tree, the counters, and every swap are computed from the input rather
+          than replayed from a recording, and the tree and array views are drawn from the same state. The presets are
+          kept small so the tree fits on screen; real priority queues hold far more.
         </p>
       </div>
     </Figure>
