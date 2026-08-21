@@ -114,7 +114,7 @@ export default function HeapsViz() {
       speedControl
       status={f.note}
       readouts={readouts}
-      tryThis="Placeholder callout, final wording lands with the prose commit. Run each preset to the end and compare the swap counts: the descending preset is already a valid heap, so phase 1 does no swapping at all, while the ascending one does the most."
+      tryThis="Build with each preset and compare the swap counts. Descending takes none, because a descending array already satisfies the heap rule. Ascending takes the most, in both phases. Watch both views as you step: every swap in the tree is the same swap in the array, and the tree is only ever a picture of the indexes."
     >
       <div className={styles.heapFigure}>
         <div className={styles.controlsRow}>
