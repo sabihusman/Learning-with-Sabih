@@ -4,27 +4,34 @@ import { useRef, useState, useEffect } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
 import RobotAvatar from './RobotAvatar'
+import { usePacedInterval } from './usePacedInterval'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { prefersReducedMotion } from './motion'
+import { BLUE, AMBER, PURPLE, LINE } from './vizPalette'
 import styles from './PolymorphismViz.module.css'
 
 // Three concrete robot types, each overriding activate(). Colors match the rest of
-// the OOP section (CleaningBot blue, GuardBot amber, ChefBot plum). The message is
-// the exact activate() output the prose's Java prints.
+// the OOP section (CleaningBot blue, GuardBot amber, ChefBot purple, the robot
+// mapping's identity set). The message is the exact activate() output the prose's
+// Java prints.
 const BOTS = {
-  CleaningBot: { color: '#4f6d9c', message: 'Starting vacuum and mop', action: 'sweep' },
-  GuardBot: { color: '#b07a2e', message: 'Arming sensors and patrol route', action: 'radar' },
-  ChefBot: { color: '#8a5a83', message: 'Preheating oven and checking recipes', action: 'heat' },
+  CleaningBot: { color: BLUE, message: 'Starting vacuum and mop', action: 'sweep' },
+  GuardBot: { color: AMBER, message: 'Arming sensors and patrol route', action: 'radar' },
+  ChefBot: { color: PURPLE, message: 'Preheating oven and checking recipes', action: 'heat' },
 }
 const INITIAL_SLOTS = ['CleaningBot', 'GuardBot', 'ChefBot']
 
 // The action visual that plays inside a card when its robot's activate() runs. SVG +
-// CSS keyframes (keyed to replay); deterministic and hand-authored per type.
-function ActionVisual({ action, playKey }) {
+// CSS keyframes (keyed to replay); deterministic and hand-authored per type. Under
+// reduced motion the keyframes are guarded in CSS (they end at their final state),
+// so no JS branch is needed here.
+function ActionVisual({ action, color, playKey }) {
   if (action === 'sweep') {
     return (
       <svg viewBox="0 0 80 40" className={styles.actionSvg} aria-hidden="true">
-        <line x1="6" y1="34" x2="74" y2="34" stroke="#d4d0c8" strokeWidth="1.5" />
+        <line x1="6" y1="34" x2="74" y2="34" stroke={LINE} strokeWidth="1.5" />
         {[0, 1, 2, 3].map((i) => (
-          <circle key={`${playKey}-${i}`} className={styles.sweepDust} style={{ animationDelay: `${i * 70}ms` }} cx={18 + i * 14} cy="30" r="2.4" fill="#4f6d9c" />
+          <circle key={`${playKey}-${i}`} className={styles.sweepDust} style={{ animationDelay: `${i * 70}ms` }} cx={18 + i * 14} cy="30" r="2.4" fill={color} />
         ))}
       </svg>
     )
@@ -32,9 +39,9 @@ function ActionVisual({ action, playKey }) {
   if (action === 'radar') {
     return (
       <svg viewBox="0 0 80 40" className={styles.actionSvg} aria-hidden="true">
-        <circle cx="40" cy="22" r="3" fill="#b07a2e" />
+        <circle cx="40" cy="22" r="3" fill={color} />
         {[0, 1, 2].map((i) => (
-          <circle key={`${playKey}-${i}`} className={styles.radarRing} style={{ animationDelay: `${i * 220}ms` }} cx="40" cy="22" r="6" fill="none" stroke="#b07a2e" strokeWidth="1.6" />
+          <circle key={`${playKey}-${i}`} className={styles.radarRing} style={{ animationDelay: `${i * 220}ms` }} cx="40" cy="22" r="6" fill="none" stroke={color} strokeWidth="1.6" />
         ))}
       </svg>
     )
@@ -42,7 +49,7 @@ function ActionVisual({ action, playKey }) {
   // heat
   return (
     <svg viewBox="0 0 80 40" className={styles.actionSvg} aria-hidden="true">
-      <rect x="30" y="30" width="20" height="6" rx="1.5" fill="#8a5a83" />
+      <rect x="30" y="30" width="20" height="6" rx="1.5" fill={color} />
       {[0, 1, 2].map((i) => (
         <path
           key={`${playKey}-${i}`}
@@ -50,7 +57,7 @@ function ActionVisual({ action, playKey }) {
           style={{ animationDelay: `${i * 160}ms` }}
           d={`M ${33 + i * 7} 28 q 3 -5 0 -10 q -3 -5 0 -10`}
           fill="none"
-          stroke="#8a5a83"
+          stroke={color}
           strokeWidth="1.6"
           strokeLinecap="round"
         />
@@ -70,18 +77,24 @@ export default function PolymorphismViz() {
   const tokenRef = useRef(null)
   const cardRefs = useRef([])
   const timerRef = useRef(null)
+  const speedRef = useAnimationSpeedRef()
 
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
   // Move the "activate()" token over card `i`. anime drives the visible travel; the
-  // sequence itself is timer-driven so it completes even if rAF is throttled.
+  // sequence itself is timer-driven so it completes even if rAF is throttled. Under
+  // reduced motion the token jumps straight to position instead of gliding.
   const moveTokenTo = (i) => {
     const card = cardRefs.current[i]
     const token = tokenRef.current
     if (!card || !token) return
     const x = card.offsetLeft + card.offsetWidth / 2 - token.offsetWidth / 2
     const y = card.offsetTop - token.offsetHeight - 4
-    animate(token, { translateX: x, translateY: y, duration: 480, ease: 'inOutQuad' })
+    if (prefersReducedMotion()) {
+      token.style.transform = `translateX(${x}px) translateY(${y}px)`
+      return
+    }
+    animate(token, { translateX: x, translateY: y, duration: 480 / speedRef.current, ease: 'inOutQuad' })
   }
 
   const activate = () => {
@@ -102,14 +115,14 @@ export default function PolymorphismViz() {
         setReacted((r) => ({ ...r, [idx]: true }))
         i += 1
         if (i < slots.length) {
-          timerRef.current = setTimeout(step, 340)
+          timerRef.current = setTimeout(step, 340 / speedRef.current)
         } else {
           timerRef.current = setTimeout(() => {
             setRunning(false)
             setCallAt(-1)
-          }, 650)
+          }, 650 / speedRef.current)
         }
-      }, 520)
+      }, 520 / speedRef.current)
     }
     step()
   }
@@ -158,6 +171,7 @@ export default function PolymorphismViz() {
       eyebrow="Polymorphism"
       title="One activate() call, many behaviors"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Every slot is declared as type Robot, but each holds a different concrete robot. Press activate() and the same call travels to each one, yet each runs its own overridden activate(): the CleaningBot sweeps, the GuardBot sweeps a sensor ring, the ChefBot sends up heat. Now press Shuffle to move the objects into different slots and activate() again. The behavior follows the object, not the slot or the declared Robot type. That runtime choice of which activate() to run is dynamic dispatch."
@@ -189,7 +203,7 @@ export default function PolymorphismViz() {
                 </div>
 
                 <div className={styles.actionStage}>
-                  {isReacted && <ActionVisual action={bot.action} playKey={playKey} />}
+                  {isReacted && <ActionVisual action={bot.action} color={bot.color} playKey={playKey} />}
                 </div>
 
                 <div className={styles.message}>{isReacted ? bot.message : ''}</div>

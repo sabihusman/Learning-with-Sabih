@@ -12,20 +12,18 @@ import {
   LAST_STEP,
   PRO_PLAN,
 } from './normalizationData'
+import { INK, FADE, ACCENT, OK, MONO, AMBER_BG, ERR_BG, OK_BG, CONTROL_BG, MUTED_BG, PANEL, RULE } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './NormalizationViz.module.css'
 
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
-const PK_GREEN = '#1f6f5c'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+const PK_GREEN = OK
 const PLAY_MS = 1600
 
 // mark styles for cell highlighting
 const MARK = {
-  smell: { bg: '#f6e7c8', text: INK },
-  error: { bg: '#fbecea', text: ACCENT },
-  ok: { bg: '#e6f2ec', text: PK_GREEN },
+  smell: { bg: AMBER_BG, text: INK },
+  error: { bg: ERR_BG, text: ACCENT },
+  ok: { bg: OK_BG, text: PK_GREEN },
 }
 
 const VB_W = 560
@@ -68,6 +66,23 @@ const ORDERS_COLS = [
 
 const roleColor = (role) => (role === 'PK' ? PK_GREEN : role === 'FK' ? ACCENT : null)
 const tableWidth = (cols) => cols.reduce((s, c) => s + c.w, 0)
+const tableHeight = (rowCount) => 14 + HEAD_H + rowCount * ROW_H
+
+// Layout of the split scene (steps 4-5): users above plans on the left, orders on the right.
+const PLANS_GAP = 22
+const ORDERS_X = 300
+
+// One fixed viewBox height for every step: the tallest scene's height, so stepping never
+// resizes the figure and shifts the page. Computed from the same data and table geometry
+// drawTable uses.
+const VB_H = (() => {
+  const split = splitTables()
+  const wideBottom = TOP + tableHeight(flatRows().length)
+  const oneNFBottom = TOP + tableHeight(oneNFRows().length)
+  const plansBottom = TOP + tableHeight(split.users.length) + PLANS_GAP + tableHeight(split.plans.length)
+  const ordersBottom = TOP + tableHeight(split.orders.length)
+  return Math.max(wideBottom, oneNFBottom, plansBottom, ordersBottom) + 8
+})()
 
 const STATUS = [
   'Press Step to walk this one wide table into normal forms.',
@@ -118,7 +133,7 @@ export default function NormalizationViz() {
       const ci = cols.findIndex((c) => c.key === key)
       return ci < 0 ? x : colLeft(ci) + cols[ci].w / 2
     }
-    const height = 14 + HEAD_H + rows.length * ROW_H
+    const height = tableHeight(rows.length)
     const nodes = []
 
     nodes.push(
@@ -128,7 +143,7 @@ export default function NormalizationViz() {
     )
     // header
     nodes.push(
-      <rect key={`${id}-hb`} x={x} y={headTop} width={width} height={HEAD_H} fill="#f0ede6" stroke="#e2e0d8" strokeWidth={0.5} />
+      <rect key={`${id}-hb`} x={x} y={headTop} width={width} height={HEAD_H} fill={CONTROL_BG} stroke={RULE} strokeWidth={0.5} />
     )
     cols.forEach((c, ci) => {
       const rc = roleColor(c.role)
@@ -151,7 +166,7 @@ export default function NormalizationViz() {
         nodes.push(
           <g key={`${id}-b-${c.key}`}>
             <rect x={bx} y={headTop + 4} width={15} height={10} rx={2} fill={rc} />
-            <text x={bx + 7.5} y={headTop + 12} fontSize={9.5} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">
+            <text x={bx + 7.5} y={headTop + 12} fontSize={9.5} fill={PANEL} fontFamily={MONO} fontWeight={700} textAnchor="middle">
               {c.role}
             </text>
           </g>
@@ -173,7 +188,7 @@ export default function NormalizationViz() {
             width={c.w}
             height={ROW_H}
             fill={style ? style.bg : '#ffffff'}
-            stroke="#eceae3"
+            stroke={MUTED_BG}
             strokeWidth={0.5}
           />
         )
@@ -199,7 +214,6 @@ export default function NormalizationViz() {
   // Build the current scene: a single wide table (steps 0-3) or the three split tables
   // with key connectors (steps 4-5).
   let scene
-  let vbH
   if (step <= 3) {
     const wide = step <= 1
     const cols = wide ? WIDE_COLS : ONE_NF_COLS
@@ -215,14 +229,13 @@ export default function NormalizationViz() {
     const tw = tableWidth(cols)
     const t = drawTable('wide', (VB_W - tw) / 2, TOP, wide ? 'user_orders  (one wide table)' : 'user_orders  (1NF: one row per order)', cols, rows, markFn)
     scene = t.nodes
-    vbH = t.bottom + 8
   } else {
     const { users, plans, orders } = splitTables(step === 5)
     const uT = drawTable('users', 8, TOP, 'users', USERS_COLS, users, null)
-    const pT = drawTable('plans', 8, uT.bottom + 22, 'plans', PLANS_COLS, plans, (ri, key) =>
+    const pT = drawTable('plans', 8, uT.bottom + PLANS_GAP, 'plans', PLANS_COLS, plans, (ri, key) =>
       step === 5 && key === 'plan_price' && plans[ri].plan === PRO_PLAN ? 'ok' : null
     )
-    const oX = 300
+    const oX = ORDERS_X
     const oT = drawTable('orders', oX, TOP, 'orders', ORDERS_COLS, orders, null)
 
     // key connectors (cosmetic): plans.plan PK -> users.plan FK, users.user_id PK -> orders.user_id FK
@@ -251,7 +264,6 @@ export default function NormalizationViz() {
       />,
     ]
     scene = [...connectors, ...uT.nodes, ...pT.nodes, ...oT.nodes]
-    vbH = Math.max(pT.bottom, oT.bottom) + 8
   }
 
   return (
@@ -265,15 +277,15 @@ export default function NormalizationViz() {
       tryThis="Run the price update in step 3, then again in step 5, and compare what can go wrong. In the wide table the pro price is copied onto every pro row, so changing it in one place leaves the other copies stale and the data contradicts itself. After the split, plan_price lives once in the plans table, so the same update touches a single cell and there is no copy left to disagree. That is what normalizing buys you: each fact in exactly one place."
     >
       <svg
-        viewBox={`0 0 ${VB_W} ${vbH}`}
-        style={{ width: '100%', maxWidth: 620, height: 'auto', display: 'block', margin: '0 auto' }}
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        className={styles.svg}
         role="img"
         aria-label={`Normalization step ${step} of ${LAST_STEP}. ${STATUS[step]}`}
       >
         {scene}
       </svg>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The table count and the number of places the pro price lives are counted from the
         live shape at each step, not typed in, so they always match the tables drawn. The
         does-not-agree and price-update steps are simulated, and the data is a fixed,

@@ -6,11 +6,8 @@
 
 /* The figure is a single wide timeline (12-key stream) plus the cache and origin
    below it. On a phone, scaling the whole SVG down to fit would shrink the labels
-   below legibility, so keep a min-width floor and let this wrapper scroll instead. */
-.scroll {
-  overflow-x: auto;
-}
-
+   below legibility, so keep a min-width floor and let the shared scroll wrapper
+   scroll instead. */
 .svg {
   width: 100%;
   min-width: 400px;
@@ -18,12 +15,4 @@
   height: auto;
   display: block;
   margin: 0 auto;
-}
-
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
 }

@@ -4,28 +4,26 @@ import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
 import styles from './IsolationLevelsViz.module.css'
+import shared from './vizShared.module.css'
+import { INK, FADE, ACCENT, OK, OK_BG, BLUE, PURPLE, AMBER, AMBER_STROKE, AMBER_BG, CONTROL_BG, RULE, LINE } from './vizPalette'
 import { LEVELS, PHENOMENA, buildTimeline } from './isolationData'
 
 // Timer cadence for auto-play. setInterval + setState only (never requestAnimationFrame)
 // so the timeline keeps advancing in a backgrounded tab.
 const PLAY_MS = 1150
 
-// lane colors match the sibling transaction figures
-const T1_COLOR = '#2f6f8f'
-const T2_COLOR = '#9a5a86'
-const GREEN = '#1f6f5c'
-const RED = '#c0392b'
-const AMBER_FILL = '#fdf3ee'
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
+// lane colors: the shared identity pair the sibling transaction figures use
+const T1_COLOR = BLUE
+const T2_COLOR = PURPLE
 
 function laneStyle(status) {
+  // uncommitted / rolled back / aborted: a tentative, in-between state (amber family)
   if (status === 'aborted' || status === 'rolled back' || status === 'uncommitted write') {
-    return { background: AMBER_FILL, color: RED, border: `1px solid ${RED}` }
+    return { background: AMBER_BG, color: AMBER, border: `1px solid ${AMBER_STROKE}` }
   }
-  if (status === 'committed') return { background: '#e9f1ee', color: GREEN, border: `1px solid ${GREEN}` }
-  if (status === 'idle') return { background: '#f4f2ec', color: FADE, border: '1px solid #e2e0d8' }
-  return { background: '#ffffff', color: INK, border: '1px solid #d8d4cc' }
+  if (status === 'committed') return { background: OK_BG, color: OK, border: `1px solid ${OK}` }
+  if (status === 'idle') return { background: CONTROL_BG, color: FADE, border: `1px solid ${RULE}` }
+  return { background: '#ffffff', color: INK, border: `1px solid ${LINE}` }
 }
 
 function Lane({ id, color, status, active }) {
@@ -81,7 +79,7 @@ export default function IsolationLevelsViz() {
   const dbState = f ? f.db : 'idle'
 
   const outcomeText = done ? (occurs ? 'OCCURS' : 'PREVENTED') : '-'
-  const outcomeColor = done ? (occurs ? RED : GREEN) : INK
+  const outcomeColor = done ? (occurs ? ACCENT : OK) : INK
 
   const controls = [
     { label: 'Step', onClick: onStep, variant: 'primary', disabled: done },
@@ -112,16 +110,10 @@ export default function IsolationLevelsViz() {
     >
       <div className={styles.dials}>
         <div className={styles.dial}>
-          <span className={styles.dialLabel}>isolation level</span>
+          <span className={shared.groupLabel}>isolation level</span>
           <div className={styles.segGroup} role="group" aria-label="Isolation level">
             {LEVELS.map((name, i) => (
-              <button
-                key={name}
-                type="button"
-                className={`${styles.seg} ${level === i ? styles.segActive : ''}`}
-                aria-pressed={level === i}
-                onClick={() => pickLevel(i)}
-              >
+              <button key={name} type="button" className={shared.btn} aria-pressed={level === i} onClick={() => pickLevel(i)}>
                 {name}
               </button>
             ))}
@@ -129,16 +121,10 @@ export default function IsolationLevelsViz() {
         </div>
 
         <div className={styles.dial}>
-          <span className={styles.dialLabel}>phenomenon</span>
+          <span className={shared.groupLabel}>phenomenon</span>
           <div className={styles.segGroup} role="group" aria-label="Concurrency phenomenon">
             {PHENOMENA.map((p) => (
-              <button
-                key={p.key}
-                type="button"
-                className={`${styles.seg} ${phenKey === p.key ? styles.segActive : ''}`}
-                aria-pressed={phenKey === p.key}
-                onClick={() => pickPhen(p.key)}
-              >
+              <button key={p.key} type="button" className={shared.btn} aria-pressed={phenKey === p.key} onClick={() => pickPhen(p.key)}>
                 {p.label}
               </button>
             ))}
@@ -168,6 +154,17 @@ export default function IsolationLevelsViz() {
         ))}
       </div>
 
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: T1_COLOR }} />
+          T1
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: T2_COLOR }} />
+          T2
+        </span>
+      </div>
+
       {done && (
         <div className={styles.verdict} style={{ color: outcomeColor, borderColor: outcomeColor }}>
           {occurs
@@ -182,7 +179,7 @@ export default function IsolationLevelsViz() {
         </div>
       )}
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         This is a scripted illustration of documented PostgreSQL behavior, not a live database. The outcomes are
         transcribed from the official PostgreSQL docs, Table 13.1. The timeline steps and numbers are hand-authored for
         clarity. PostgreSQL offers all four standard levels but implements three distinct ones internally (Read

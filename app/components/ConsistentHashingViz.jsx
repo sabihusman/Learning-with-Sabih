@@ -13,13 +13,17 @@ import {
   movedKeys,
   modNRemapOnChange,
 } from './consistentHashingData'
+import { CATEGORICAL, RULE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './ConsistentHashingViz.module.css'
 
+// Node identities are the shared categorical colours in order (never ACCENT,
+// which means error elsewhere on the site).
 const NODE_COLORS = {
-  'node-A': '#c0392b',
-  'node-B': '#2f6f7e',
-  'node-C': '#9a6b1f',
-  'node-D': '#4a5db0',
+  'node-A': CATEGORICAL[0],
+  'node-B': CATEGORICAL[1],
+  'node-C': CATEGORICAL[2],
+  'node-D': CATEGORICAL[3],
 }
 
 const VB = 400
@@ -62,7 +66,7 @@ export default function ConsistentHashingViz() {
 
   return (
     <Figure
-      eyebrow="Consistent Hashing"
+      eyebrow="Consistent hashing"
       title="A ring, not a modulus"
       controls={controls}
       status={status}
@@ -75,8 +79,8 @@ export default function ConsistentHashingViz() {
         role="img"
         aria-label={`${nodesCurrent.length} nodes on a hash ring holding ${KEYS.length} keys. ${status}`}
       >
-        <circle cx={CENTER} cy={CENTER} r={R_NODE} fill="none" stroke="#e2e0d8" strokeWidth={1} />
-        <circle cx={CENTER} cy={CENTER} r={R_KEY} fill="none" stroke="#e2e0d8" strokeWidth={1} strokeDasharray="2 3" />
+        <circle cx={CENTER} cy={CENTER} r={R_NODE} fill="none" stroke={RULE} strokeWidth={1} />
+        <circle cx={CENTER} cy={CENTER} r={R_KEY} fill="none" stroke={RULE} strokeWidth={1} strokeDasharray="2 3" />
 
         {KEYS.map((key) => {
           const owner = assign[key]
@@ -119,7 +123,7 @@ export default function ConsistentHashingViz() {
                 x={labelPoint.x}
                 y={labelPoint.y}
                 fontSize={11}
-                fontFamily="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+                fontFamily={MONO}
                 fontWeight={700}
                 fill={color}
                 textAnchor="middle"
@@ -131,7 +135,7 @@ export default function ConsistentHashingViz() {
         })}
       </svg>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Every key and node position is the real FNV-1a hash of its name, taken mod
         {` ${RING_SIZE}`}. Ownership walks clockwise from a key to the next node,
         wrapping to the lowest-positioned node past the end. Highlighted keys are

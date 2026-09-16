@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
 import { useAnimationSpeedRef } from './animationSpeed'
+import { prefersReducedMotion } from './motion'
 import { usePacedInterval } from './usePacedInterval'
+import { INK, FADE, ACCENT, OK, OK_BG, ERR_BG, AMBER_STROKE, AMBER_BG, RULE, PANEL, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import {
   STREAM,
   POLICIES,
@@ -19,18 +22,13 @@ import styles from './LoadBalancingViz.module.css'
 
 const PLAY_MS = 1100
 
-// Palette: the site family (ink / fade / accent) plus the ok-green already used
-// elsewhere and the amber "long" tone from the Caching figure. No new colors.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b' // overload, down servers, dropped requests
-const OK = '#1f6f5c' // the request a server is actively processing
-const OK_BG = '#e6f2ec'
-const ERR_BG = '#fbecea'
-const LONG_BG = '#f6e7c8' // a long (multi-tick) request in the stream
-const LINE = '#e2e0d8'
-const PANEL_BG = '#faf9f6'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// Shared palette: ACCENT marks overload, down servers and dropped requests; OK the
+// request a server is actively processing; the amber family a long (multi-tick)
+// request waiting in the stream.
+
+// The smallest label (the policy name under "one door", 8 units) must render at
+// >= 7px on a phone: ceil(7 x 460 / 8) = 403, so the drawing scrolls below that.
+const SVG_MIN_WIDTH = 403
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 const VB_W = 460
@@ -79,9 +77,10 @@ export default function LoadBalancingViz() {
   usePacedInterval(playing && !done, PLAY_MS, () => setState((s) => (isDone(s) ? s : tick(s))))
 
   // Cosmetic flourish only: pulse the arrow and server the last request was routed
-  // to, so each dispatch registers. Pure animation, no state change.
+  // to, so each dispatch registers. Pure animation, no state change; skipped under
+  // reduced motion (the nodes already render at their end state).
   useEffect(() => {
-    if (!state.lastAssign || !svgRef.current) return
+    if (!state.lastAssign || !svgRef.current || prefersReducedMotion()) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
     animate(nodes, { opacity: [0.35, 1], duration: 480 / speedRef.current, ease: 'outQuad' })
@@ -137,39 +136,29 @@ export default function LoadBalancingViz() {
       tryThis="Run the whole stream once under Round robin and watch max load climb to 4 on one server while the others sit near idle. Reset, switch to Least connections, and run the same stream: max load never passes 2. Then try killing server 2 partway through each run. Round robin keeps feeding its dead slot's neighbours until one is buried; least connections just routes around the gap."
     >
       {/* policy switch + per-server kill toggles: real buttons, keyboard reachable */}
-      <div className={styles.controlsRow}>
-        <span className={styles.groupLabel}>policy</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>policy</span>
         {POLICIES.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            className={`${styles.btn} ${state.policy === p.id ? styles.btnOn : ''}`}
-            aria-pressed={state.policy === p.id}
-            onClick={() => setPolicy(p.id)}
-          >
+          <button key={p.id} type="button" className={shared.btn} aria-pressed={state.policy === p.id} onClick={() => setPolicy(p.id)}>
             {p.label}
           </button>
         ))}
-        <span className={styles.groupLabel} style={{ marginLeft: 8 }}>
+        <span className={shared.groupLabel} style={{ marginLeft: 8 }}>
           servers
         </span>
         {state.servers.map((sv) => (
-          <button
-            key={sv.id}
-            type="button"
-            className={`${styles.btn} ${sv.up ? '' : styles.btnDown}`}
-            aria-pressed={!sv.up}
-            onClick={() => toggleServer(sv.id)}
-          >
+          <button key={sv.id} type="button" className={shared.btn} aria-pressed={!sv.up} onClick={() => toggleServer(sv.id)}>
             {`Server ${sv.id}: ${sv.up ? 'up' : 'down'}`}
           </button>
         ))}
       </div>
 
+      <div className={shared.scroll}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
+        style={{ minWidth: SVG_MIN_WIDTH }}
         role="img"
         aria-label={`Load balancing under ${policyLabel}. Server loads ${state.servers
           .map((s) => (s.up ? s.queue.length : 'down'))
@@ -197,8 +186,8 @@ export default function LoadBalancingViz() {
                 width={TOK_W}
                 height={TOK_H}
                 rx={4}
-                fill={current ? OK_BG : long ? LONG_BG : '#ffffff'}
-                stroke={current ? OK : long ? '#caa24a' : LINE}
+                fill={current ? OK_BG : long ? AMBER_BG : '#ffffff'}
+                stroke={current ? OK : long ? AMBER_STROKE : RULE}
                 strokeWidth={current ? 1.8 : 1}
               />
               <text x={tokenX(i) + TOK_W / 2} y={STREAM_Y + TOK_H / 2 + 3.5} fontSize={9} fill={INK} fontFamily={MONO} fontWeight={long ? 700 : 400} textAnchor="middle">
@@ -212,7 +201,7 @@ export default function LoadBalancingViz() {
         <text x={LB_X} y={LB_Y - 6} fontSize={8.5} fill={FADE} fontFamily={MONO} letterSpacing="0.12em">
           LOAD BALANCER
         </text>
-        <rect x={LB_X} y={LB_Y} width={LB_W} height={LB_H} rx={8} fill={PANEL_BG} stroke={LINE} strokeWidth={1} />
+        <rect x={LB_X} y={LB_Y} width={LB_W} height={LB_H} rx={8} fill={PANEL} stroke={RULE} strokeWidth={1} />
         <text x={LB_X + LB_W / 2} y={LB_Y + 18} fontSize={10} fill={INK} fontFamily={MONO} fontWeight={700} textAnchor="middle">
           one door
         </text>
@@ -235,7 +224,7 @@ export default function LoadBalancingViz() {
                 y1={LB_CY}
                 x2={SRV_X - 2}
                 y2={cy}
-                stroke={targeted ? INK : LINE}
+                stroke={targeted ? INK : RULE}
                 strokeWidth={targeted ? 1.8 : 1}
                 markerEnd="url(#lb-arrow)"
                 opacity={sv.up ? 1 : 0.3}
@@ -250,8 +239,8 @@ export default function LoadBalancingViz() {
                 width={SRV_W}
                 height={SRV_H}
                 rx={8}
-                fill={sv.up ? PANEL_BG : ERR_BG}
-                stroke={sv.up ? (overloaded ? ACCENT : LINE) : ACCENT}
+                fill={sv.up ? PANEL : ERR_BG}
+                stroke={sv.up ? (overloaded ? ACCENT : RULE) : ACCENT}
                 strokeWidth={sv.up ? (overloaded ? 1.6 : 1) : 1.4}
                 strokeDasharray={sv.up ? undefined : '4 3'}
               />
@@ -296,8 +285,9 @@ export default function LoadBalancingViz() {
           )
         })}
       </svg>
+      </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Each server handles one request at a time; the rest queue behind it, so its
         active count is the queue length and a long request holds up everything after
         it. Least connections sends each request to the up server with the shortest

@@ -3,9 +3,12 @@
 // it draws a DIFFERENT relationship over the same sentence, which is the whole point:
 // a transformer runs many heads in parallel, each watching a different pattern.
 //
-// The sentence, word layout, and colours are reused from the attention topic so the
-// two read as a pair (same look). attentionData is imported read-only, not modified.
+// The sentence and word layout are reused from the attention topic so the two read as
+// a pair (same look). attentionData is imported read-only, not modified. Head colours
+// come from the site's categorical identity palette (vizPalette.js): three heads are
+// three distinct categories, not an error/emphasis state, so ACCENT is never used here.
 import { WORDS, SENTENCE, INK, FADE, PAPER } from './attentionData'
+import { CATEGORICAL } from './vizPalette'
 
 export { WORDS, SENTENCE, INK, FADE, PAPER }
 
@@ -54,9 +57,9 @@ function fallback(id) {
 }
 
 export const HEADS = [
-  { id: 0, name: 'Coreference', color: '#c0392b', blurb: 'pronouns and the nouns they refer to', weights: COREF, useFallback: true },
-  { id: 1, name: 'Previous word', color: '#2f6f7e', blurb: 'each word looks back at the one before it', weights: ADJACENT, useFallback: false },
-  { id: 2, name: 'Verb to arguments', color: '#9a6b1f', blurb: 'verbs and their subject and object', weights: VERB, useFallback: true },
+  { id: 0, name: 'Coreference', color: CATEGORICAL[0], blurb: 'pronouns and the nouns they refer to', weights: COREF, useFallback: true },
+  { id: 1, name: 'Previous word', color: CATEGORICAL[1], blurb: 'each word looks back at the one before it', weights: ADJACENT, useFallback: false },
+  { id: 2, name: 'Verb to arguments', color: CATEGORICAL[2], blurb: 'verbs and their subject and object', weights: VERB, useFallback: true },
 ]
 
 // Outgoing weights for one head, from a word to every other (0..1).

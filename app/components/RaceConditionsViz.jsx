@@ -15,6 +15,7 @@ import {
   INTERLEAVED,
 } from './raceConditionsData'
 import styles from './RaceConditionsViz.module.css'
+import shared from './vizShared.module.css'
 
 const PLAY_MS = 900
 const PATTERNS = { clean: CLEAN, interleaved: INTERLEAVED }
@@ -90,7 +91,7 @@ export default function RaceConditionsViz() {
   const correct = done && race.balance === CORRECT
 
   const controls = [
-    { label: 'Step A', onClick: () => stepManual('A'), disabled: disabledA },
+    { label: 'Step A', onClick: () => stepManual('A'), variant: 'primary', disabled: disabledA },
     { label: 'Step B', onClick: () => stepManual('B'), disabled: disabledB },
     { label: playing ? 'Pause' : 'Play', onClick: () => setPlaying((p) => !p), disabled: done },
     { label: 'Reset', onClick: reset, disabled: idle && run.tick === 0 },
@@ -126,7 +127,7 @@ export default function RaceConditionsViz() {
 
   return (
     <Figure
-      eyebrow="Race Conditions"
+      eyebrow="Race conditions"
       title="Two threads, one shared balance"
       controls={controls}
       speedControl
@@ -134,39 +135,24 @@ export default function RaceConditionsViz() {
       readouts={readouts}
       tryThis="Leave the lock off and run the interleaved order. Watch both threads read 100 and one increment disappear as the balance ends at 101. Now turn the lock on and run the same order. The second thread is forced to wait, and the balance ends at 102. Try to break it by stepping manually with the lock on, and notice the other thread's buttons are disabled while one thread holds the lock."
     >
-      <div className={styles.controlsRow}>
-        <span className={styles.groupLabel}>lock</span>
-        <button
-          type="button"
-          className={`${styles.btn} ${!lockEnabled ? styles.btnOn : ''}`}
-          aria-pressed={!lockEnabled}
-          onClick={() => setLock(false)}
-        >
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>lock</span>
+        <button type="button" className={shared.btn} aria-pressed={!lockEnabled} onClick={() => setLock(false)}>
           off
         </button>
-        <button
-          type="button"
-          className={`${styles.btn} ${lockEnabled ? styles.btnOn : ''}`}
-          aria-pressed={lockEnabled}
-          onClick={() => setLock(true)}
-        >
+        <button type="button" className={shared.btn} aria-pressed={lockEnabled} onClick={() => setLock(true)}>
           on
         </button>
 
-        <span className={styles.groupLabel} style={{ marginLeft: 8 }}>
+        <span className={shared.groupLabel} style={{ marginLeft: 8 }}>
           auto-play order
         </span>
-        <button
-          type="button"
-          className={`${styles.btn} ${pattern === 'clean' ? styles.btnOn : ''}`}
-          aria-pressed={pattern === 'clean'}
-          onClick={() => setPatternMode('clean')}
-        >
+        <button type="button" className={shared.btn} aria-pressed={pattern === 'clean'} onClick={() => setPatternMode('clean')}>
           clean
         </button>
         <button
           type="button"
-          className={`${styles.btn} ${pattern === 'interleaved' ? styles.btnOn : ''}`}
+          className={shared.btn}
           aria-pressed={pattern === 'interleaved'}
           onClick={() => setPatternMode('interleaved')}
         >
@@ -193,7 +179,7 @@ export default function RaceConditionsViz() {
         </div>
       )}
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The balance and each register are real state (start {START}, each thread adds 1, correct total {CORRECT}).
         Every number above comes from actually folding READ/ADD/WRITE steps over that state in whatever order you
         step or auto-play; the lock works by refusing a blocked thread&apos;s step, not by swapping in a different

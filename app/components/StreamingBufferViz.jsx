@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import shared from './vizShared.module.css'
 import {
   PLAYBACK_RATE,
   NET_MIN,
@@ -31,21 +33,26 @@ export default function StreamingBufferViz() {
     netRef.current = netRate
   }, [netRate])
 
+  // The shared animation-speed multiplier, read at tick time so a speed change
+  // mid-play scales the simulated clock without restarting the interval.
+  const speedRef = useAnimationSpeedRef()
+
   // Each tick integrates over the wall-clock time actually elapsed (capped at
   // 1s), not the nominal period: a hidden or backgrounded tab clamps intervals
   // to ~1 per second, and measuring dt keeps the simulation running at true
-  // speed instead of silently slowing down.
+  // speed instead of silently slowing down. The elapsed time is multiplied by
+  // the site-wide speed setting (1.5x runs the sim faster, 0.5x slower).
   useEffect(() => {
     if (!playing) return undefined
     let last = performance.now()
     const id = window.setInterval(() => {
       const now = performance.now()
-      const dt = Math.min((now - last) / 1000, 1)
+      const dt = Math.min((now - last) / 1000, 1) * speedRef.current
       last = now
       setSim((s) => tick(s, netRef.current, dt))
     }, TICK_MS)
     return () => window.clearInterval(id)
-  }, [playing])
+  }, [playing, speedRef])
 
   const reset = () => {
     setPlaying(false)
@@ -81,9 +88,10 @@ export default function StreamingBufferViz() {
 
   return (
     <Figure
-      eyebrow="Systems"
+      eyebrow="Streaming"
       title="The playback buffer: a cushion between network and screen"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis={
@@ -135,7 +143,7 @@ export default function StreamingBufferViz() {
         </label>
         <input
           id="net-rate"
-          className={styles.slider}
+          className={`${shared.slider} ${styles.slider}`}
           type="range"
           min={NET_MIN}
           max={NET_MAX}
@@ -150,7 +158,7 @@ export default function StreamingBufferViz() {
         </div>
       </div>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The buffer level is genuinely integrated: every tick adds what the network delivered and subtracts what
         playback consumed over the elapsed time, and the stall and resume states fall out of that arithmetic, nothing
         is scripted. The

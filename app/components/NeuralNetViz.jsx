@@ -1,7 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
+import { PAPER, INK, FADE, RULE, LINE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
+import styles from './NeuralNetViz.module.css'
 import {
   DATA,
   H,
@@ -17,14 +21,14 @@ import {
   meanLoss,
   predictGrid,
   snapshotWeights,
-  PAPER,
-  INK,
-  FADE,
   CLASS0,
   CLASS1,
   POS_EDGE,
   NEG_EDGE,
 } from './neuralNetData'
+
+const FRAME_MS = 16 // ~60 ticks/sec at 1x; the shared speed multiplier divides it
+const FIELD_MS = 70 // the decision field (costliest redraw) refreshes on this throttle
 
 // ── network-diagram geometry ────────────────────────────────────────────────
 const NN_W = 250
@@ -79,51 +83,35 @@ export default function NeuralNetViz() {
 
   const epochRef = useRef(0)
   const lastFieldRef = useRef(0)
-  const timerRef = useRef(null)
 
-  // training loop: timer-driven, NOT requestAnimationFrame. Browsers suspend rAF in
-  // a hidden/backgrounded tab, which would freeze training mid-run; setTimeout keeps
-  // firing (just throttled), so the network keeps converging. ~60 ticks/sec in the
-  // foreground matches the old rAF pacing. Cleared on pause and on unmount, so no
-  // loop leaks. Runs a few epochs per tick; the decision field (the costliest redraw)
-  // refreshes on a throttle while loss/epoch/weights update every tick.
-  useEffect(() => {
-    if (!running) return undefined
-    let active = true
-    const FRAME_MS = 16
-    const FIELD_MS = 70
+  // training loop: timer-driven through the shared paced interval (setInterval, NOT
+  // requestAnimationFrame). Browsers suspend rAF in a hidden/backgrounded tab, which
+  // would freeze training mid-run; an interval keeps firing (just throttled), so the
+  // network keeps converging. Runs a few epochs per tick; the decision field (the
+  // costliest redraw) refreshes on a throttle while loss/epoch/weights update every
+  // tick. All state changes happen inside the tick.
+  const trainStep = () => {
+    let l = 0
+    for (let i = 0; i < EPOCHS_PER_FRAME; i++) l = trainEpoch(netRef.current, DATA, LR)
+    epochRef.current += EPOCHS_PER_FRAME
+    setEpoch(epochRef.current)
+    setLoss(l)
+    setWeights(snapshotWeights(netRef.current))
+    setAccuracy(accuracyOf(netRef.current))
 
-    const loop = () => {
-      if (!active) return
-      let l = 0
-      for (let i = 0; i < EPOCHS_PER_FRAME; i++) l = trainEpoch(netRef.current, DATA, LR)
-      epochRef.current += EPOCHS_PER_FRAME
-      setEpoch(epochRef.current)
-      setLoss(l)
-      setWeights(snapshotWeights(netRef.current))
-      setAccuracy(accuracyOf(netRef.current))
-
-      const now = performance.now()
-      if (now - lastFieldRef.current > FIELD_MS) {
-        lastFieldRef.current = now
-        setField(predictGrid(netRef.current, GRID_N))
-      }
-
-      if (l < CONVERGE_LOSS || epochRef.current >= MAX_EPOCH) {
-        setField(predictGrid(netRef.current, GRID_N))
-        setConverged(true)
-        setRunning(false)
-        return
-      }
-      timerRef.current = setTimeout(loop, FRAME_MS)
+    const now = performance.now()
+    if (now - lastFieldRef.current > FIELD_MS) {
+      lastFieldRef.current = now
+      setField(predictGrid(netRef.current, GRID_N))
     }
 
-    timerRef.current = setTimeout(loop, FRAME_MS)
-    return () => {
-      active = false
-      clearTimeout(timerRef.current)
+    if (l < CONVERGE_LOSS || epochRef.current >= MAX_EPOCH) {
+      setField(predictGrid(netRef.current, GRID_N))
+      setConverged(true)
+      setRunning(false)
     }
-  }, [running])
+  }
+  usePacedInterval(running, FRAME_MS, trainStep)
 
   const onStep = () => {
     if (running || converged) return
@@ -139,7 +127,6 @@ export default function NeuralNetViz() {
   }
 
   const onReset = () => {
-    clearTimeout(timerRef.current)
     setRunning(false)
     setConverged(false)
     netRef.current = makeNet()
@@ -193,8 +180,8 @@ export default function NeuralNetViz() {
   }, [field])
 
   const controls = [
-    { label: running ? 'Pause' : 'Play', onClick: () => setRunning((r) => !r), variant: 'primary', disabled: converged },
-    { label: 'Step', onClick: onStep, disabled: running || converged },
+    { label: 'Step', onClick: onStep, variant: 'primary', disabled: running || converged },
+    { label: running ? 'Pause' : 'Play', onClick: () => setRunning((r) => !r), disabled: converged },
     { label: 'Reset', onClick: onReset },
   ]
 
@@ -212,15 +199,16 @@ export default function NeuralNetViz() {
       eyebrow="Deep learning"
       title="A tiny neural network learning to separate two classes"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Press Play and watch the loss fall as the network trains. The connection lines thicken and change color (black for positive weights, red for negative) as the weights update, and the shaded decision boundary bends from a straight guess into a ring that wraps the inner class. Reset restores the same seeded starting weights and starts over. Step advances training a little at a time."
     >
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center', alignItems: 'center' }}>
+      <div className={styles.layout}>
         {/* network diagram */}
-        <svg
+        <svg role="img"
           viewBox={`0 0 ${NN_W} ${NN_H}`}
-          style={{ width: '100%', maxWidth: 250, height: 'auto', flex: '1 1 220px' }}
+          className={styles.netSvg}
           aria-label="Network diagram: two inputs, one hidden layer of six neurons, one output. Edge thickness shows weight magnitude and color shows sign."
         >
           {/* edges: inputs -> hidden */}
@@ -255,7 +243,7 @@ export default function NeuralNetViz() {
           {IN_Y.map((y, i) => (
             <g key={`in${i}`}>
               <circle cx={IN_X} cy={y} r={11} fill={PAPER} stroke={INK} strokeWidth={1.4} />
-              <text x={IN_X} y={y + 3.5} fontSize={13.5} fill={INK} textAnchor="middle" fontFamily="ui-monospace,monospace">
+              <text x={IN_X} y={y + 3.5} fontSize={13.5} fill={INK} textAnchor="middle" fontFamily={MONO}>
                 {i === 0 ? 'x' : 'y'}
               </text>
             </g>
@@ -265,32 +253,51 @@ export default function NeuralNetViz() {
           ))}
           <g>
             <circle cx={OUT_X} cy={OUT_Y} r={11} fill={PAPER} stroke={INK} strokeWidth={1.4} />
-            <text x={OUT_X} y={OUT_Y + 3.5} fontSize={11} fill={INK} textAnchor="middle" fontFamily="ui-monospace,monospace">
+            <text x={OUT_X} y={OUT_Y + 3.5} fontSize={11} fill={INK} textAnchor="middle" fontFamily={MONO}>
               out
             </text>
           </g>
-          <text x={IN_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+          <text x={IN_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily={MONO}>
             inputs
           </text>
-          <text x={HID_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+          <text x={HID_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily={MONO}>
             hidden
           </text>
-          <text x={OUT_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+          <text x={OUT_X} y={NN_H - 8} fontSize={11} fill={FADE} textAnchor="middle" fontFamily={MONO}>
             output
           </text>
         </svg>
 
         {/* task panel: points + decision field */}
-        <svg
+        <svg role="img"
           viewBox={`0 0 ${T} ${T}`}
-          style={{ width: '100%', maxWidth: 300, height: 'auto', flex: '1 1 260px' }}
+          className={styles.taskSvg}
           aria-label="Two classes of 2D points (inside vs outside a circle) with the network's current decision boundary shaded behind them."
         >
-          <rect x={PADT} y={PADT} width={PLOTW} height={PLOTW} fill={PAPER} stroke="#e2e0d8" strokeWidth={1} />
+          <rect x={PADT} y={PADT} width={PLOTW} height={PLOTW} fill={PAPER} stroke={RULE} strokeWidth={1} />
           {fieldEls}
           {pointEls}
-          <rect x={PADT} y={PADT} width={PLOTW} height={PLOTW} fill="none" stroke="#d4d0c8" strokeWidth={1} />
+          <rect x={PADT} y={PADT} width={PLOTW} height={PLOTW} fill="none" stroke={LINE} strokeWidth={1} />
         </svg>
+      </div>
+
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: CLASS0 }} />
+          class 0 (outside)
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: CLASS1 }} />
+          class 1 (inside)
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: POS_EDGE }} />
+          positive weight
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: NEG_EDGE }} />
+          negative weight
+        </span>
       </div>
     </Figure>
   )

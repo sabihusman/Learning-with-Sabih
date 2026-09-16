@@ -4,13 +4,13 @@
 // inside vs outside a circle, which a single linear boundary cannot do but a small
 // hidden layer can.
 
-export const PAPER = '#f7f6f2'
-export const INK = '#1a1a1a'
-export const FADE = '#9b9892'
-export const CLASS1 = '#2f6f8f' // inside the circle (blue)
-export const CLASS0 = '#c98a3b' // outside the circle (amber)
-export const POS_EDGE = '#1a1a1a' // positive weight
-export const NEG_EDGE = '#c0392b' // negative weight
+import { INK, ACCENT, BLUE, AMBER } from './vizPalette'
+
+// Class and edge colours come from the shared palette so this figure cannot drift.
+export const CLASS1 = BLUE // inside the circle
+export const CLASS0 = AMBER // outside the circle
+export const POS_EDGE = INK // positive weight
+export const NEG_EDGE = ACCENT // negative weight
 
 // ── hyperparameters (tuned so it converges smoothly in a few seconds) ──────────
 export const H = 6 // hidden neurons

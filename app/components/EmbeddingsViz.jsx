@@ -3,7 +3,9 @@
 import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Figure from './Figure'
-import { WORDS, nearestNeighbors } from './embeddingsData'
+import { WORDS, CLUSTERS, nearestNeighbors } from './embeddingsData'
+import { FADE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 
 // three.js / R3F load ONLY here, client-side, on this route. ssr:false keeps the
 // 3D scene out of the static export and out of every other page's bundle. The
@@ -17,11 +19,11 @@ const EmbeddingsScene = dynamic(() => import('./EmbeddingsScene'), {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+        fontFamily: MONO,
         fontSize: 12,
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
-        color: '#9b9892',
+        color: FADE,
       }}
     >
       Loading 3D scene…
@@ -59,6 +61,15 @@ export default function EmbeddingsViz() {
       tryThis="Drag to orbit the cloud and scroll to zoom. Click any word to draw lines to its three nearest neighbors. Notice they are always its own cluster: king pulls in queen, prince, and princess, never car or banana. That is the whole idea of an embedding: closeness in space means closeness in meaning."
     >
       <EmbeddingsScene selected={selected} neighborIds={neighborIds} onSelect={setSelected} />
+
+      <div className={shared.legend}>
+        {Object.entries(CLUSTERS).map(([name, color]) => (
+          <span key={name} className={shared.legendItem}>
+            <span className={shared.swatch} style={{ background: color }} />
+            {name}
+          </span>
+        ))}
+      </div>
     </Figure>
   )
 }

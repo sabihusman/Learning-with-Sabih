@@ -3,16 +3,17 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { D_MODEL, NUM_PAIRS, POSITIONS, peVector, waveAt, periodOf, similarity } from './positionalEncodingData'
+import { INK, FADE, BLUE, AMBER, RULE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './PositionalEncodingViz.module.css'
 
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const SIM_COLOR = '#2f6f7e' // teal, matches the Query color used on the attention topic
-const SIN_COLOR = '#2f6f7e' // teal
-const COS_COLOR = '#9a6b1f' // amber, matches the Key color used on the attention topic
+const SIM_COLOR = BLUE // matches the Query color used on the attention topic
+const SIN_COLOR = BLUE
+const COS_COLOR = AMBER // matches the Key color used on the attention topic
 
 // ── View 1 geometry: encoding strip + similarity strip ────────────────────────
+// STRIP_X leaves horizontal padding so the row labels (which run to the viewBox
+// edge with textAnchor="end" on the wave rows) are not clipped.
 const VB_W = 500
 const CELL = 16
 const CELL_GAP = 3
@@ -47,7 +48,7 @@ function EncodingStrip({ selected }) {
             rx={3}
             fill={dim % 2 === 0 ? SIN_COLOR : COS_COLOR}
             fillOpacity={cellOpacity(val)}
-            stroke="#e2e0d8"
+            stroke={RULE}
             strokeWidth={0.5}
           />
           <text
@@ -89,7 +90,7 @@ function SimilarityStrip({ selected, positions, onSelect }) {
               rx={3}
               fill={SIM_COLOR}
               fillOpacity={0.1 + norm * 0.85}
-              stroke={isSelected ? INK : '#e2e0d8'}
+              stroke={isSelected ? INK : RULE}
               strokeWidth={isSelected ? 1.4 : 0.5}
             />
             <text
@@ -119,6 +120,11 @@ const WAVE_PLOT_W = WAVE_VB_W - WAVE_PAD_X * 2
 const WAVE_VB_H = NUM_PAIRS * (WAVE_ROW_H + WAVE_ROW_GAP)
 const SAMPLES = 80
 const MAX_POS = POSITIONS.length - 1
+// The "pair N" labels sit at x=0 and the "period ..." labels sit at x=WAVE_VB_W with
+// textAnchor="end", both flush with the viewBox edge and prone to clipping. A small
+// horizontal pad, applied as a wrapping <g> translate, keeps both inside the box
+// without touching any of the plot math above.
+const WAVE_LABEL_PAD = 6
 
 function xOf(pos) {
   return WAVE_PAD_X + (pos / MAX_POS) * WAVE_PLOT_W
@@ -152,7 +158,7 @@ function WaveRow({ pairIndex, selected }) {
 
   return (
     <g>
-      <line x1={WAVE_PAD_X} y1={midY} x2={WAVE_VB_W - WAVE_PAD_X} y2={midY} stroke="#e2e0d8" strokeWidth={1} />
+      <line x1={WAVE_PAD_X} y1={midY} x2={WAVE_VB_W - WAVE_PAD_X} y2={midY} stroke={RULE} strokeWidth={1} />
       <text x={0} y={rowTop + 10} fontSize={13} fill={FADE} fontFamily={MONO}>
         {`pair ${pairIndex}`}
       </text>
@@ -162,8 +168,8 @@ function WaveRow({ pairIndex, selected }) {
       <path d={pathFor(pairIndex, 'sin', rowTop)} fill="none" stroke={SIN_COLOR} strokeWidth={1.6} />
       <path d={pathFor(pairIndex, 'cos', rowTop)} fill="none" stroke={COS_COLOR} strokeWidth={1.6} strokeDasharray="4,3" />
       <line x1={selX} y1={rowTop} x2={selX} y2={rowTop + WAVE_ROW_H - 8} stroke={INK} strokeWidth={1} strokeDasharray="2,2" opacity={0.55} />
-      <circle cx={selX} cy={yOf(rowTop, selSin)} r={3.4} fill={SIN_COLOR} stroke="#fff" strokeWidth={1} />
-      <circle cx={selX} cy={yOf(rowTop, selCos)} r={3.4} fill={COS_COLOR} stroke="#fff" strokeWidth={1} />
+      <circle cx={selX} cy={yOf(rowTop, selSin)} r={3.4} fill={SIN_COLOR} stroke="#ffffff" strokeWidth={1} />
+      <circle cx={selX} cy={yOf(rowTop, selCos)} r={3.4} fill={COS_COLOR} stroke="#ffffff" strokeWidth={1} />
       <text x={WAVE_VB_W} y={rowTop + 10} fontSize={11} fill={FADE} fontFamily={MONO} textAnchor="end">
         {`period ≈ ${periodLabel} pos`}
       </text>
@@ -202,7 +208,7 @@ export default function PositionalEncodingViz() {
       readouts={readouts}
       tryThis={`Click through the positions and watch the encoding row change. Notice position 0 is all zeros and ones, the simplest pattern. Watch the similarity shading: positions near the one you picked stay close, distant ones drift apart. Then look at the waves below, and see that a position's encoding is just those waves read off at that one spot. The fast waves separate nearby positions; the slow waves separate far ones.`}
     >
-      <svg
+      <svg role="img"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         style={{ width: '100%', maxWidth: 520, height: 'auto', display: 'block', margin: '0 auto' }}
         aria-label="A strip of cells showing the selected position's encoding vector, and a second strip showing how similar every position's encoding is to the selected one."
@@ -213,14 +219,16 @@ export default function PositionalEncodingViz() {
 
       <p className={styles.sectionLabel}>The waves underneath</p>
 
-      <svg
-        viewBox={`0 0 ${WAVE_VB_W} ${WAVE_VB_H}`}
+      <svg role="img"
+        viewBox={`0 0 ${WAVE_VB_W + WAVE_LABEL_PAD * 2} ${WAVE_VB_H}`}
         style={{ width: '100%', maxWidth: 520, height: 'auto', display: 'block', margin: '0 auto' }}
         aria-label="One row per dimension pair, each showing the sine and cosine wave that pair follows across positions, with a dot marking the selected position."
       >
-        {Array.from({ length: NUM_PAIRS }, (_, i) => (
-          <WaveRow key={i} pairIndex={i} selected={selected} />
-        ))}
+        <g transform={`translate(${WAVE_LABEL_PAD}, 0)`}>
+          {Array.from({ length: NUM_PAIRS }, (_, i) => (
+            <WaveRow key={i} pairIndex={i} selected={selected} />
+          ))}
+        </g>
       </svg>
 
       <div className={styles.legend}>
@@ -235,7 +243,7 @@ export default function PositionalEncodingViz() {
       <p className={styles.formula}>
         {'PE(pos, 2i) = sin(pos / 10000^(2i / d_model))    PE(pos, 2i+1) = cos(pos / 10000^(2i / d_model))'}
       </p>
-      <p className={styles.note}>
+      <p className={shared.caption}>
         Every value above comes from that formula computed live, at d_model = {D_MODEL} and {POSITIONS.length} positions.
         A real model uses hundreds of dimensions and adds this encoding to the token embedding rather than showing it
         on its own, as this figure does.

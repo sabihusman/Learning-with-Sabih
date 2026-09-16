@@ -2,28 +2,6 @@
    (rule borders, mono members, tag chip) over a small family tree, with a lookup
    probe that climbs the chain. */
 
-.legend {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.75rem;
-}
-
-.legendItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  color: var(--ink);
-}
-
-.swatch {
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 2px;
-}
-
 .wrap {
   display: flex;
   align-items: flex-start;
@@ -31,10 +9,10 @@
   flex-wrap: wrap;
 }
 
+/* sizing only; the horizontal scroll itself comes from vizShared's .scroll */
 .stageScroll {
   flex: 1 1 460px;
   min-width: 0;
-  overflow-x: auto;
 }
 
 .stage {
@@ -119,8 +97,8 @@
 
 /* box states */
 .selected {
-  border-color: #2c6e7f;
-  box-shadow: 2px 2px 0 #bcd6da;
+  border-color: #1f6f5c;
+  box-shadow: 2px 2px 0 #b9c6d8;
 }
 
 .checking {
@@ -269,4 +247,12 @@
 .memberTag {
   margin-left: auto;
   font-size: 0.625rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .box,
+  .checking {
+    animation: none;
+    transition: none;
+  }
 }

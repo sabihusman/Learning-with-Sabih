@@ -11,13 +11,15 @@
 // stay in 0..1 so the figure's opacity encoding (VecCells) stays legible.
 // A real model learns Q, K, V from data; this is the idea, not the math.
 
-// Colours for the three vector kinds (also defined in attentionData, kept local so
-// this 2D figure is self-contained).
-export const Q_COLOR = '#2f6f7e' // query  (teal)
-export const K_COLOR = '#9a6b1f' // key    (amber)
-export const V_COLOR = '#c0392b' // value  (accent)
-export const INK = '#1a1a1a'
-export const FADE = '#9b9892'
+import { INK, FADE, BLUE, AMBER, ACCENT } from './vizPalette'
+
+// Colours for the three vector kinds, from the shared palette (also re-exported
+// from attentionData for that figure; this one imports its own copy so it stays
+// self-contained).
+export const Q_COLOR = BLUE // query
+export const K_COLOR = AMBER // key
+export const V_COLOR = ACCENT // value
+export { INK, FADE }
 
 // A readable 4-word slice. Each word has a 5-dim Query, Key, and Value (values 0..1).
 export const WORDS = [

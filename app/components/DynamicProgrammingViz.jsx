@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import { INK, FADE, ACCENT, LINE, MUTED_BG, CATEGORICAL } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './DynamicProgrammingViz.module.css'
 
 const MIN_N = 4
@@ -77,10 +79,10 @@ function layoutTree(root) {
   return { nodes, edges, width, height, count: nodes.length }
 }
 
-// one pastel per subproblem value k, so equal subproblems share a colour and the
-// repetition is visible at a glance
-const KCOLORS = ['#dfe7f2', '#f4e3c8', '#dceee0', '#f1dde6', '#e6e0ef', '#d9ece9', '#f3e7d2', '#e3e9d6']
-const colorForK = (k) => KCOLORS[k % KCOLORS.length]
+// one identity colour per subproblem value k (drawn as a light fill with a matching
+// stroke), so equal subproblems share a colour and the repetition is visible at a glance
+const colorForK = (k) => CATEGORICAL[k % CATEGORICAL.length]
+const K_FILL_OPACITY = 0.2
 
 export default function DynamicProgrammingViz() {
   const [n, setN] = useState(DEFAULT_N)
@@ -148,15 +150,15 @@ export default function DynamicProgrammingViz() {
       readouts={readouts}
       tryThis="Compute the same Fibonacci number both ways. Naive recursion rebuilds the same subproblems again and again, so equal-coloured nodes repeat all over the tree. Switch to Memoized: each subproblem is computed once and every later appearance becomes a cache hit, not a whole subtree. Compare the two call counts, the lean tree does the same job with a fraction of the work."
     >
-      <div className={styles.toggle} role="group" aria-label="Strategy">
+      <div className={shared.group} role="group" aria-label="Strategy">
         {[['naive', 'Naive'], ['memo', 'Memoized']].map(([k, label]) => (
-          <button key={k} type="button" className={`${styles.toggleBtn} ${k === mode ? styles.toggleActive : ''}`} aria-pressed={k === mode} onClick={() => selectMode(k)}>
+          <button key={k} type="button" className={shared.btn} aria-pressed={k === mode} onClick={() => selectMode(k)}>
             {label}
           </button>
         ))}
         <span className={styles.nControl}>
-          <label htmlFor="dp-n" className={styles.nLabel}>n</label>
-          <input id="dp-n" className={styles.slider} type="range" min={MIN_N} max={MAX_N} step={1} value={n} onChange={(e) => selectN(Number(e.target.value))} />
+          <label htmlFor="dp-n" className={shared.groupLabel}>n</label>
+          <input id="dp-n" className={`${shared.slider} ${styles.nSlider}`} type="range" min={MIN_N} max={MAX_N} step={1} value={n} onChange={(e) => selectN(Number(e.target.value))} />
           <span className={styles.nValue}>{n}</span>
         </span>
       </div>
@@ -165,7 +167,7 @@ export default function DynamicProgrammingViz() {
         <svg viewBox={`0 0 ${tree.width} ${tree.height}`} className={styles.svg} style={{ maxWidth: `${svgMaxW}px` }} role="img" aria-label={`${mode} Fibonacci call tree for fib(${n})`}>
           {tree.edges.map((e, i) => {
             const made = e.to.id < step
-            return <line key={i} x1={e.from.x} y1={e.from.y + NODE_H / 2} x2={e.to.x} y2={e.to.y - NODE_H / 2} stroke="#cfcbc2" strokeWidth={1.25} opacity={made ? 1 : 0.3} />
+            return <line key={i} x1={e.from.x} y1={e.from.y + NODE_H / 2} x2={e.to.x} y2={e.to.y - NODE_H / 2} stroke={LINE} strokeWidth={1.25} opacity={made ? 1 : 0.3} />
           })}
           {tree.nodes.map((node) => {
             const made = node.id < step
@@ -179,19 +181,20 @@ export default function DynamicProgrammingViz() {
                   width={NODE_W}
                   height={NODE_H}
                   rx={4}
-                  fill={cached ? '#efece4' : colorForK(node.k)}
-                  stroke={isCurrent ? '#c0392b' : cached ? '#b9b6ae' : '#9b9892'}
+                  fill={cached ? MUTED_BG : colorForK(node.k)}
+                  fillOpacity={cached ? 1 : K_FILL_OPACITY}
+                  stroke={isCurrent ? ACCENT : cached ? LINE : colorForK(node.k)}
                   strokeWidth={isCurrent ? 2.5 : 1}
                   strokeDasharray={cached ? '3 2' : undefined}
                 />
-                <text x={node.x} y={node.y + 4} className={styles.nodeText} fill={cached ? '#9b9892' : '#1a1a1a'} textAnchor="middle">{node.k}</text>
+                <text x={node.x} y={node.y + 4} className={styles.nodeText} fill={cached ? FADE : INK} textAnchor="middle">{node.k}</text>
               </g>
             )
           })}
         </svg>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Each node is one call to fib(k); the call counts and the tree are computed for real from the recursion. The same
         subproblem in naive mode is recomputed every time it appears, while memoized mode computes each one once and
         reuses it. In memoized mode, solid nodes are real computations and dashed nodes are cache-hit lookups; the

@@ -29,26 +29,9 @@
   flex: 1;
 }
 
+/* the slider row sits below the board; layout, label and slider come from vizShared */
 .diskRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 14px 0 0;
-}
-
-.diskLabel {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fade);
-}
-
-.slider {
-  flex: 1;
-  max-width: 220px;
-  accent-color: var(--accent);
-  cursor: pointer;
+  margin-top: 14px;
 }
 
 .diskValue {
@@ -57,12 +40,4 @@
   font-weight: 700;
   color: var(--ink);
   min-width: 1ch;
-}
-
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 0.9rem 0 0;
 }

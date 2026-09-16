@@ -45,17 +45,19 @@
 }
 
 /* ── SVG stage ───────────────────────────────────────────────────────────── */
-.svg {
+/* The stage is the flex item; the drawing keeps a legibility floor and scrolls
+   sideways inside it on narrow phones (paired with the shared scroll wrapper). */
+.stage {
   flex: 1 1 400px;
-  min-width: 320px;
+  min-width: 0;
   max-width: 600px;
-  height: auto;
 }
 
-@media (max-width: 480px) {
-  .svg {
-    min-width: 0;
-  }
+.svg {
+  display: block;
+  width: 100%;
+  min-width: 320px;
+  height: auto;
 }
 
 .panelLabel {
@@ -104,12 +106,4 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10.5px;
   letter-spacing: 0.02em;
-}
-
-/* ── caption ─────────────────────────────────────────────────────────────── */
-.caption {
-  margin: 0.9rem 0 0;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--fade);
 }

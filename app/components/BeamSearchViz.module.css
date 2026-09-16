@@ -1,12 +1,14 @@
 /* Beam search vs greedy decoding: a token-probability tree, a beam-width slider, and
    chip buttons for the surviving beam sequences. All highlight color is derived from
-   real path membership computed in the component; this file is presentation only. */
+   real path membership computed in the component; this file is presentation only.
+   The slider row, legend, chip buttons and caption use the shared in-card classes
+   (vizShared.module.css); only the prompt line, the tree and the chip layout live here. */
 
 .prompt {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  font-family: 'Source Serif Pro', Georgia, serif;
+  font-family: Georgia, 'Times New Roman', serif;
   font-size: 16px;
   color: var(--ink);
   margin: 0 0 16px;
@@ -25,114 +27,50 @@
   font-weight: 600;
 }
 
-.sliderRow {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0 0 14px;
-}
-
-.sliderLabel {
-  display: flex;
-  justify-content: space-between;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fade);
-}
-
 .sliderValue {
-  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
   font-weight: 700;
-  text-transform: none;
-  letter-spacing: normal;
+  color: var(--ink);
+  min-width: 1ch;
 }
 
-.slider {
-  width: 100%;
-  accent-color: #2f8f63;
-  cursor: pointer;
-}
-
+/* min-width keeps the 14-unit token labels at >= 7px on a phone (the wrapper
+   scrolls sideways); the 640px cap keeps them around 9.6px on desktop */
 .svg {
   width: 100%;
+  min-width: 466px;
   max-width: 640px;
   height: auto;
   display: block;
   margin: 6px auto;
 }
 
-.nodeText {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 8px;
-  font-weight: 600;
-}
-
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  justify-content: center;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10.5px;
-  color: var(--fade);
-  margin: 4px 0 14px;
-}
-
-.legendItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
 .swatchDashed {
   width: 12px;
   height: 0;
   border-radius: 0;
-  border-top: 2px dashed #2f8f63;
+  border: 0;
+  border-top: 2px dashed #1f6f5c;
 }
 
 .chips {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin: 4px 0 0;
+  margin: 12px 0 0;
 }
 
+/* layout only: the button skin comes from the shared .btn */
 .chip {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  padding: 6px 10px;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  background: #ffffff;
-  color: var(--ink);
-  cursor: pointer;
   text-align: left;
 }
 
-.chip:hover {
-  border-color: #2f8f63;
-}
-
-.chipActive {
-  border-color: #2f8f63;
-  background: #eaf4ef;
-}
-
 .chipRank {
-  color: var(--fade);
+  opacity: 0.7;
   min-width: 1.6rem;
 }
 
@@ -141,14 +79,6 @@
 }
 
 .chipLogProb {
-  color: var(--fade);
+  opacity: 0.7;
   font-variant-numeric: tabular-nums;
-}
-
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 0.9rem 0 0;
 }

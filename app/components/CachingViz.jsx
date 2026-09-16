@@ -13,23 +13,18 @@ import {
   hitRate,
   statusFor,
 } from './cachingData'
+import { INK, FADE, ACCENT, OK, OK_BG, ERR_BG, AMBER_BG, RULE, PANEL, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
+import { prefersReducedMotion } from './motion'
 import styles from './CachingViz.module.css'
 
 const PLAY_MS = 1300
 
-// Palette: the site family (ink / fade / accent) plus the ok-green and error-red
-// already used by the SQL and Normalization figures, plus the amber "touch" tone
-// for a value just fetched. No new colors are invented for this section.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b' // eviction / the leaving key
-const OK = '#1f6f5c' // a hit, served from the cache
-const OK_BG = '#e6f2ec'
-const ERR_BG = '#fbecea'
-const FETCH_BG = '#f6e7c8' // a key just fetched from the origin
-const LINE = '#e2e0d8'
-const PANEL_BG = '#faf9f6'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// Palette: shared tokens. ACCENT marks an eviction or the leaving key, OK a hit
+// served from the cache, AMBER_BG a key just fetched from the origin.
+const FETCH_BG = AMBER_BG
+const LINE = RULE
+const PANEL_BG = PANEL
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 // The three bands (stream, cache, origin) are stacked tightly: just enough gap
@@ -87,9 +82,11 @@ export default function CachingViz() {
 
   // Cosmetic flourish only: pulse the elements marked data-pulse (the current cache
   // slot and, on a miss, the origin fetch arrow) so each step's action registers.
-  // Pure animation, no state change.
+  // Pure animation, no state change. Under reduced motion the elements simply
+  // render at their resting (fully opaque) state.
   useEffect(() => {
     if (step === 0 || !svgRef.current) return
+    if (prefersReducedMotion()) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
     animate(nodes, { opacity: [0.4, 1], duration: 520 / speedRef.current, ease: 'outQuad' })
@@ -130,7 +127,7 @@ export default function CachingViz() {
       readouts={readouts}
       tryThis="Watch key E arrive. It evicts the key that turns out to be needed again just two requests later, forcing a second trip to the origin. Which key would you have evicted instead? The cache only knows what was used recently; it cannot see that a key is about to be used again. That gap between recent and soon is why no single eviction policy wins every time."
     >
-      <div className={styles.scroll}>
+      <div className={shared.scroll}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -281,7 +278,7 @@ export default function CachingViz() {
       </svg>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The cache holds a real least-recently-used structure, capacity 3, and the hits,
         misses, and hit rate are counted straight from it as each request is processed,
         never typed in by hand. The 12-key stream is fixed and deliberately shaped to be

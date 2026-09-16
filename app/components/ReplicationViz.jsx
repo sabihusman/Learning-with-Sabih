@@ -13,24 +13,19 @@ import {
   stateAt,
   killAt,
 } from './replicationData'
+import { INK, FADE, ACCENT, OK, OK_BG, ERR_BG, AMBER_STROKE, AMBER_BG, RULE, PANEL, MONO } from './vizPalette'
 import styles from './ReplicationViz.module.css'
+import shared from './vizShared.module.css'
 
 // Reader-driven only. There is no interval, no animation frame, and no auto-advance
 // anywhere in this component: every value below is stateAt(mode, step), a pure
 // function of the step index. That is also why it takes no speed control.
 
-// Palette: the site family already used by the Systems figures. No new colors.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b' // stale, lost, failed
-const OK = '#1f6f5c' // fresh, arrived
-const OK_BG = '#e6f2ec'
-const ERR_BG = '#fbecea'
-const WAIT = '#caa24a' // in flight / waiting
-const WAIT_BG = '#f6e7c8'
-const LINE = '#e2e0d8'
-const PANEL_BG = '#faf9f6'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// AMBER means in-flight/waiting here, same as elsewhere on the site.
+const WAIT = AMBER_STROKE
+const WAIT_BG = AMBER_BG
+const LINE = RULE
+const PANEL_BG = PANEL
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 const VB_W = 440
@@ -113,24 +108,25 @@ export default function ReplicationViz() {
       readouts={readouts}
       tryThis="Step through in asynchronous mode and watch the pending lists fill: those are writes the client was already told had succeeded, sitting on the primary and not yet on a replica. Kill the primary while a pending list is non-empty and the promoted replica has no way to recover exactly those writes. Then switch to synchronous, watch the step counter for the same twenty operations, and kill the primary mid-wait: nothing acknowledged is ever lost, and the extra steps are what bought that."
     >
-      <div className={styles.controlsRow}>
-        <span className={styles.groupLabel}>replication</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>replication</span>
         {MODES.map((m) => (
           <button
             key={m.id}
             type="button"
-            className={`${styles.btn} ${mode === m.id ? styles.btnOn : ''}`}
+            className={shared.btn}
             aria-pressed={mode === m.id}
             onClick={() => pickMode(m.id)}
           >
             {m.label}
           </button>
         ))}
-        <span className={styles.groupLabel}>
+        <span className={shared.groupLabel}>
           {`${totalStepsFor(mode)} steps for ${OPS.length} ops, ${writeCostFor(mode)} per write`}
         </span>
       </div>
 
+      <div className={shared.scroll}>
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
@@ -304,6 +300,7 @@ export default function ReplicationViz() {
           </text>
         ))}
       </svg>
+      </div>
 
       <p className={styles.caption}>
         One key holding one integer, a primary, and two replicas with authored lags of{' '}

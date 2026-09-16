@@ -4,9 +4,11 @@
 //
 // It is a small inline SVG: an antenna, a head with two eyes, and a body, tinted
 // by `color`. Pass `dim` for a ghosted blueprint-style robot, and `title` for the
-// accessible label.
-const ROBOT_PALETTE = ['#2c6e7f', '#4f6d9c', '#b07a2e', '#8a5a83']
-const INK = '#1a1a1a'
+// accessible label. The four robot identities are shared identity colours, so
+// the OOP figures stay distinct from each other and from the site's error red.
+import { INK, PAPER, OK, BLUE, AMBER, PURPLE } from './vizPalette'
+
+const ROBOT_PALETTE = [OK, BLUE, AMBER, PURPLE]
 
 export default function RobotAvatar({ color = ROBOT_PALETTE[0], size = 44, dim = false, title }) {
   const stroke = INK
@@ -25,8 +27,8 @@ export default function RobotAvatar({ color = ROBOT_PALETTE[0], size = 44, dim =
       {/* head */}
       <rect x="9" y="12" width="30" height="20" rx="5" fill={color} stroke={stroke} strokeWidth="2" />
       {/* eyes */}
-      <circle cx="18" cy="22" r="3" fill="#f7f6f2" stroke={stroke} strokeWidth="1.1" />
-      <circle cx="30" cy="22" r="3" fill="#f7f6f2" stroke={stroke} strokeWidth="1.1" />
+      <circle cx="18" cy="22" r="3" fill={PAPER} stroke={stroke} strokeWidth="1.1" />
+      <circle cx="30" cy="22" r="3" fill={PAPER} stroke={stroke} strokeWidth="1.1" />
       <circle cx="18" cy="22" r="1.2" fill={stroke} />
       <circle cx="30" cy="22" r="1.2" fill={stroke} />
       {/* arms */}

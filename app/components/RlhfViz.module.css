@@ -1,0 +1,100 @@
+/* RLHF: a prompt, candidate response cards, and a diverging preference-weight meter.
+   Candidate cards use the mono uppercase tag vocabulary from the rest of the site;
+   the answer text stays serif since it is quoted prose. Project palette throughout. */
+
+.wrap {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.sectionLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 0.25rem;
+}
+
+.prompt {
+  font-size: 1rem;
+  color: var(--ink);
+  margin-bottom: 0.875rem;
+  line-height: 1.4;
+}
+
+.candidates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.card {
+  text-align: left;
+  border: 1px solid var(--rule);
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 0.6875rem 0.8125rem;
+  cursor: pointer;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.90625rem;
+  line-height: 1.45;
+  color: var(--ink);
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.cardPicked {
+  border-color: var(--accent);
+  background: #fbecea;
+}
+
+.cardText {
+  display: block;
+}
+
+.cardTag {
+  display: inline-block;
+  margin-top: 0.4375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.59375rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.cardTagPicked {
+  color: var(--accent);
+}
+
+.meters {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.barFill {
+  transition: x 0.45s ease-out, width 0.45s ease-out, fill 0.2s linear;
+}
+
+.barValue {
+  transition: x 0.45s ease-out;
+}
+
+.disclaimer {
+  font-size: 0.75rem;
+  color: var(--fade);
+  line-height: 1.5;
+  margin-top: 0.875rem;
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .barFill,
+  .barValue {
+    transition: none;
+  }
+}

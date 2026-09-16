@@ -4,8 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
 import { useAnimationSpeedRef } from './animationSpeed'
+import { prefersReducedMotion } from './motion'
+import { ACCENT, ACCENT_SOFT, ERR_BG, FADE, LINE, MONO } from './vizPalette'
 import { COMPANY, KB, KB_BY_ID, QUERIES, TOP_K, ranked, retrievedIds } from './ragData'
 import styles from './RagViz.module.css'
+import shared from './vizShared.module.css'
 
 const STAGES = ['retrieve', 'augment', 'generate']
 
@@ -24,9 +27,9 @@ function Pipeline({ stage }) {
         const active = stage === i + 1
         return (
           <g key={n.key}>
-            {i < 2 && <line x1={x + 118} y1={22} x2={x + 146} y2={22} stroke={stage >= i + 2 ? '#c0392b' : '#d8d4cc'} strokeWidth="2" />}
-            <rect x={x} y={6} width={118} height={32} rx={7} fill={done ? '#fbeeec' : '#ffffff'} stroke={active ? '#c0392b' : done ? '#e0b9b2' : '#d8d4cc'} strokeWidth={active ? 2 : 1.4} />
-            <text x={x + 59} y={26} fontSize={12} fontFamily="ui-monospace, monospace" textAnchor="middle" fill={done ? '#c0392b' : '#9b9892'} fontWeight={active ? 700 : 400}>
+            {i < 2 && <line x1={x + 118} y1={22} x2={x + 146} y2={22} stroke={stage >= i + 2 ? ACCENT : LINE} strokeWidth="2" />}
+            <rect x={x} y={6} width={118} height={32} rx={7} fill={done ? ERR_BG : '#ffffff'} stroke={active ? ACCENT : done ? ACCENT_SOFT : LINE} strokeWidth={active ? 2 : 1.4} />
+            <text x={x + 59} y={26} fontSize={12} fontFamily={MONO} textAnchor="middle" fill={done ? ACCENT : FADE} fontWeight={active ? 700 : 400}>
               {i + 1}. {n.label}
             </text>
           </g>
@@ -51,9 +54,10 @@ export default function RagViz() {
 
   // anime: when the prompt is assembled (augment), slide the retrieved context in, so
   // "the chunks are inserted into the prompt" reads as a real move. Reveal is
-  // state-driven; this only decorates, so it is fine if rAF is throttled.
+  // state-driven; this only decorates, so it is fine if rAF is throttled. Under
+  // reduced motion the block simply renders in place (its natural end state).
   useEffect(() => {
-    if (stage >= 2 && contextRef.current) {
+    if (stage >= 2 && contextRef.current && !prefersReducedMotion()) {
       animate(contextRef.current, { opacity: [0.2, 1], translateY: [-8, 0], duration: 420 / speedRef.current, ease: 'outQuad' })
     }
   }, [stage, queryId, speedRef])
@@ -93,9 +97,9 @@ export default function RagViz() {
       readouts={readouts}
       tryThis="Pick a question about a fictional company, then step through the pipeline. Retrieve embeds the question and scores every chunk by similarity, lighting up the most relevant ones. Augment drops those chunks into the prompt as context. Generate answers from that context. Compare the two answers at the end: the bare model answers from memory and can be confidently wrong, while the RAG answer is grounded in the retrieved text. Try the voice-control question, whose answer is a made-up product detail no model could have memorized. The scores and answers here are hand-authored to show the behavior; the retrieve, augment, generate pipeline is the real architecture."
     >
-      <div className={styles.queries}>
+      <div className={shared.group}>
         {QUERIES.map((q) => (
-          <button key={q.id} type="button" onClick={() => pickQuery(q.id)} className={`${styles.qBtn} ${q.id === queryId ? styles.qActive : ''}`} aria-pressed={q.id === queryId}>
+          <button key={q.id} type="button" onClick={() => pickQuery(q.id)} className={shared.btn} aria-pressed={q.id === queryId}>
             {q.text}
             {q.headline && <span className={styles.payoff}>not in training</span>}
           </button>
@@ -171,7 +175,7 @@ export default function RagViz() {
         </section>
       )}
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Illustrative only: the similarity scores and both answers are hand-authored, not from a real embedding model or
         language model. The pipeline, retrieve then augment then generate, is the real architecture. Retrieval reuses
         the embeddings idea: the question and each chunk become vectors, and closeness means relevance.

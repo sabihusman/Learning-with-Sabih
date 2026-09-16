@@ -4,17 +4,28 @@ import { useEffect, useRef, useState } from 'react'
 import { animate, stagger } from 'animejs'
 import Figure from './Figure'
 import RobotAvatar from './RobotAvatar'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { prefersReducedMotion } from './motion'
+import { BLUE, OK, AMBER } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './CompositionViz.module.css'
 
 // Three capabilities, shared by both sides. On the inheritance side each capability
 // (and each combination) needs its own class; on the composition side each is a
-// module you snap in. Colors match the rest of the OOP section.
+// module you snap in. Colours are shared identity tokens (CATEGORICAL), matching
+// the robot palette used across the OOP section.
 const CAP_ORDER = ['Fly', 'Swim', 'Dig']
 const CAP = {
-  Fly: { adj: 'Flying', method: 'fly', module: 'FlightModule', color: '#4f6d9c' },
-  Swim: { adj: 'Swimming', method: 'swim', module: 'SwimModule', color: '#2c6e7f' },
-  Dig: { adj: 'Digging', method: 'dig', module: 'DigModule', color: '#b07a2e' },
+  Fly: { adj: 'Flying', method: 'fly', module: 'FlightModule', color: BLUE },
+  Swim: { adj: 'Swimming', method: 'swim', module: 'SwimModule', color: OK },
+  Dig: { adj: 'Digging', method: 'dig', module: 'DigModule', color: AMBER },
 }
+const ROBOT_COLOR = OK
+
+// Baseline flourish timings at 1x; every one divides by the shared speed multiplier.
+const RIPPLE_MS = 360
+const RIPPLE_STAGGER_MS = 110
+const CHIP_MS = 440
 
 const sortCaps = (caps) => CAP_ORDER.filter((c) => caps.includes(c))
 const className = (caps) => sortCaps(caps).map((c) => CAP[c].adj).join('') + 'Robot'
@@ -41,6 +52,10 @@ export default function CompositionViz() {
   const chipRefs = useRef({})
   const timerRef = useRef(null)
 
+  // Stable ref to the shared animation-speed multiplier: the flourishes and the
+  // ripple timer read it at fire time, so a speed change never replays one.
+  const speedRef = useAnimationSpeedRef()
+
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
   const hasLeaf = (caps) => leaves.some((l) => keyOf(l) === keyOf(caps))
@@ -61,26 +76,38 @@ export default function CompositionViz() {
 
   // Change something in the base Robot: a ripple cascades down every subclass and
   // the combined (duplicated) ones break. anime animates the cascade; the break
-  // state is timer-driven so it lands even if rAF is throttled.
+  // state is timer-driven so it lands even if rAF is throttled. Both the stagger
+  // and the timer divide by the shared speed multiplier; under reduced motion the
+  // stagger is skipped and the end state lands at once.
   const changeBase = () => {
     if (rippling || leaves.length === 0) return
-    setRippling(true)
     setBroken(false)
+    if (prefersReducedMotion()) {
+      setBroken(true)
+      return
+    }
+    setRippling(true)
+    const speed = speedRef.current
     const nodes = [baseRef.current, ...leaves.map((l) => leafRefs.current[keyOf(l)])].filter(Boolean)
-    animate(nodes, { scale: [{ to: 1.06 }, { to: 1 }], duration: 360, delay: stagger(110), ease: 'inOutQuad' })
+    animate(nodes, {
+      scale: [{ to: 1.06 }, { to: 1 }],
+      duration: RIPPLE_MS / speed,
+      delay: stagger(RIPPLE_STAGGER_MS / speed),
+      ease: 'inOutQuad',
+    })
     clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
       setBroken(true)
       setRippling(false)
-    }, 110 * nodes.length + 360)
+    }, (RIPPLE_STAGGER_MS * nodes.length + RIPPLE_MS) / speed)
   }
 
   const toggleModule = (cap) => {
     const turningOn = !modules[cap]
     setModules((m) => ({ ...m, [cap]: !m[cap] }))
     setNote('')
-    if (turningOn && chipRefs.current[cap]) {
-      animate(chipRefs.current[cap], { scale: [0.5, 1], translateX: [-14, 0], duration: 440, ease: 'outBack' })
+    if (turningOn && chipRefs.current[cap] && !prefersReducedMotion()) {
+      animate(chipRefs.current[cap], { scale: [0.5, 1], translateX: [-14, 0], duration: CHIP_MS / speedRef.current, ease: 'outBack' })
     }
   }
 
@@ -89,7 +116,9 @@ export default function CompositionViz() {
       setNote('Snap in the FlightModule first, then upgrade it.')
       return
     }
-    if (chipRefs.current.Fly) animate(chipRefs.current.Fly, { scale: [1, 1.14, 1], duration: 440, ease: 'inOutQuad' })
+    if (chipRefs.current.Fly && !prefersReducedMotion()) {
+      animate(chipRefs.current.Fly, { scale: [1, 1.14, 1], duration: CHIP_MS / speedRef.current, ease: 'inOutQuad' })
+    }
     setNote('FlightModule upgraded. Only flight-capable robots change; nothing else is touched.')
   }
 
@@ -123,6 +152,7 @@ export default function CompositionViz() {
       eyebrow="Composition"
       title="Composition vs inheritance: building the same robot two ways"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Left, by inheritance: add FlyingRobot and SwimmingRobot, then a robot that does both needs its own FlyingSwimmingRobot with the flight and swim code copied in (amber dup tags). Add the Dig capability and the class count explodes, one class per combination. Press Change base class to watch a change in Robot ripple down and break the combined subclasses. Right, by composition: snap FlightModule and SwimModule into one Robot and it gains both capabilities with no new class. Upgrade a module and only that module changes. Same goal, two very different shapes."
@@ -139,7 +169,7 @@ export default function CompositionViz() {
             <div ref={baseRef} className={`${styles.classBox} ${styles.base} ${broken ? styles.changed : ''}`}>
               <span className={styles.boxTag}>base</span>
               <span className={styles.boxName}>
-                <RobotAvatar color="#2c6e7f" size={24} title="Robot" /> Robot
+                <RobotAvatar color={ROBOT_COLOR} size={24} title="Robot" /> Robot
               </span>
               {broken && <span className={styles.changedBadge}>changed</span>}
             </div>
@@ -176,19 +206,25 @@ export default function CompositionViz() {
           </div>
 
           <div className={styles.btnRow}>
-            <button type="button" className={styles.addBtn} onClick={() => addLeaf(FLY)} disabled={hasLeaf(FLY)}>
+            <button type="button" className={shared.btn} onClick={() => addLeaf(FLY)} disabled={hasLeaf(FLY)}>
               + FlyingRobot
             </button>
-            <button type="button" className={styles.addBtn} onClick={() => addLeaf(SWIM)} disabled={hasLeaf(SWIM)}>
+            <button type="button" className={shared.btn} onClick={() => addLeaf(SWIM)} disabled={hasLeaf(SWIM)}>
               + SwimmingRobot
             </button>
-            <button type="button" className={styles.addBtn} onClick={() => addLeaf(FLY_SWIM)} disabled={hasLeaf(FLY_SWIM)}>
+            <button type="button" className={shared.btn} onClick={() => addLeaf(FLY_SWIM)} disabled={hasLeaf(FLY_SWIM)}>
               + FlyingSwimmingRobot
             </button>
-            <button type="button" className={styles.addBtn} onClick={addDig} disabled={hasLeaf(['Fly', 'Swim', 'Dig'])}>
+            <button type="button" className={shared.btn} onClick={addDig} disabled={hasLeaf(['Fly', 'Swim', 'Dig'])}>
               + add Dig capability
             </button>
-            <button type="button" className={styles.dangerBtn} onClick={changeBase} disabled={rippling || leaves.length === 0}>
+            <button
+              type="button"
+              className={shared.btn}
+              data-variant="danger"
+              onClick={changeBase}
+              disabled={rippling || leaves.length === 0}
+            >
               Change base class
             </button>
           </div>
@@ -203,7 +239,7 @@ export default function CompositionViz() {
 
           <div className={styles.composeArea}>
             <div className={styles.composedRobot}>
-              <RobotAvatar color="#2c6e7f" size={52} title="Robot with modules" />
+              <RobotAvatar color={ROBOT_COLOR} size={52} title="Robot with modules" />
               <span className={styles.composedName}>Robot</span>
               <span className={styles.composedCaps}>
                 {composedCaps.length ? `can ${composedCaps.map((c) => CAP[c].method + '()').join(', ')}` : 'no modules yet'}
@@ -233,7 +269,7 @@ export default function CompositionViz() {
               })}
             </div>
 
-            <button type="button" className={styles.addBtn} onClick={upgradeModule}>
+            <button type="button" className={shared.btn} onClick={upgradeModule}>
               Upgrade FlightModule
             </button>
             {note && <p className={styles.note}>{note}</p>}

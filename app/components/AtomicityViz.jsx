@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
 import styles from './AtomicityViz.module.css'
+import shared from './vizShared.module.css'
+import { INK, FADE, OK, OK_BG, AMBER, AMBER_BG, AMBER_STROKE, PANEL, RULE, MONO } from './vizPalette'
 
 // Fixed starting numbers. Everything below is real integer arithmetic on these, so a
 // rolled-back transaction literally restores A to A_START and the total to the start
@@ -14,16 +16,10 @@ const AMOUNT = 40
 const START_TOTAL = A_START + B_START
 const PLAY_MS = 950
 
-// palette (shared project tokens, matching the SQL-section figures)
-const GREEN = '#1f6f5c'
-const GREEN_FILL = '#e9f1ee'
-const AMBER_FILL = '#fdf3ee'
-const AMBER_STROKE = '#c0392b'
-const IDLE_FILL = '#fffefb'
-const IDLE_STROKE = '#e2e0d8'
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
+// Card colours: a changed-but-uncommitted balance is an in-between state
+// (amber); a credited or committed one is settled (OK); untouched is idle.
+const IDLE_FILL = PANEL
+const IDLE_STROKE = RULE
 
 // Build the ordered statements for one transaction. Each frame carries the resulting
 // balances, so stepping is just reading the next frame; the numbers are precomputed
@@ -103,13 +99,13 @@ function idleStatus(failAfterDebit) {
 // Pure colour derivation, kept out of the component so the render body stays simple.
 function accountColors(aChanged, bChanged, broken) {
   return {
-    aFill: aChanged ? AMBER_FILL : IDLE_FILL,
+    aFill: aChanged ? AMBER_BG : IDLE_FILL,
     aStroke: aChanged ? AMBER_STROKE : IDLE_STROKE,
-    bFill: bChanged ? GREEN_FILL : IDLE_FILL,
-    bStroke: bChanged ? GREEN : IDLE_STROKE,
-    totalFill: broken ? AMBER_FILL : GREEN_FILL,
-    totalStroke: broken ? AMBER_STROKE : GREEN,
-    totalText: broken ? AMBER_STROKE : GREEN,
+    bFill: bChanged ? OK_BG : IDLE_FILL,
+    bStroke: bChanged ? OK : IDLE_STROKE,
+    totalFill: broken ? AMBER_BG : OK_BG,
+    totalStroke: broken ? AMBER_STROKE : OK,
+    totalText: broken ? AMBER : OK,
   }
 }
 
@@ -163,14 +159,14 @@ export default function AtomicityViz() {
   const aChanged = a !== A_START
   const bChanged = b !== B_START
   const c = accountColors(aChanged, bChanged, broken)
-  const arrowColor = bChanged ? GREEN : FADE
+  const arrowColor = bChanged ? OK : FADE
   const activeIndex = step - 1
 
   // The two account cards are identical markup with different data, so render them
   // from a small config to keep one copy of the card.
   const cards = [
-    { key: 'A', x: AX, label: 'Account A', balance: a, changed: aChanged, fill: c.aFill, stroke: c.aStroke, delta: `-${AMOUNT}`, deltaColor: AMBER_STROKE },
-    { key: 'B', x: BX, label: 'Account B', balance: b, changed: bChanged, fill: c.bFill, stroke: c.bStroke, delta: `+${AMOUNT}`, deltaColor: GREEN },
+    { key: 'A', x: AX, label: 'Account A', balance: a, changed: aChanged, fill: c.aFill, stroke: c.aStroke, delta: `-${AMOUNT}`, deltaColor: AMBER },
+    { key: 'B', x: BX, label: 'Account B', balance: b, changed: bChanged, fill: c.bFill, stroke: c.bStroke, delta: `+${AMOUNT}`, deltaColor: OK },
   ]
 
   let status
@@ -205,18 +201,11 @@ export default function AtomicityViz() {
       readouts={readouts}
       tryThis="Run it with fail after debit off: step through BEGIN, the debit, the credit, and COMMIT. A drops to 60, B rises to 40, and the total briefly reads 60 between the debit and the credit before COMMIT settles it back to 100. Now turn fail after debit on and step again. The debit runs, then the failure hits before the credit, so the total briefly reads 60, money that has left A and reached no one. Watch ROLLBACK undo the debit and restore A to 100, with the total back to 100."
     >
-      <div className={styles.controls}>
-        <div className={styles.line}>
-          <span className={styles.label}>fail after debit</span>
-          <button
-            type="button"
-            className={`${styles.toggle} ${failAfterDebit ? styles.toggleOn : ''}`}
-            aria-pressed={failAfterDebit}
-            onClick={toggleFail}
-          >
-            {failAfterDebit ? 'on' : 'off'}
-          </button>
-        </div>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>fail after debit</span>
+        <button type="button" className={shared.btn} aria-pressed={failAfterDebit} onClick={toggleFail}>
+          {failAfterDebit ? 'on' : 'off'}
+        </button>
       </div>
 
       <div className={styles.plotWrap}>
@@ -265,7 +254,7 @@ export default function AtomicityViz() {
         ))}
       </div>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The transfer, the failure, and the rollback are real integer arithmetic on the fixed starting balances
         (A = {A_START}, B = {B_START}, transfer {AMOUNT}). A rolled-back transaction restores A to {A_START} exactly, so
         the total returns to {START_TOTAL}. The example is kept to one tiny two-step transfer to make the all-or-nothing

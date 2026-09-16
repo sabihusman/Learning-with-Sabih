@@ -8,7 +8,8 @@
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Text, Billboard, Line } from '@react-three/drei'
-import { WORDS, CLUSTERS, ACCENT, INK, FADE, PAPER } from './embeddingsData'
+import { WORDS, CLUSTERS } from './embeddingsData'
+import { ACCENT, INK, FADE, PAPER } from './vizPalette'
 
 const byId = (id) => WORDS.find((w) => w.id === id)
 
@@ -27,8 +28,7 @@ function labelColorFor(state) {
   return INK
 }
 
-function WordPoint({ word, state, onSelect }) {
-  const [hovered, setHovered] = useState(false)
+function WordPoint({ word, state, hovered, onHover, onSelect }) {
   // state: 'selected' | 'neighbor' | 'dim' | 'normal'
   const radius = pointRadius(state)
   // Base color is the word's cluster color, so the four groups read as groups
@@ -46,13 +46,9 @@ function WordPoint({ word, state, onSelect }) {
         }}
         onPointerOver={(e) => {
           e.stopPropagation()
-          setHovered(true)
-          document.body.style.cursor = 'pointer'
+          onHover(word.id)
         }}
-        onPointerOut={() => {
-          setHovered(false)
-          document.body.style.cursor = 'auto'
-        }}
+        onPointerOut={() => onHover(null)}
       >
         <sphereGeometry args={[hovered && state !== 'selected' ? radius * 1.25 : radius, 24, 24]} />
         <meshStandardMaterial color={color} transparent opacity={opacity} roughness={0.5} metalness={0.05} />
@@ -76,6 +72,9 @@ function WordPoint({ word, state, onSelect }) {
 }
 
 export default function EmbeddingsScene({ selected, neighborIds, onSelect }) {
+  // Which word the pointer is over, lifted to the scene so the pointer cursor
+  // is a style on this container rather than a write to document.body.
+  const [hoveredId, setHoveredId] = useState(null)
   const neighborSet = new Set(neighborIds)
   const sel = selected ? byId(selected) : null
 
@@ -86,8 +85,17 @@ export default function EmbeddingsScene({ selected, neighborIds, onSelect }) {
     return 'dim'
   }
 
+  const clusterNames = Object.keys(CLUSTERS).join(', ')
+  const sceneLabel = sel
+    ? `3D scatter of ${WORDS.length} words in four clusters (${clusterNames}). ${sel.label} is selected, with lines to its nearest neighbours ${neighborIds.map((id) => byId(id)?.label ?? id).join(', ')}.`
+    : `3D scatter of ${WORDS.length} words in four clusters (${clusterNames}), coloured by cluster. Drag to orbit, scroll to zoom, click a word to select it.`
+
   return (
-    <div style={{ height: 440, width: '100%' }}>
+    <div
+      role="img"
+      aria-label={sceneLabel}
+      style={{ height: 440, width: '100%', cursor: hoveredId ? 'pointer' : 'auto' }}
+    >
       <Canvas
         camera={{ position: [7, 4.5, 12], fov: 45 }}
         dpr={[1, 2]}
@@ -105,7 +113,14 @@ export default function EmbeddingsScene({ selected, neighborIds, onSelect }) {
           })}
 
         {WORDS.map((w) => (
-          <WordPoint key={w.id} word={w} state={stateFor(w.id)} onSelect={onSelect} />
+          <WordPoint
+            key={w.id}
+            word={w}
+            state={stateFor(w.id)}
+            hovered={hoveredId === w.id}
+            onHover={setHoveredId}
+            onSelect={onSelect}
+          />
         ))}
 
         <OrbitControls

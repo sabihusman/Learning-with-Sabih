@@ -1,0 +1,20 @@
+/* Multi-head attention: three panels, one per head, each drawing the same word
+   column so a reader can compare heads at a glance. Word rows are real interactive
+   elements (tabIndex + role="button") since clicking one redraws every panel. */
+
+.svg {
+  width: 100%;
+  max-width: 580px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.wordRow {
+  cursor: pointer;
+}
+
+.wordRow:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

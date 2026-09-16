@@ -8,9 +8,16 @@
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Text, Billboard, Line } from '@react-three/drei'
-import { WORDS, weightsFrom, ACCENT, INK, FADE, PAPER } from './attentionData'
+import { WORDS, SENTENCE, weightsFrom } from './attentionData'
+import { ACCENT, INK, FADE, PAPER } from './vizPalette'
 
 const byId = (id) => WORDS.find((w) => w.id === id)
+
+// Word labels alternate above and below their node: adjacent words sit only
+// 1.3 units apart, so two neighbouring labels on the same side would overlap
+// ("animal"/"didn't", "street"/"because", "was"/"tired") at the desktop camera.
+const LABEL_GAP = 0.34
+const labelSide = (id) => (id % 2 === 0 ? 1 : -1)
 
 // interpolate between two hex colors by t in [0,1]
 const hexToRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]
@@ -36,7 +43,7 @@ function nodeColor(selected, anySelected, weight) {
   return INK
 }
 
-function WordPoint({ word, selected, weight, anySelected, onSelect }) {
+function WordPoint({ word, selected, weight, anySelected, onSelect, onHover }) {
   const [hovered, setHovered] = useState(false)
   // when a word is selected, every other word is styled by how strongly the
   // selected word attends to it (weight). With nothing selected, all are neutral.
@@ -55,18 +62,18 @@ function WordPoint({ word, selected, weight, anySelected, onSelect }) {
         onPointerOver={(e) => {
           e.stopPropagation()
           setHovered(true)
-          document.body.style.cursor = 'pointer'
+          onHover(true)
         }}
         onPointerOut={() => {
           setHovered(false)
-          document.body.style.cursor = 'auto'
+          onHover(false)
         }}
       >
         <sphereGeometry args={[hovered && !selected ? radius * 1.25 : radius, 24, 24]} />
         <meshStandardMaterial color={color} roughness={0.5} metalness={0.05} />
       </mesh>
 
-      <Billboard position={[0, radius + 0.34, 0]}>
+      <Billboard position={[0, labelSide(word.id) * (radius + LABEL_GAP), 0]}>
         <Text
           fontSize={0.46}
           color={labelColor}
@@ -86,9 +93,18 @@ function WordPoint({ word, selected, weight, anySelected, onSelect }) {
 export default function AttentionScene({ selected, onSelect }) {
   const sel = selected != null ? byId(selected) : null
   const weights = selected != null ? weightsFrom(selected) : {}
+  // Hover state lives here so the pointer cursor is scoped to this container
+  // rather than written onto document.body.
+  const [hovering, setHovering] = useState(false)
+
+  const ariaLabel = `3D scene of the sentence "${SENTENCE.join(' ')}", one sphere per word in reading order. ${
+    sel
+      ? `"${sel.label}" is selected; lines from it to the other words are thicker and redder the more strongly it attends to them.`
+      : 'No word is selected. Drag to orbit, scroll to zoom, click a word to draw its attention links.'
+  }`
 
   return (
-    <div style={{ height: 440, width: '100%' }}>
+    <div style={{ height: 440, width: '100%', cursor: hovering ? 'pointer' : 'auto' }} role="img" aria-label={ariaLabel}>
       <Canvas camera={{ position: [0, 2.2, 15], fov: 45 }} dpr={[1, 2]} onPointerMissed={() => onSelect(null)}>
         <color attach="background" args={[PAPER]} />
         <ambientLight intensity={0.9} />
@@ -119,6 +135,7 @@ export default function AttentionScene({ selected, onSelect }) {
             weight={weights[w.id] ?? 0}
             anySelected={selected != null}
             onSelect={onSelect}
+            onHover={setHovering}
           />
         ))}
 

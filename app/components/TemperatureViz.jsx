@@ -3,12 +3,9 @@
 import { useRef, useState } from 'react'
 import Figure from './Figure'
 import { CANDIDATES, T_MIN, T_MAX, probsAt, entropy, sampleWith } from './temperatureData'
+import { INK, ACCENT, BLUE, CONTROL_BG, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './TemperatureViz.module.css'
-
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 const VB_W = 500
@@ -65,10 +62,16 @@ export default function TemperatureViz() {
     { label: 'entropy', value: `${ent.toFixed(2)} bits` },
   ]
 
+  const controls = [
+    { label: 'Sample a word', onClick: sample, variant: 'primary' },
+    { label: 'Reset', onClick: reset },
+  ]
+
   return (
     <Figure
       eyebrow="Language models"
       title="Temperature reshapes the next-word distribution"
+      controls={controls}
       status={status}
       readouts={readouts}
       tryThis={`At each step a model produces a probability for every candidate next word. Temperature reshapes that distribution before a word is sampled. Slide low (near 0.1) and "mat" wins almost every time, so the output is predictable and safe. Slide high (near 2.0) and probabilities flatten out, so unlikely words like "roof" or even "moon" get a real chance, making the output more creative but also more error-prone. Hit Sample to draw a word from the current distribution; do it several times at each end to see how often each word appears. The candidate words and their base scores are hand-set for illustration; the softmax-with-temperature math reshaping them is the real formula models use.`}
@@ -77,7 +80,7 @@ export default function TemperatureViz() {
         The cat sat on the <span className={styles.blank}>___</span>
       </p>
 
-      <svg
+      <svg role="img"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         style={{ width: '100%', maxWidth: 520, height: 'auto', display: 'block', margin: '0 auto' }}
         aria-label="Probability bars for each candidate next word. Higher temperature flattens the bars, lower temperature peaks them at the top word."
@@ -91,16 +94,16 @@ export default function TemperatureViz() {
               <text x={LABEL_W} y={y + ROW_H / 2 + 4} fontSize={13} fill={INK} fontFamily={MONO} fontWeight={isTop ? 700 : 400} textAnchor="end">
                 {p.word}
               </text>
-              <rect x={BAR_X} y={y + 8} width={BAR_MAX} height={ROW_H - 16} rx={3} fill="#f0ede6" />
+              <rect x={BAR_X} y={y + 8} width={BAR_MAX} height={ROW_H - 16} rx={3} fill={CONTROL_BG} />
               <rect
                 x={BAR_X}
                 y={y + 8}
                 width={w}
                 height={ROW_H - 16}
                 rx={3}
-                fill={isTop ? ACCENT : '#2f6f7e'}
+                fill={isTop ? ACCENT : BLUE}
                 opacity={0.45 + p.p * 0.5}
-                style={{ transition: 'width 220ms ease-out, fill 200ms ease' }}
+                className={styles.probBar}
               />
               <text x={BAR_X + BAR_MAX + 6} y={y + ROW_H / 2 + 4} fontSize={12} fill={INK} fontFamily={MONO} fontWeight={isTop ? 700 : 400}>
                 {`${(p.p * 100).toFixed(1)}%`}
@@ -113,7 +116,7 @@ export default function TemperatureViz() {
       <div className={styles.sliderRow}>
         <span className={styles.sliderLabel}>temperature</span>
         <input
-          className={styles.slider}
+          className={`${shared.slider} ${styles.slider}`}
           type="range"
           min={T_MIN}
           max={T_MAX}
@@ -130,19 +133,13 @@ export default function TemperatureViz() {
       </div>
 
       <div className={styles.sampleRow}>
-        <button type="button" className={styles.sampleBtn} onClick={sample}>
-          Sample a word
-        </button>
-        <button type="button" className={styles.sampleBtn} onClick={reset} style={{ background: '#f4f2ec', color: INK, border: '1px solid #d8d4cc' }}>
-          Reset
-        </button>
         <span className={styles.sampleResult}>
           {history.length === 0 ? 'no samples yet' : `last: ${history[0]}`}
         </span>
         <span className={styles.sampleHistory}>{history.length > 1 && `recent: ${history.slice(0, 12).join(', ')}`}</span>
       </div>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         Candidate scores are hand-authored to keep the demo legible; a real model produces a probability for every
         token in its vocabulary. The softmax-with-temperature math here is the real one.
       </p>

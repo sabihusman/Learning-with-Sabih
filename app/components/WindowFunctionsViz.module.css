@@ -4,6 +4,14 @@
    never left invisible even if the animation does not run (e.g. a backgrounded
    tab). The bar key includes the partition state, so React remounts the bars and
    the build replays whenever PARTITION BY is toggled. */
+.svg {
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
 .bar {
   animation: grow 420ms ease-out both;
   transform-box: fill-box;
@@ -19,37 +27,36 @@
   }
 }
 
-.partitionToggle {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  color: #1a1a1a;
-  background: #f4f2ec;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  padding: 7px 12px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+/* PARTITION BY toggle row: shared.btn handles the button itself */
+.partitionRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
 }
 
-.partitionToggle:hover {
-  background: #ece9e1;
-}
-
-.partitionToggleOn {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #f7f5f0;
-}
-
-.partitionToggleOn:hover {
-  background: #1a1a1a;
-}
-
-.note {
+.partitionHint {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
+  color: var(--fade);
+}
+
+.sql {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f4f2ec;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
   line-height: 1.5;
-  color: #9b9892;
-  margin: 10px 0 0;
+  color: var(--ink);
+  overflow-x: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
 }

@@ -1,73 +1,7 @@
 /* "Build GuardBot against a contract": six live toggles compute whether
-   GuardBot compiles against an abstract class or interface Robot. Reuses the
-   OOP section's mono/rule vocabulary and the site's toggle-pill convention
-   (same classes as FunnelViz/GroupByViz's cohort/group-by rows). */
-
-.controlRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-
-.controlLabel {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fade);
-  white-space: nowrap;
-}
-
-.toggle {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  color: var(--ink);
-  background: #f4f2ec;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.toggle:hover {
-  background: #ece9e1;
-}
-
-.toggleOn {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #f7f5f0;
-}
-
-.toggleOn:hover {
-  background: #1a1a1a;
-}
-
-.tryNewBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--accent);
-  background: #fbeeec;
-  border: 1px solid var(--accent);
-  border-radius: 6px;
-  padding: 6px 14px;
-  cursor: pointer;
-}
-
-.tryNewBtn:hover {
-  background: #f6dcd8;
-}
-
-.tryNewBtn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
+   GuardBot compiles against an abstract class or interface Robot. The toggle
+   rows, the danger button and the caption use the shared in-card classes
+   (vizShared.module.css); only the code panels and the verdict live here. */
 
 /* ── code panels ─────────────────────────────────────────────────────────── */
 .panels {
@@ -112,8 +46,8 @@
 }
 
 .codeHot {
-  background: #eef3f7;
-  box-shadow: inset 2px 0 0 #2f6f8f;
+  background: #eef3f7; /* BLUE_BG */
+  box-shadow: inset 2px 0 0 #2f6f8f; /* BLUE */
 }
 
 .codeDim {
@@ -121,9 +55,9 @@
 }
 
 .codeError {
-  background: #fbeeec;
-  box-shadow: inset 2px 0 0 #c0392b;
-  color: #c0392b;
+  background: #fbecea;
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--accent);
 }
 
 .comment {
@@ -150,19 +84,11 @@
 }
 
 .verdictOk .verdictBadge {
-  background: #d8e6d8;
+  background: #e6f2ec;
   color: #1f6f5c;
 }
 
 .verdictError .verdictBadge {
-  background: #fbeeec;
+  background: #fbecea;
   color: var(--accent);
-}
-
-/* ── caption ─────────────────────────────────────────────────────────────── */
-.caption {
-  margin: 0.9rem 0 0;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--fade);
 }

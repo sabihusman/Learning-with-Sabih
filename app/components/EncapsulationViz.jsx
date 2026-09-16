@@ -5,6 +5,9 @@ import { animate } from 'animejs'
 import Figure from './Figure'
 import { useAnimationSpeedRef } from './animationSpeed'
 import { usePacedInterval } from './usePacedInterval'
+import { prefersReducedMotion } from './motion'
+import { INK, FADE, ACCENT, OK, OK_BG, ERR_BG, BLUE_BG, PANEL, RULE } from './vizPalette'
+import shared from './vizShared.module.css'
 import {
   ACTIONS,
   LAST_STEP,
@@ -70,6 +73,8 @@ export default function EncapsulationViz() {
   // Cosmetic flourish only: flash the balance figure when it changes. Pure animation.
   useEffect(() => {
     if (step === 0 || !balanceRef.current) return
+    // Reduced motion: the figure already renders at full opacity, so skip the flash.
+    if (prefersReducedMotion()) return
     animate(balanceRef.current, {
       opacity: [0.3, 1],
       duration: 380 / speedRef.current,
@@ -137,6 +142,7 @@ export default function EncapsulationViz() {
           ))}
         </pre>
 
+        <div className={`${shared.scroll} ${styles.stage}`}>
         <svg
           viewBox={`0 0 ${VB_W} ${VB_H}`}
           className={styles.svg}
@@ -153,8 +159,8 @@ export default function EncapsulationViz() {
             width={ACC_W}
             height={VB_H - 66}
             rx={8}
-            fill="#faf9f6"
-            stroke="#e2e0d8"
+            fill={PANEL}
+            stroke={RULE}
             strokeWidth={1}
           />
           <text x={ACC_X + ACC_W / 2} y={82} className={styles.balanceLabel}>
@@ -165,7 +171,7 @@ export default function EncapsulationViz() {
             x={ACC_X + ACC_W / 2}
             y={128}
             className={styles.balance}
-            fill={broken ? '#c0392b' : '#1a1a1a'}
+            fill={broken ? ACCENT : INK}
           >
             {formatMoney(balance)}
           </text>
@@ -177,15 +183,15 @@ export default function EncapsulationViz() {
             width={ACC_W - 56}
             height={30}
             rx={15}
-            fill={broken ? '#fbecea' : '#eaf5ef'}
-            stroke={broken ? '#c0392b' : '#1f8a5b'}
+            fill={broken ? ERR_BG : OK_BG}
+            stroke={broken ? ACCENT : OK}
             strokeWidth={1.4}
           />
           <text
             x={ACC_X + ACC_W / 2}
             y={170}
             className={styles.badge}
-            fill={broken ? '#c0392b' : '#1f8a5b'}
+            fill={broken ? ACCENT : OK}
           >
             {broken ? 'invariant BROKEN' : 'invariant OK'}
           </text>
@@ -204,16 +210,16 @@ export default function EncapsulationViz() {
             const strike = outcome === 'nocompile'
             const marker =
               outcome === 'applied'
-                ? { glyph: '✓', color: mode === 'public' ? '#c0392b' : '#1f8a5b', label: 'applied' }
+                ? { glyph: '✓', color: mode === 'public' ? ACCENT : OK, label: 'applied' }
                 : outcome === 'refused'
-                  ? { glyph: '✗', color: '#1f8a5b', label: 'refused' }
+                  ? { glyph: '✗', color: OK, label: 'refused' }
                   : outcome === 'nocompile'
-                    ? { glyph: '✗', color: '#9b9892', label: 'does not compile' }
+                    ? { glyph: '✗', color: FADE, label: 'does not compile' }
                     : null
             return (
               <g key={action.id} opacity={dim ? 0.4 : 1}>
                 {current && (
-                  <rect x={CODE_X - 6} y={y - 16} width={VB_W - CODE_X - 4} height={ROW_H - 8} rx={5} fill="#eef3f7" />
+                  <rect x={CODE_X - 6} y={y - 16} width={VB_W - CODE_X - 4} height={ROW_H - 8} rx={5} fill={BLUE_BG} />
                 )}
                 <text
                   x={CODE_X}
@@ -231,9 +237,10 @@ export default function EncapsulationViz() {
             )
           })}
         </svg>
+        </div>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The balance and the invariant are replayed from the account rules for the current
         mode and step, not typed in per frame, so the readouts always match the actions. The
         sequence is fixed and deterministic; there is no randomness.

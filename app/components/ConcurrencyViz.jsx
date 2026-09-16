@@ -3,6 +3,22 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import {
+  INK,
+  FADE,
+  ACCENT,
+  OK,
+  OK_BG,
+  AMBER,
+  AMBER_STROKE,
+  AMBER_BG,
+  BLUE,
+  PURPLE,
+  LINE,
+  RULE,
+  CONTROL_BG,
+} from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './ConcurrencyViz.module.css'
 
 // Two transactions, T1 and T2, both add INC to the same shared balance. The correct
@@ -15,12 +31,12 @@ const INC = 50
 const CORRECT = START + 2 * INC // 200
 const PLAY_MS = 1050
 
-// palette (shared project tokens, matching the SQL-section figures)
-const GREEN = '#1f6f5c'
-const RED = '#c0392b'
-const AMBER_FILL = '#fdf3ee'
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
+// palette: shared tokens. OK marks a held lock or a commit, ACCENT a wrong result
+// or a stale read, AMBER a transaction waiting for a lock. T1 and T2 carry the
+// first two identity colours (BLUE, PURPLE).
+const GREEN = OK
+const RED = ACCENT
+const TX_COLOR = { T1: BLUE, T2: PURPLE }
 
 const STATE_LABEL = {
   idle: 'idle',
@@ -142,10 +158,10 @@ function buildRun(locking) {
 }
 
 function badge(state) {
-  if (state === 'waiting') return { background: AMBER_FILL, color: RED, border: `1px solid ${RED}` }
-  if (state === 'committed' || state === 'locked') return { background: '#e9f1ee', color: GREEN, border: `1px solid ${GREEN}` }
-  if (state === 'read') return { background: '#ffffff', color: INK, border: '1px solid #d8d4cc' }
-  return { background: '#f4f2ec', color: FADE, border: '1px solid #e2e0d8' }
+  if (state === 'waiting') return { background: AMBER_BG, color: AMBER, border: `1px solid ${AMBER_STROKE}` }
+  if (state === 'committed' || state === 'locked') return { background: OK_BG, color: GREEN, border: `1px solid ${GREEN}` }
+  if (state === 'read') return { background: '#ffffff', color: INK, border: `1px solid ${LINE}` }
+  return { background: CONTROL_BG, color: FADE, border: `1px solid ${RULE}` }
 }
 
 function Lane({ id, tx, active }) {
@@ -153,7 +169,9 @@ function Lane({ id, tx, active }) {
   const stale = tx.stale
   return (
     <div className={`${styles.lane} ${active ? styles.laneActive : ''}`}>
-      <div className={styles.laneHead}>{id}</div>
+      <div className={styles.laneHead} style={{ color: TX_COLOR[id] }}>
+        {id}
+      </div>
       <span className={styles.badge} style={b}>
         {STATE_LABEL[tx.state]}
       </span>
@@ -233,13 +251,13 @@ export default function ConcurrencyViz() {
       readouts={readouts}
       tryThis="Both T1 and T2 add 50 to a balance that starts at 100, so the right answer is 200. With No protection, step through one bad interleaving: T1 and T2 both read 100, T1 writes 150, then T2 writes 150 from the stale 100 it read, overwriting T1. One update is lost and the balance ends at 150. Switch to With locking and step again: T2 has to wait until T1 commits, then reads the updated 150 and writes 200. This is one specific ordering chosen to make the bug visible; in a real system it is timing-dependent and does not always happen, which is what makes it dangerous."
     >
-      <div className={styles.controls}>
-        <span className={styles.label}>mode</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>mode</span>
         <div className={styles.modeGroup} role="group" aria-label="Concurrency mode">
-          <button type="button" className={`${styles.modeBtn} ${!locking ? styles.modeActive : ''}`} aria-pressed={!locking} onClick={() => setMode(false)}>
+          <button type="button" className={shared.btn} aria-pressed={!locking} onClick={() => setMode(false)}>
             No protection
           </button>
-          <button type="button" className={`${styles.modeBtn} ${locking ? styles.modeActive : ''}`} aria-pressed={locking} onClick={() => setMode(true)}>
+          <button type="button" className={shared.btn} aria-pressed={locking} onClick={() => setMode(true)}>
             With locking
           </button>
         </div>
@@ -262,11 +280,22 @@ export default function ConcurrencyViz() {
         {run.script.map((line, i) => {
           const isT2 = line.startsWith('T2')
           return (
-            <div key={line} className={`${styles.scriptLine} ${i === (step - 1) ? styles.scriptLineActive : ''}`} style={{ borderLeftColor: isT2 ? '#9a5a86' : '#2f6f8f' }}>
+            <div key={line} className={`${styles.scriptLine} ${i === (step - 1) ? styles.scriptLineActive : ''}`} style={{ borderLeftColor: isT2 ? TX_COLOR.T2 : TX_COLOR.T1 }}>
               {line}
             </div>
           )
         })}
+      </div>
+
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: TX_COLOR.T1 }} />
+          T1
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: TX_COLOR.T2 }} />
+          T2
+        </span>
       </div>
 
       {finished && (
@@ -277,7 +306,7 @@ export default function ConcurrencyViz() {
         </div>
       )}
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The balances are real arithmetic on fixed numbers (start {START}, each transaction adds {INC}, correct total{' '}
         {CORRECT}). No protection really lands on {START + INC} because T2 writes from a stale read; with locking it
         really lands on {CORRECT}. The buggy run is one specific interleaving chosen to make the lost update visible; in

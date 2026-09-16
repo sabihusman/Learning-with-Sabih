@@ -3,7 +3,13 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import { FADE, ACCENT, BLUE, OK, LINE } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './LinkedListArrayViz.module.css'
+
+// The smallest SVG label (10px) must render at >= 7px on a phone:
+// ceil(7 x 580 / 10) = 406, so the drawing scrolls sideways below that width.
+const SVG_MIN_WIDTH = 406
 
 // One fixed, deterministic value set held by BOTH structures, so the array and the
 // linked list run every operation on identical data and the costs are comparable.
@@ -194,29 +200,36 @@ export default function LinkedListArrayViz() {
       readouts={readouts}
       tryThis="Run the same operation on both structures and read the costs. Insert at front: the array shifts every element while the list just repoints the head. Access by index: the array jumps straight to the cell while the list walks node by node. Neither structure wins everywhere, that is the whole point: pick the one whose cheap operations match what you do most."
     >
-      <div className={styles.ops} role="group" aria-label="Operation">
+      <div className={shared.group} role="group" aria-label="Operation">
         {OPS.map((o) => (
-          <button key={o.key} type="button" className={`${styles.opBtn} ${o.key === op ? styles.opActive : ''}`} aria-pressed={o.key === op} onClick={() => selectOp(o.key)}>
+          <button key={o.key} type="button" className={shared.btn} aria-pressed={o.key === op} onClick={() => selectOp(o.key)}>
             {o.label}
           </button>
         ))}
       </div>
 
       {op === 'access' && (
-        <div className={styles.indexRow}>
-          <span className={styles.indexLabel}>index</span>
+        <div className={shared.group}>
+          <span className={shared.groupLabel}>index</span>
           {VALUES.map((_, i) => (
-            <button key={i} type="button" className={`${styles.indexBtn} ${i === accessIndex ? styles.indexActive : ''}`} aria-pressed={i === accessIndex} onClick={() => selectIndex(i)}>
+            <button key={i} type="button" className={shared.btn} aria-pressed={i === accessIndex} onClick={() => selectIndex(i)}>
               {i}
             </button>
           ))}
         </div>
       )}
 
-      <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className={styles.svg} role="img" aria-label="An array row above a linked-list row, both holding the same values">
+      <div className={shared.scroll}>
+      <svg
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        className={styles.svg}
+        style={{ minWidth: SVG_MIN_WIDTH }}
+        role="img"
+        aria-label="An array row above a linked-list row, both holding the same values"
+      >
         <defs>
           <marker id="llva-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="#8a8780" />
+            <path d="M0,0 L10,5 L0,10 z" fill={FADE} />
           </marker>
         </defs>
 
@@ -229,7 +242,7 @@ export default function LinkedListArrayViz() {
         {a.slots.map((cell, s) =>
           cell ? (
             <g key={cell.id} className={styles.cellG} style={{ transform: `translate(${arrCellX(s)}px, ${ARR_Y}px)` }}>
-              <rect width={CELL_W} height={CELL_H} rx={3} fill={a.hi === s ? '#c0392b' : '#6b7f9e'} stroke="#ffffff" strokeWidth={1} />
+              <rect width={CELL_W} height={CELL_H} rx={3} fill={a.hi === s ? ACCENT : BLUE} stroke="#ffffff" strokeWidth={1} />
               <text x={CELL_W / 2} y={CELL_H / 2 + 5} className={styles.cellText} fill="#ffffff" textAnchor="middle">{cell.value}</text>
             </g>
           ) : null
@@ -241,7 +254,7 @@ export default function LinkedListArrayViz() {
 
         {/* linked-list pointers */}
         {links.map((ln, i) => (
-          <line key={`ln${i}`} x1={ln.from.x} y1={ln.from.y} x2={ln.to.x} y2={ln.to.y} stroke="#8a8780" strokeWidth={1.5} markerEnd="url(#llva-arrow)" />
+          <line key={`ln${i}`} x1={ln.from.x} y1={ln.from.y} x2={ln.to.x} y2={ln.to.y} stroke={FADE} strokeWidth={1.5} markerEnd="url(#llva-arrow)" />
         ))}
         <text x={HEAD_X} y={ROW_Y + NODE_H / 2 + 4} className={styles.marker} textAnchor="middle">head</text>
         <text x={listX(N - 1) + NODE_PITCH * 0.62 + 6} y={ROW_Y + NODE_H / 2 + 4} className={styles.marker} textAnchor="start">null</text>
@@ -250,7 +263,7 @@ export default function LinkedListArrayViz() {
         {VALUES.map((v, i) =>
           l.deletedId === i ? null : (
             <g key={`n${i}`}>
-              <rect x={listX(i)} y={ROW_Y} width={NODE_W} height={NODE_H} rx={4} fill={l.cursor === i ? '#c0392b' : '#3f7d68'} stroke="#ffffff" strokeWidth={1} />
+              <rect x={listX(i)} y={ROW_Y} width={NODE_W} height={NODE_H} rx={4} fill={l.cursor === i ? ACCENT : OK} stroke="#ffffff" strokeWidth={1} />
               <text x={listX(i) + NODE_W / 2} y={ROW_Y + NODE_H / 2 + 5} className={styles.cellText} fill="#ffffff" textAnchor="middle">{v}</text>
             </g>
           )
@@ -258,20 +271,21 @@ export default function LinkedListArrayViz() {
         {/* deleted node, dropped below and greyed */}
         {l.deletedId != null && (
           <g key="deleted" className={styles.fade}>
-            <rect x={listX(l.deletedId)} y={DEL_Y} width={NODE_W} height={NODE_H} rx={4} fill="#d7d4cc" stroke="#ffffff" strokeWidth={1} />
-            <text x={listX(l.deletedId) + NODE_W / 2} y={DEL_Y + NODE_H / 2 + 5} className={styles.cellText} fill="#9b9892" textAnchor="middle">{VALUES[l.deletedId]}</text>
+            <rect x={listX(l.deletedId)} y={DEL_Y} width={NODE_W} height={NODE_H} rx={4} fill={LINE} stroke="#ffffff" strokeWidth={1} />
+            <text x={listX(l.deletedId) + NODE_W / 2} y={DEL_Y + NODE_H / 2 + 5} className={styles.cellText} fill={FADE} textAnchor="middle">{VALUES[l.deletedId]}</text>
           </g>
         )}
         {/* newly inserted node, above the row */}
         {l.newNode && (
           <g key="newnode" className={styles.fade}>
-            <rect x={newNodeX} y={NEW_Y} width={NODE_W} height={NODE_H} rx={4} fill="#2f8f63" stroke="#ffffff" strokeWidth={1} />
+            <rect x={newNodeX} y={NEW_Y} width={NODE_W} height={NODE_H} rx={4} fill={OK} stroke="#ffffff" strokeWidth={1} />
             <text x={newNodeX + NODE_W / 2} y={NEW_Y + NODE_H / 2 + 5} className={styles.cellText} fill="#ffffff" textAnchor="middle">{INSERT_VALUE}</text>
           </g>
         )}
       </svg>
+      </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Each cost is a real count of what happened on the structure above: array shifts are elements actually moved, and
         the list numbers are nodes actually walked and pointers actually rewritten. The structures are kept small for
         clarity; real ones hold far more, where these gaps become decisive.

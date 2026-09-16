@@ -3,6 +3,12 @@
 import { useReducer, useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { prefersReducedMotion } from './motion'
+import { INK, FADE, ACCENT, LINE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
+import styles from './GradientDescentViz.module.css'
 
 // ─── math ────────────────────────────────────────────────────────────────────
 // 1D asymmetric double well (ported from the real study-guide-demo):
@@ -27,9 +33,10 @@ const DEFAULT_LR = 0.12 // the rate that settles the right start in the local mi
 const LR_MIN = 0.02
 const LR_MAX = 2 // low end: smooth; mid: overshoot/oscillate; top: blows up fast
 const MAX_STEPS = 80
-// STEP_MS is the per-step glide duration AND the stepping cadence: the next
-// optimizer step is dispatched when the current glide completes. Steps shrink as
-// f'(x) -> 0, so at a fixed time per step the dot decelerates on its own.
+// STEP_MS is the per-step glide duration AND the stepping cadence (both divided
+// by the shared animation-speed multiplier), so each glide covers exactly one
+// step. Steps shrink as f'(x) -> 0, so at a fixed time per step the dot
+// decelerates on its own.
 const STEP_MS = 600
 const SETTLE_SLOPE = 1e-3 // |f'(x)| below this counts as settled
 const DIVERGE_BOUND = 4.2 // |x| past this means the steps blew up (flew off the chart)
@@ -176,6 +183,9 @@ export default function GradientDescentViz() {
   const [renderX, setRenderX] = useState(() => STARTS.right)
   const displayRef = useRef(STARTS.right) // where the dot currently is (glide start)
   const animRef = useRef(null) // current anime.js glide instance, so we can cancel it
+  // Shared speed multiplier, read at glide time so a speed change never replays
+  // the glide in flight (the paced interval re-times the cadence on its own).
+  const speedRef = useAnimationSpeedRef()
 
   // ── drag-to-place ──────────────────────────────────────────────────────────
   // While paused, the dot can be dragged along the curve to set the start x.
@@ -233,28 +243,21 @@ export default function GradientDescentViz() {
     }
   }
 
-  // Optimizer cadence. The run advances on a timer, NOT on anime's rAF callbacks,
-  // so the optimization keeps progressing even when rAF is paused or throttled
-  // (a backgrounded or hidden tab). The first step fires immediately; the rest
-  // follow every STEP_MS. The reducer stops appending once the run has settled or
-  // diverged, which flips `running` off and tears this timer down.
-  useEffect(() => {
-    if (!state.running) return undefined
-    let id = 0
-    const tick = () => {
-      dispatch({ type: 'AUTO_STEP' })
-      id = window.setTimeout(tick, STEP_MS)
-    }
-    id = window.setTimeout(tick, 0)
-    return () => window.clearTimeout(id)
-  }, [state.running])
+  // Optimizer cadence: the shared paced interval (setInterval, never anime's rAF
+  // callbacks), so the optimization keeps progressing even when rAF is paused or
+  // throttled (a backgrounded or hidden tab), and a speed change mid-run re-times
+  // the next step. The optimizer state (history) changes ONLY here, synchronously
+  // in the tick. The reducer stops appending once the run has settled or
+  // diverged, which flips `running` off and tears the timer down.
+  usePacedInterval(state.running, STEP_MS, () => dispatch({ type: 'AUTO_STEP' }))
 
-  // Visual glide. anime.js v4 interpolates the dot's x from the previous committed
-  // step to the new one over STEP_MS; the dot's y is recomputed from f(x) every
-  // frame in render (see cy below), so the motion rides the curve instead of cutting
-  // a straight chord across it. The ease is LINEAR per step; because the optimizer's
-  // steps shrink as f'(x) -> 0, the dot decelerates on its own and settles rather
-  // than slamming to a halt.
+  // Visual glide. anime.js v4 interpolates a DISPLAY proxy (renderX, the drawn
+  // dot position) from the previous committed step to the new one over one step's
+  // cadence; the dot's y is recomputed from f(x) every frame in render (see cy
+  // below), so the motion rides the curve instead of cutting a straight chord
+  // across it. It never touches the optimizer state. The ease is LINEAR per step;
+  // because the optimizer's steps shrink as f'(x) -> 0, the dot decelerates on
+  // its own and settles rather than slamming to a halt.
   //
   // Each glide starts from the PREVIOUS committed step, not the live mid-glide
   // position, so it covers exactly one step. Snapping renderX to that start also
@@ -267,11 +270,11 @@ export default function GradientDescentViz() {
     const startX = prevTarget
     const stepPx = Math.abs((targetX - startX) / (X_MAX - X_MIN)) * (PLOT_R - PLOT_L)
 
-    // single-point history (reset / drag / lr change) or a sub-pixel step: snap with
-    // no glide. The snap is deferred to a 0ms timer so it is not a synchronous
-    // setState in the effect body, and because a timer (unlike rAF) still fires when
-    // the tab is hidden.
-    if (state.history.length <= 1 || stepPx < MIN_STEP_PX) {
+    // single-point history (reset / drag / lr change), a sub-pixel step, or a
+    // reduced-motion viewer: snap with no glide. The snap is deferred to a 0ms
+    // timer so it is not a synchronous setState in the effect body, and because a
+    // timer (unlike rAF) still fires when the tab is hidden.
+    if (state.history.length <= 1 || stepPx < MIN_STEP_PX || prefersReducedMotion()) {
       const snap = window.setTimeout(() => {
         displayRef.current = targetX
         setRenderX(targetX)
@@ -279,15 +282,16 @@ export default function GradientDescentViz() {
       return () => window.clearTimeout(snap)
     }
 
-    // anime.js v4 glides the dot across exactly one optimizer step (prevTarget ->
-    // targetX). The dot's y is recomputed from f(x) every frame in render, so the
-    // motion rides the curve. The previous glide ended at prevTarget, so starting the
-    // proxy there continues smoothly with no jump. The ease is LINEAR; deceleration
-    // (and the settle) come from the optimizer steps shrinking as f'(x) -> 0.
+    // anime.js v4 glides the proxy across exactly one optimizer step (prevTarget ->
+    // targetX) in the time the paced interval takes to reach the next one. The
+    // previous glide ended at prevTarget, so starting the proxy there continues
+    // smoothly with no jump. The ease is LINEAR; deceleration (and the settle) come
+    // from the optimizer steps shrinking as f'(x) -> 0.
+    const glideMs = STEP_MS / speedRef.current
     const proxy = { x: startX }
     animRef.current = animate(proxy, {
       x: targetX,
-      duration: STEP_MS,
+      duration: glideMs,
       ease: 'linear',
       onUpdate: () => {
         displayRef.current = proxy.x
@@ -308,13 +312,13 @@ export default function GradientDescentViz() {
         displayRef.current = targetX
         setRenderX(targetX)
       }
-    }, STEP_MS + 60)
+    }, glideMs + 60)
 
     return () => {
       if (animRef.current) animRef.current.cancel()
       window.clearTimeout(floor)
     }
-  }, [state.history, targetX, prevTarget])
+  }, [state.history, targetX, prevTarget, speedRef])
 
   // Discrete current step — drives readouts, settling, and status.
   const x = state.history[state.history.length - 1]
@@ -342,13 +346,12 @@ export default function GradientDescentViz() {
   const status = statusLabel(state, done)
 
   const controls = [
+    { label: 'Step', onClick: () => dispatch({ type: 'STEP' }), variant: 'primary', disabled: state.running || done },
     {
       label: state.running ? 'Pause' : 'Play',
       onClick: () => dispatch({ type: state.running ? 'PAUSE' : 'PLAY' }),
-      variant: 'primary',
       disabled: done && !state.running,
     },
-    { label: 'Step', onClick: () => dispatch({ type: 'STEP' }), disabled: state.running || done },
     { label: 'Reset', onClick: () => dispatch({ type: 'RESET' }) },
     {
       label: 'Start right',
@@ -375,55 +378,57 @@ export default function GradientDescentViz() {
       eyebrow="Optimization"
       title="Gradient descent on f(x) = 0.08(x² − 4)² + 0.15x"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="While paused, drag the red point anywhere along the curve to set the start, then press Play. Where you release it decides the outcome: on the right slope it settles in the local minimum, left of the central ridge it reaches the deeper global minimum. Then raise the learning rate. A small rate takes slow, careful steps; a large one overshoots the valley, bounces, and eventually blows up and leaves the chart entirely."
     >
+      <div className={shared.scroll}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '0 auto', touchAction: 'none' }}
+        className={styles.svg}
         role="img"
         aria-label="Loss curve of a 1D double-well function. Drag the red point along the curve while paused to set the starting position, then run gradient descent."
       >
         <defs>
           <marker id="gdArrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-            <path d="M0,0.5 L0,5.5 L6,3 z" fill="#c0392b" />
+            <path d="M0,0.5 L0,5.5 L6,3 z" fill={ACCENT} />
           </marker>
         </defs>
 
         {/* baseline at f = 0 */}
-        <line x1={PLOT_L} y1={sy(0)} x2={PLOT_R} y2={sy(0)} stroke="#e7e3da" strokeWidth={1} />
+        <line x1={PLOT_L} y1={sy(0)} x2={PLOT_R} y2={sy(0)} stroke={LINE} strokeWidth={1} />
         {/* x axis ticks */}
         {[-3, -2, -1, 0, 1, 2, 3].map((tx) => (
           <g key={tx}>
-            <line x1={sx(tx)} y1={PLOT_B} x2={sx(tx)} y2={PLOT_B + 4} stroke="#c8c4bc" strokeWidth={0.8} />
-            <text x={sx(tx)} y={PLOT_B + 16} fontSize={11.5} fill="#9b9892" textAnchor="middle" fontFamily="ui-monospace,monospace">{tx}</text>
+            <line x1={sx(tx)} y1={PLOT_B} x2={sx(tx)} y2={PLOT_B + 4} stroke={LINE} strokeWidth={0.8} />
+            <text x={sx(tx)} y={PLOT_B + 16} fontSize={11.5} fill={FADE} textAnchor="middle" fontFamily={MONO}>{tx}</text>
           </g>
         ))}
-        <text x={(PLOT_L + PLOT_R) / 2} y={VB_H - 2} fontSize={11.5} fill="#9b9892" textAnchor="middle" fontFamily="ui-monospace,monospace">x</text>
+        <text x={(PLOT_L + PLOT_R) / 2} y={VB_H - 2} fontSize={11.5} fill={FADE} textAnchor="middle" fontFamily={MONO}>x</text>
 
         {/* the loss curve */}
-        <path d={CURVE_D} fill="none" stroke="#bdb8ad" strokeWidth={1.6} strokeLinejoin="round" />
+        <path d={CURVE_D} fill="none" stroke={LINE} strokeWidth={1.6} strokeLinejoin="round" />
 
         {/* minima markers */}
-        <circle cx={sx(GLOBAL_MIN)} cy={sy(f(GLOBAL_MIN))} r={3} fill="#1a1a1a" />
-        <text x={sx(GLOBAL_MIN)} y={sy(f(GLOBAL_MIN)) + 16} fontSize={11} fill="#6b6862" textAnchor="middle" fontFamily="ui-monospace,monospace">global min</text>
-        <circle cx={sx(LOCAL_MIN)} cy={sy(f(LOCAL_MIN))} r={3} fill="none" stroke="#1a1a1a" strokeWidth={1.2} />
-        <text x={sx(LOCAL_MIN)} y={sy(f(LOCAL_MIN)) - 9} fontSize={11} fill="#6b6862" textAnchor="middle" fontFamily="ui-monospace,monospace">local min</text>
+        <circle cx={sx(GLOBAL_MIN)} cy={sy(f(GLOBAL_MIN))} r={3} fill={INK} />
+        <text x={sx(GLOBAL_MIN)} y={sy(f(GLOBAL_MIN)) + 16} fontSize={11} fill={FADE} textAnchor="middle" fontFamily={MONO}>global min</text>
+        <circle cx={sx(LOCAL_MIN)} cy={sy(f(LOCAL_MIN))} r={3} fill="none" stroke={INK} strokeWidth={1.2} />
+        <text x={sx(LOCAL_MIN)} y={sy(f(LOCAL_MIN)) - 9} fontSize={11} fill={FADE} textAnchor="middle" fontFamily={MONO}>local min</text>
 
         {/* descent trail */}
         {state.history.length > 1 && (
-          <path d={trailD} fill="none" stroke="#9b9892" strokeWidth={1.4} strokeDasharray="3 2" strokeLinejoin="round" />
+          <path d={trailD} fill="none" stroke={FADE} strokeWidth={1.4} strokeDasharray="3 2" strokeLinejoin="round" />
         )}
 
         {/* descent-direction arrow (uses the animated slope so it fades on arrival) */}
         {!done && Math.abs(vSlope) > SETTLE_SLOPE && (
-          <line x1={cx.toFixed(1)} y1={cy.toFixed(1)} x2={arrowX2.toFixed(1)} y2={cy.toFixed(1)} stroke="#c0392b" strokeWidth={1.6} markerEnd="url(#gdArrow)" />
+          <line x1={cx.toFixed(1)} y1={cy.toFixed(1)} x2={arrowX2.toFixed(1)} y2={cy.toFixed(1)} stroke={ACCENT} strokeWidth={1.6} markerEnd="url(#gdArrow)" />
         )}
 
         {/* current point (visual only; the grab handle below receives pointer events) */}
-        <circle cx={cx.toFixed(1)} cy={cy.toFixed(1)} r={5} fill="#c0392b" stroke="#ffffff" strokeWidth={1.5} pointerEvents="none" />
+        <circle cx={cx.toFixed(1)} cy={cy.toFixed(1)} r={5} fill={ACCENT} stroke="#ffffff" strokeWidth={1.5} pointerEvents="none" />
 
         {/* drag handle: a generous transparent hit area over the dot. Draggable
             only while paused; sets the start x and tracks the pointer instantly. */}
@@ -439,25 +444,14 @@ export default function GradientDescentViz() {
           onPointerCancel={onPointerUp}
         />
       </svg>
+      </div>
 
       {/* learning-rate slider — the key teaching control. Changing it returns the
           dot to the current start so each rate is compared from the same place. */}
-      <div style={{ maxWidth: 600, margin: '14px auto 4px', padding: '0 4px' }}>
-        <label
-          htmlFor="gd-lr"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-            fontSize: 11,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: '#9b9892',
-            marginBottom: 6,
-          }}
-        >
+      <div className={styles.lrBlock}>
+        <label htmlFor="gd-lr" className={styles.lrLabel}>
           <span>Learning rate</span>
-          <span style={{ color: '#1a1a1a' }}>{state.lr.toFixed(2)}</span>
+          <span className={styles.lrValue}>{state.lr.toFixed(2)}</span>
         </label>
         <input
           id="gd-lr"
@@ -467,19 +461,10 @@ export default function GradientDescentViz() {
           step={0.01}
           value={state.lr}
           onChange={(e) => dispatch({ type: 'SET_LR', lr: Number(e.target.value) })}
-          style={{ width: '100%', accentColor: '#c0392b', cursor: 'pointer' }}
+          className={`${shared.slider} ${styles.lrSlider}`}
           aria-label="Learning rate"
         />
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-            fontSize: 9,
-            color: '#9b9892',
-            marginTop: 2,
-          }}
-        >
+        <div className={styles.lrHints}>
           <span>small, careful steps</span>
           <span>overshoot, then diverge</span>
         </div>

@@ -10,17 +10,13 @@ import {
   percentileValue,
   countSlowerThan,
 } from './percentilesData'
+import { INK, FADE, ACCENT, OK, OK_BG, RULE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './PercentilesViz.module.css'
 
-// Palette: the site family (ink / fade / accent) plus the ok-green already used by
-// other figures. No new colors for the section.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b' // the mean, and the live handle label
-const OK = '#1f6f5c' // a request inside the current percentile
-const OK_BG = '#e6f2ec'
-const LINE = '#e2e0d8'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// ACCENT marks the mean (the distorted stat) and the live handle label; OK marks a
+// request inside the current percentile.
+const LINE = RULE
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 const VB_W = 460
@@ -89,6 +85,7 @@ export default function PercentilesViz() {
       readouts={readouts}
       tryThis="Drag slowly up from p50 and find where the latency stops creeping and leaps: the jump from the main cluster into the tail. Here it happens around p93, at 160 ms. That means the slowest 5 of these 60 requests live in the tail. Five users out of sixty sounds ignorable. Now imagine sixty million: the same fraction is five million people having the worst experience, all of them invisible in the mean."
     >
+      <div className={shared.scroll}>
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
@@ -150,15 +147,16 @@ export default function PercentilesViz() {
           {`p${p} = ${handleValue} ms`}
         </text>
       </svg>
+      </div>
 
       {/* percentile control: a native range in percentile space (linear and fully
           keyboard reachable); the strip above shows where that percentile lands in
           milliseconds, so the nonlinear jump into the tail is visible as you drag. */}
-      <div className={styles.sliderRow}>
-        <span className={styles.sliderLabel}>percentile</span>
+      <div className={`${shared.group} ${styles.sliderRow}`}>
+        <span className={shared.groupLabel}>percentile</span>
         <input
           type="range"
-          className={styles.slider}
+          className={shared.slider}
           min={1}
           max={100}
           step={1}
@@ -171,7 +169,7 @@ export default function PercentilesViz() {
         <span className={styles.sliderValue}>{`p${p} = ${handleValue} ms`}</span>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Percentiles here use the nearest-rank method on the sorted sample: pXX is the
         value at rank ceil(XX/100 of {N}). Monitoring tools that interpolate between
         ranks may report a slightly different number for the same data. The {N}-request

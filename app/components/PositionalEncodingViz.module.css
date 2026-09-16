@@ -3,7 +3,7 @@
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
   margin: 18px 0 6px;
   text-align: center;
 }
@@ -15,7 +15,7 @@
   margin: 10px 0 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
-  color: #5a5750;
+  color: var(--fade);
 }
 
 .legendItem {
@@ -34,26 +34,19 @@
   display: inline-block;
   width: 16px;
   height: 0;
-  border-top: 2px dashed #9a6b1f;
+  border-top: 2px dashed #b07a2e;
 }
 
 .formula {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11.5px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: var(--ink);
   background: #f4f2ec;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 10px 12px;
   margin-top: 14px;
   overflow-x: auto;
 }
 
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 10px 0 0;
-}

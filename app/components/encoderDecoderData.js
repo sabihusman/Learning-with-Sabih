@@ -1,7 +1,8 @@
 // The attention-mask rule: what is each word ALLOWED to attend to, not the actual
 // attention weights. Reuses the shared attention sentence unmodified so this topic
 // reads as a direct sequel to Attention and Transformers.
-import { SENTENCE, INK, FADE, PAPER } from './attentionData'
+import { SENTENCE } from './attentionData'
+import { INK, FADE, PAPER } from './vizPalette'
 
 export { SENTENCE, INK, FADE, PAPER }
 

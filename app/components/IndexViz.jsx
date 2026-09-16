@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
 import styles from './IndexViz.module.css'
+import shared from './vizShared.module.css'
+import { INK, FADE, OK, AMBER, AMBER_STROKE, AMBER_BG, MUTED_BG, LINE, PANEL, RULE, MONO } from './vizPalette'
 import { ROWS, INDEX, N, QUERIES, buildFrames, queryLabel, querySql } from './indexData'
 
 const PLAY_MS = 700
@@ -24,19 +26,14 @@ const INDEX_W = IX_SCORE_W + IX_ARROW_W
 const TABLE_X = PADX + BAR
 const INDEX_X = TABLE_X + TABLE_W + GAP
 const VB_H = PADT + HEAD_H + N * ROW_H + PADT
+// One viewBox width whether or not the index is shown: the index column's space is
+// reserved when it is hidden, so toggling the index never reflows the card.
+const VB_W = INDEX_X + INDEX_W + PADX
 const rowY = (i) => PADT + HEAD_H + i * ROW_H
 
-// palette (shared project tokens / the searching-topic colours)
-const GREEN = '#1f6f5c'
-const AMBER_FILL = '#fdf3ee'
-const AMBER_STROKE = '#c0392b'
-const DIM_FILL = '#efece4'
-const DIM_TEXT = '#b9b6ae'
-const IDLE_FILL = '#fffefb'
-const IDLE_STROKE = '#e2e0d8'
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
+// Shared palette: OK marks a match, the amber family marks the cursor / the binary
+// search's current middle (an in-between state), the muted family marks rows the
+// strategy has passed or ruled out.
 
 // classify a physical-table row for the current frame
 function tableKind(rowIndex, rowId, f) {
@@ -68,9 +65,9 @@ function indexKind(pos, f) {
   return 'dim'
 }
 
-const fillFor = (k) => (k === 'match' ? GREEN : k === 'cursor' || k === 'mid' ? AMBER_FILL : k === 'elim' || k === 'seen' || k === 'dim' ? DIM_FILL : IDLE_FILL)
-const strokeFor = (k) => (k === 'match' ? GREEN : k === 'cursor' || k === 'mid' ? AMBER_STROKE : IDLE_STROKE)
-const textFor = (k) => (k === 'match' ? '#ffffff' : k === 'elim' || k === 'seen' || k === 'dim' ? DIM_TEXT : INK)
+const fillFor = (k) => (k === 'match' ? OK : k === 'cursor' || k === 'mid' ? AMBER_BG : k === 'elim' || k === 'seen' || k === 'dim' ? MUTED_BG : PANEL)
+const strokeFor = (k) => (k === 'match' ? OK : k === 'cursor' || k === 'mid' ? AMBER_STROKE : RULE)
+const textFor = (k) => (k === 'match' ? '#ffffff' : k === 'elim' || k === 'seen' || k === 'dim' ? LINE : INK)
 
 export default function IndexViz() {
   const [query, setQuery] = useState(QUERIES[0])
@@ -127,8 +124,6 @@ export default function IndexViz() {
       ? `Index on: binary-search the sorted index for "${queryLabel(query)}". Step or play.`
       : `No index: full scan for "${queryLabel(query)}". Step or play to check every row.`
 
-  const VB_W = indexed ? INDEX_X + INDEX_W + PADX : TABLE_X + TABLE_W + PADX
-
   return (
     <Figure
       eyebrow="Indexing"
@@ -141,19 +136,14 @@ export default function IndexViz() {
     >
       <div className={styles.controls}>
         <div className={styles.line}>
-          <span className={styles.label}>index</span>
-          <button
-            type="button"
-            className={`${styles.toggle} ${indexed ? styles.toggleOn : ''}`}
-            aria-pressed={indexed}
-            onClick={() => setIndex(!indexed)}
-          >
+          <span className={shared.groupLabel}>index</span>
+          <button type="button" className={shared.btn} aria-pressed={indexed} onClick={() => setIndex(!indexed)}>
             {indexed ? 'on (B-tree)' : 'off'}
           </button>
         </div>
         <div className={styles.line}>
-          <span className={styles.label}>query</span>
-          <select className={styles.select} value={QUERIES.some((q) => q.id === query.id) ? query.id : 'custom'} onChange={(e) => chooseQuery(QUERIES.find((q) => q.id === e.target.value) || query)} aria-label="Query">
+          <span className={shared.groupLabel}>query</span>
+          <select className={shared.select} value={QUERIES.some((q) => q.id === query.id) ? query.id : 'custom'} onChange={(e) => chooseQuery(QUERIES.find((q) => q.id === e.target.value) || query)} aria-label="Query">
             {QUERIES.map((q) => (
               <option key={q.id} value={q.id}>
                 {q.label}
@@ -168,7 +158,6 @@ export default function IndexViz() {
         <svg
           viewBox={`0 0 ${VB_W} ${VB_H}`}
           className={styles.svg}
-          style={{ maxWidth: indexed ? 520 : 240 }}
           role="img"
           aria-label={`A ${N}-row users table in physical order on the left${indexed ? ', and a sorted B-tree index on the score column on the right' : ''}. The current strategy highlights the rows or index entries it examines.`}
         >
@@ -187,8 +176,8 @@ export default function IndexViz() {
             const y = rowY(i)
             return (
               <g key={row.id} onClick={() => clickRow(row)} style={{ cursor: 'pointer' }} className={styles.row}>
-                {kind === 'cursor' && <rect x={PADX} y={y} width={BAR} height={ROW_H - 2} fill={AMBER_STROKE} />}
-                {kind === 'match' && <rect x={PADX} y={y} width={BAR} height={ROW_H - 2} fill={GREEN} />}
+                {kind === 'cursor' && <rect x={PADX} y={y} width={BAR} height={ROW_H - 2} fill={AMBER} />}
+                {kind === 'match' && <rect x={PADX} y={y} width={BAR} height={ROW_H - 2} fill={OK} />}
                 <rect x={TABLE_X} y={y} width={TABLE_W} height={ROW_H - 2} rx={2} fill={fillFor(kind)} stroke={strokeFor(kind)} strokeWidth={kind === 'cursor' ? 1.6 : 1} />
                 <text x={TABLE_X + 6} y={y + ROW_H / 2 + 2} fontSize={10.5} fill={textFor(kind)} fontFamily={MONO}>
                   {row.id}
@@ -200,7 +189,21 @@ export default function IndexViz() {
             )
           })}
 
-          {/* index panel */}
+          {/* index panel; when the index is off its column stays reserved as an
+              empty dashed slot so the toggle never shifts the layout */}
+          {!indexed && (
+            <rect
+              x={INDEX_X}
+              y={PADT + HEAD_H}
+              width={INDEX_W}
+              height={N * ROW_H - 2}
+              rx={2}
+              fill="none"
+              stroke={LINE}
+              strokeWidth={1}
+              strokeDasharray="4 4"
+            />
+          )}
           {indexed && (
             <>
               <text x={INDEX_X} y={PADT + 8} fontSize={9} fill={FADE} fontFamily={MONO} letterSpacing="0.04em">
@@ -234,7 +237,7 @@ export default function IndexViz() {
 
       <pre className={styles.sql}>{querySql(query)}</pre>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The scan and the index lookup are real: rows examined is the actual number of rows or index entries the chosen
         strategy touches on this fixed {N}-row table. The index shown is a simplified B-tree, a sorted copy of the score
         column; the table is kept tiny for clarity, where real tables have millions of rows and the gap is enormous.

@@ -2,35 +2,6 @@
    panel, and an honesty caption. Node fills transition as a small CSS flourish; the step
    cadence is a timer in the component. Project paper/ink/accent palette. */
 
-.algoToggle {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0 0 12px;
-}
-
-.algoBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.74rem;
-  padding: 0.3rem 0.8rem;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  background: #ffffff;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.algoBtn:hover {
-  border-color: var(--ink);
-}
-
-.algoActive {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--ink);
-}
-
 .startHint {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.6875rem;
@@ -144,7 +115,7 @@
 
 .frontierHead {
   border-color: var(--accent);
-  background: #fcf3f1;
+  background: #fbecea;
 }
 
 .headTag {
@@ -236,7 +207,7 @@
   padding: 2px 7px;
   border: 1px solid var(--accent);
   border-radius: 4px;
-  background: #fcf3f1;
+  background: #fbecea;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.6875rem;
   font-weight: 700;
@@ -257,10 +228,12 @@
   color: var(--fade);
 }
 
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 0.9rem 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .node circle {
+    transition: none;
+  }
+
+  .frontierItem {
+    animation: none;
+  }
 }

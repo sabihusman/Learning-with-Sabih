@@ -1,8 +1,11 @@
 /* Binary search topic: a sorted array as SVG cells with lo/hi/mid pointers, plus a
-   small target picker and an honesty caption. Project paper/ink/accent palette. */
+   small target picker. The picker button and the caption use the shared in-card
+   classes (vizShared.module.css); the .scroll wrapper is also shared. */
 
+/* min-width keeps the 9-unit index labels at >= 7px on a phone (the wrapper scrolls) */
 .svg {
   width: 100%;
+  min-width: 467px;
   max-width: 600px;
   height: auto;
   display: block;
@@ -21,27 +24,4 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.6875rem;
   color: var(--fade);
-}
-
-.absentBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  padding: 0.25rem 0.55rem;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  background: #ffffff;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.absentBtn:hover {
-  border-color: var(--ink);
-}
-
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 0.9rem 0 0;
 }

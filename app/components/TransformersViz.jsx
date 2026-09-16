@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { WORDS, SENTENCE, HEADS, weightsFor, topLinks, INK } from './transformerData'
-
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
+import { MONO } from './vizPalette'
+import styles from './TransformersViz.module.css'
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 // Three panels side by side, one per head, each showing the same word column at
@@ -68,7 +68,21 @@ function HeadPanel({ head, panelIndex, selected, onSelect }) {
         const wt = selected != null ? (weights[w.id] ?? 0) : 0
         const dotOpacity = isPicked ? 1 : selected != null ? 0.3 + wt * 0.65 : 0.55
         return (
-          <g key={w.id} style={{ cursor: 'pointer' }} onClick={() => onSelect(w.id)}>
+          <g
+            key={w.id}
+            className={styles.wordRow}
+            tabIndex={0}
+            role="button"
+            aria-label={`${w.label}, show its attention links`}
+            aria-pressed={isPicked}
+            onClick={() => onSelect(w.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onSelect(w.id)
+              }
+            }}
+          >
             <rect
               x={0}
               y={rowY(w.id) - ROW_H / 2 + 2}
@@ -128,8 +142,9 @@ export default function TransformersViz() {
       }
     >
       <svg
+        role="group"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', maxWidth: 580, height: 'auto', display: 'block', margin: '0 auto' }}
+        className={styles.svg}
         aria-label="Three panels, one per attention head, each showing the same sentence. Clicking a word draws its attention links in all three panels at once, colored by head."
       >
         {HEADS.map((head, i) => (

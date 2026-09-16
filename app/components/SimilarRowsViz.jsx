@@ -10,6 +10,7 @@ import {
   tokenFor,
   buildModel,
 } from './similarRowsData'
+import shared from './vizShared.module.css'
 import styles from './SimilarRowsViz.module.css'
 
 // Static-on-change figure: every control change recomputes the whole pipeline
@@ -72,7 +73,7 @@ export default function SimilarRowsViz() {
       type="button"
       onClick={() => setSelected(i)}
       aria-pressed={selected === i}
-      className={`${styles.rowBtn} ${selected === i ? styles.rowSelected : ''} ${extraClass}`}
+      className={`${shared.btn} ${extraClass}`}
     >
       {children}
     </button>
@@ -87,8 +88,8 @@ export default function SimilarRowsViz() {
       readouts={readouts}
       tryThis="Step through the five stages once with the default row, then jump to the last stage and click other rows: the five short-tenure month-to-month customers find each other, the five two-year customers find each other, and the in-between rows split the difference. Then start removing columns. Select C04 and turn tenure off: its similarity to the top rows snaps to a perfect score, because tenure was the only thing separating them. Select C16 and turn contract type off: with its two-year token gone, it defects to the electronic-check side of the table."
     >
-      <div className={styles.controlRow}>
-        <span className={styles.controlLabel}>columns</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>columns</span>
         {MODEL_COLUMNS.map((key) => {
           const on = included.includes(key)
           const lastOn = on && included.length === 1
@@ -96,11 +97,13 @@ export default function SimilarRowsViz() {
             <button
               key={key}
               type="button"
-              onClick={() => toggleColumn(key)}
+              onClick={() => {
+                if (!lastOn) toggleColumn(key)
+              }}
               aria-pressed={on}
-              disabled={lastOn}
+              aria-disabled={lastOn || undefined}
               title={lastOn ? 'at least one column must stay in' : undefined}
-              className={`${styles.toggle} ${on ? styles.toggleOn : ''}`}
+              className={shared.btn}
             >
               {COL_LABELS[key]}
             </button>
@@ -110,7 +113,7 @@ export default function SimilarRowsViz() {
 
       {/* ── STAGES 1-3: the table, progressively transformed ─────────────── */}
       {stage <= 2 && (
-        <div className={styles.scroll}>
+        <div className={shared.scroll}>
           <table className={styles.table}>
             <thead>
               <tr>
@@ -224,7 +227,7 @@ export default function SimilarRowsViz() {
         </div>
       )}
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The sixteen-row table is authored once and frozen; everything downstream is
         computed live: the quantile bins, the token vocabulary, the co-occurrence
         counts, the PPMI weights (log base 2), every row vector, and every cosine in

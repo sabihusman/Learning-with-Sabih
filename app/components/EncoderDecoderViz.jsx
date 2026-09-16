@@ -2,14 +2,13 @@
 
 import { useState } from 'react'
 import Figure from './Figure'
-import { SENTENCE, INK, FADE, canAttend, visibleWords } from './encoderDecoderData'
+import { SENTENCE, canAttend, visibleWords } from './encoderDecoderData'
+import { INK, FADE, ACCENT, BLUE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './EncoderDecoderViz.module.css'
 
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
-const ENCODER_COLOR = '#2f6f7e' // teal, matches the site's "open/full" convention
-const DECODER_COLOR = '#c0392b' // accent red, matches the site's "restricted" convention
-
-const hexToRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]
+const ENCODER_COLOR = BLUE // matches the site's "open/full" convention
+const DECODER_COLOR = ACCENT // accent red, matches the site's "restricted" convention
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 const N = SENTENCE.length
@@ -30,7 +29,15 @@ export default function EncoderDecoderViz() {
   const [mode, setMode] = useState('encoder')
   const [selectedRow, setSelectedRow] = useState(null)
   const color = mode === 'encoder' ? ENCODER_COLOR : DECODER_COLOR
-  const colorRgb = hexToRgb(color)
+
+  // Rows are SVG groups, so they need the keyboard affordances a native button
+  // would give for free: Enter or Space selects the row.
+  const onRowKeyDown = (e, row) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      setSelectedRow(row)
+    }
+  }
 
   const controls = [
     { label: 'Encoder', onClick: () => setMode('encoder'), active: mode === 'encoder' },
@@ -65,8 +72,9 @@ export default function EncoderDecoderViz() {
       }
     >
       <svg
+        role="group"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', maxWidth: 420, height: 'auto', display: 'block', margin: '0 auto' }}
+        className={styles.svg}
         aria-label={`A ${N} by ${N} grid where rows and columns are the words of the sentence. A filled cell means the row word can attend to the column word. ${rule}.`}
       >
         {/* column labels, rotated so ten words fit above narrow columns */}
@@ -106,15 +114,20 @@ export default function EncoderDecoderViz() {
           <g
             key={row}
             className={styles.row}
-            style={{ cursor: 'pointer' }}
+            role="button"
+            tabIndex={0}
+            aria-pressed={selectedRow === row}
+            aria-label={`Show what "${SENTENCE[row]}" can attend to`}
             onClick={() => setSelectedRow(row)}
+            onKeyDown={(e) => onRowKeyDown(e, row)}
           >
             <rect
               x={0}
               y={rowY(row) - 1}
               width={VB_W}
               height={CELL + 2}
-              fill={selectedRow === row ? `rgba(${colorRgb.join(', ')}, 0.1)` : 'transparent'}
+              fill={selectedRow === row ? color : 'transparent'}
+              fillOpacity={selectedRow === row ? 0.1 : 1}
             />
             {SENTENCE.map((__, col) => {
               const on = canAttend(mode, row, col)
@@ -137,6 +150,17 @@ export default function EncoderDecoderViz() {
           </g>
         ))}
       </svg>
+
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: color }} />
+          can attend
+        </span>
+        <span className={shared.legendItem}>
+          <span className={`${shared.swatch} ${styles.maskedSwatch}`} />
+          masked
+        </span>
+      </div>
     </Figure>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Figure from './Figure'
+import shared from './vizShared.module.css'
 import styles from './BroadcastingViz.module.css'
 import { SHAPES, shapeString, alignShapes } from './broadcastData'
 
@@ -49,37 +50,33 @@ export default function BroadcastingViz() {
       tryThis="Pick shapes A and B and read the alignment from the right. Try (3,) with (4,) to see a clean failure, then (4, 1) with (3,) to watch both size-1 dimensions stretch to make (4, 3). The shorter shape is always padded with 1s on its left, never its right."
     >
       <div className={styles.selectors}>
-        <div className={styles.selector} role="group" aria-label="Shape A">
-          <span className={`${styles.selLabel} ${styles.selLabelA}`}>Shape A</span>
-          <div className={styles.segGroup}>
-            {SHAPES.map((s) => (
-              <button
-                key={s.key}
-                type="button"
-                className={`${styles.seg} ${aKey === s.key ? styles.segActiveA : ''}`}
-                aria-pressed={aKey === s.key}
-                onClick={() => setAKey(s.key)}
-              >
-                {shapeString(s.dims)}
-              </button>
-            ))}
-          </div>
+        <div className={shared.group} role="group" aria-label="Shape A">
+          <span className={`${shared.groupLabel} ${styles.selLabelA}`}>Shape A</span>
+          {SHAPES.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              className={shared.btn}
+              aria-pressed={aKey === s.key}
+              onClick={() => setAKey(s.key)}
+            >
+              {shapeString(s.dims)}
+            </button>
+          ))}
         </div>
-        <div className={styles.selector} role="group" aria-label="Shape B">
-          <span className={`${styles.selLabel} ${styles.selLabelB}`}>Shape B</span>
-          <div className={styles.segGroup}>
-            {SHAPES.map((s) => (
-              <button
-                key={s.key}
-                type="button"
-                className={`${styles.seg} ${bKey === s.key ? styles.segActiveB : ''}`}
-                aria-pressed={bKey === s.key}
-                onClick={() => setBKey(s.key)}
-              >
-                {shapeString(s.dims)}
-              </button>
-            ))}
-          </div>
+        <div className={shared.group} role="group" aria-label="Shape B">
+          <span className={`${shared.groupLabel} ${styles.selLabelB}`}>Shape B</span>
+          {SHAPES.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              className={shared.btn}
+              aria-pressed={bKey === s.key}
+              onClick={() => setBKey(s.key)}
+            >
+              {shapeString(s.dims)}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -143,7 +140,7 @@ export default function BroadcastingViz() {
         </p>
       )}
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The compatibility of each dimension pair and the result shape are computed for real
         from the standard NumPy-style broadcasting rule: align from the right, pad the
         shorter shape with 1s on the left, a pair fits when the sizes are equal or one is 1,

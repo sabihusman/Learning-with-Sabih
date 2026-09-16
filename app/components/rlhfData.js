@@ -5,12 +5,10 @@
 // choosing, and candidate generation is biased toward high-weight traits, so the
 // shown responses trend that way. A real system trains a reward model on many
 // human comparisons and then fine-tunes the language model against it.
+import { BLUE, AMBER } from './vizPalette'
 
-export const INK = '#1a1a1a'
-export const FADE = '#9b9892'
-export const ACCENT = '#c0392b'
-export const POS = '#2f6f8f' // positive preference (blue)
-export const NEG = '#c98a3b' // negative preference (amber)
+export const POS = BLUE // positive preference
+export const NEG = AMBER // negative preference
 
 export const TRAITS = [
   { key: 'helpful', label: 'Helpful' },

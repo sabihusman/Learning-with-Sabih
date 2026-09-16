@@ -23,18 +23,16 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: var(--ink);
   background: #f4f2ec;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 10px 12px;
   margin-top: 14px;
 }
 
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 10px 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .matchBar {
+    animation: none;
+  }
 }

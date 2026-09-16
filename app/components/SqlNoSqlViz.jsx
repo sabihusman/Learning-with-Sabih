@@ -15,42 +15,48 @@ import {
   placesTouched,
   winnerOf,
 } from './sqlNoSqlData'
+import { INK, FADE, ACCENT, OK, MONO, AMBER_BG, OK_BG, ERR_BG, CONTROL_BG, RULE, MUTED_BG } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './SqlNoSqlViz.module.css'
 
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
-const PK_GREEN = '#1f6f5c'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+const PK_GREEN = OK
 const PLAY_MS = 1300
 
 // tone -> cell fill/text, shared by the relational tables and the JSON spans
 const TONE = {
-  touch: { bg: '#f6e7c8', text: INK }, // a place the query has to visit
-  clean: { bg: '#e6f2ec', text: PK_GREEN }, // the single clean place (relational, change-price)
-  copy: { bg: '#fbecea', text: ACCENT }, // a redundant copy (document, change-price)
+  touch: { bg: AMBER_BG, text: INK }, // a place the query has to visit
+  clean: { bg: OK_BG, text: PK_GREEN }, // the single clean place (relational, change-price)
+  copy: { bg: ERR_BG, text: ACCENT }, // a redundant copy (document, change-price)
 }
 
 // ── relational SVG geometry (same vocabulary as the Normalization split view) ──────
-const REL_W = 420
+const REL_W = 444
 const TOP = 24
 const HEAD_H = 20
 const ROW_H = 17
 const PAD = 6
+// PK/FK badge: sized from its label so the text renders >= 9px at the panel's
+// max width (rendered px = raw x 440 / REL_W).
+const BADGE_FONT = 9.5
+const BADGE_H = 12
+const badgeWidth = (role) => Math.round(role.length * BADGE_FONT * 0.62 + 6)
+// smallest raw font in the SVG (column headers); sets the mobile scroll floor
+const MIN_FONT = 8.5
+const SVG_MIN_WIDTH = Math.min(600, Math.ceil((7 * REL_W) / MIN_FONT))
 
 const USERS_COLS = [
-  { key: 'user_id', label: 'user_id', w: 48, role: 'PK' },
+  { key: 'user_id', label: 'user_id', w: 60, role: 'PK' },
   { key: 'name', label: 'name', w: 48 },
-  { key: 'plan', label: 'plan', w: 40, role: 'FK' },
+  { key: 'plan', label: 'plan', w: 52, role: 'FK' },
   { key: 'country', label: 'country', w: 48 },
 ]
 const PLANS_COLS = [
-  { key: 'plan', label: 'plan', w: 40, role: 'PK' },
+  { key: 'plan', label: 'plan', w: 52, role: 'PK' },
   { key: 'plan_price', label: 'plan_price', w: 66 },
 ]
 const ORDERS_COLS = [
-  { key: 'order_id', label: 'order_id', w: 58, role: 'PK' },
-  { key: 'user_id', label: 'user_id', w: 48, role: 'FK' },
+  { key: 'order_id', label: 'order_id', w: 66, role: 'PK' },
+  { key: 'user_id', label: 'user_id', w: 60, role: 'FK' },
   { key: 'order_total', label: 'order_total', w: 70 },
 ]
 
@@ -118,7 +124,7 @@ export default function SqlNoSqlViz() {
         {title}
       </text>
     )
-    nodes.push(<rect key={`${idp}-hb`} x={x} y={headTop} width={width} height={HEAD_H} fill="#f0ede6" stroke="#e2e0d8" strokeWidth={0.5} />)
+    nodes.push(<rect key={`${idp}-hb`} x={x} y={headTop} width={width} height={HEAD_H} fill={CONTROL_BG} stroke={RULE} strokeWidth={0.5} />)
     cols.forEach((c, ci) => {
       const rc = roleColor(c.role)
       nodes.push(
@@ -128,10 +134,11 @@ export default function SqlNoSqlViz() {
       )
       if (c.role) {
         const bx = colLeft(ci) + PAD + c.label.length * 4.7 + 3
+        const bw = badgeWidth(c.role)
         nodes.push(
           <g key={`${idp}-b-${c.key}`}>
-            <rect x={bx} y={headTop + 4} width={15} height={10} rx={2} fill={rc} />
-            <text x={bx + 7.5} y={headTop + 12} fontSize={7} fill="#f7f5f0" fontFamily={MONO} fontWeight={700} textAnchor="middle">
+            <rect x={bx} y={headTop + (HEAD_H - BADGE_H) / 2} width={bw} height={BADGE_H} rx={2} fill={rc} />
+            <text x={bx + bw / 2} y={headTop + HEAD_H / 2 + 3.4} fontSize={BADGE_FONT} fill="#ffffff" fontFamily={MONO} fontWeight={700} textAnchor="middle">
               {c.role}
             </text>
           </g>
@@ -145,7 +152,7 @@ export default function SqlNoSqlViz() {
         const style = tone ? TONE[tone] : null
         const rc = roleColor(c.role)
         nodes.push(
-          <rect key={`${idp}-c-${ri}-${c.key}`} x={colLeft(ci)} y={top} width={c.w} height={ROW_H} fill={style ? style.bg : '#ffffff'} stroke="#eceae3" strokeWidth={0.5} />
+          <rect key={`${idp}-c-${ri}-${c.key}`} x={colLeft(ci)} y={top} width={c.w} height={ROW_H} fill={style ? style.bg : '#ffffff'} stroke={MUTED_BG} strokeWidth={0.5} />
         )
         nodes.push(
           <text key={`${idp}-x-${ri}-${c.key}`} x={colLeft(ci) + PAD} y={top + ROW_H / 2 + 3.3} fontSize={9.5} fill={style ? style.text : rc || INK} fontFamily={MONO} fontWeight={c.role ? 600 : 400}>
@@ -207,13 +214,13 @@ export default function SqlNoSqlViz() {
       tryThis="Run the first query, then the second, and watch the winner flip. Fetching everything about one user is cheaper in the document shape, because the data that is read together is stored together. Changing a shared fact is cheaper in the relational shape, because it is stored once instead of copied into every document. Neither shape is better in general; the right one depends on how you read and write the data."
     >
       {/* query picker (in-body segmented control, keyboard-reachable buttons) */}
-      <div className={styles.queryRow}>
-        <span className={styles.queryLabel}>query</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>query</span>
         {QUERIES.map((q, i) => (
           <button
             key={q.id}
             type="button"
-            className={`${styles.queryBtn} ${queryId === q.id ? styles.queryBtnOn : ''}`}
+            className={shared.btn}
             aria-pressed={queryId === q.id}
             onClick={() => pickQuery(q.id)}
           >
@@ -226,12 +233,20 @@ export default function SqlNoSqlViz() {
         {/* RELATIONAL */}
         <div className={styles.panel}>
           <div className={styles.panelTag}>relational: normalized tables</div>
-          <svg viewBox={`0 0 ${REL_W} ${relVbH}`} className={styles.relSvg} role="img" aria-label={`Relational shape: three tables. This query touches ${pt.relational} of them.`}>
-            {connectors}
-            {uT.nodes}
-            {pT.nodes}
-            {oT.nodes}
-          </svg>
+          <div className={shared.scroll}>
+            <svg
+              viewBox={`0 0 ${REL_W} ${relVbH}`}
+              className={styles.relSvg}
+              style={{ minWidth: SVG_MIN_WIDTH }}
+              role="img"
+              aria-label={`Relational shape: three tables. This query touches ${pt.relational} of them.`}
+            >
+              {connectors}
+              {uT.nodes}
+              {pT.nodes}
+              {oT.nodes}
+            </svg>
+          </div>
         </div>
 
         {/* DOCUMENT */}
@@ -270,7 +285,7 @@ export default function SqlNoSqlViz() {
         </div>
       </div>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         Places touched counts the distinct containers each shape must open for the query,
         the tables on the left and the documents on the right, counted from what lights up,
         not typed in. The data is a fixed, deterministic excerpt, and the claims are about

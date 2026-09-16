@@ -1,8 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
+import { CATEGORICAL, MONO } from './vizPalette'
 import styles from './BigOViz.module.css'
+import shared from './vizShared.module.css'
 
 // Number of calls the naive recursive Fibonacci makes for fib(n): 2*Fib(n+1) - 1,
 // computed with a deterministic iterative Fibonacci (no floating-point powers). This is
@@ -23,15 +27,17 @@ function fibCalls(n) {
 }
 
 // Growth functions are EXACT for each class. Only the lane below corrected from the
-// prototype is O(2^n): it now uses the real naive-Fibonacci call count.
+// prototype is O(2^n): it now uses the real naive-Fibonacci call count. Lane colours
+// are the shared identity palette, in lane order.
 const LANES = [
-  { key: 'O(1)', label: 'O(1)', algo: 'Hash table lookup', color: '#1e8449', f: () => 1 },
-  { key: 'O(log n)', label: 'O(log n)', algo: 'Binary search', color: '#2980b9', f: (n) => Math.max(1, Math.log2(n)) },
-  { key: 'O(n)', label: 'O(n)', algo: 'Linear scan', color: '#8e44ad', f: (n) => n },
-  { key: 'O(n log n)', label: 'O(n log n)', algo: 'Merge sort', color: '#d68910', f: (n) => n * Math.max(1, Math.log2(n)) },
-  { key: 'O(n^2)', label: 'O(n²)', algo: 'Bubble sort', color: '#c0392b', f: (n) => n * n },
-  { key: 'O(2^n)', label: 'O(2ⁿ)', algo: 'Naive Fibonacci', color: '#7b241c', f: (n) => fibCalls(n) },
+  { key: 'O(1)', label: 'O(1)', algo: 'Hash table lookup', color: CATEGORICAL[0], f: () => 1 },
+  { key: 'O(log n)', label: 'O(log n)', algo: 'Binary search', color: CATEGORICAL[1], f: (n) => Math.max(1, Math.log2(n)) },
+  { key: 'O(n)', label: 'O(n)', algo: 'Linear scan', color: CATEGORICAL[2], f: (n) => n },
+  { key: 'O(n log n)', label: 'O(n log n)', algo: 'Merge sort', color: CATEGORICAL[3], f: (n) => n * Math.max(1, Math.log2(n)) },
+  { key: 'O(n^2)', label: 'O(n²)', algo: 'Bubble sort', color: CATEGORICAL[4], f: (n) => n * n },
+  { key: 'O(2^n)', label: 'O(2ⁿ)', algo: 'Naive Fibonacci', color: CATEGORICAL[5], f: (n) => fibCalls(n) },
 ]
+const TICK_MS = 40
 
 const OPS_PER_SECOND = 2e9
 // N_MAX chosen so the "> age of universe" label is genuinely reachable: the naive-Fibonacci
@@ -84,50 +90,50 @@ export default function BigOViz() {
   const [n, setN] = useState(20)
   const [running, setRunning] = useState(false)
   const [progress, setProgress] = useState(() => Object.fromEntries(LANES.map((l) => [l.key, 0])))
-  const timerRef = useRef(null)
-  const startRef = useRef(0)
+  // Wall-clock integration: simulated elapsed ms accumulates real dt times the shared
+  // speed multiplier, so a speed change mid-race applies from the next tick without
+  // jumping the bars.
+  const simElapsedRef = useRef(0)
+  const lastTickRef = useRef(0)
+  const speedRef = useAnimationSpeedRef()
 
   const totals = useMemo(() => Object.fromEntries(LANES.map((l) => [l.key, l.f(n)])), [n])
   const refTotal = Math.max(1, totals['O(n)'])
 
   const reset = useCallback(() => {
     setRunning(false)
-    if (timerRef.current) clearInterval(timerRef.current)
+    simElapsedRef.current = 0
     setProgress(Object.fromEntries(LANES.map((l) => [l.key, 0])))
   }, [])
 
-  // Timer-driven cadence (setInterval), never requestAnimationFrame, so the race keeps
-  // advancing in a backgrounded tab. Each lane fills at ops/ms set by the O(n) lane
-  // finishing in BASE_DURATION_MS; the slow lanes simply never catch up.
+  // Timer-driven cadence (the shared paced interval, never requestAnimationFrame), so
+  // the race keeps advancing in a backgrounded tab. Each lane fills at ops/ms set by
+  // the O(n) lane finishing in BASE_DURATION_MS; the slow lanes simply never catch up.
   const start = useCallback(() => {
     reset()
-    startRef.current = Date.now()
+    lastTickRef.current = Date.now()
     setRunning(true)
-    const opsPerMs = refTotal / BASE_DURATION_MS
-    timerRef.current = setInterval(() => {
-      const elapsed = Date.now() - startRef.current
-      // Compute the next progress and the all-done condition outside the state updater:
-      // each lane's fill depends only on totals and elapsed, not on previous progress, so
-      // the updater can stay pure. Side effects (stopping the timer, clearing running) run
-      // after setProgress, not inside it.
-      const next = {}
-      let allDone = true
-      for (const l of LANES) {
-        const done = Math.min(totals[l.key], opsPerMs * elapsed)
-        next[l.key] = done
-        if (done < totals[l.key]) allDone = false
-      }
-      setProgress(next)
-      if (allDone) {
-        clearInterval(timerRef.current)
-        setRunning(false)
-      }
-    }, 40)
-  }, [totals, refTotal, reset])
+  }, [reset])
 
-  // Only cleanup lives in an effect (no setState in the effect body). The race is reset
-  // from the slider's onChange handler below, NOT from an effect on [n].
-  useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current) }, [])
+  usePacedInterval(running, TICK_MS, () => {
+    const now = Date.now()
+    simElapsedRef.current += (now - lastTickRef.current) * speedRef.current
+    lastTickRef.current = now
+    const elapsed = simElapsedRef.current
+    const opsPerMs = refTotal / BASE_DURATION_MS
+    // Compute the next progress and the all-done condition outside the state updater:
+    // each lane's fill depends only on totals and elapsed, not on previous progress, so
+    // the updater can stay pure. Stopping the race runs after setProgress, not inside it.
+    const next = {}
+    let allDone = true
+    for (const l of LANES) {
+      const done = Math.min(totals[l.key], opsPerMs * elapsed)
+      next[l.key] = done
+      if (done < totals[l.key]) allDone = false
+    }
+    setProgress(next)
+    if (allDone) setRunning(false)
+  })
 
   const onSlide = (e) => {
     setN(parseInt(e.target.value, 10))
@@ -171,6 +177,7 @@ export default function BigOViz() {
       eyebrow="Complexity"
       title="Big-O and time complexity"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Six real algorithms race on the same input. Press Start, then drag the input size n and watch the gap explode: the fast lanes finish in an instant while the slow ones crawl. The same n moves the marker on the curve below, so the race and the exact picture stay in sync."
@@ -202,12 +209,10 @@ export default function BigOViz() {
       </div>
 
       {/* shared input-size slider: drives all three parts */}
-      <div className={styles.sliderRow}>
-        <div className={styles.sliderHead}>
-          <span>input size n</span>
-          <strong>{n}</strong>
-        </div>
-        <input className={styles.slider} type="range" min="1" max={N_MAX} step="1" value={n} onChange={onSlide} aria-label="Input size n" />
+      <div className={`${shared.group} ${styles.sliderRow}`}>
+        <span className={shared.groupLabel}>input size n</span>
+        <input className={shared.slider} type="range" min="1" max={N_MAX} step="1" value={n} onChange={onSlide} aria-label="Input size n" />
+        <span className={styles.sliderValue}>{n}</span>
       </div>
 
       {/* PART 2: wall-clock estimate at the current n */}
@@ -230,37 +235,39 @@ export default function BigOViz() {
         log scale so all six fit.
       </p>
       <div className={styles.curveCard}>
-        <svg viewBox={`0 0 ${W} ${H}`} className={styles.svg} role="img" aria-label="Operation count versus input size n for six complexity classes, on a log scale. A dashed marker tracks the current n.">
-          <text x={12} y={padT + plotH / 2} fontFamily="ui-monospace, monospace" fontSize="9" fill="var(--fade)" textAnchor="middle" transform={`rotate(-90 12 ${padT + plotH / 2})`}>
-            ops (log)
-          </text>
-          <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} stroke="var(--rule)" />
-          <line x1={padL} y1={padT + plotH} x2={W - padR} y2={padT + plotH} stroke="var(--rule)" />
-          <line x1={sx(n)} y1={padT} x2={sx(n)} y2={padT + plotH} stroke="var(--accent)" strokeDasharray="3 4" opacity="0.5" />
-          <text x={sx(n)} y={padT + plotH + 18} fontFamily="ui-monospace, monospace" fontSize="10" fill="var(--accent)" textAnchor="middle">
-            n={n}
-          </text>
-          {[0, 30, 60, 90, 120].map((t) => (
-            <text key={t} x={sx(t)} y={padT + plotH + 18} fontFamily="ui-monospace, monospace" fontSize="9" fill="var(--fade)" textAnchor="middle">
-              {t}
+        <div className={shared.scroll}>
+          <svg viewBox={`0 0 ${W} ${H}`} className={styles.svg} role="img" aria-label="Operation count versus input size n for six complexity classes, on a log scale. A dashed marker tracks the current n.">
+            <text x={12} y={padT + plotH / 2} fontFamily={MONO} fontSize="10" fill="var(--fade)" textAnchor="middle" transform={`rotate(-90 12 ${padT + plotH / 2})`}>
+              ops (log)
             </text>
-          ))}
-          {paths.map((c) => (
-            <g key={c.key}>
-              <path d={c.d} fill="none" stroke={c.color} strokeWidth="1.8" />
-              {c.leftChart && (
-                <text x={W - padR - 4} y={padT + 10} fontFamily="ui-monospace, monospace" fontSize="9" fill={c.color} textAnchor="end">
-                  {c.label} &#8593; off-chart
-                </text>
-              )}
-            </g>
-          ))}
-          {LANES.map((c) => {
-            const py = sy(c.f(n))
-            if (py < padT) return null
-            return <circle key={c.key} cx={sx(n)} cy={py} r="3" fill={c.color} stroke="#fff" strokeWidth="1.3" />
-          })}
-        </svg>
+            <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} stroke="var(--rule)" />
+            <line x1={padL} y1={padT + plotH} x2={W - padR} y2={padT + plotH} stroke="var(--rule)" />
+            <line x1={sx(n)} y1={padT} x2={sx(n)} y2={padT + plotH} stroke="var(--accent)" strokeDasharray="3 4" opacity="0.5" />
+            <text x={sx(n)} y={padT + plotH + 18} fontFamily={MONO} fontSize="10" fill="var(--accent)" textAnchor="middle">
+              n={n}
+            </text>
+            {[0, 30, 60, 90, 120].map((t) => (
+              <text key={t} x={sx(t)} y={padT + plotH + 18} fontFamily={MONO} fontSize="10" fill="var(--fade)" textAnchor="middle">
+                {t}
+              </text>
+            ))}
+            {paths.map((c) => (
+              <g key={c.key}>
+                <path d={c.d} fill="none" stroke={c.color} strokeWidth="1.8" />
+                {c.leftChart && (
+                  <text x={W - padR - 4} y={padT + 10} fontFamily={MONO} fontSize="10" fill={c.color} textAnchor="end">
+                    {c.label} &#8593; off-chart
+                  </text>
+                )}
+              </g>
+            ))}
+            {LANES.map((c) => {
+              const py = sy(c.f(n))
+              if (py < padT) return null
+              return <circle key={c.key} cx={sx(n)} cy={py} r="3" fill={c.color} stroke="#ffffff" strokeWidth="1.3" />
+            })}
+          </svg>
+        </div>
       </div>
     </Figure>
   )

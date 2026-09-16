@@ -1,0 +1,50 @@
+/* Gradient descent: the loss-curve plot and the learning-rate control under it.
+   All motion (the dot's glide between optimizer steps) is anime.js in the
+   component; nothing here animates. */
+
+/* min-width keeps the 11px labels at >= 7px on a phone; the shared scroll
+   wrapper takes the overflow */
+.svg {
+  width: 100%;
+  max-width: 600px;
+  min-width: 382px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  touch-action: none;
+}
+
+.lrBlock {
+  max-width: 600px;
+  margin: 14px auto 4px;
+  padding: 0 4px;
+}
+
+.lrLabel {
+  display: flex;
+  justify-content: space-between;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 6px;
+}
+
+.lrValue {
+  color: var(--ink);
+}
+
+/* the slider spans the plot it drives, so lift the shared 220px cap */
+.lrSlider {
+  max-width: none;
+}
+
+.lrHints {
+  display: flex;
+  justify-content: space-between;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 9px;
+  color: var(--fade);
+  margin-top: 2px;
+}

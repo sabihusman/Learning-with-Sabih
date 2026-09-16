@@ -1,0 +1,24 @@
+/* "A tiny neural network learning to separate two classes": the network diagram
+   and the task panel sit side by side and wrap on a phone. */
+
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+}
+
+.netSvg {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  flex: 1 1 220px;
+}
+
+.taskSvg {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  flex: 1 1 260px;
+}

@@ -3,8 +3,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
-import { useAnimationSpeed, useAnimationSpeedRef } from './animationSpeed'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
+import { prefersReducedMotion } from './motion'
 import { DOMAIN_NAME, DATASET, PROMPTS } from './fineTuningData'
+import { INK, FADE, ACCENT, LINE, ERR_BG, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './FineTuningViz.module.css'
 
 const STEP = 0.05 // progress increment per tick
@@ -18,19 +22,24 @@ export default function FineTuningViz() {
   const [phase, setPhase] = useState('base')
   const [progress, setProgress] = useState(0)
 
-  const timerRef = useRef(null)
   const flippedRef = useRef(new Set()) // domain rows already animated, so each pops once
   const answerRefs = useRef({})
   const tunedChipRef = useRef(null)
 
-  // Shared animation-speed multiplier. The training interval is created in the
-  // run() handler (not an effect), so the multiplier is captured when a run
-  // starts; the flourish effects read it through a ref so a speed change never
-  // replays them (same pattern as CachingLayersViz).
-  const speed = useAnimationSpeed()
+  // The flourish effects read the shared speed through a ref so a speed change
+  // never replays them; the training timer below is paced by the hook itself.
   const speedRef = useAnimationSpeedRef()
 
-  useEffect(() => () => clearInterval(timerRef.current), [])
+  // Training cadence: the shared paced interval runs while phase is 'tuning', so
+  // a speed change mid-run re-times the next tick. State changes happen only in
+  // the tick; when progress reaches 1 the phase flips and the timer tears down.
+  usePacedInterval(phase === 'tuning', TICK_MS, () => {
+    setProgress((prev) => {
+      const next = Math.min(1, prev + STEP)
+      if (next >= 1) setPhase('tuned')
+      return next
+    })
+  })
 
   // Fade each domain answer in as it specializes. The answer text is already swapped
   // by render (state-driven); anime only adds the shift flourish, so the answer is
@@ -39,6 +48,7 @@ export default function FineTuningViz() {
     PROMPTS.forEach((p) => {
       if (!isRowTuned(p, phase, progress) || flippedRef.current.has(p.id)) return
       flippedRef.current.add(p.id)
+      if (prefersReducedMotion()) return
       const node = answerRefs.current[p.id]
       if (node) animate(node, { opacity: [0.15, 1], translateX: [-10, 0], duration: 420 / speedRef.current, ease: 'outQuad' })
     })
@@ -46,30 +56,18 @@ export default function FineTuningViz() {
 
   // Pop the "fine-tuned" chip when training completes.
   useEffect(() => {
-    if (phase === 'tuned' && tunedChipRef.current) {
+    if (phase === 'tuned' && tunedChipRef.current && !prefersReducedMotion()) {
       animate(tunedChipRef.current, { scale: [0.6, 1], duration: 380 / speedRef.current, ease: 'outBack' })
     }
   }, [phase, speedRef])
 
   const run = () => {
     if (phase !== 'base') return
-    setPhase('tuning')
     setProgress(0)
-    clearInterval(timerRef.current)
-    timerRef.current = setInterval(() => {
-      setProgress((prev) => {
-        const next = Math.min(1, prev + STEP)
-        if (next >= 1) {
-          clearInterval(timerRef.current)
-          setPhase('tuned')
-        }
-        return next
-      })
-    }, TICK_MS / speed)
+    setPhase('tuning')
   }
 
   const reset = () => {
-    clearInterval(timerRef.current)
     flippedRef.current = new Set()
     setPhase('base')
     setProgress(0)
@@ -109,17 +107,17 @@ export default function FineTuningViz() {
     >
       {/* base -> tuned flow (SVG) with a progress-filled arrow */}
       <svg className={styles.flow} viewBox="0 0 480 60" role="img" aria-label="A general base model is fine-tuned on domain data into a domain-tuned model; the arrow fills as training runs.">
-        <rect x="6" y="14" width="150" height="32" rx="8" fill="#ffffff" stroke="#1a1a1a" strokeWidth="1.5" />
-        <text x="81" y="34" fontSize="11" fontFamily="ui-monospace, monospace" textAnchor="middle" fill="#1a1a1a">general base</text>
+        <rect x="6" y="14" width="150" height="32" rx="8" fill="#ffffff" stroke={INK} strokeWidth="1.5" />
+        <text x="81" y="34" fontSize="11" fontFamily={MONO} textAnchor="middle" fill={INK}>general base</text>
 
-        <line x1="162" y1="30" x2="318" y2="30" stroke="#d8d4cc" strokeWidth="3" strokeLinecap="round" />
-        <line x1="162" y1="30" x2={(162 + 156 * fillW).toFixed(1)} y2="30" stroke="#c0392b" strokeWidth="3" strokeLinecap="round" />
-        <polygon points="318,30 310,26 310,34" fill={tuned ? '#c0392b' : '#d8d4cc'} />
-        <text x="240" y="20" fontSize="9.5" fontFamily="ui-monospace, monospace" textAnchor="middle" fill="#9b9892">fine-tune</text>
+        <line x1="162" y1="30" x2="318" y2="30" stroke={LINE} strokeWidth="3" strokeLinecap="round" />
+        <line x1="162" y1="30" x2={(162 + 156 * fillW).toFixed(1)} y2="30" stroke={ACCENT} strokeWidth="3" strokeLinecap="round" />
+        <polygon points="318,30 310,26 310,34" fill={tuned ? ACCENT : LINE} />
+        <text x="240" y="20" fontSize="9.5" fontFamily={MONO} textAnchor="middle" fill={FADE}>fine-tune</text>
 
         <g ref={tunedChipRef} style={{ transformOrigin: '399px 30px' }}>
-          <rect x="324" y="14" width="150" height="32" rx="8" fill={tuned ? '#fbeeec' : '#ffffff'} stroke={tuned ? '#c0392b' : '#d8d4cc'} strokeWidth="1.5" />
-          <text x="399" y="34" fontSize="11" fontFamily="ui-monospace, monospace" textAnchor="middle" fill={tuned ? '#c0392b' : '#9b9892'} fontWeight={tuned ? 700 : 400}>domain-tuned</text>
+          <rect x="324" y="14" width="150" height="32" rx="8" fill={tuned ? ERR_BG : '#ffffff'} stroke={tuned ? ACCENT : LINE} strokeWidth="1.5" />
+          <text x="399" y="34" fontSize="11" fontFamily={MONO} textAnchor="middle" fill={tuned ? ACCENT : FADE} fontWeight={tuned ? 700 : 400}>domain-tuned</text>
         </g>
       </svg>
 
@@ -164,7 +162,7 @@ export default function FineTuningViz() {
         })}
       </ul>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Illustrative only: the before and after answers are hand-authored to show the effect of fine-tuning. No real
         model is trained here. RLHF, in the figure above, is one kind of fine-tuning where the specialized data is
         human preferences.

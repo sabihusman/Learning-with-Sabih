@@ -5,6 +5,9 @@ import { animate } from 'animejs'
 import Figure from './Figure'
 import { useAnimationSpeedRef } from './animationSpeed'
 import { usePacedInterval } from './usePacedInterval'
+import { prefersReducedMotion } from './motion'
+import { BLUE, BLUE_SOFT, PANEL, RULE } from './vizPalette'
+import shared from './vizShared.module.css'
 import {
   CODE_LINES,
   STATES,
@@ -60,6 +63,9 @@ export default function ConstructorsHeapViz() {
   // arrows to make "same object, two names" land. Pure animation, no state change.
   useEffect(() => {
     if (!state.highlight || !svgRef.current) return
+    // Reduced motion: the arrows already sit at their end state (opacity 1), so
+    // there is nothing to apply; just skip the pulse.
+    if (prefersReducedMotion()) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-arrow]'))
     if (nodes.length === 0) return
     animate(nodes, {
@@ -114,6 +120,7 @@ export default function ConstructorsHeapViz() {
           ))}
         </pre>
 
+        <div className={`${shared.scroll} ${styles.stage}`}>
         <svg
           ref={svgRef}
           viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -124,7 +131,7 @@ export default function ConstructorsHeapViz() {
           {/* arrowhead marker */}
           <defs>
             <marker id="ch-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#46617e" />
+              <path d="M 0 0 L 10 5 L 0 10 z" fill={BLUE} />
             </marker>
           </defs>
 
@@ -138,8 +145,8 @@ export default function ConstructorsHeapViz() {
             width={STACK_W}
             height={VB_H - 74}
             rx={8}
-            fill="#faf9f6"
-            stroke="#e2e0d8"
+            fill={PANEL}
+            stroke={RULE}
             strokeWidth={1}
           />
           <text x={STACK_X + 10} y={68} className={styles.frameTag}>
@@ -161,8 +168,8 @@ export default function ConstructorsHeapViz() {
                   width={SLOT_W - 16}
                   height={SLOT_H}
                   rx={5}
-                  fill="#fffefb"
-                  stroke={slot && slot.ref ? '#46617e' : '#b9c6d8'}
+                  fill={PANEL}
+                  stroke={slot && slot.ref ? BLUE : BLUE_SOFT}
                   strokeWidth={slot && slot.ref ? 1.6 : 1}
                 />
                 {present && !slot.ref && (
@@ -184,7 +191,7 @@ export default function ConstructorsHeapViz() {
                     y1={y + SLOT_H / 2}
                     x2={heapCX - 2}
                     y2={heapCY}
-                    stroke="#46617e"
+                    stroke={BLUE}
                     strokeWidth={1.6}
                     markerEnd="url(#ch-arrow)"
                   />
@@ -206,7 +213,7 @@ export default function ConstructorsHeapViz() {
                 height={HEAP_H}
                 rx={8}
                 fill="#ffffff"
-                stroke="#46617e"
+                stroke={BLUE}
                 strokeWidth={1.6}
               />
               <text x={HEAP_X + 12} y={HEAP_TOP + 22} className={styles.heapType}>
@@ -217,7 +224,7 @@ export default function ConstructorsHeapViz() {
                 y1={HEAP_TOP + 30}
                 x2={HEAP_X + HEAP_W - 10}
                 y2={HEAP_TOP + 30}
-                stroke="#e2e0d8"
+                stroke={RULE}
                 strokeWidth={1}
               />
               {/* The box exists once allocated (step 2), but the name field only
@@ -241,9 +248,10 @@ export default function ConstructorsHeapViz() {
             </text>
           )}
         </svg>
+        </div>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         References and heap objects are counted straight from the current step, not typed
         in by hand, so the readout always matches the picture. The trace is a fixed,
         deterministic sequence; there is no randomness.
