@@ -4,7 +4,7 @@ export const metadata = {
   title: 'Heaps and priority queues - Learning with Sabih',
 }
 
-# Heaps and Priority Queues
+# Heaps and priority queues
 
 Sometimes you do not want the items in order. You just want the biggest one, over and over, as new items keep arriving.
 
@@ -54,6 +54,6 @@ Empty the heap completely and the array is fully sorted. That is heapsort, and i
 
 Run the descending preset. It costs nothing to build, because a descending array is already a valid max-heap. Every parent is already bigger than its children and not a single swap is needed.
 
-Now run ascending. It is the most expensive preset in both phases. Building it means dragging the largest values up from the tail of the array. Emptying it means the values you pull back to the root are the smallest ones left, so they sink the whole depth of the tree before settling.
+Now run ascending. It is the most expensive preset in both phases. Building it means dragging the largest values up from the tail of the array. Emptying it means the values you pull back to the root are the smallest ones left, so they tend to sink a long way back down before settling.
 
 The lesson is not that one arrangement is cheap and another dear. It is that a heap does not care about sorted order at all. Descending order happens to satisfy the heap rule by accident. Ascending order violates it as thoroughly as an arrangement can. Neither one is more sorted than the other.

@@ -1,10 +1,10 @@
 import ConsistentHashingViz from '@/app/components/ConsistentHashingViz'
 
 export const metadata = {
-  title: 'Consistent Hashing - Learning with Sabih',
+  title: 'Consistent hashing - Learning with Sabih',
 }
 
-# Consistent Hashing
+# Consistent hashing
 
 The last topic ended with a problem. If you place rows with hash mod n, then adding a shard changes n, and almost every row's hash mod n now points somewhere new. Nearly all your data has to move at once. For a cache or a database that is a stall, or an outage. Consistent hashing is the fix, and it is what real distributed caches and databases actually use.
 
