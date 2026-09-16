@@ -5,6 +5,9 @@ import { animate } from 'animejs'
 import Figure from './Figure'
 import { useAnimationSpeedRef } from './animationSpeed'
 import { usePacedInterval } from './usePacedInterval'
+import { prefersReducedMotion } from './motion'
+import { INK, FADE, ACCENT, OK, OK_BG, ERR_BG, AMBER, AMBER_STROKE, AMBER_BG, RULE, PANEL, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import {
   DEFAULT_LOSS_PCT,
   MAX_LOSS_PCT,
@@ -26,23 +29,19 @@ import styles from './TcpUdpViz.module.css'
 
 const PLAY_MS = 900
 
-// Palette: the site family (ink / fade / accent) plus the ok-green and amber
-// already used elsewhere in the section. No new colors.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b' // a lost packet
-const OK = '#1f6f5c' // an arrived / released packet
-const OK_BG = '#e6f2ec'
-const ERR_BG = '#fbecea'
-const HOLD = '#caa24a' // a held packet, waiting behind an earlier gap
-const HOLD_BG = '#f6e7c8'
-const LINE = '#e2e0d8'
-const PANEL_BG = '#faf9f6'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// Palette (vizPalette): ACCENT is a lost packet, OK an arrived / released one,
+// AMBER a held packet waiting behind an earlier gap.
+const HOLD = AMBER_STROKE
+const HOLD_BG = AMBER_BG
+const LINE = RULE
+const PANEL_BG = PANEL
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 const VB_W = 460
 const VB_H = 172
+// smallest raw font (the two uppercase labels); sets the mobile scroll floor
+const MIN_FONT = 8.5
+const SVG_MIN_WIDTH = Math.min(600, Math.ceil((7 * VB_W) / MIN_FONT))
 
 const QUEUE_LABEL_Y = 10
 const QUEUE_Y = 18
@@ -89,9 +88,11 @@ export default function TcpUdpViz() {
   usePacedInterval(playing && !done, PLAY_MS, () => setState((s) => (isDone(s) ? s : step(s))))
 
   // Cosmetic flourish only: pulse the elements marked data-pulse (the acting
-  // node and the in-flight token). Pure animation, no state change.
+  // node and the in-flight token). Pure animation, no state change; skipped
+  // entirely under reduced motion (the end state is the rendered state).
   useEffect(() => {
     if (!state.lastEvent || !svgRef.current) return
+    if (prefersReducedMotion()) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
     animate(nodes, { opacity: [0.4, 1], duration: 450 / speedRef.current, ease: 'outQuad' })
@@ -152,11 +153,11 @@ export default function TcpUdpViz() {
       readouts={readouts}
       tryThis="Set loss to about 25 percent and run both protocols with the same seed. UDP finishes in 8 ticks but delivers with permanent gaps; TCP takes more ticks and more sends, and some arrived packets sit visibly held until a missing one behind them is retransmitted, but ends complete and in order. At 0 percent loss, step through both: nothing is dropped, so there is nothing to retransmit or hold, and the two protocols behave identically."
     >
-      <div className={styles.controlsRow}>
-        <span className={styles.groupLabel}>protocol</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>protocol</span>
         <button
           type="button"
-          className={`${styles.btn} ${state.protocol === 'TCP' ? styles.btnOn : ''}`}
+          className={shared.btn}
           aria-pressed={state.protocol === 'TCP'}
           onClick={() => onProtocol('TCP')}
         >
@@ -164,18 +165,16 @@ export default function TcpUdpViz() {
         </button>
         <button
           type="button"
-          className={`${styles.btn} ${state.protocol === 'UDP' ? styles.btnOn : ''}`}
+          className={shared.btn}
           aria-pressed={state.protocol === 'UDP'}
           onClick={() => onProtocol('UDP')}
         >
           UDP
         </button>
-        <span className={styles.groupLabel} style={{ marginLeft: 8 }}>
-          loss
-        </span>
+        <span className={`${shared.groupLabel} ${styles.lossLabel}`}>loss</span>
         <input
           type="range"
-          className={styles.slider}
+          className={`${shared.slider} ${styles.lossSlider}`}
           min={0}
           max={MAX_LOSS_PCT}
           step={1}
@@ -188,10 +187,12 @@ export default function TcpUdpViz() {
         <span className={styles.sliderValue}>{`${state.lossPct}%`}</span>
       </div>
 
+      <div className={shared.scroll}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
+        style={{ minWidth: SVG_MIN_WIDTH }}
         role="img"
         aria-label={`${state.protocol}, ${state.lossPct} percent loss. Sent ${sentCount(state)}, delivered ${deliveredCount(state)}${isUdp ? `, lost ${lostCount(state)}` : `, retransmits ${state.retransmits}`}.`}
       >
@@ -319,7 +320,7 @@ export default function TcpUdpViz() {
           } else if (held.includes(seq)) {
             bg = HOLD_BG
             stroke = HOLD
-            textColor = HOLD
+            textColor = AMBER
           }
           return (
             <g key={`slot-${seq}`}>
@@ -331,8 +332,9 @@ export default function TcpUdpViz() {
           )
         })}
       </svg>
+      </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Heavily simplified: 8 fixed packets, one-way channel, no three-way
         handshake, no congestion control or windowing, and acks are implied
         rather than drawn. TCP&apos;s retransmit here is modeled as a

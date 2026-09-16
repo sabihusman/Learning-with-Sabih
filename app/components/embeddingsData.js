@@ -8,16 +8,15 @@
 // the clusters are ~7+ units apart, so a word's nearest neighbours are always its
 // own cluster-mates.
 
-export const ACCENT = '#c0392b'
-export const INK = '#1a1a1a'
-export const FADE = '#9b9892'
-export const PAPER = '#f7f6f2'
+import { CATEGORICAL } from './vizPalette'
 
+// One identity colour per cluster, taken from the shared categorical palette in
+// order (never the accent, which means "selected" here).
 export const CLUSTERS = {
-  royalty: '#1a1a1a',
-  animals: '#2d6a4f',
-  vehicles: '#1d3f72',
-  fruit: '#b8860b',
+  royalty: CATEGORICAL[0],
+  animals: CATEGORICAL[1],
+  vehicles: CATEGORICAL[2],
+  fruit: CATEGORICAL[3],
 }
 
 export const WORDS = [

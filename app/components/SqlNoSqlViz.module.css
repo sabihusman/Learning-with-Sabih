@@ -1,49 +1,6 @@
 /* "Same data, two shapes": relational tables (SVG, Databases palette) beside a set of
-   JSON documents (mono). A query picker steps through which containers each shape must
-   touch. */
-
-.queryRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-
-.queryLabel {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
-}
-
-.queryBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11.5px;
-  color: #1a1a1a;
-  background: #f4f2ec;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  padding: 5px 10px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.queryBtn:hover {
-  background: #ece9e1;
-}
-
-.queryBtnOn {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #f7f5f0;
-}
-
-.queryBtn:focus-visible {
-  outline: 2px solid #c0392b;
-  outline-offset: 2px;
-}
+   JSON documents (mono). A query picker (shared in-card button dialect) steps through
+   which containers each shape must touch. */
 
 /* ── two panels side by side ─────────────────────────────────────────────── */
 .layout {
@@ -64,7 +21,7 @@
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
   margin-bottom: 6px;
 }
 
@@ -83,7 +40,7 @@
 }
 
 .docCard {
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-left: 3px solid #d8d4cc;
   border-radius: 6px;
   background: #ffffff;
@@ -92,16 +49,16 @@
 }
 
 .docCardHot {
-  border-color: #d8b878;
+  border-color: #caa24a;
   border-left-color: #caa24a;
-  background: #fefaf1;
+  background: #f6e7c8;
 }
 
 .json {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11.5px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: var(--ink);
   white-space: pre;
   overflow-x: auto;
 }
@@ -112,11 +69,8 @@
   font-weight: 600;
 }
 
-/* ── caption ─────────────────────────────────────────────────────────────── */
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .docCard {
+    transition: none;
+  }
 }

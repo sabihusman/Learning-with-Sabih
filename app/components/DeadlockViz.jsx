@@ -5,6 +5,9 @@ import { animate } from 'animejs'
 import Figure from './Figure'
 import { useAnimationSpeedRef } from './animationSpeed'
 import { usePacedInterval } from './usePacedInterval'
+import { prefersReducedMotion } from './motion'
+import { ACCENT, BLUE, OK, OK_BG, AMBER_STROKE, AMBER_BG, ERR_BG, PANEL, LINE } from './vizPalette'
+import shared from './vizShared.module.css'
 import {
   actionsFor,
   initialState,
@@ -124,6 +127,8 @@ export default function DeadlockViz() {
   // Pure animation, no state change; the cycle itself is drawn from state above.
   useEffect(() => {
     if (!deadlocked || !svgRef.current) return
+    // Reduced motion: the cycle edges already render at full opacity, so skip the pulse.
+    if (prefersReducedMotion()) return
     const edges = Array.from(svgRef.current.querySelectorAll('[data-cycle-edge]'))
     if (edges.length === 0) return
     animate(edges, {
@@ -156,7 +161,7 @@ export default function DeadlockViz() {
   const disabledB = doneB || blockedB || playing
 
   const controls = [
-    { label: 'Step A', onClick: () => stepManual('A'), disabled: disabledA },
+    { label: 'Step A', onClick: () => stepManual('A'), variant: 'primary', disabled: disabledA },
     { label: 'Step B', onClick: () => stepManual('B'), disabled: disabledB },
     { label: playing ? 'Pause' : 'Play', onClick: () => setPlaying((p) => !p), disabled: done || deadlocked },
     { label: 'Reset', onClick: reset, disabled: idle && run.tick === 0 },
@@ -195,11 +200,11 @@ export default function DeadlockViz() {
       readouts={readouts}
       tryThis="In opposite-order mode, step A once, then B once, then keep stepping, and watch the wait-for graph close into a loop with a deadlock label. Notice both threads freeze and no step is allowed. Now switch to same-order mode and try the same thing. One thread waits on a single lock, the other finishes, and the loop never closes."
     >
-      <div className={styles.controlsRow}>
-        <span className={styles.groupLabel}>acquire order</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>acquire order</span>
         <button
           type="button"
-          className={`${styles.btn} ${mode === 'OPPOSITE' ? styles.btnOn : ''}`}
+          className={shared.btn}
           aria-pressed={mode === 'OPPOSITE'}
           onClick={() => setModeValue('OPPOSITE')}
         >
@@ -207,7 +212,7 @@ export default function DeadlockViz() {
         </button>
         <button
           type="button"
-          className={`${styles.btn} ${mode === 'SAME' ? styles.btnOn : ''}`}
+          className={shared.btn}
           aria-pressed={mode === 'SAME'}
           onClick={() => setModeValue('SAME')}
         >
@@ -224,10 +229,10 @@ export default function DeadlockViz() {
       >
         <defs>
           <marker id="dl-held" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f6f8f" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill={BLUE} />
           </marker>
           <marker id="dl-waiting" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#c0392b" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill={ACCENT} />
           </marker>
         </defs>
 
@@ -239,7 +244,7 @@ export default function DeadlockViz() {
             y1={edge.y1}
             x2={edge.x2}
             y2={edge.y2}
-            stroke={deadlocked ? '#c0392b' : edge.kind === 'held' ? '#2f6f8f' : '#c0392b'}
+            stroke={deadlocked ? ACCENT : edge.kind === 'held' ? BLUE : ACCENT}
             strokeWidth={deadlocked ? 2.6 : 1.8}
             strokeDasharray={edge.kind === 'waiting' ? '5 4' : undefined}
             markerEnd={edge.kind === 'held' ? 'url(#dl-held)' : 'url(#dl-waiting)'}
@@ -255,8 +260,8 @@ export default function DeadlockViz() {
               cx={NODE_POS[lock.key].x}
               cy={NODE_POS[lock.key].y}
               r={LOCK_R}
-              fill={lock.held ? '#e9f1ee' : '#faf9f6'}
-              stroke={lock.held ? '#2f6f8f' : '#d8d4cc'}
+              fill={lock.held ? OK_BG : PANEL}
+              stroke={lock.held ? BLUE : LINE}
               strokeWidth={lock.held ? 2 : 1}
             />
             <text x={NODE_POS[lock.key].x} y={NODE_POS[lock.key].y - 2} textAnchor="middle" className={styles.nodeLabel}>
@@ -281,8 +286,8 @@ export default function DeadlockViz() {
                 width={THREAD_W}
                 height={THREAD_H}
                 rx={8}
-                fill={isStuck ? '#fbecea' : finished ? '#e9f1ee' : waiting ? '#fdf3ee' : '#fffefb'}
-                stroke={isStuck ? '#c0392b' : finished ? '#1f6f5c' : waiting ? '#c0392b' : '#d8d4cc'}
+                fill={isStuck ? ERR_BG : finished ? OK_BG : waiting ? AMBER_BG : PANEL}
+                stroke={isStuck ? ACCENT : finished ? OK : waiting ? AMBER_STROKE : LINE}
                 strokeWidth={isStuck || finished || waiting ? 2 : 1}
               />
               <text x={pos.x} y={pos.y - 4} textAnchor="middle" className={styles.nodeLabel}>
@@ -302,7 +307,7 @@ export default function DeadlockViz() {
         )}
       </svg>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         Lock ownership and each thread&apos;s waiting status are real state; deadlock is detected from that state as a
         closed circular wait, not scripted. The wait-for graph above is drawn straight from the current lock and
         thread state on every render: a held edge means the lock really is held by that thread, and a waiting edge

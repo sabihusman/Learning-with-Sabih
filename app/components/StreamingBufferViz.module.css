@@ -16,7 +16,7 @@
   flex: 0 0 108px;
   min-width: 0;
   background: #faf9f6;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 8px 10px;
 }
@@ -26,7 +26,7 @@
 }
 
 .nodeStalled {
-  border-color: #c0392b;
+  border-color: var(--accent);
   background: #fbecea;
 }
 
@@ -34,18 +34,18 @@
   font-size: 10.5px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
   margin-bottom: 4px;
 }
 
 .nodeSub {
   font-size: 11.5px;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 .arrow {
   align-self: center;
-  color: #9b9892;
+  color: var(--fade);
   font-size: 15px;
   flex: 0 0 auto;
 }
@@ -54,7 +54,7 @@
   flex: 1;
   min-width: 0;
   background: #faf9f6;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 8px 10px;
 }
@@ -62,8 +62,8 @@
 .bar {
   position: relative;
   height: 22px;
-  background: #f0eee8;
-  border: 1px solid #d4d0c8;
+  background: #faf9f6;
+  border: 1px solid #d8d4cc;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -76,7 +76,7 @@
 }
 
 .fillStalled {
-  background: #c0392b;
+  background: var(--accent);
 }
 
 .resumeMark {
@@ -84,14 +84,14 @@
   top: 0;
   bottom: 0;
   width: 0;
-  border-left: 1.5px dashed #9b9892;
+  border-left: 1.5px dashed var(--fade);
 }
 
 .barScale {
   display: flex;
   justify-content: space-between;
   font-size: 9.5px;
-  color: #9b9892;
+  color: var(--fade);
   margin-top: 3px;
 }
 
@@ -102,38 +102,36 @@
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
   margin-bottom: 6px;
 }
 
 .sliderValue {
-  color: #1a1a1a;
+  color: var(--ink);
   text-transform: none;
   letter-spacing: 0;
   font-size: 12px;
 }
 
+/* layout only: the shared slider spans the full pipeline width so the
+   "dead connection / plenty of headroom" ends line up with its extremes */
 .slider {
-  width: 100%;
-  accent-color: #c0392b;
-  cursor: pointer;
+  max-width: none;
 }
 
 .endsRow {
   display: flex;
   justify-content: space-between;
   font-size: 10.5px;
-  color: #9b9892;
+  color: var(--fade);
   letter-spacing: 0.04em;
   margin-top: 4px;
 }
 
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    transition: none;
+  }
 }
 
 @media (max-width: 600px) {

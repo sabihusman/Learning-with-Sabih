@@ -4,6 +4,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import Figure from './Figure'
 import { WORDS, SENTENCE, topLinks } from './attentionData'
+import { FADE, MONO } from './vizPalette'
 import AttentionHeatmap from './AttentionHeatmap'
 
 // three.js / R3F load ONLY here, client-side, on this route. ssr:false keeps the
@@ -18,11 +19,11 @@ const AttentionScene = dynamic(() => import('./AttentionScene'), {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+        fontFamily: MONO,
         fontSize: 12,
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
-        color: '#9b9892',
+        color: FADE,
       }}
     >
       Loading 3D scene…

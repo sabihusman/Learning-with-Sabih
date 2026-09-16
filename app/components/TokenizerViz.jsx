@@ -3,13 +3,20 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { tokenize, counts, DEFAULT_TEXT } from './tokenizerData'
+import { OK_BG, MUTED_BG, CATEGORICAL } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './TokenizerViz.module.css'
 
-// Calm fill for a word the model sees as ONE token; varied palette for the pieces of a
-// split word, so a broken-up word visibly differs from a whole one.
-const WHOLE_BG = '#e7ecea'
-const PUNCT_BG = '#eceae3'
-const PALETTE = ['#f3d7d2', '#d8e4e6', '#efe2c7', '#dcdcec', '#d8e6d8']
+// Calm fill for a word the model sees as ONE token; the categorical identity
+// colours (as low-opacity fills) mark the pieces of a split word, so a
+// broken-up word visibly differs from a whole one.
+const WHOLE_BG = OK_BG
+const PUNCT_BG = MUTED_BG
+const hexToRgba = (hex, alpha) => {
+  const n = parseInt(hex.slice(1), 16)
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`
+}
+const PALETTE = CATEGORICAL.map((c) => hexToRgba(c, 0.22))
 
 const SPELLING_TEXT = 'how many r letters are in strawberry'
 
@@ -52,7 +59,7 @@ export default function TokenizerViz() {
       tryThis={`Edit the sentence and watch the tokens change. Common words like "the" and "apple" stay as a single token, but longer or rarer words split into subword pieces, like un / break / able. Each block is one token with an integer ID; a model reads this stream of IDs, not the letters. That is why models stumble on spelling or counting letters: try the spelling example and notice "strawberry" is a single token, so the model never sees its individual r's. This splitter is a simplified illustration, not a real model's tokenizer.`}
     >
       <input
-        className={styles.input}
+        className={shared.input}
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -87,7 +94,22 @@ export default function TokenizerViz() {
         })}
       </div>
 
-      <p className={styles.note}>
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: WHOLE_BG }} />
+          whole word
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: PALETTE[0] }} />
+          sub-word piece
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: PUNCT_BG }} />
+          punctuation
+        </span>
+      </div>
+
+      <p className={shared.caption}>
         Token IDs come from a small fixed lookup, with a stable fallback for rare pieces. A real tokenizer learns its
         vocabulary from data and uses tens of thousands of tokens; this one is hand-made to show the idea.
       </p>

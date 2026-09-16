@@ -2,64 +2,15 @@
    line, a row of indexed buckets with chained chips, and an honesty caption. Newly
    added chips drop in via a CSS keyframe (flourish only). Project palette. */
 
-.presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0 0 10px;
-}
-
-.presetBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.74rem;
-  padding: 0.28rem 0.6rem;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  background: #ffffff;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.presetBtn:hover:not(:disabled) {
-  border-color: var(--ink);
-}
-
-.presetBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
 .inputRow {
   display: flex;
   gap: 6px;
   margin: 0 0 12px;
 }
 
-.input {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.74rem;
-  padding: 0.28rem 0.5rem;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  background: #ffffff;
-  color: var(--ink);
+/* width only; the field itself is the shared in-card input */
+.keyInput {
   width: 140px;
-}
-
-.addBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.74rem;
-  padding: 0.28rem 0.7rem;
-  border: 1px solid var(--ink);
-  border-radius: 4px;
-  background: var(--ink);
-  color: var(--paper);
-  cursor: pointer;
-}
-
-.addBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 .compute {
@@ -67,7 +18,7 @@
   font-size: 0.72rem;
   line-height: 1.5;
   color: var(--ink);
-  background: #efece4;
+  background: #f4f2ec;
   border-left: 3px solid var(--accent);
   border-radius: 0 4px 4px 0;
   padding: 0.5rem 0.7rem;
@@ -119,10 +70,8 @@
   }
 }
 
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 0.85rem 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    animation: none;
+  }
 }

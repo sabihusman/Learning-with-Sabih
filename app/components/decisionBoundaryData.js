@@ -7,8 +7,10 @@
 // learning rate, fixed step count. Deterministic: w = 0, b = 0 at the start of
 // every run, same learning rate and step count every time.
 
-export const CLASS0 = '#c98a3b' // amber, label 0 (matches the activations figure's outside class)
-export const CLASS1 = '#2f6f8f' // blue, label 1 (matches the activations figure's inside class)
+import { AMBER, BLUE } from './vizPalette'
+
+export const CLASS0 = AMBER // label 0 (matches the activations figure's outside class)
+export const CLASS1 = BLUE // label 1 (matches the activations figure's inside class)
 
 // ── hyperparameters (fixed, deterministic; verified by a Node harness before
 // this module was wired into the UI) ─────────────────────────────────────────

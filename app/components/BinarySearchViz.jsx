@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import { INK, FADE, OK, ACCENT, LINE, RULE, ERR_BG, MUTED_BG, PANEL, MONO } from './vizPalette'
 import styles from './BinarySearchViz.module.css'
+import shared from './vizShared.module.css'
 
 // Fixed, deterministic sorted set. 15 cells so the worst case is exactly
 // ceil(log2(15)) = 4 comparisons (a perfect-tree size; 16 would need 5).
@@ -47,9 +49,9 @@ function cellKind(i, s, midDisplay) {
   if (i === midDisplay) return 'mid'
   return 'active'
 }
-const FILL = { found: '#1f6f5c', mid: '#fcf3f1', active: '#fffefb', eliminated: '#ece9e1' }
-const STROKE = { found: '#1f6f5c', mid: '#c0392b', active: '#d8d4cc', eliminated: '#e2e0d8' }
-const TEXT = { found: '#ffffff', mid: '#1a1a1a', active: '#1a1a1a', eliminated: '#b9b6ae' }
+const FILL = { found: OK, mid: ERR_BG, active: PANEL, eliminated: MUTED_BG }
+const STROKE = { found: OK, mid: ACCENT, active: LINE, eliminated: RULE }
+const TEXT = { found: '#ffffff', mid: INK, active: INK, eliminated: FADE }
 
 export default function BinarySearchViz() {
   const [target, setTarget] = useState(DEFAULT_TARGET)
@@ -114,61 +116,63 @@ export default function BinarySearchViz() {
       readouts={readouts}
       tryThis="Click a cell to pick a target, then Step. Binary search checks the middle of the active range and throws away the half that cannot contain the target, so the search space halves every comparison. Watch lo and hi close in while the eliminated cells grey out. Compare the two readouts: binary search finishes in a handful of comparisons where a linear scan would check far more. Try the missing value to see the search end in not-found."
     >
-      <svg
-        viewBox={`0 0 ${VB_W} ${VB_H}`}
-        className={styles.svg}
-        role="img"
-        aria-label={`A sorted array of ${ARR.length} values. Binary search keeps a lo-to-hi window, compares the middle cell to the target, and greys out the half that is eliminated each step.`}
-      >
-        {/* pointers above the array */}
-        {searching && search.lo === search.hi && (
-          <Pointer x={cellMidX(search.lo)} y={12} label="lo hi" color="#6b6862" />
-        )}
-        {searching && search.lo !== search.hi && (
-          <>
-            <Pointer x={cellMidX(search.lo)} y={12} label="lo" color="#6b6862" />
-            <Pointer x={cellMidX(search.hi)} y={12} label="hi" color="#6b6862" />
-          </>
-        )}
-        {midDisplay !== null && (
-          <Pointer x={cellMidX(midDisplay)} y={30} label={search.status === 'found' ? 'found' : 'mid'} color={search.status === 'found' ? '#1f6f5c' : '#c0392b'} />
-        )}
+      <div className={shared.scroll}>
+        <svg
+          viewBox={`0 0 ${VB_W} ${VB_H}`}
+          className={styles.svg}
+          role="img"
+          aria-label={`A sorted array of ${ARR.length} values. Binary search keeps a lo-to-hi window, compares the middle cell to the target, and greys out the half that is eliminated each step.`}
+        >
+          {/* pointers above the array */}
+          {searching && search.lo === search.hi && (
+            <Pointer x={cellMidX(search.lo)} y={12} label="lo hi" color={FADE} />
+          )}
+          {searching && search.lo !== search.hi && (
+            <>
+              <Pointer x={cellMidX(search.lo)} y={12} label="lo" color={FADE} />
+              <Pointer x={cellMidX(search.hi)} y={12} label="hi" color={FADE} />
+            </>
+          )}
+          {midDisplay !== null && (
+            <Pointer x={cellMidX(midDisplay)} y={30} label={search.status === 'found' ? 'found' : 'mid'} color={search.status === 'found' ? OK : ACCENT} />
+          )}
 
-        {/* cells */}
-        {ARR.map((v, i) => {
-          const kind = cellKind(i, search, midDisplay)
-          const clickable = true
-          return (
-            <g key={i} onClick={() => chooseTarget(v)} style={{ cursor: clickable ? 'pointer' : 'default' }}>
-              <rect
-                x={cellLeft(i)}
-                y={CELL_Y}
-                width={CELL_OUTER - 4}
-                height={CELL_H}
-                rx={3}
-                fill={FILL[kind]}
-                stroke={STROKE[kind]}
-                strokeWidth={kind === 'mid' ? 2 : 1}
-              />
-              <text x={cellMidX(i)} y={CELL_Y + CELL_H / 2 + 4} fontSize="12.5" fontFamily="ui-monospace, monospace" fill={TEXT[kind]} textAnchor="middle">
-                {v}
-              </text>
-              <text x={cellMidX(i)} y={CELL_Y + CELL_H + 13} fontSize="8.5" fontFamily="ui-monospace, monospace" fill="#9b9892" textAnchor="middle">
-                {i}
-              </text>
-            </g>
-          )
-        })}
-      </svg>
+          {/* cells */}
+          {ARR.map((v, i) => {
+            const kind = cellKind(i, search, midDisplay)
+            const clickable = true
+            return (
+              <g key={i} onClick={() => chooseTarget(v)} style={{ cursor: clickable ? 'pointer' : 'default' }}>
+                <rect
+                  x={cellLeft(i)}
+                  y={CELL_Y}
+                  width={CELL_OUTER - 4}
+                  height={CELL_H}
+                  rx={3}
+                  fill={FILL[kind]}
+                  stroke={STROKE[kind]}
+                  strokeWidth={kind === 'mid' ? 2 : 1}
+                />
+                <text x={cellMidX(i)} y={CELL_Y + CELL_H / 2 + 4} fontSize="12.5" fontFamily={MONO} fill={TEXT[kind]} textAnchor="middle">
+                  {v}
+                </text>
+                <text x={cellMidX(i)} y={CELL_Y + CELL_H + 13} fontSize="9" fontFamily={MONO} fill={FADE} textAnchor="middle">
+                  {i}
+                </text>
+              </g>
+            )
+          })}
+        </svg>
+      </div>
 
       <div className={styles.targetRow}>
         <span className={styles.hint}>Click any cell to choose a target, or</span>
-        <button type="button" className={styles.absentBtn} onClick={() => chooseTarget(ABSENT_TARGET)}>
+        <button type="button" className={shared.btn} onClick={() => chooseTarget(ABSENT_TARGET)}>
           search a missing value ({ABSENT_TARGET})
         </button>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The search is real: lo, hi, and the comparison count are computed live, and the linear-scan number is the
         position this target would sit at. The list is kept small for clarity; real datasets are far larger, where the
         gap between the two counts is enormous.
@@ -180,7 +184,7 @@ export default function BinarySearchViz() {
 function Pointer({ x, y, label, color }) {
   return (
     <g>
-      <text x={x} y={y} fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="700" fill={color} textAnchor="middle">
+      <text x={x} y={y} fontSize="9.5" fontFamily="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" fontWeight="700" fill={color} textAnchor="middle">
         {label}
       </text>
       <text x={x} y={y + 11} fontSize="9" fill={color} textAnchor="middle">

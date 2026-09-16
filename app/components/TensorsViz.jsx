@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Figure from './Figure'
+import shared from './vizShared.module.css'
 import styles from './TensorsViz.module.css'
 import { LADDER, MAX_RANK, elementCount, shapeString, indexString } from './tensorData'
 
@@ -135,7 +136,7 @@ export default function TensorsViz() {
         <span className={styles.rungExample}>{`e.g. ${rung.example}`}</span>
       </div>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The shape, the element count, and every index path are computed for real from the
         rank you pick. The dimension sizes are kept deliberately small so the array stays
         readable; nothing here is hard-coded per cell. Rank {MAX_RANK} is drawn as a row of

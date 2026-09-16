@@ -3,7 +3,9 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import { OK, BLUE_SOFT, ACCENT, ACCENT_SOFT, LINE, INK } from './vizPalette'
 import styles from './BinarySearchTreeViz.module.css'
+import shared from './vizShared.module.css'
 
 const BALANCED = [4, 2, 6, 1, 3, 5, 7] // insert order that fills both sides evenly -> short tree
 const DEGENERATE = [1, 2, 3, 4, 5, 6, 7] // already sorted -> every node is a right child, a straight line
@@ -81,9 +83,17 @@ const R = 17
 const PAD_X = 28
 const PAD_TOP = 26
 
-const NODE_FILL = { base: '#fffefb', visited: '#fcf3f1', current: '#c0392b', found: '#2f8f63', inserted: '#2f8f63' }
-const NODE_STROKE = { base: '#7d96b8', visited: '#d98c84', current: '#c0392b', found: '#2f8f63', inserted: '#2f8f63' }
-const NODE_TEXT = { base: '#1a1a1a', visited: '#1a1a1a', current: '#ffffff', found: '#ffffff', inserted: '#ffffff' }
+const NODE_FILL = { base: '#ffffff', visited: ACCENT_SOFT, current: ACCENT, found: OK, inserted: OK }
+const NODE_STROKE = { base: BLUE_SOFT, visited: ACCENT, current: ACCENT, found: OK, inserted: OK }
+const NODE_TEXT = { base: INK, visited: INK, current: '#ffffff', found: '#ffffff', inserted: '#ffffff' }
+
+// The empty tree has no nodes to size a viewBox from, so the dynamic width/height
+// formula below collapses to a near-zero box and the "empty tree" text is scaled up
+// to fill it. Give the empty state the balanced preset's viewBox instead, so the
+// placeholder renders at the same normal size as any small tree, centered.
+const BALANCED_TREE = buildTree(BALANCED)
+const EMPTY_COLS = countOf(BALANCED_TREE)
+const EMPTY_ROWS = heightOf(BALANCED_TREE)
 
 export default function BinarySearchTreeViz() {
   const [tree, setTree] = useState(null)
@@ -100,9 +110,10 @@ export default function BinarySearchTreeViz() {
   const { pos, edges } = useMemo(() => layoutTree(tree), [tree])
   const height = heightOf(tree)
   const count = countOf(tree)
-  const cols = Math.max(1, count)
+  const cols = count === 0 ? EMPTY_COLS : count
+  const rows = count === 0 ? EMPTY_ROWS : height
   const VB_W = PAD_X * 2 + (cols - 1) * COL_W
-  const VB_H = PAD_TOP * 2 + Math.max(0, height - 1) * ROW_H + 4
+  const VB_H = PAD_TOP * 2 + Math.max(0, rows - 1) * ROW_H + 4
   const cx = (x) => PAD_X + x * COL_W
   const cy = (depth) => PAD_TOP + depth * ROW_H
 
@@ -181,28 +192,28 @@ export default function BinarySearchTreeViz() {
       readouts={readouts}
       tryThis="Load the balanced preset, then the degenerate one: both hold the same seven values, but the sorted insert order collapses the tree into a straight line. Search a value in each and compare the comparison counts. A short tree finds a value in a few steps; the collapsed line has to walk almost every node, the worst case that ties back to Big-O."
     >
-      <div className={styles.presets} role="group" aria-label="Populate the tree">
-        <button type="button" className={styles.presetBtn} disabled={walking} onClick={() => loadPreset(BALANCED)}>
+      <div className={shared.group} role="group" aria-label="Populate the tree">
+        <button type="button" className={shared.btn} disabled={walking} onClick={() => loadPreset(BALANCED)}>
           Balanced preset
         </button>
-        <button type="button" className={styles.presetBtn} disabled={walking} onClick={() => loadPreset(DEGENERATE)}>
+        <button type="button" className={shared.btn} disabled={walking} onClick={() => loadPreset(DEGENERATE)}>
           Degenerate preset
         </button>
       </div>
 
-      <div className={styles.inputRow}>
+      <div className={shared.group}>
         <input
-          className={styles.input}
+          className={shared.input}
           type="number"
           value={input}
           placeholder="value"
           aria-label="Value to insert or search"
           onChange={(e) => setInput(e.target.value)}
         />
-        <button type="button" className={styles.actBtn} disabled={!validInsert} onClick={doInsert}>
+        <button type="button" className={shared.btn} data-variant="primary" disabled={!validInsert} onClick={doInsert}>
           Insert
         </button>
-        <button type="button" className={styles.actBtn} disabled={!validSearch} onClick={doSearch}>
+        <button type="button" className={shared.btn} disabled={!validSearch} onClick={doSearch}>
           Search
         </button>
       </div>
@@ -215,14 +226,14 @@ export default function BinarySearchTreeViz() {
             {edges.map(([p, c], i) => {
               const a = pos.get(p)
               const b = pos.get(c)
-              return <line key={i} x1={cx(a.x)} y1={cy(a.depth)} x2={cx(b.x)} y2={cy(b.depth)} stroke="#cfcbc2" strokeWidth={1.5} />
+              return <line key={i} x1={cx(a.x)} y1={cy(a.depth)} x2={cx(b.x)} y2={cy(b.depth)} stroke={LINE} strokeWidth={1.5} />
             })}
             {[...pos.entries()].map(([value, p]) => {
               const st = nodeState(value)
               const pending = st === 'pending'
               return (
                 <g key={value} className={styles.node} opacity={pending ? 0.4 : 1}>
-                  <circle cx={cx(p.x)} cy={cy(p.depth)} r={R} fill={NODE_FILL[pending ? 'base' : st]} stroke={pending ? '#2f8f63' : NODE_STROKE[st]} strokeWidth={st === 'base' ? 1.5 : 2} strokeDasharray={pending ? '3 2' : undefined} />
+                  <circle cx={cx(p.x)} cy={cy(p.depth)} r={R} fill={NODE_FILL[pending ? 'base' : st]} stroke={pending ? OK : NODE_STROKE[st]} strokeWidth={st === 'base' ? 1.5 : 2} strokeDasharray={pending ? '3 2' : undefined} />
                   <text x={cx(p.x)} y={cy(p.depth) + 4} className={styles.nodeText} fill={NODE_TEXT[pending ? 'base' : st]} textAnchor="middle">{value}</text>
                 </g>
               )
@@ -231,7 +242,22 @@ export default function BinarySearchTreeViz() {
         )}
       </svg>
 
-      <p className={styles.caption}>
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: '#ffffff', borderColor: BLUE_SOFT }} />
+          default
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: ACCENT_SOFT, borderColor: ACCENT }} />
+          visited
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: OK, borderColor: OK }} />
+          found / inserted
+        </span>
+      </div>
+
+      <p className={shared.caption}>
         The tree, the insert and search walks, and all three readouts are computed live from the real structure. The
         tree is kept small for clarity; real trees hold far more, and real systems often use self-balancing trees to
         avoid the degenerate line shown by the sorted preset.

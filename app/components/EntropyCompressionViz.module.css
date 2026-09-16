@@ -49,7 +49,7 @@
   width: 100%;
   height: 10px;
   border-radius: 5px;
-  background: #eee9df;
+  background: #ece9e1;
   overflow: hidden;
 }
 
@@ -60,16 +60,13 @@
   transition: width 0.1s linear;
 }
 
+/* the slider spans the bar it drives, so lift the shared 220px cap */
 .slider {
-  width: 100%;
-  accent-color: #2f6f8f;
-  cursor: pointer;
+  max-width: none;
 }
 
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 0.9rem 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .barFill {
+    transition: none;
+  }
 }

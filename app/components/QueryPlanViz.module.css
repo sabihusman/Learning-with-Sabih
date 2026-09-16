@@ -1,38 +1,8 @@
 /* Query planning: two clearly separated parts behind a toggle so neither crowds the
    other. Part 1 is the index-vs-scan selectivity flip; Part 2 is join order. Everything
    recomputes from the transparent cost model on a control change, so there is no timer
-   and the transitions are purely cosmetic. Project paper/ink/accent palette. */
-
-.partToggle {
-  display: flex;
-  gap: 6px;
-  margin: 0 0 16px;
-}
-
-.partBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  padding: 6px 14px;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  background: #f4f2ec;
-  color: #1a1a1a;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.partBtn:hover {
-  background: #ece9e1;
-}
-
-.partActive {
-  background: #1a1a1a;
-  color: #f7f5f0;
-  border-color: #1a1a1a;
-}
+   and the transitions are purely cosmetic. In-card toggles and the slider use the
+   shared vizShared classes; only the layout and cost-bar rules live here. */
 
 .part {
   display: flex;
@@ -43,43 +13,21 @@
 .sql {
   margin: 0;
   padding: 10px 12px;
-  background: #f0ede6;
-  border: 1px solid #e2e0d8;
+  background: #f4f2ec;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12.5px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: var(--ink);
   overflow-x: auto;
-}
-
-.controlLine {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.label {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
-  min-width: 5.2rem;
-}
-
-.range {
-  width: 180px;
-  accent-color: #c0392b;
-  cursor: pointer;
 }
 
 .value {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12.5px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 /* selectivity strip: one cell per table row, the matching ones filled */
@@ -94,8 +42,8 @@
   width: 14px;
   height: 20px;
   border-radius: 2px;
-  border: 1px solid #e2e0d8;
-  background: #fffefb;
+  border: 1px solid var(--rule);
+  background: #faf9f6;
 }
 
 .cellMatch {
@@ -111,15 +59,15 @@
 }
 
 .bar {
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 8px 10px;
-  background: #fffefb;
+  background: #faf9f6;
 }
 
 .barChosen {
   border-color: #1f6f5c;
-  background: #f3f8f5;
+  background: #e6f2ec;
 }
 
 .barHead {
@@ -133,7 +81,7 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12.5px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 .barTag {
@@ -141,7 +89,7 @@
   font-size: 10px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #f7f5f0;
+  color: #ffffff;
   background: #1f6f5c;
   border-radius: 3px;
   padding: 1px 6px;
@@ -149,14 +97,14 @@
 
 .barTrack {
   height: 12px;
-  background: #efece4;
+  background: #ece9e1;
   border-radius: 6px;
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
-  background: #c98a3b;
+  background: #b07a2e;
   border-radius: 6px;
   transition: width 0.22s ease;
 }
@@ -170,26 +118,26 @@
   margin-top: 5px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
-  color: #6b6862;
+  color: var(--fade);
 }
 
 .explainLabel {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10.5px;
   letter-spacing: 0.03em;
-  color: #9b9892;
+  color: var(--fade);
   margin-top: 2px;
 }
 
 .explain {
   margin: 0;
   padding: 9px 11px;
-  background: #1f1d1a;
+  background: var(--ink);
   border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
   line-height: 1.45;
-  color: #e8e4da;
+  color: #d8d4cc;
   overflow-x: auto;
 }
 
@@ -207,7 +155,7 @@
   border: 1px solid #d8d4cc;
   border-radius: 6px;
   padding: 8px 12px;
-  background: #f7f5f0;
+  background: #faf9f6;
   min-width: 92px;
 }
 
@@ -215,45 +163,19 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12.5px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 .chipSize {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
-  color: #6b6862;
+  color: var(--fade);
 }
 
 .chipNote {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10px;
-  color: #9b9892;
-}
-
-.toggleGroup {
-  display: inline-flex;
-  gap: 6px;
-}
-
-.toggleBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  padding: 6px 12px;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  background: #f4f2ec;
-  color: #1a1a1a;
-  cursor: pointer;
-}
-
-.toggleBtn:hover {
-  background: #ece9e1;
-}
-
-.toggleActive {
-  background: #1f6f5c;
-  border-color: #1f6f5c;
-  color: #f7f5f0;
+  color: var(--fade);
 }
 
 /* Part 2 step breakdown */
@@ -261,10 +183,10 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 10px 12px;
-  background: #fffefb;
+  background: #faf9f6;
 }
 
 .step,
@@ -275,30 +197,28 @@
   gap: 12px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12.5px;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 .stepTotal {
   margin-top: 4px;
   padding-top: 6px;
-  border-top: 1px solid #e2e0d8;
+  border-top: 1px solid var(--rule);
   font-weight: 700;
 }
 
 .stepLabel {
-  color: #4a4843;
+  color: var(--fade);
 }
 
 .stepRows {
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
   white-space: nowrap;
 }
 
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .barFill {
+    transition: none;
+  }
 }

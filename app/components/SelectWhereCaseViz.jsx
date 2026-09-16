@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Figure from './Figure'
-import { INK, FADE, MONO } from './vizPalette'
+import { INK, FADE, OK, LINE, MUTED_BG, PANEL, MONO } from './vizPalette'
 import {
   ROWS,
   ID_COL,
@@ -15,10 +15,9 @@ import {
   buildSql,
 } from './selectWhereData'
 import styles from './SelectWhereCaseViz.module.css'
+import shared from './vizShared.module.css'
 
-const PAID = '#1f6f5c'
-const FREE = '#9b9892'
-const tierColor = (tier) => (tier === 'paid' ? PAID : FREE)
+const tierColor = (tier) => (tier === 'paid' ? OK : FADE)
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 const X0 = 10
@@ -63,7 +62,7 @@ export default function SelectWhereCaseViz() {
       readouts={readouts}
       tryThis="SELECT chooses columns: tick or untick country, plan, and signup_date to change what the query returns (user_id always stays as the row's identity). WHERE chooses rows: pick a condition and the rows that fail it fade out, leaving only the matches. CASE adds a derived column without changing the source data: turn it on to bucket each row into a paid or free tier from its plan, colouring the rows by bucket. The SQL below updates to match every choice."
     >
-      <svg
+      <svg role="img"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         style={{ width: '100%', maxWidth: 560, height: 'auto', display: 'block', margin: '0 auto' }}
         aria-label="A users table whose visible columns, filtered rows, and an optional CASE tier column change as the controls below are adjusted."
@@ -75,7 +74,7 @@ export default function SelectWhereCaseViz() {
             x={colLeft(ci) + 8}
             y={TOP + 15}
             fontSize={9.5}
-            fill={c.key === TIER_COL.key ? PAID : FADE}
+            fill={c.key === TIER_COL.key ? OK : FADE}
             fontFamily={MONO}
             fontWeight={c.key === TIER_COL.key ? 700 : 400}
             letterSpacing="0.03em"
@@ -83,7 +82,7 @@ export default function SelectWhereCaseViz() {
             {c.label}
           </text>
         ))}
-        <line x1={X0} y1={TOP + HEAD_H} x2={X0 + totalW} y2={TOP + HEAD_H} stroke="#d4d0c8" strokeWidth={1} />
+        <line x1={X0} y1={TOP + HEAD_H} x2={X0 + totalW} y2={TOP + HEAD_H} stroke={LINE} strokeWidth={1} />
 
         {/* rows */}
         {ROWS.map((row, ri) => {
@@ -97,8 +96,8 @@ export default function SelectWhereCaseViz() {
                 y={top}
                 width={totalW}
                 height={ROW_H}
-                fill={ri % 2 ? '#faf9f6' : '#ffffff'}
-                stroke="#eceae3"
+                fill={ri % 2 ? PANEL : '#ffffff'}
+                stroke={MUTED_BG}
                 strokeWidth={0.5}
               />
               {caseOn && <rect x={X0} y={top} width={4} height={ROW_H} fill={tierColor(tier)} />}
@@ -124,8 +123,8 @@ export default function SelectWhereCaseViz() {
       </svg>
 
       {/* SELECT: column checkboxes */}
-      <div className={styles.controlRow}>
-        <span className={styles.label}>select</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>select</span>
         <label className={styles.check}>
           <input type="checkbox" checked readOnly disabled />
           user_id
@@ -139,9 +138,9 @@ export default function SelectWhereCaseViz() {
       </div>
 
       {/* WHERE: condition dropdown */}
-      <div className={styles.controlRow}>
-        <span className={styles.label}>where</span>
-        <select className={styles.select} value={whereId} onChange={(e) => setWhereId(e.target.value)} aria-label="WHERE condition">
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>where</span>
+        <select className={shared.select} value={whereId} onChange={(e) => setWhereId(e.target.value)} aria-label="WHERE condition">
           {WHERE_OPTS.map((w) => (
             <option key={w.id} value={w.id}>
               {w.label}
@@ -151,36 +150,16 @@ export default function SelectWhereCaseViz() {
       </div>
 
       {/* CASE: tier bucket toggle */}
-      <div className={styles.controlRow}>
-        <span className={styles.label}>case</span>
-        <button
-          type="button"
-          onClick={() => setCaseOn((v) => !v)}
-          aria-pressed={caseOn}
-          className={`${styles.toggle} ${caseOn ? styles.toggleOn : ''}`}
-        >
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>case</span>
+        <button type="button" onClick={() => setCaseOn((v) => !v)} aria-pressed={caseOn} className={shared.btn}>
           {caseOn ? 'tier column: on' : 'tier column: off'}
         </button>
-        <span style={{ fontFamily: MONO, fontSize: 11, color: FADE }}>{CASE_SQL}</span>
+        <span className={styles.caseSql}>{CASE_SQL}</span>
       </div>
 
       {/* live SQL */}
-      <pre
-        style={{
-          marginTop: 14,
-          padding: '12px 14px',
-          background: '#f0ede6',
-          border: '1px solid #e2e0d8',
-          borderRadius: 6,
-          fontFamily: MONO,
-          fontSize: 12.5,
-          lineHeight: 1.5,
-          color: INK,
-          overflowX: 'auto',
-        }}
-      >
-        {buildSql(selectedKeys, caseOn, where.sql)}
-      </pre>
+      <pre className={styles.sql}>{buildSql(selectedKeys, caseOn, where.sql)}</pre>
 
       <p className={styles.note}>
         SELECT picks columns, WHERE picks rows, and CASE derives a new column per row. None of them change the

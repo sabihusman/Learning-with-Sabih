@@ -8,15 +8,19 @@
 //                    |
 //              AttackGuardBot   <- leaf the lookup walk starts from
 
+import { OK, BLUE, AMBER, PURPLE } from './vizPalette'
+
 export const ROOT = 'Robot'
 export const LEAF = 'AttackGuardBot'
 
 // parent + own members per class. `overrides` are methods re-defined from an ancestor.
+// Robot colours are identity colours from the shared palette (the same four the
+// other OOP figures use), so each robot stays distinct across topics.
 export const CLASSES = {
-  Robot: { parent: null, color: '#2c6e7f', fields: ['name', 'batteryLevel'], methods: ['reportStatus', 'move'], overrides: [] },
-  CleaningBot: { parent: 'Robot', color: '#4f6d9c', fields: [], methods: ['clean'], overrides: ['reportStatus'] },
-  GuardBot: { parent: 'Robot', color: '#b07a2e', fields: [], methods: ['patrol'], overrides: ['reportStatus'] },
-  AttackGuardBot: { parent: 'GuardBot', color: '#8a5a83', fields: [], methods: ['attack'], overrides: [] },
+  Robot: { parent: null, color: OK, fields: ['name', 'batteryLevel'], methods: ['reportStatus', 'move'], overrides: [] },
+  CleaningBot: { parent: 'Robot', color: BLUE, fields: [], methods: ['clean'], overrides: ['reportStatus'] },
+  GuardBot: { parent: 'Robot', color: AMBER, fields: [], methods: ['patrol'], overrides: ['reportStatus'] },
+  AttackGuardBot: { parent: 'GuardBot', color: PURPLE, fields: [], methods: ['attack'], overrides: [] },
 }
 
 // Methods that can be called on the leaf, ordered to show a range of walks:

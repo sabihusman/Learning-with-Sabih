@@ -16,21 +16,17 @@ import {
   isDone,
   hasConflict,
 } from './capTheoremData'
+import { INK, FADE, ACCENT, OK, OK_BG, ERR_BG, AMBER_BG, AMBER_STROKE, RULE, PANEL, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
+import { prefersReducedMotion } from './motion'
 import styles from './CapTheoremViz.module.css'
 
 const PLAY_MS = 1300
 
-// Palette: the site family (ink / fade / accent) plus the ok-green already used
-// elsewhere. No new colors.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b' // partition, refusal, and disagreement
-const OK = '#1f6f5c' // agreement / a replicated write
-const OK_BG = '#e6f2ec'
-const ERR_BG = '#fbecea'
-const LINE = '#e2e0d8'
-const PANEL_BG = '#faf9f6'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// Palette: shared tokens. ACCENT marks a partition, a refusal, or disagreement;
+// OK marks agreement or a replicated write; AMBER a write that diverged.
+const LINE = RULE
+const PANEL_BG = PANEL
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 const VB_W = 460
@@ -87,6 +83,7 @@ export default function CapTheoremViz() {
   // on a healthy write, the replication token). Pure animation, no state change.
   useEffect(() => {
     if (!state.lastOp || !svgRef.current) return
+    if (prefersReducedMotion()) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
     animate(nodes, { opacity: [0.4, 1], duration: 500 / speedRef.current, ease: 'outQuad' })
@@ -133,24 +130,19 @@ export default function CapTheoremViz() {
       tryThis="Run the sequence three ways and watch which readout pays. Healthy link: nothing pays, both nodes end at 3. Partitioned and preferring consistency: every operation is refused, the count climbs to 6, but the data never diverges. Partitioned and preferring availability: nothing is refused, yet the nodes drift to 2 and 3 and the divergence count hits 6. Then heal the link after the availability run and see the conflict it left behind."
     >
       {/* network toggle + partition-behaviour choice: real buttons, keyboard reachable */}
-      <div className={styles.controlsRow}>
-        <span className={styles.groupLabel}>network</span>
-        <button
-          type="button"
-          className={`${styles.btn} ${state.linkHealthy ? '' : styles.btnPartitioned}`}
-          aria-pressed={!state.linkHealthy}
-          onClick={toggleLink}
-        >
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>network</span>
+        <button type="button" className={shared.btn} aria-pressed={!state.linkHealthy} onClick={toggleLink}>
           {state.linkHealthy ? 'Network: healthy' : 'Network: partitioned'}
         </button>
-        <span className={styles.groupLabel} style={{ marginLeft: 8 }}>
+        <span className={shared.groupLabel} style={{ marginLeft: 8 }}>
           when partitioned
         </span>
         {CHOICES.map((c) => (
           <button
             key={c.id}
             type="button"
-            className={`${styles.btn} ${state.choice === c.id ? styles.btnOn : ''}`}
+            className={shared.btn}
             aria-pressed={state.choice === c.id}
             disabled={state.linkHealthy}
             onClick={() => pickChoice(c.id)}
@@ -160,6 +152,7 @@ export default function CapTheoremViz() {
         ))}
       </div>
 
+      <div className={shared.scroll}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -181,8 +174,8 @@ export default function CapTheoremViz() {
               bg = ERR_BG
               stroke = ACCENT
             } else if (state.lastOp.diverged) {
-              bg = '#f6e7c8'
-              stroke = '#caa24a'
+              bg = AMBER_BG
+              stroke = AMBER_STROKE
             } else {
               bg = OK_BG
               stroke = OK
@@ -285,8 +278,9 @@ export default function CapTheoremViz() {
           )
         })}
       </svg>
+      </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         A deliberately small model: one key x, two replicas, and synchronous
         replication while the link is healthy. Consistency here means the two nodes
         never disagree (stricter than the ACID consistency of the Isolation Levels

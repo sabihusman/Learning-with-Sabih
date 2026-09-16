@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import { INK, FADE, ACCENT, OK, OK_SOFT, AMBER_BG, PANEL, PAPER, LINE } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './DijkstraViz.module.css'
 import { NODES, EDGES, NODE_IDS, nodePos, GRAPH_VIEWBOX } from './graphData'
 
@@ -124,18 +126,20 @@ export default function DijkstraViz() {
   const pathNodeSet = new Set(pathNodes)
 
   const nodeFill = (id) => {
-    if (pathNodeSet.has(id)) return '#2f8f63'
-    if (f.current === id) return '#c0392b'
-    if (f.finalized.has(id)) return '#3f7d68'
-    if (f.dist.get(id) !== Infinity) return '#f0d49a'
-    return '#fffefb'
+    if (pathNodeSet.has(id)) return OK
+    if (f.current === id) return ACCENT
+    if (f.finalized.has(id)) return OK_SOFT
+    if (f.dist.get(id) !== Infinity) return AMBER_BG
+    return PANEL
   }
-  const nodeText = (id) => (pathNodeSet.has(id) || f.current === id || f.finalized.has(id) ? '#ffffff' : '#1a1a1a')
+  // White text only on the two dark fills (path, current); the finalized fill is
+  // light, so ink stays legible on it.
+  const nodeText = (id) => (pathNodeSet.has(id) || f.current === id ? '#ffffff' : INK)
 
   const edgeStroke = (a, b) => {
-    if (pathEdges.has(edgeKey(a, b))) return { stroke: '#2f8f63', width: 3.5 }
-    if (f.relaxEdge && edgeKey(f.relaxEdge[0], f.relaxEdge[1]) === edgeKey(a, b)) return { stroke: '#c0392b', width: 3 }
-    return { stroke: '#d8d4cc', width: 1.5 }
+    if (pathEdges.has(edgeKey(a, b))) return { stroke: OK, width: 3.5 }
+    if (f.relaxEdge && edgeKey(f.relaxEdge[0], f.relaxEdge[1]) === edgeKey(a, b)) return { stroke: ACCENT, width: 3 }
+    return { stroke: LINE, width: 1.5 }
   }
 
   const finalizedCount = f.finalized.size
@@ -161,10 +165,10 @@ export default function DijkstraViz() {
       readouts={readouts}
       tryThis="Pick a source, then step. Each step finalizes the nearest unfinalized node and relaxes its edges, lowering a neighbour's tentative distance only when a cheaper route is found. The finalized set grows from the source outward. When every node is finalized, click any node to trace its shortest path back to the source and read its total cost."
     >
-      <div className={styles.sourceRow}>
-        <span className={styles.sourceLabel}>source</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>source</span>
         {NODE_IDS.map((id) => (
-          <button key={id} type="button" className={`${styles.sourceBtn} ${id === source ? styles.sourceActive : ''}`} aria-pressed={id === source} onClick={() => selectSource(id)}>
+          <button key={id} type="button" className={shared.btn} aria-pressed={id === source} onClick={() => selectSource(id)}>
             {id}
           </button>
         ))}
@@ -184,21 +188,21 @@ export default function DijkstraViz() {
           const my = (a.y + b.y) / 2
           return (
             <g key={`w${i}`}>
-              <rect x={mx - 8} y={my - 8} width={16} height={15} rx={2} fill="#f7f6f2" opacity={0.92} />
+              <rect x={mx - 8} y={my - 8} width={16} height={15} rx={2} fill={PAPER} opacity={0.92} />
               <text x={mx} y={my + 3} className={styles.weight} textAnchor="middle">{weight}</text>
             </g>
           )
         })}
         {NODES.map((n) => (
           <g key={n.id} onClick={() => onNodeClick(n.id)} style={{ cursor: 'pointer' }} className={styles.node}>
-            <circle cx={n.x} cy={n.y} r={R} fill={nodeFill(n.id)} stroke={n.id === source ? '#c0392b' : '#9b9892'} strokeWidth={n.id === source ? 2.5 : 1.5} />
+            <circle cx={n.x} cy={n.y} r={R} fill={nodeFill(n.id)} stroke={n.id === source ? ACCENT : FADE} strokeWidth={n.id === source ? 2.5 : 1.5} />
             <text x={n.x} y={n.y + 4} className={styles.dist} fill={nodeText(n.id)} textAnchor="middle">{fmt(f.dist.get(n.id))}</text>
             <text x={n.x} y={n.y - R - 3} className={styles.nodeTag} textAnchor="middle">{n.id}</text>
           </g>
         ))}
       </svg>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Every tentative distance, the growing finalized set, and the final path are computed for real by Dijkstra on the
         same graph from the previous topic, now using its edge weights. The graph is kept small for clarity; real graphs,
         like road networks, are far larger.

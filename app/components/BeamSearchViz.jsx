@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import styles from './BeamSearchViz.module.css'
+import shared from './vizShared.module.css'
+import { ACCENT, OK, OK_BG, LINE, INK, MONO } from './vizPalette'
 import {
   TREE,
   ALL_NODES,
@@ -15,10 +17,14 @@ import {
   pathEdgeKeySet,
 } from './beamSearchData'
 
-const ACCENT = '#c0392b' // greedy
-const BEAM = '#2f8f63' // beam search
-const FADE = '#c8c4bc' // untraveled tree
-const INK = '#1a1a1a'
+// greedy walk = ACCENT, beam walk = OK, untraveled tree = LINE
+const BEAM = OK
+const UNTRAVELED = LINE
+
+// Token labels sit just below their node, in the walk's colour with a white
+// halo, at a size that stays legible once the 932-unit-wide viewBox is scaled
+// to the card (14 units renders about 9.6px at the 640px desktop cap).
+const LABEL_SIZE = 14
 
 // Computed once: greedy never changes, the tree is fixed.
 const GREEDY = greedyDecode(TREE)
@@ -86,10 +92,9 @@ export default function BeamSearchViz() {
         <span className={styles.promptBlank}>___</span>
       </div>
 
-      <div className={styles.sliderRow}>
-        <label htmlFor="beam-k" className={styles.sliderLabel}>
-          <span>beam width k</span>
-          <span className={styles.sliderValue}>{k}</span>
+      <div className={shared.group}>
+        <label htmlFor="beam-k" className={shared.groupLabel}>
+          beam width k
         </label>
         <input
           id="beam-k"
@@ -99,11 +104,13 @@ export default function BeamSearchViz() {
           step={1}
           value={k}
           onChange={(e) => changeK(Number(e.target.value))}
-          className={styles.slider}
+          className={shared.slider}
           aria-label="Beam width k"
         />
+        <span className={styles.sliderValue}>{k}</span>
       </div>
 
+      <div className={shared.scroll}>
       <svg
         viewBox={`0 0 ${LAYOUT.width} ${LAYOUT.height}`}
         className={styles.svg}
@@ -114,7 +121,7 @@ export default function BeamSearchViz() {
           const key = `${from}>${to}`
           const a = pos(from)
           const b = pos(to)
-          let stroke = FADE
+          let stroke = UNTRAVELED
           let width = 1
           let dash = undefined
           if (otherEdgeKeys.has(key)) {
@@ -132,7 +139,7 @@ export default function BeamSearchViz() {
             width = 2.4
             dash = undefined
           }
-          return <line key={key} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={stroke} strokeWidth={width} strokeDasharray={dash} opacity={stroke === FADE ? 0.5 : 1} />
+          return <line key={key} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={stroke} strokeWidth={width} strokeDasharray={dash} opacity={stroke === UNTRAVELED ? 0.5 : 1} />
         })}
 
         {ALL_NODES.map((n) => {
@@ -141,15 +148,26 @@ export default function BeamSearchViz() {
           const onBeamOnly = beamOnlyNodeIds.has(n.id)
           const onOther = otherNodeIds.has(n.id)
           const emphasized = onGreedy || onBeamOnly || onOther
-          const fill = onGreedy ? ACCENT : onBeamOnly ? BEAM : onOther ? '#eaf4ef' : '#ffffff'
-          const stroke = onGreedy ? ACCENT : onBeamOnly ? BEAM : onOther ? BEAM : '#b8b4aa'
-          const textColor = onGreedy || onBeamOnly ? '#ffffff' : INK
+          const fill = onGreedy ? ACCENT : onBeamOnly ? BEAM : onOther ? OK_BG : '#ffffff'
+          const stroke = onGreedy ? ACCENT : onBeamOnly ? BEAM : onOther ? BEAM : LINE
+          const textColor = onGreedy ? ACCENT : onBeamOnly || onOther ? BEAM : INK
           const r = emphasized ? (onGreedy || onBeamOnly ? 12 : 9) : 3
           return (
             <g key={n.id}>
               <circle cx={p.x} cy={p.y} r={r} fill={fill} stroke={stroke} strokeWidth={emphasized ? 1.6 : 1} />
               {emphasized && n.token !== 'START' && (
-                <text x={p.x} y={p.y + 3.5} className={styles.nodeText} fill={textColor} textAnchor="middle">
+                <text
+                  x={p.x}
+                  y={p.y + r + LABEL_SIZE}
+                  fontSize={LABEL_SIZE}
+                  fontFamily={MONO}
+                  fontWeight={600}
+                  fill={textColor}
+                  stroke="#ffffff"
+                  strokeWidth={3}
+                  paintOrder="stroke"
+                  textAnchor="middle"
+                >
                   {n.token}
                 </text>
               )}
@@ -157,16 +175,20 @@ export default function BeamSearchViz() {
           )
         })}
       </svg>
+      </div>
 
-      <div className={styles.legend}>
-        <span className={styles.legendItem}>
-          <span className={styles.swatch} style={{ background: ACCENT }} /> greedy walk
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: ACCENT }} />
+          greedy walk
         </span>
-        <span className={styles.legendItem}>
-          <span className={styles.swatch} style={{ background: BEAM }} /> selected beam walk
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: BEAM }} />
+          selected beam walk
         </span>
-        <span className={styles.legendItem}>
-          <span className={`${styles.swatch} ${styles.swatchDashed}`} /> other surviving beams
+        <span className={shared.legendItem}>
+          <span className={`${shared.swatch} ${styles.swatchDashed}`} />
+          other surviving beams
         </span>
       </div>
 
@@ -175,7 +197,7 @@ export default function BeamSearchViz() {
           <button
             key={b.ids.join(',')}
             type="button"
-            className={`${styles.chip} ${i === selected ? styles.chipActive : ''}`}
+            className={`${shared.btn} ${styles.chip}`}
             aria-pressed={i === selected}
             onClick={() => setSelected(i)}
           >
@@ -186,7 +208,7 @@ export default function BeamSearchViz() {
         ))}
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The tree, both walks, and every log-probability shown are computed live by real greedy and beam-search
         functions over the tree data. The tree itself and its edge probabilities are hand-authored, not a real
         model&apos;s output; a real decoder searches over its full vocabulary at every step, not three or four

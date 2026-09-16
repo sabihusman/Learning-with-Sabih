@@ -36,14 +36,22 @@
 .codeActive {
   color: var(--ink);
   background: #eef3f7;
-  box-shadow: inset 2px 0 0 #46617e;
+  box-shadow: inset 2px 0 0 #2f6f8f;
 }
 
 /* ── SVG stage ───────────────────────────────────────────────────────────── */
-.svg {
+/* The stage is the flex item; the drawing keeps a legibility floor and scrolls
+   sideways inside it on narrow phones (paired with the shared scroll wrapper). */
+.stage {
   flex: 1 1 380px;
-  min-width: 300px;
+  min-width: 0;
   max-width: 600px;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  min-width: 300px;
   height: auto;
 }
 
@@ -81,7 +89,7 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10px;
   letter-spacing: 0.08em;
-  fill: #46617e;
+  fill: #2f6f8f;
   text-anchor: middle;
 }
 
@@ -114,10 +122,8 @@
   fill: var(--fade);
 }
 
-/* ── caption ─────────────────────────────────────────────────────────────── */
-.caption {
-  margin: 0.9rem 0 0;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--fade);
+@media (prefers-reduced-motion: reduce) {
+  .codeLine {
+    transition: none;
+  }
 }

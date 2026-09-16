@@ -1,7 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Figure from './Figure'
+import { usePacedInterval } from './usePacedInterval'
+import shared from './vizShared.module.css'
 import {
   HOSTS,
   ROUTER,
@@ -17,12 +19,9 @@ import {
 } from './networkStackData'
 import styles from './NetworkStackViz.module.css'
 
-// House rule: auto-play advances on a plain setInterval + setState cadence,
-// integrating over measured elapsed wall-clock time capped at 1s (same pattern
-// as StreamingBufferViz) so a background-throttled tab does not change the
-// pace arithmetic. No rAF chains, no anime.js.
-const TICK_MS = 200
-const STEP_SEC = 1.4 // seconds of accumulated time per hop while playing
+// House rule: auto-play advances one hop per tick of the shared paced interval
+// (setInterval, never rAF), paced by the site-wide animation-speed multiplier.
+const HOP_MS = 1400 // one hop per 1.4s at 1x while playing
 
 export default function NetworkStackViz() {
   const [srcId, setSrcId] = useState(DEFAULT_SRC)
@@ -37,38 +36,18 @@ export default function NetworkStackViz() {
   const reads = readsAt(path, hop)
   const device = path[hop]
 
-  // Elapsed-time accumulator for auto-play. The interval measures real elapsed
-  // time (capped at 1s per tick) and advances one hop per STEP_SEC accumulated.
-  // hopRef mirrors hop (synced in an effect) so the timer callback can read the
-  // current position and stop the player at arrival without setState-in-updater
-  // or setState-in-effect-body patterns.
-  const accRef = useRef(0)
-  const hopRef = useRef(0)
-  useEffect(() => {
-    hopRef.current = hop
-  }, [hop])
-  useEffect(() => {
-    if (!playing) return undefined
-    let last = performance.now()
-    const id = window.setInterval(() => {
-      const now = performance.now()
-      accRef.current += Math.min((now - last) / 1000, 1)
-      last = now
-      if (accRef.current >= STEP_SEC) {
-        accRef.current -= STEP_SEC
-        const next = Math.min(hopRef.current + 1, lastHop)
-        hopRef.current = next
-        setHop(next)
-        if (next >= lastHop) setPlaying(false)
-      }
-    }, TICK_MS)
-    return () => window.clearInterval(id)
-  }, [playing, lastHop])
+  // Auto-play: one hop per tick while playing, stopping the player at arrival.
+  // The tick closure is read fresh each render by the hook, so it sees the
+  // current hop without a mirror ref.
+  usePacedInterval(playing && !arrived, HOP_MS, () => {
+    const next = Math.min(hop + 1, lastHop)
+    setHop(next)
+    if (next >= lastHop) setPlaying(false)
+  })
 
   const restart = () => {
     setHop(0)
     setPlaying(false)
-    accRef.current = 0
   }
 
   const pick = (which, id) => {
@@ -79,12 +58,12 @@ export default function NetworkStackViz() {
 
   const controls = [
     {
-      label: playing ? 'Pause' : 'Play',
-      onClick: () => setPlaying((p) => !p),
+      label: 'Step',
+      onClick: () => setHop((h) => Math.min(h + 1, lastHop)),
       variant: 'primary',
-      disabled: arrived && !playing,
+      disabled: playing || arrived,
     },
-    { label: 'Step', onClick: () => setHop((h) => Math.min(h + 1, lastHop)), disabled: playing || arrived },
+    { label: playing ? 'Pause' : 'Play', onClick: () => setPlaying((p) => !p), disabled: arrived && !playing },
     { label: 'Reset', onClick: restart },
   ]
 
@@ -125,6 +104,7 @@ export default function NetworkStackViz() {
       eyebrow="Networking"
       title="Two networks, two switches, one router"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis={
@@ -209,14 +189,15 @@ export default function NetworkStackViz() {
 
         {/* ── source / destination pickers ── */}
         <div className={styles.pickers}>
-          <div className={styles.pickerGroup}>
-            <span className={styles.pickerLabel}>From</span>
+          <div className={shared.group}>
+            <span className={`${shared.groupLabel} ${styles.pickerLabel}`}>From</span>
             {HOSTS.map((h) => (
               <button
                 key={h.id}
                 type="button"
                 data-testid={`src-${h.id}`}
-                className={`${styles.pickBtn} ${srcId === h.id ? styles.pickBtnActive : ''}`}
+                className={shared.btn}
+                data-active={srcId === h.id ? 'true' : undefined}
                 disabled={dstId === h.id}
                 onClick={() => pick('src', h.id)}
               >
@@ -224,14 +205,15 @@ export default function NetworkStackViz() {
               </button>
             ))}
           </div>
-          <div className={styles.pickerGroup}>
-            <span className={styles.pickerLabel}>To</span>
+          <div className={shared.group}>
+            <span className={`${shared.groupLabel} ${styles.pickerLabel}`}>To</span>
             {HOSTS.map((h) => (
               <button
                 key={h.id}
                 type="button"
                 data-testid={`dst-${h.id}`}
-                className={`${styles.pickBtn} ${dstId === h.id ? styles.pickBtnActive : ''}`}
+                className={shared.btn}
+                data-active={dstId === h.id ? 'true' : undefined}
                 disabled={srcId === h.id}
                 onClick={() => pick('dst', h.id)}
               >
@@ -242,7 +224,7 @@ export default function NetworkStackViz() {
         </div>
       </div>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The path, per-hop headers, and the router&apos;s layer 2 rewrite are computed from the small topology model
         above, and the layer 3 addresses are real RFC 1918 private IPv4 addresses (one /24 subnet per network). The
         layer 2 labels are deliberately simplified stand-ins, not real MAC addresses, and how the devices learn where

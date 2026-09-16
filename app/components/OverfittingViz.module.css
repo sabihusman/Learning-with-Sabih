@@ -1,30 +1,30 @@
-.slider {
+/* Both panels sit on a PANEL tint. The min-width keeps the 10.5px degree ticks at
+   >= 7px rendered on a phone (7 x 560 / 10.5); the shared.scroll wrapper scrolls
+   the rest. */
+.svg {
   width: 100%;
-  accent-color: #c0392b;
-  cursor: pointer;
+  min-width: 374px;
+  max-width: 600px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  background: #faf9f6;
+  border-radius: 6px;
+}
+
+.svgLower {
+  margin-top: 14px;
 }
 
 .sliderRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 10px 0 6px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  color: #5a5750;
-}
-
-.sliderLabel {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
-  min-width: 7rem;
+  margin-top: 10px;
 }
 
 .degValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
   min-width: 2rem;
   text-align: right;
 }
@@ -42,17 +42,17 @@
 
 .regimeUnder {
   background: #ece9e1;
-  color: #5a5750;
+  color: var(--fade);
 }
 
 .regimeGood {
-  background: #d8e6d8;
+  background: #e6f2ec;
   color: #1f6f5c;
 }
 
 .regimeOver {
-  background: #fbeeec;
-  color: #c0392b;
+  background: #fbecea;
+  color: var(--accent);
 }
 
 .endsRow {
@@ -60,35 +60,7 @@
   justify-content: space-between;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10.5px;
-  color: #9b9892;
+  color: var(--fade);
   letter-spacing: 0.04em;
-  margin-top: 4px;
-}
-
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
-}
-
-/* On narrow/touch viewports the fixed-width label, value, and regime badge crowd the
-   slider down to a sliver, making it hard or impossible to drag. The breakpoint covers
-   the full phone range: even at ~540px the inline slider is only ~150px wide and 16px
-   tall. Let the row wrap and give the slider its own full-width line with a taller
-   touch target. */
-@media (max-width: 600px) {
-  .sliderRow {
-    flex-wrap: wrap;
-  }
-
-  .sliderLabel {
-    min-width: 0;
-  }
-
-  .slider {
-    flex-basis: 100%;
-    height: 28px;
-  }
+  margin-top: -0.25rem;
 }

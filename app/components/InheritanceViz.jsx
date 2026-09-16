@@ -18,9 +18,13 @@ import {
   boxMethods,
   lookupPath,
 } from './inheritanceData'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { prefersReducedMotion } from './motion'
+import { OK, FADE, AMBER, LINE } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './InheritanceViz.module.css'
 
-const TAG_COLOR = { own: '#2c6e7f', inherited: '#9b9892', overridden: '#b07a2e' }
+const TAG_COLOR = { own: OK, inherited: FADE, overridden: AMBER }
 const TAG_LABEL = { own: 'own', inherited: 'inherited', overridden: 'overridden' }
 const CLASS_NAMES = Object.keys(CLASSES)
 
@@ -42,19 +46,27 @@ export default function InheritanceViz() {
   const probeRef = useRef(null)
   const timerRef = useRef(null)
 
+  // Stable ref to the shared animation-speed multiplier: both the timed walk and
+  // the probe glide read it at fire time, so a speed change never replays a step.
+  const speedRef = useAnimationSpeedRef()
+
   // Move the probe to a class box. anime drives the visual climb; the step sequence
   // itself is timer-driven (below) so the walk always completes even if the tab is
-  // backgrounded and rAF-based animations are throttled.
+  // backgrounded and rAF-based animations are throttled. Under reduced motion the
+  // probe snaps straight to its end position.
   const moveProbe = (cls) => {
     const target = probePos(cls)
-    if (probeRef.current) {
-      animate(probeRef.current, {
-        translateX: target.x,
-        translateY: target.y,
-        duration: 520,
-        ease: 'inOutQuad',
-      })
+    if (!probeRef.current) return
+    if (prefersReducedMotion()) {
+      probeRef.current.style.transform = `translate(${target.x}px, ${target.y}px)`
+      return
     }
+    animate(probeRef.current, {
+      translateX: target.x,
+      translateY: target.y,
+      duration: 520 / speedRef.current,
+      ease: 'inOutQuad',
+    })
   }
 
   const callMethod = (method) => {
@@ -85,7 +97,7 @@ export default function InheritanceViz() {
           i += 1
           advance()
         }
-      }, STEP_MS)
+      }, STEP_MS / speedRef.current)
     }
     advance()
   }
@@ -139,28 +151,20 @@ export default function InheritanceViz() {
       eyebrow="Inheritance"
       title="A robot family tree and the method-lookup walk"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis="Click any class to see its members color-coded: green for members defined on that class (own), amber for a method it overrides from a parent, grey for members inherited unchanged. Then call a method on AttackGuardBot, the leaf, and watch the lookup walk climb the chain. attack() is found right on the leaf. move() is not on the leaf or GuardBot, so the walk climbs all the way to Robot. reportStatus() is overridden on GuardBot, so the walk stops there and never reaches Robot's version. That early stop is why an override wins."
     >
-      <div className={styles.legend}>
-        {['own', 'overridden', 'inherited'].map((t) => (
-          <span key={t} className={styles.legendItem}>
-            <span className={styles.swatch} style={{ background: TAG_COLOR[t] }} />
-            {TAG_LABEL[t]}
-          </span>
-        ))}
-      </div>
-
       <div className={styles.wrap}>
-        <div className={styles.stageScroll}>
+        <div className={`${shared.scroll} ${styles.stageScroll}`}>
           <div className={styles.stage} style={{ width: STAGE_W, height: STAGE_H }}>
             {/* connector lines behind the boxes */}
             <svg className={styles.lines} viewBox={`0 0 ${STAGE_W} ${STAGE_H}`} width={STAGE_W} height={STAGE_H} aria-hidden="true">
               {CLASS_NAMES.filter((n) => CLASSES[n].parent).map((n) => {
                 const a = bottomCenter(CLASSES[n].parent)
                 const b = topCenter(n)
-                return <path key={n} d={`M ${a.x} ${a.y} C ${a.x} ${(a.y + b.y) / 2}, ${b.x} ${(a.y + b.y) / 2}, ${b.x} ${b.y}`} fill="none" stroke="#d4d0c8" strokeWidth={1.5} />
+                return <path key={n} d={`M ${a.x} ${a.y} C ${a.x} ${(a.y + b.y) / 2}, ${b.x} ${(a.y + b.y) / 2}, ${b.x} ${b.y}`} fill="none" stroke={LINE} strokeWidth={1.5} />
               })}
             </svg>
 
@@ -248,6 +252,15 @@ export default function InheritanceViz() {
             ))}
           </ul>
         </div>
+      </div>
+
+      <div className={shared.legend}>
+        {['own', 'overridden', 'inherited'].map((t) => (
+          <span key={t} className={shared.legendItem}>
+            <span className={shared.swatch} style={{ background: TAG_COLOR[t] }} />
+            {TAG_LABEL[t]}
+          </span>
+        ))}
       </div>
     </Figure>
   )

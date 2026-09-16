@@ -1,49 +1,6 @@
 /* Sharding: a partition key + a real hash decides which shard box a row lands in.
-   Direct manipulation only, no timers. Reuses the site's button-group vocabulary
-   (see LoadBalancingViz) and the project palette. */
-
-.controlsRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-
-.groupLabel {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
-}
-
-.btn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11.5px;
-  color: #1a1a1a;
-  background: #f4f2ec;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  padding: 5px 10px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.btn:hover {
-  background: #ece9e1;
-}
-
-.btnOn {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #f7f5f0;
-}
-
-.btn:focus-visible {
-  outline: 2px solid #c0392b;
-  outline-offset: 2px;
-}
+   Direct manipulation only, no timers. The partition-key and shard-count groups use
+   the shared vizShared button vocabulary; only the shard grid and chips live here. */
 
 .shardRow {
   display: grid;
@@ -55,7 +12,7 @@
 }
 
 .shard {
-  border: 1px solid #d8d4cc;
+  border: 1px solid var(--rule);
   border-radius: 8px;
   background: #faf9f6;
   min-height: 120px;
@@ -64,7 +21,7 @@
 }
 
 .shardHot {
-  border-color: #c0392b;
+  border-color: var(--accent);
   background: #fbecea;
 }
 
@@ -73,7 +30,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 6px 8px;
-  border-bottom: 1px solid #e2e0d8;
+  border-bottom: 1px solid var(--rule);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -81,13 +38,13 @@
   font-size: 10.5px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
 }
 
 .shardCount {
   font-size: 13px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 .shardBody {
@@ -101,7 +58,7 @@
 .empty {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10.5px;
-  color: #9b9892;
+  color: var(--fade);
   padding: 4px 2px;
 }
 
@@ -112,7 +69,7 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10.5px;
   background: #ffffff;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 4px;
   padding: 3px 6px;
   /* Keep each token (u-1004, pro) on one line; the row scrolls to fit the
@@ -121,18 +78,10 @@
 }
 
 .chipId {
-  color: #1a1a1a;
+  color: var(--ink);
   font-weight: 600;
 }
 
 .chipValue {
-  color: #9b9892;
-}
-
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
+  color: var(--fade);
 }

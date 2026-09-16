@@ -34,11 +34,3 @@
   margin: 0.75rem 0 0;
   letter-spacing: 0.01em;
 }
-
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 0.9rem 0 0;
-}

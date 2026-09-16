@@ -4,22 +4,18 @@ import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
 import { PRESETS, HEAP_SIZE, buildFrames, shuffledValues, leftOf, depthOf, offsetInDepth } from './heapsData'
+import { INK, FADE, RULE, ACCENT, OK, OK_SOFT, OK_BG, ERR_BG, PANEL, CONTROL_BG, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './HeapsViz.module.css'
 
 const PLAY_MS = 420
 
-// Palette: the site family already used by the Algorithms figures. No new colors.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const LINE = '#e2e0d8'
-const ACCENT = '#c0392b' // the two cells being compared
-const OK = '#1f6f5c' // the two cells being swapped
-const OK_BG = '#e6f2ec'
-const ERR_BG = '#fbecea'
-const SETTLED = '#9cc3ab' // locked into the sorted tail
-const SETTLED_BG = '#eef5f0'
-const PANEL_BG = '#faf9f6'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// Shared palette: ACCENT marks the two cells being compared, OK the two being
+// swapped, OK_SOFT/OK_BG the tail locked into sorted order.
+
+// The smallest label (index digits, 8.5 units) must render at >= 7px on a phone:
+// ceil(7 x 480 / 8.5) = 396, so the drawing scrolls sideways below that width.
+const SVG_MIN_WIDTH = 396
 
 // ── geometry ────────────────────────────────────────────────────────────────────
 // 15 nodes is exactly a full tree of depth 4, so every level is complete and the
@@ -49,9 +45,9 @@ function stateOf(i, f) {
   return 'plain'
 }
 
-const FILL = { swap: OK_BG, compare: ERR_BG, locked: SETTLED_BG, focus: '#ffffff', plain: PANEL_BG }
-const STROKE = { swap: OK, compare: ACCENT, locked: SETTLED, focus: INK, plain: LINE }
-const TEXT = { swap: OK, compare: ACCENT, locked: '#3f7d68', focus: INK, plain: INK }
+const FILL = { swap: OK_BG, compare: ERR_BG, locked: OK_BG, focus: '#ffffff', plain: PANEL }
+const STROKE = { swap: OK, compare: ACCENT, locked: OK_SOFT, focus: INK, plain: RULE }
+const TEXT = { swap: OK, compare: ACCENT, locked: OK, focus: INK, plain: INK }
 const WEIGHT = { swap: 2, compare: 2, locked: 1.4, focus: 2, plain: 1 }
 
 const PHASE_LABEL = { build: 'build', sort: 'empty', done: 'done' }
@@ -117,32 +113,29 @@ export default function HeapsViz() {
       tryThis="Build with each preset and compare the swap counts. Descending takes none, because a descending array already satisfies the heap rule. Ascending takes the most, in both phases. Watch both views as you step: every swap in the tree is the same swap in the array, and the tree is only ever a picture of the indexes."
     >
       <div className={styles.heapFigure}>
-        <div className={styles.controlsRow}>
-          <span className={styles.groupLabel}>array</span>
+        <div className={shared.group}>
+          <span className={shared.groupLabel}>array</span>
           {PRESETS.map((p) => (
             <button
               key={p.key}
               type="button"
-              className={`${styles.btn} ${presetKey === p.key ? styles.btnOn : ''}`}
+              className={shared.btn}
               aria-pressed={presetKey === p.key}
               onClick={() => pickPreset(p.key)}
             >
               {p.label}
             </button>
           ))}
-          <button
-            type="button"
-            className={`${styles.btn} ${presetKey === 'shuffle' ? styles.btnOn : ''}`}
-            aria-pressed={presetKey === 'shuffle'}
-            onClick={shuffle}
-          >
+          <button type="button" className={shared.btn} aria-pressed={presetKey === 'shuffle'} onClick={shuffle}>
             Shuffle
           </button>
         </div>
 
+        <div className={shared.scroll}>
         <svg
           viewBox={`0 0 ${VB_W} ${VB_H}`}
           className={styles.svg}
+          style={{ minWidth: SVG_MIN_WIDTH }}
           role="img"
           aria-label={`Max-heap of ${HEAP_SIZE} values, phase ${PHASE_LABEL[f.phase]}, step ${step} of ${last}, ${f.comparisons} comparisons and ${f.swaps} swaps so far. Array is ${f.arr.join(', ')}.`}
         >
@@ -158,7 +151,7 @@ export default function HeapsViz() {
                   y1={nodeY(i)}
                   x2={nodeX(c)}
                   y2={nodeY(c)}
-                  stroke={c >= f.heapSize || i >= f.heapSize ? '#efece5' : LINE}
+                  stroke={c >= f.heapSize || i >= f.heapSize ? CONTROL_BG : RULE}
                   strokeWidth={1.3}
                 />
               ))
@@ -226,8 +219,9 @@ export default function HeapsViz() {
             )
           })}
         </svg>
+        </div>
 
-        <p className={styles.caption}>
+        <p className={shared.caption}>
           Both phases are real. The array, the tree, the counters, and every swap are computed from the input rather
           than replayed from a recording, and the tree and array views are drawn from the same state. The presets are
           kept small so the tree fits on screen; real priority queues hold far more.

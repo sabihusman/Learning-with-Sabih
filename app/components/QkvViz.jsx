@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { WORDS, DIMS, matches, output, topMatches, Q_COLOR, K_COLOR, V_COLOR, INK, FADE } from './qkvData'
+import { ERR_BG, RULE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './QkvViz.module.css'
-
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 // VB_W widened from 500 to account for DIMS=5 (was 3): wider Q/K/V cell groups would
@@ -46,7 +46,7 @@ function VecCells({ x, y, vec, color, boxed }) {
           rx={2}
           fill={color}
           fillOpacity={0.15 + val * 0.85}
-          stroke="#e2e0d8"
+          stroke={RULE}
           strokeWidth={0.5}
         />
       ))}
@@ -89,7 +89,7 @@ export default function QkvViz() {
       readouts={readouts}
       tryThis={`Pick a word to use it as the Query. Its Query is compared against every word's Key, and the match bars show how strong each comparison is (a higher bar is a higher attention weight). The word then pulls in a blend of every word's Value, weighted by those matches, to form its output row at the bottom. Pick "it" and its Query matches "animal"'s Key most, so its output is mostly "animal"'s Value. The Q, K, and V vectors are hand-set so the example is small, but the match, scaling, and softmax that turn them into weights are the real computation.`}
     >
-      <svg
+      <svg role="img"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         style={{ width: '100%', maxWidth: 520, height: 'auto', display: 'block', margin: '0 auto' }}
         aria-label="Each word shows a Query, Key, and Value vector as small cells. Picking a word compares its Query against every Key to produce match weights, then blends the Values into an output."
@@ -118,7 +118,7 @@ export default function QkvViz() {
                 width={VB_W - 4}
                 height={ROW_H - 4}
                 rx={4}
-                fill={isPicked ? '#fbeeec' : 'transparent'}
+                fill={isPicked ? ERR_BG : 'transparent'}
                 stroke={isPicked ? V_COLOR : 'transparent'}
                 strokeWidth={1}
               />
@@ -168,7 +168,7 @@ export default function QkvViz() {
       <p className={styles.formula}>
         Compare my Query to your Key; the better the match, the more of your Value I take.
       </p>
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The Q, K, and V vectors are hand-authored to illustrate the mechanism. A real model learns them from each
         word and computes the matches on the fly.
       </p>

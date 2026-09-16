@@ -3,12 +3,9 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { computeView, buildSql, maxRunning } from './windowFnData'
+import { INK, FADE, ACCENT, RULE, MUTED_BG, ERR_BG, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './WindowFunctionsViz.module.css'
-
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
 
 const FUNCTIONS = ['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'SUM']
 
@@ -30,7 +27,9 @@ const PARTITION_GAP = 16
 const COLS = [
   { key: 'session_id', label: 'session', w: 58 },
   { key: 'time', label: 'time', w: 70 },
-  { key: 'event', label: 'event', w: 116 },
+  // wide enough for the longest event name ("interactive_used") plus its cell
+  // padding, so it never runs into the val column beside it
+  { key: 'event', label: 'event', w: 148 },
   { key: 'value', label: 'val', w: 40 },
   { key: 'row_number', label: 'row_number', w: 78 },
   { key: 'rank', label: 'rank', w: 52 },
@@ -40,6 +39,9 @@ const COLS = [
 const TOTAL_W = COLS.reduce((s, c) => s + c.w, 0)
 const VB_W = X0 + TOTAL_W + 8
 const COL_X = COLS.map((_, ci) => X0 + COLS.slice(0, ci).reduce((s, c) => s + c.w, 0))
+// smallest raw font (the column headers); sets the mobile scroll floor
+const MIN_FONT = 11
+const SVG_MIN_WIDTH = Math.min(600, Math.ceil((7 * VB_W) / MIN_FONT))
 
 // running-sum bar metrics inside the last column
 const BAR_NUM_W = 28
@@ -98,9 +100,12 @@ export default function WindowFunctionsViz() {
       readouts={readouts}
       tryThis="A window function adds a column without collapsing rows, so every event stays visible. Compare row_number, rank, and dense_rank on the tied pair (the two events at the same time): row_number gives 2 and 3, rank gives 2 and 2 then jumps to 4, dense_rank gives 2 and 2 then 3. The running column is SUM(value) accumulating down the rows, where value is an illustrative weight per event type (opened 1, used 2, completed 3). Turn on PARTITION BY session_id and watch the numbering and the running total restart for each session."
     >
+      <div className={shared.scroll}>
       <svg
+        role="img"
         viewBox={`0 0 ${VB_W} ${vbH}`}
-        style={{ width: '100%', maxWidth: 620, height: 'auto', display: 'block', margin: '0 auto' }}
+        className={styles.svg}
+        style={{ minWidth: SVG_MIN_WIDTH }}
         aria-label="An events table with row_number, rank, dense_rank, and a running total computed across the rows. A tied pair shows how the ranking functions differ, and a PARTITION BY toggle restarts the calculation per session."
       >
         {/* highlight band behind the active function's column */}
@@ -133,7 +138,7 @@ export default function WindowFunctionsViz() {
           y1={TABLE_TOP + HEAD_H}
           x2={X0 + TOTAL_W}
           y2={TABLE_TOP + HEAD_H}
-          stroke="#d4d0c8"
+          stroke={RULE}
           strokeWidth={1}
         />
 
@@ -160,8 +165,8 @@ export default function WindowFunctionsViz() {
               y={r.y}
               width={TOTAL_W}
               height={ROW_H}
-              fill={r.tied ? '#fbeeec' : ri % 2 ? '#faf9f6' : '#ffffff'}
-              stroke="#eceae3"
+              fill={r.tied ? ERR_BG : ri % 2 ? '#faf9f6' : '#ffffff'}
+              stroke={MUTED_BG}
               strokeWidth={0.5}
             />
             {COLS.map((c, ci) => {
@@ -212,41 +217,27 @@ export default function WindowFunctionsViz() {
           </g>
         ))}
       </svg>
+      </div>
 
       {/* PARTITION BY toggle */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14, flexWrap: 'wrap' }}>
+      <div className={styles.partitionRow}>
         <button
           type="button"
           onClick={() => setPartition((p) => !p)}
           aria-pressed={partition}
-          className={`${styles.partitionToggle} ${partition ? styles.partitionToggleOn : ''}`}
+          className={shared.btn}
         >
           {partition ? 'PARTITION BY session_id: on' : 'PARTITION BY session_id: off'}
         </button>
-        <span style={{ fontFamily: MONO, fontSize: 11, color: FADE }}>
+        <span className={styles.partitionHint}>
           {partition ? 'numbering and running total restart per session' : 'one calculation across all rows'}
         </span>
       </div>
 
       {/* SQL for the active function */}
-      <pre
-        style={{
-          marginTop: 14,
-          padding: '12px 14px',
-          background: '#f0ede6',
-          border: '1px solid #e2e0d8',
-          borderRadius: 6,
-          fontFamily: MONO,
-          fontSize: 12.5,
-          lineHeight: 1.5,
-          color: INK,
-          overflowX: 'auto',
-        }}
-      >
-        {buildSql(activeFn, partition)}
-      </pre>
+      <pre className={styles.sql}>{buildSql(activeFn, partition)}</pre>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         GROUP BY would collapse these rows into one summary per group. A window function keeps every row and
         adds the calculated column alongside it.
       </p>

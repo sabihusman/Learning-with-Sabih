@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import shared from './vizShared.module.css'
 import styles from './EntropyCompressionViz.module.css'
 import {
   SYMBOLS,
@@ -67,7 +68,7 @@ export default function EntropyCompressionViz() {
                 step={0.5}
                 value={p * 100}
                 onChange={(e) => onSlide(i, Number(e.target.value))}
-                className={styles.slider}
+                className={`${shared.slider} ${styles.slider}`}
                 aria-label={`Probability of symbol ${label}`}
               />
             </div>
@@ -75,7 +76,7 @@ export default function EntropyCompressionViz() {
         })}
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Moving one slider renormalizes the other three proportionally, so the table always sums to 100%. Entropy,
         the Huffman code for every symbol, and the average code length are all recomputed live from the current
         probabilities, not scripted.

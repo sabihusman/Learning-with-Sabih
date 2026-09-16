@@ -15,6 +15,9 @@ import {
   hitRate,
   statusFor,
 } from './cachingLayersData'
+import { INK, FADE, ACCENT, OK, OK_BG, ERR_BG, AMBER_BG, RULE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
+import { prefersReducedMotion } from './motion'
 import styles from './CachingLayersViz.module.css'
 
 // Baseline durations at 1x. Every timing in the figure (Play tick, fast-run
@@ -26,17 +29,10 @@ import styles from './CachingLayersViz.module.css'
 const PLAY_MS = 700
 const FAST_MS = 250
 
-// Palette: the site family (ink / fade / accent) plus the ok-green and the amber
-// fetched tone already used by the Caching figure. No new colors.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b' // a database trip, or a key just copied in
-const OK = '#1f6f5c' // served by a cache layer
-const OK_BG = '#e6f2ec'
-const ERR_BG = '#fbecea'
-const FETCH_BG = '#f6e7c8' // a key just copied into a layer
-const LINE = '#e2e0d8'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// Palette: shared tokens. ACCENT marks a database trip or a key just copied in,
+// OK a read served by a cache layer, AMBER_BG a key just copied into a layer.
+const FETCH_BG = AMBER_BG
+const LINE = RULE
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 const VB_W = 460
@@ -113,7 +109,7 @@ export default function CachingLayersViz() {
   // beads, sag, tints) carries the figure on its own.
   useEffect(() => {
     if (step === 0) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (prefersReducedMotion()) return
     // Every duration and delay is a baseline value divided by the current speed
     // multiplier; nothing is timed outside this scaling.
     const ms = (v) => v / speedRef.current
@@ -188,7 +184,7 @@ export default function CachingLayersViz() {
 
   return (
     <Figure
-      eyebrow="Caching Layers"
+      eyebrow="Caching layers"
       title="Reads fall through the stack"
       controls={controls}
       speedControl
@@ -196,7 +192,7 @@ export default function CachingLayersViz() {
       readouts={readouts}
       tryThis="Step through the first few reads and watch everything fall to the database while the caches are cold. Then watch the same keys come back: each copy written on the way up lets the next read stop higher, and by the second half most reads never get past the browser or the CDN. Watch read 12, a one-off key: it pushes the hot key out of the CDN, and the very next read of that key has to fall all the way down to Redis to find it."
     >
-      <div className={styles.scroll}>
+      <div className={shared.scroll}>
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
@@ -339,7 +335,7 @@ export default function CachingLayersViz() {
       </svg>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The three cache layers are real least-recently-used structures (capacities 2, 3,
         and 4) processed over a fixed 24-read stream; which layer serves each read, every
         count, and every eviction are computed from them, never typed in. The stream is

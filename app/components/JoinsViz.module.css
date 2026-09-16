@@ -1,3 +1,29 @@
+/* Joins: two source tables with connector lines, a result table below, and the SQL
+   for the selected join. The drawing sits in vizShared's .scroll wrapper; the
+   min-width keeps its smallest label (11 units in a 680 viewBox) at >= 7px on a
+   phone: ceil(7 x 680 / 11) = 433. */
+.svg {
+  width: 100%;
+  max-width: 600px;
+  min-width: 433px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.sql {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  background: #f4f2ec;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  overflow-x: auto;
+}
+
 /* Result rows assemble in (fade + slide). Rows are rendered from state at full
    opacity by default; this animation is purely additive, so a row is never left
    invisible even if the animation does not run (e.g. a backgrounded tab). The
@@ -16,5 +42,11 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resultRow {
+    animation: none;
   }
 }

@@ -3,8 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { prefersReducedMotion } from './motion'
 import { DEFAULTS, evaluate, buildDefinition } from './abstractInterfaceData'
 import styles from './AbstractInterfaceViz.module.css'
+import shared from './vizShared.module.css'
 
 // Renders one code panel from a `lines` array of { code, comment, hot, dim,
 // error }. Lines are plain strings, never parsed as JSX.
@@ -40,14 +43,20 @@ export default function AbstractInterfaceViz() {
   const { robotLines, guardBotLines, newLine } = buildDefinition(state)
 
   const verdictRef = useRef(null)
+  const speedRef = useAnimationSpeedRef()
 
   // Cosmetic flourish only: fade the verdict in when it changes. Pure
-  // animation, no state change, no onComplete chaining.
+  // animation, no state change, no onComplete chaining. Duration follows the
+  // shared speed multiplier; under reduced motion the end state is applied
+  // immediately and the fade is skipped.
   useEffect(() => {
-    if (verdictRef.current) {
-      animate(verdictRef.current, { opacity: [0.3, 1], duration: 280, ease: 'outQuad' })
+    if (!verdictRef.current) return
+    if (prefersReducedMotion()) {
+      verdictRef.current.style.opacity = 1
+      return
     }
-  }, [verdict.compiles, verdict.message])
+    animate(verdictRef.current, { opacity: [0.3, 1], duration: 280 / speedRef.current, ease: 'outQuad' })
+  }, [verdict.compiles, verdict.message, speedRef])
 
   const isDefault =
     kind === DEFAULTS.kind &&
@@ -83,68 +92,44 @@ export default function AbstractInterfaceViz() {
       readouts={readouts}
       tryThis="Every toggle below is live: nothing to step through. Start by removing doJob() from GuardBot and watch the compile error name it. Switch to interface and add battery back: it compiles, because an interface field is a constant every implementer shares, not per-object state. Switch back to abstract class and turn on Alarmed: extending two classes is illegal, but the same toggle in interface mode is fine, because a class can implement any number of interfaces. Press try new Robot() any time to see why neither kind of contract can be instantiated directly."
     >
-      <div className={styles.controlRow}>
-        <span className={styles.controlLabel}>contract kind</span>
-        <button
-          type="button"
-          onClick={() => setKind('abstract')}
-          aria-pressed={kind === 'abstract'}
-          className={`${styles.toggle} ${kind === 'abstract' ? styles.toggleOn : ''}`}
-        >
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>contract kind</span>
+        <button type="button" onClick={() => setKind('abstract')} aria-pressed={kind === 'abstract'} className={shared.btn}>
           Abstract class
         </button>
-        <button
-          type="button"
-          onClick={() => setKind('interface')}
-          aria-pressed={kind === 'interface'}
-          className={`${styles.toggle} ${kind === 'interface' ? styles.toggleOn : ''}`}
-        >
+        <button type="button" onClick={() => setKind('interface')} aria-pressed={kind === 'interface'} className={shared.btn}>
           Interface
         </button>
       </div>
 
-      <div className={styles.controlRow}>
-        <span className={styles.controlLabel}>GuardBot</span>
-        <button
-          type="button"
-          onClick={() => setImplementsDoJob((v) => !v)}
-          aria-pressed={implementsDoJob}
-          className={`${styles.toggle} ${implementsDoJob ? styles.toggleOn : ''}`}
-        >
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>GuardBot</span>
+        <button type="button" onClick={() => setImplementsDoJob((v) => !v)} aria-pressed={implementsDoJob} className={shared.btn}>
           {implementsDoJob ? 'implements doJob()' : 'doJob() missing'}
         </button>
-        <button
-          type="button"
-          onClick={() => setTakesAlarmed((v) => !v)}
-          aria-pressed={takesAlarmed}
-          className={`${styles.toggle} ${takesAlarmed ? styles.toggleOn : ''}`}
-        >
+        <button type="button" onClick={() => setTakesAlarmed((v) => !v)} aria-pressed={takesAlarmed} className={shared.btn}>
           {takesAlarmed ? 'also takes Alarmed' : 'Robot only'}
         </button>
       </div>
 
-      <div className={styles.controlRow}>
-        <span className={styles.controlLabel}>Robot contract</span>
-        <button
-          type="button"
-          onClick={() => setHasBattery((v) => !v)}
-          aria-pressed={hasBattery}
-          className={`${styles.toggle} ${hasBattery ? styles.toggleOn : ''}`}
-        >
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>Robot contract</span>
+        <button type="button" onClick={() => setHasBattery((v) => !v)} aria-pressed={hasBattery} className={shared.btn}>
           {hasBattery ? 'battery field: yes' : 'battery field: no'}
         </button>
-        <button
-          type="button"
-          onClick={() => setHasChargeBody((v) => !v)}
-          aria-pressed={hasChargeBody}
-          className={`${styles.toggle} ${hasChargeBody ? styles.toggleOn : ''}`}
-        >
+        <button type="button" onClick={() => setHasChargeBody((v) => !v)} aria-pressed={hasChargeBody} className={shared.btn}>
           {hasChargeBody ? 'charge() body: yes' : 'charge() body: no'}
         </button>
       </div>
 
-      <div className={styles.controlRow}>
-        <button type="button" onClick={() => setTriedNew(true)} disabled={triedNew} className={styles.tryNewBtn}>
+      <div className={shared.group}>
+        <button
+          type="button"
+          onClick={() => setTriedNew(true)}
+          disabled={triedNew}
+          className={shared.btn}
+          data-variant="danger"
+        >
           try new Robot()
         </button>
       </div>
@@ -165,7 +150,7 @@ export default function AbstractInterfaceViz() {
         <span className={styles.verdictBadge}>{verdict.compiles ? '✓ compiles' : '✗ does not compile'}</span>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Every verdict above is computed from the same rule function against the toggles you set; nothing is
         hand-typed per combination. The &quot;does not compile&quot; cases are simulated, the same treatment as the
         Encapsulation figure: nothing is compiled in your browser.

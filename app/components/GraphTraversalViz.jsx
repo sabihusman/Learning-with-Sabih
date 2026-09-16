@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import { INK, FADE, ACCENT, OK, AMBER, AMBER_BG, LINE, PANEL } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './GraphTraversalViz.module.css'
 import { NODES, EDGES, nodePos, buildAdjacency, GRAPH_VIEWBOX } from './graphData'
 
@@ -68,8 +70,8 @@ function codeListing(algo) {
   ]
 }
 
-const NODE_FILL = { plain: '#fffefb', frontier: '#f0d49a', visited: '#3f7d68', current: '#c0392b' }
-const NODE_STROKE = { plain: '#9b9892', frontier: '#c8922e', visited: '#3f7d68', current: '#c0392b' }
+const NODE_FILL = { plain: PANEL, frontier: AMBER_BG, visited: OK, current: ACCENT }
+const NODE_STROKE = { plain: FADE, frontier: AMBER, visited: OK, current: ACCENT }
 const R = 17
 
 export default function GraphTraversalViz() {
@@ -149,9 +151,9 @@ export default function GraphTraversalViz() {
       readouts={readouts}
       tryThis="Pick BFS or DFS, click a node to start, and step. Watch the side panel: BFS drives the visits with a queue (first in, first out), DFS with a stack (last in, first out). Now toggle between the two and watch the code listing instead. Almost every line holds still. The marked line is the algorithm difference, the whole of it. The second marked line is ours rather than the algorithm's: reversing the push order means DFS takes a node's neighbours off the stack alphabetically, so it descends into a node's first neighbour rather than its last. Without it the two traversals would walk the graph in opposite directions and the visit orders would be much harder to line up. Run both from the same start and read the numbers filling the nodes. BFS fans out level by level, DFS dives down one path before backtracking."
     >
-      <div className={styles.algoToggle} role="group" aria-label="Traversal algorithm">
+      <div className={shared.group} role="group" aria-label="Traversal algorithm">
         {[['bfs', 'BFS'], ['dfs', 'DFS']].map(([k, label]) => (
-          <button key={k} type="button" className={`${styles.algoBtn} ${k === algo ? styles.algoActive : ''}`} aria-pressed={k === algo} onClick={() => selectAlgo(k)}>
+          <button key={k} type="button" className={shared.btn} aria-pressed={k === algo} onClick={() => selectAlgo(k)}>
             {label}
           </button>
         ))}
@@ -164,15 +166,15 @@ export default function GraphTraversalViz() {
             {EDGES.map(({ from, to }, i) => {
               const a = nodePos(from)
               const b = nodePos(to)
-              return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#d8d4cc" strokeWidth={1.5} />
+              return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={LINE} strokeWidth={1.5} />
             })}
             {NODES.map((n) => {
               const st = nodeState(n.id)
               const visitNum = order.get(n.id)
               return (
                 <g key={n.id} className={styles.node} onClick={() => selectStart(n.id)} style={{ cursor: 'pointer' }}>
-                  <circle cx={n.x} cy={n.y} r={R} fill={NODE_FILL[st]} stroke={st === 'plain' && n.id === start ? '#c0392b' : NODE_STROKE[st]} strokeWidth={st === 'plain' && n.id === start ? 2.5 : st === 'plain' ? 1.5 : 2.5} />
-                  <text x={n.x} y={n.y + 4} className={styles.nodeLabel} fill={st === 'visited' || st === 'current' ? '#ffffff' : '#1a1a1a'} textAnchor="middle">
+                  <circle cx={n.x} cy={n.y} r={R} fill={NODE_FILL[st]} stroke={st === 'plain' && n.id === start ? ACCENT : NODE_STROKE[st]} strokeWidth={st === 'plain' && n.id === start ? 2.5 : st === 'plain' ? 1.5 : 2.5} />
+                  <text x={n.x} y={n.y + 4} className={styles.nodeLabel} fill={st === 'visited' || st === 'current' ? '#ffffff' : INK} textAnchor="middle">
                     {visitNum != null ? visitNum : n.id}
                   </text>
                   {visitNum != null && (
@@ -217,7 +219,7 @@ export default function GraphTraversalViz() {
         </div>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Both traversals are real and deterministic, run on one shared graph with a fixed neighbour order, and the panel
         shows the actual queue or stack contents. The listing is a trimmed version of the loop that drives this figure,
         with the step recording left out. The graph is kept small for clarity; real graphs are far larger.

@@ -12,14 +12,12 @@ import {
   passesHaving,
   buildSql,
 } from './groupByData'
+import { INK, FADE, MUTED_BG, MONO, CATEGORICAL } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './GroupByViz.module.css'
 
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
-
-// Muted, distinct group colors (only up to 4 groups are ever shown at once).
-const PALETTE = ['#c0392b', '#2f6f7e', '#9a6b1f', '#4a5db0', '#5f7a4f']
+// Distinct group identity colours (only up to 4 groups are ever shown at once).
+const PALETTE = CATEGORICAL
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 const VB_W = 600
@@ -31,7 +29,8 @@ const GROUP_GAP = 12
 
 const X_L = 8
 const W_L = 188
-const COL = { uid: 10, country: 58, plan: 102, events: 150 }
+// column x offsets, spaced so the 11px headers ("country", "plan") never touch
+const COL = { uid: 10, country: 52, plan: 108, events: 150 }
 
 const X_R = 360
 const W_R = 232
@@ -94,9 +93,11 @@ export default function GroupByViz() {
       readouts={readouts}
       tryThis="GROUP BY collapses every row in a group into one summary row. Switch the grouping column to recluster the rows, then pick an aggregate. COUNT(*) counts rows, but COUNT(DISTINCT user_id) folds a user's repeat sessions into one (watch the faded rows), so it is smaller wherever a group has repeat users. Drag the HAVING slider to drop whole groups by their COUNT(*): HAVING filters groups after aggregating, whereas WHERE would filter rows before. Window functions, covered separately, instead keep every row."
     >
+      <div className={shared.scroll}>
       <svg
+        role="img"
         viewBox={`0 0 ${VB_W} ${vbH}`}
-        style={{ width: '100%', maxWidth: 620, height: 'auto', display: 'block', margin: '0 auto' }}
+        className={styles.svg}
         aria-label="A table of per-session rows on the left clusters by the chosen column and collapses into one summary row per group on the right, showing the selected aggregate. A HAVING slider removes whole groups."
       >
         {/* panel titles */}
@@ -153,14 +154,11 @@ export default function GroupByViz() {
           return (
             <g
               key={r.session_id}
-              style={{
-                transform: `translate(${X_L}px, ${L.y}px)`,
-                transition: 'transform 480ms cubic-bezier(.4,0,.2,1), opacity 280ms ease',
-                opacity: faded ? 0.3 : 1,
-              }}
+              className={styles.detailRow}
+              style={{ transform: `translate(${X_L}px, ${L.y}px)`, opacity: faded ? 0.3 : 1 }}
             >
-              <rect x={0} y={0} width={4} height={RH} fill={L.color} style={{ transition: 'fill 480ms ease' }} />
-              <rect x={0} y={0} width={W_L} height={RH} fill="#ffffff" stroke="#eceae3" strokeWidth={0.5} />
+              <rect x={0} y={0} width={4} height={RH} fill={L.color} className={styles.colorBar} />
+              <rect x={0} y={0} width={W_L} height={RH} fill="#ffffff" stroke={MUTED_BG} strokeWidth={0.5} />
               <text x={COL.uid} y={RH / 2 + 3.3} fontSize={12.5} fill={INK} fontFamily={MONO}>
                 {`u${r.user_id}`}
               </text>
@@ -220,16 +218,17 @@ export default function GroupByViz() {
                 rx={1.5}
                 fill={g.color}
                 opacity={0.5}
-                style={{ transition: 'width 360ms ease' }}
+                className={styles.valueBar}
               />
             </g>
           )
         })}
       </svg>
+      </div>
 
       {/* GROUP BY column toggle */}
-      <div className={styles.controlRow}>
-        <span className={styles.controlLabel}>group by</span>
+      <div className={`${shared.group} ${styles.controlRow}`}>
+        <span className={shared.groupLabel}>group by</span>
         {GROUP_COLUMNS.map((c) => (
           <button
             key={c}
@@ -240,7 +239,7 @@ export default function GroupByViz() {
               setHavingN((h) => Math.min(h, newMax))
             }}
             aria-pressed={groupCol === c}
-            className={`${styles.toggle} ${groupCol === c ? styles.toggleOn : ''}`}
+            className={shared.btn}
           >
             {c}
           </button>
@@ -248,10 +247,10 @@ export default function GroupByViz() {
       </div>
 
       {/* HAVING threshold */}
-      <div className={styles.controlRow}>
+      <div className={shared.group}>
         <span className={styles.havingValue}>{havingN > 0 ? `HAVING COUNT(*) > ${havingN}` : 'HAVING: off'}</span>
         <input
-          className={styles.slider}
+          className={shared.slider}
           type="range"
           min={0}
           max={maxCount}
@@ -263,24 +262,9 @@ export default function GroupByViz() {
       </div>
 
       {/* SQL for the current grouping, aggregate, and HAVING */}
-      <pre
-        style={{
-          marginTop: 14,
-          padding: '12px 14px',
-          background: '#f0ede6',
-          border: '1px solid #e2e0d8',
-          borderRadius: 6,
-          fontFamily: MONO,
-          fontSize: 12.5,
-          lineHeight: 1.5,
-          color: INK,
-          overflowX: 'auto',
-        }}
-      >
-        {buildSql(groupCol, agg, havingN)}
-      </pre>
+      <pre className={styles.sql}>{buildSql(groupCol, agg, havingN)}</pre>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         GROUP BY collapses each group&apos;s rows into a single summary row. A window function, by contrast, keeps
         every row and adds the calculated value alongside it.
       </p>

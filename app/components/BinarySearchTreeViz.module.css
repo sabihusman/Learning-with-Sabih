@@ -1,66 +1,7 @@
 /* Binary search trees: preset buttons, a value input with Insert/Search, the tree as
-   SVG circles and edges, and an honesty caption. Walk highlights are driven by a timer
-   in the component; node color transitions are a small CSS flourish. Project palette. */
-
-.presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0 0 10px;
-}
-
-.presetBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.72rem;
-  padding: 0.3rem 0.7rem;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  background: #ffffff;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.presetBtn:hover:not(:disabled) {
-  border-color: var(--ink);
-}
-
-.presetBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.inputRow {
-  display: flex;
-  gap: 6px;
-  margin: 0 0 14px;
-}
-
-.input {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.74rem;
-  padding: 0.28rem 0.5rem;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  background: #ffffff;
-  color: var(--ink);
-  width: 90px;
-}
-
-.actBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.74rem;
-  padding: 0.28rem 0.7rem;
-  border: 1px solid var(--ink);
-  border-radius: 4px;
-  background: var(--ink);
-  color: var(--paper);
-  cursor: pointer;
-}
-
-.actBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
+   SVG circles and edges, a legend, and an honesty caption. Walk highlights are driven
+   by a timer in the component; node color transitions are a small CSS flourish. The
+   buttons, input and caption use the shared in-card classes (vizShared.module.css). */
 
 .svg {
   width: 100%;
@@ -90,10 +31,9 @@
   font-style: italic;
 }
 
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 0.85rem 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .node circle,
+  .node text {
+    transition: none;
+  }
 }

@@ -4,7 +4,9 @@ import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
 import CallStackPanel from './CallStackPanel'
+import { CATEGORICAL, FADE, INK, LINE, MONO } from './vizPalette'
 import styles from './RecursionViz.module.css'
+import shared from './vizShared.module.css'
 
 const MIN_DISKS = 3
 const MAX_DISKS = 6
@@ -51,7 +53,8 @@ const BASE_Y = 150
 const PEG_TOP = 40
 const DISK_H = 15
 const diskWidth = (size) => 20 + size * 11 // size 1 -> 31, size 6 -> 86 (fits 112px pitch)
-const DISK_COLORS = ['#4f6d9c', '#2c7a7b', '#1f8a5b', '#b07a2e', '#9a5a86', '#c0392b']
+// six disks, six identity colours (never ACCENT: it means error/emphasis elsewhere)
+const DISK_COLORS = CATEGORICAL
 
 export default function RecursionViz() {
   const [disks, setDisks] = useState(DEFAULT_DISKS)
@@ -125,8 +128,8 @@ export default function RecursionViz() {
           <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className={styles.svg} role="img" aria-label={`Towers of Hanoi with ${disks} disks across three pegs`}>
             {PEGS.map((peg) => (
               <g key={peg}>
-                <line x1={PEG_X[peg]} y1={PEG_TOP} x2={PEG_X[peg]} y2={BASE_Y} stroke="#cfcbc2" strokeWidth={3} strokeLinecap="round" />
-                <text x={PEG_X[peg]} y={BASE_Y + 22} fontSize="11" fontFamily="ui-monospace, monospace" fill="#9b9892" textAnchor="middle">
+                <line x1={PEG_X[peg]} y1={PEG_TOP} x2={PEG_X[peg]} y2={BASE_Y} stroke={LINE} strokeWidth={3} strokeLinecap="round" />
+                <text x={PEG_X[peg]} y={BASE_Y + 22} fontSize="11" fontFamily={MONO} fill={FADE} textAnchor="middle">
                   {peg}
                 </text>
                 {state[peg].map((size, j) => {
@@ -141,14 +144,14 @@ export default function RecursionViz() {
                       height={DISK_H - 2}
                       rx={3}
                       fill={DISK_COLORS[(size - 1) % DISK_COLORS.length]}
-                      stroke={moved ? '#1a1a1a' : '#ffffff'}
+                      stroke={moved ? INK : '#ffffff'}
                       strokeWidth={moved ? 2 : 1}
                     />
                   )
                 })}
               </g>
             ))}
-            <rect x={14} y={BASE_Y} width={VB_W - 28} height={7} rx={2} fill="#cfcbc2" />
+            <rect x={14} y={BASE_Y} width={VB_W - 28} height={7} rx={2} fill={LINE} />
           </svg>
         </div>
 
@@ -157,13 +160,13 @@ export default function RecursionViz() {
         </div>
       </div>
 
-      <div className={styles.diskRow}>
-        <label className={styles.diskLabel} htmlFor="disk-count">
+      <div className={`${shared.group} ${styles.diskRow}`}>
+        <label className={shared.groupLabel} htmlFor="disk-count">
           disks
         </label>
         <input
           id="disk-count"
-          className={styles.slider}
+          className={shared.slider}
           type="range"
           min={MIN_DISKS}
           max={MAX_DISKS}
@@ -174,7 +177,7 @@ export default function RecursionViz() {
         <span className={styles.diskValue}>{disks}</span>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The solve and every readout are computed for real from the recursive algorithm, and the total is exactly two to
         the power of the disk count, minus one. The disk count is kept small so the stack stays readable; the move count
         still doubles with each disk added.

@@ -6,7 +6,7 @@
 .curveCard {
   border: 1px solid var(--rule);
   border-radius: 4px;
-  background: #fffefb;
+  background: #faf9f6;
 }
 
 .raceCard {
@@ -51,7 +51,7 @@
 .bar {
   position: relative;
   height: 11px;
-  background: #efece4;
+  background: #f4f2ec;
   border-radius: 2px;
   overflow: hidden;
 }
@@ -64,36 +64,22 @@
   transition: width 0.05s linear;
 }
 
-/* shared input-size slider */
+/* shared input-size slider (skin from the shared .group/.slider) */
 .sliderRow {
   margin-bottom: 18px;
 }
 
-.sliderHead {
-  display: flex;
-  justify-content: space-between;
+.sliderValue {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--fade);
-  margin-bottom: 6px;
-}
-
-.sliderHead strong {
-  color: var(--ink);
+  font-size: 0.8125rem;
   font-weight: 700;
-}
-
-.slider {
-  width: 100%;
-  accent-color: var(--accent);
-  cursor: pointer;
+  color: var(--ink);
+  min-width: 3ch;
 }
 
 /* wall-clock estimate block */
 .wallClock {
-  background: #efece4;
+  background: #f4f2ec;
   border-left: 3px solid var(--accent);
   border-radius: 0 4px 4px 0;
   padding: 13px 16px;
@@ -139,7 +125,7 @@
 .curveIntro {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 0.9rem;
-  color: #3a3a3a;
+  color: var(--ink);
   line-height: 1.5;
   margin: 0 0 10px;
 }
@@ -148,7 +134,15 @@
   padding: 6px 8px 2px;
 }
 
+/* min-width keeps the 10-unit axis text at >= 7px on a phone; the wrapper scrolls */
 .svg {
   width: 100%;
+  min-width: 434px;
   display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barFill {
+    transition: none;
+  }
 }

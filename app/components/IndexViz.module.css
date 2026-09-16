@@ -1,7 +1,9 @@
 /* Indexes: a fixed users table (physical order) on the left and, when the index is on,
-   a sorted B-tree index on the right. Stepping is timer-driven in the component. The
+   a sorted B-tree index on the right (its column stays reserved when off, so the
+   toggle never reflows the card). Stepping is timer-driven in the component. The
    scan cursor and the index binary-search highlight recompute from the current frame,
-   so the row transitions are purely cosmetic. Project paper/ink/accent palette. */
+   so the row transitions are purely cosmetic. The toggle, select, group labels and
+   caption come from vizShared.module.css. */
 
 .controls {
   display: flex;
@@ -17,54 +19,6 @@
   gap: 10px;
 }
 
-.label {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
-}
-
-.toggle {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  color: #1a1a1a;
-  background: #f4f2ec;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.toggle:hover {
-  background: #ece9e1;
-}
-
-.toggleOn {
-  background: #1f6f5c;
-  border-color: #1f6f5c;
-  color: #f7f5f0;
-}
-
-.toggleOn:hover {
-  background: #1f6f5c;
-}
-
-.select {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12.5px;
-  color: #1a1a1a;
-  background: #f4f2ec;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  padding: 5px 9px;
-  cursor: pointer;
-}
-
 .plotWrap {
   width: 100%;
   display: flex;
@@ -74,6 +28,7 @@
 
 .svg {
   width: 100%;
+  max-width: 520px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -88,20 +43,18 @@
 .sql {
   margin: 14px 0 0;
   padding: 10px 12px;
-  background: #f0ede6;
-  border: 1px solid #e2e0d8;
+  background: #f4f2ec;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12.5px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: var(--ink);
   overflow-x: auto;
 }
 
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 12px 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .row rect {
+    transition: none;
+  }
 }

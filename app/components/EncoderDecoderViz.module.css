@@ -1,10 +1,41 @@
 /* Pure CSS flourish only, no state: cells and row highlight ease when the mode or
    selected row changes, and a row gets a faint hover tint so it reads as clickable
    before the user commits to a selection. */
+.svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.row {
+  cursor: pointer;
+  outline: none;
+}
+
 .row rect {
   transition: fill 160ms ease-out, fill-opacity 160ms ease-out, stroke-opacity 160ms ease-out;
 }
 
 .row:hover rect:first-child {
   fill: rgba(26, 26, 26, 0.04);
+}
+
+/* keyboard focus ring on the row's hit rect */
+.row:focus-visible rect:first-child {
+  stroke: var(--accent);
+  stroke-width: 2px;
+}
+
+/* empty legend swatch for the masked cells */
+.maskedSwatch {
+  background: transparent;
+  border-color: var(--fade);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row rect {
+    transition: none;
+  }
 }

@@ -2,10 +2,12 @@
    the Databases section's mono/rule vocabulary (ink text, faded headers, accent for
    the foreign-key and error highlights, green for primary keys). */
 
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
+/* One fixed viewBox height across every step (the tallest scene's), so stepping
+   never resizes the drawing and shifts the page. */
+.svg {
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }

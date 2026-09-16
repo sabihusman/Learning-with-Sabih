@@ -3,16 +3,15 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { STEP_EVENTS, COHORTS, computeFunnel, fmtPct, buildSql } from './funnelData'
+import { INK, ACCENT, BLUE, BLUE_SOFT, BLUE_BG, LINE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './FunnelViz.module.css'
 
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
-
-// Funnel shades, darkest at the top (widest) step.
-const STEP_FILL = ['#2c6e7f', '#4f97a3', '#84bcc4']
-const GHOST_FILL = '#ded8cf'
+// Funnel shades, darkest at the top (widest) step. The two lighter steps carry
+// ink text since white would not read on them.
+const STEP_FILL = [BLUE, BLUE_SOFT, BLUE_BG]
+const STEP_TEXT = ['#ffffff', INK, INK]
+const GHOST_FILL = LINE
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 const VB_W = 560
@@ -58,9 +57,11 @@ export default function FunnelViz() {
       readouts={readouts}
       tryThis="Each bar is the number of distinct sessions that reached a step: a session counts at a step if it ever fired that event. The percentages between bars are step-to-step conversion (interactive_used over topic_opened, then topic_completed over interactive_used), and the overall completion rate is the final step over every session in the selected cohort. Turn on drop-off to see how many sessions are lost at each step, then switch cohorts and watch where each group leaks. The SQL builds one set of distinct sessions per step, then counts each."
     >
+      <div className={shared.scroll}>
       <svg
+        role="img"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', maxWidth: 560, height: 'auto', display: 'block', margin: '0 auto' }}
+        className={styles.svg}
         aria-label={`${cohortLabel}: a three-step conversion funnel: topic_opened ${steps[0].count}, interactive_used ${steps[1].count}, topic_completed ${steps[2].count}, with step-to-step conversion percentages and optional drop-off.`}
       >
         {stepStats.map((s, i) => {
@@ -107,7 +108,7 @@ export default function FunnelViz() {
               </text>
 
               {/* distinct-session count inside the bar */}
-              <text x={CENTER_X} y={top + BAR_H / 2 + 6} fontSize={18} fill="#ffffff" fontFamily={MONO} fontWeight="bold" textAnchor="middle">
+              <text x={CENTER_X} y={top + BAR_H / 2 + 6} fontSize={18} fill={STEP_TEXT[i]} fontFamily={MONO} fontWeight="bold" textAnchor="middle">
                 {s.count}
               </text>
 
@@ -121,17 +122,18 @@ export default function FunnelViz() {
           )
         })}
       </svg>
+      </div>
 
       {/* cohort selector: one dimension at a time, no combinable filters */}
-      <div className={styles.controlRow}>
-        <span className={styles.controlLabel}>cohort</span>
+      <div className={`${shared.group} ${styles.cohortRow}`}>
+        <span className={shared.groupLabel}>cohort</span>
         {COHORTS.map((c) => (
           <button
             key={c.id}
             type="button"
             onClick={() => setCohortId(c.id)}
             aria-pressed={cohortId === c.id}
-            className={`${styles.toggle} ${cohortId === c.id ? styles.toggleOn : ''}`}
+            className={shared.btn}
           >
             {c.label}
           </button>
@@ -140,24 +142,9 @@ export default function FunnelViz() {
       </div>
 
       {/* SQL: one CTE of distinct sessions per step, then count each */}
-      <pre
-        style={{
-          marginTop: 14,
-          padding: '12px 14px',
-          background: '#f0ede6',
-          border: '1px solid #e2e0d8',
-          borderRadius: 6,
-          fontFamily: MONO,
-          fontSize: 12,
-          lineHeight: 1.5,
-          color: INK,
-          overflowX: 'auto',
-        }}
-      >
-        {buildSql(cohortId)}
-      </pre>
+      <pre className={styles.sql}>{buildSql(cohortId)}</pre>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         A session is counted once per step, by COUNT(DISTINCT session_id), so repeat events within a session do not
         inflate the funnel.
       </p>

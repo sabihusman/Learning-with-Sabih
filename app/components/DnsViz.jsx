@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { usePacedInterval } from './usePacedInterval'
+import { prefersReducedMotion } from './motion'
+import { INK, FADE, OK, OK_BG, AMBER, AMBER_BG, RULE, PANEL, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import {
   DOMAIN,
   ANSWER_IP,
@@ -27,19 +32,12 @@ import styles from './DnsViz.module.css'
 
 const PLAY_MS = 1000
 
-// Palette: the site family (ink / fade / accent) plus the ok-green and amber
-// already used elsewhere in the section. No new colors. Amber marks a
-// referral (not there yet); green marks a real answer, cached or fresh.
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
-const OK = '#1f6f5c'
-const OK_BG = '#e6f2ec'
-const HOLD = '#caa24a'
-const HOLD_BG = '#f6e7c8'
-const LINE = '#e2e0d8'
-const PANEL_BG = '#faf9f6'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// Colours come from the shared palette: amber marks a referral (in-between,
+// not there yet); green marks a real answer, cached or fresh.
+
+// Smallest SVG label is 7.5px in a 460-wide viewBox, so the drawing keeps a
+// 430px floor (7px rendered) and scrolls sideways inside the card on phones.
+const SVG_MIN_WIDTH = 430
 
 // Short header, full name (for status text/aria), and zone label (shown as a
 // second line for the three server tiers; device and resolver have none).
@@ -87,48 +85,54 @@ export default function DnsViz() {
   const done = isDone(state)
   const isPlaying = playing && !done
 
+  // Stable ref to the shared animation-speed multiplier: the TTL countdown
+  // and the flourish read it at fire time, so a speed change never rebinds
+  // the countdown or replays the flourish.
+  const speedRef = useAnimationSpeedRef()
+
   // The playback and TTL intervals read the live slider value through a ref
-  // so dragging mid-run does not tear down and restart either timer.
+  // so dragging mid-run does not tear down and restart either timer. The
+  // value is stamped onto the answer at the moment that event fires.
   const ttlRef = useRef(TTL_DEFAULT)
   useEffect(() => {
     ttlRef.current = ttlSeconds
   }, [ttlSeconds])
 
-  // Auto-advance with setInterval (never a rAF/anime chain). Keyed on `done`
-  // so it tears down when the run finishes; the effect body only sets/clears
-  // the timer.
-  useEffect(() => {
-    if (!playing || done) return undefined
-    const id = setInterval(() => setState((s) => (isDone(s) ? s : step(s, ttlRef.current))), PLAY_MS)
-    return () => clearInterval(id)
-  }, [playing, done])
+  // Auto-advance through the shared paced-interval hook (setInterval, never
+  // a rAF/anime chain): gated on playing until done, paced by the shared
+  // animation-speed multiplier.
+  usePacedInterval(playing && !done, PLAY_MS, () => setState((s) => (isDone(s) ? s : step(s, ttlRef.current))))
 
   // The cached entry ages in real wall-clock time, independent of Play/Step:
   // a real TTL counts down whether or not anyone is watching the chain
   // animate. Each tick integrates the elapsed time actually measured
-  // (capped at 1s), so a backgrounded tab does not throw the countdown off.
+  // (capped at 1s), so a backgrounded tab does not throw the countdown off;
+  // the measured elapsed time is then scaled by the animation speed so the
+  // whole figure, countdown included, runs at the one chosen pace.
   const hasCache = Boolean(state.cache)
   useEffect(() => {
     if (!hasCache) return undefined
     let last = performance.now()
     const id = window.setInterval(() => {
       const now = performance.now()
-      const dt = Math.min((now - last) / 1000, 1)
+      const dt = Math.min((now - last) / 1000, 1) * speedRef.current
       last = now
       setState((s) => tickTtl(s, dt))
     }, TTL_TICK_MS)
     return () => window.clearInterval(id)
-  }, [hasCache])
+  }, [hasCache, speedRef])
 
   // Cosmetic flourish only: pulse the elements marked data-pulse (the two
   // boxes currently talking, and the message token). Pure animation, no
-  // state change.
+  // state change. Reduced motion: the nodes already render at full opacity,
+  // so the pulse is simply skipped.
   useEffect(() => {
     if (!state.lastEvent || !svgRef.current) return
+    if (prefersReducedMotion()) return
     const nodes = Array.from(svgRef.current.querySelectorAll('[data-pulse]'))
     if (nodes.length === 0) return
-    animate(nodes, { opacity: [0.4, 1], duration: 450, ease: 'outQuad' })
-  }, [state.cursor, state.lastEvent])
+    animate(nodes, { opacity: [0.4, 1], duration: 450 / speedRef.current, ease: 'outQuad' })
+  }, [state.cursor, state.lastEvent, speedRef])
 
   const onStep = () => setState((s) => (isDone(s) ? s : step(s, ttlRef.current)))
   const doReset = () => {
@@ -160,36 +164,41 @@ export default function DnsViz() {
       eyebrow="DNS"
       title="The phone book is distributed"
       controls={controls}
+      speedControl
       status={status}
       readouts={readouts}
       tryThis={`Step through the first lookup and count how many servers actually knew ${DOMAIN}'s address: only the last one, the authoritative server. Root and TLD only ever hand back a referral, never the answer. Then press Look up again: root, TLD, and auth stay dark, servers asked drops from 4 to 1, and the answer comes straight back from cache.`}
     >
-      <div className={styles.controlsRow}>
-        <button type="button" className={styles.btn} onClick={doLookup} disabled={!done}>
+      <div className={shared.group}>
+        <button type="button" className={shared.btn} onClick={doLookup} disabled={!done}>
           Look up again
         </button>
       </div>
 
-      <label className={styles.sliderLabel} htmlFor="dns-ttl">
-        <span>TTL (server-set cache lifetime)</span>
+      <div className={shared.group}>
+        <label className={shared.groupLabel} htmlFor="dns-ttl">
+          TTL (server-set cache lifetime)
+        </label>
+        <input
+          id="dns-ttl"
+          className={shared.slider}
+          type="range"
+          min={TTL_MIN}
+          max={TTL_MAX}
+          step={TTL_STEP}
+          value={ttlSeconds}
+          onChange={(e) => setTtlSeconds(Number(e.target.value))}
+          aria-label="TTL in seconds: how long the resolver keeps a fresh answer cached before it must ask again"
+        />
         <span className={styles.sliderValue}>{ttlSeconds}s</span>
-      </label>
-      <input
-        id="dns-ttl"
-        className={styles.slider}
-        type="range"
-        min={TTL_MIN}
-        max={TTL_MAX}
-        step={TTL_STEP}
-        value={ttlSeconds}
-        onChange={(e) => setTtlSeconds(Number(e.target.value))}
-        aria-label="TTL in seconds: how long the resolver keeps a fresh answer cached before it must ask again"
-      />
+      </div>
 
+      <div className={shared.scroll}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
+        style={{ minWidth: SVG_MIN_WIDTH }}
         role="img"
         aria-label={`Resolving ${DOMAIN}. ${serversAsked(state)} servers asked so far, step ${stepsTaken(state)} of ${totalSteps(state)}. Cache is ${state.cache ? `${DOMAIN} equals ${state.cache.ip}, ${cacheRemaining} seconds left on its ttl` : 'empty'}.`}
       >
@@ -211,8 +220,8 @@ export default function DnsViz() {
                 width={BOX_W}
                 height={BOX_H}
                 rx={8}
-                fill={wasAsked ? PANEL_BG : '#ffffff'}
-                stroke={wasAsked ? INK : LINE}
+                fill={wasAsked ? PANEL : '#ffffff'}
+                stroke={wasAsked ? INK : RULE}
                 strokeWidth={active ? 1.6 : 1}
                 opacity={wasAsked ? 1 : 0.55}
               />
@@ -241,8 +250,8 @@ export default function DnsViz() {
             const x2 = boxCX(hi)
             const midX = (x1 + x2) / 2
             const peakY = BOX_BOTTOM + dip
-            const color = e.kind === 'referral' ? HOLD : e.kind === 'query' ? INK : OK
-            const bg = e.kind === 'referral' ? HOLD_BG : e.kind === 'query' ? '#ffffff' : OK_BG
+            const color = e.kind === 'referral' ? AMBER : e.kind === 'query' ? INK : OK
+            const bg = e.kind === 'referral' ? AMBER_BG : e.kind === 'query' ? '#ffffff' : OK_BG
             const labelW = Math.min(260, Math.max(70, e.label.length * 5.4 + 16))
             return (
               <g>
@@ -275,7 +284,7 @@ export default function DnsViz() {
           height={CACHE_H}
           rx={5}
           fill={state.cache ? OK_BG : '#ffffff'}
-          stroke={state.cache ? OK : LINE}
+          stroke={state.cache ? OK : RULE}
           strokeWidth={state.cache ? 1.3 : 1}
           strokeDasharray={state.cache ? undefined : '3 3'}
         />
@@ -283,8 +292,9 @@ export default function DnsViz() {
           {state.cache ? `${DOMAIN} = ${state.cache.ip}  (ttl ${cacheRemaining}s left)` : 'empty'}
         </text>
       </svg>
+      </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Heavily simplified: one query type (an A record lookup for{' '}
         {DOMAIN}, a reserved example domain per RFC 2606), one recursive
         resolver, and no device or browser cache shown, only the resolver&apos;s.

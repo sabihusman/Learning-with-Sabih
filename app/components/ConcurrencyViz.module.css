@@ -1,52 +1,11 @@
 /* Concurrency: two transaction lanes over one shared balance, driven by a frame list in
    the component. The mode toggle swaps between the buggy (no protection) interleaving and
    the locked one; stepping is timer-driven in the component. Transitions are cosmetic.
-   Project paper/ink/accent palette. */
-
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin: 0 0 14px;
-}
-
-.label {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
-}
+   Project paper/ink/accent palette; the mode toggle is a shared.btn group. */
 
 .modeGroup {
   display: inline-flex;
-  gap: 6px;
-}
-
-.modeBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  padding: 6px 12px;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  background: #f4f2ec;
-  color: #1a1a1a;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.modeBtn:hover {
-  background: #ece9e1;
-}
-
-.modeActive {
-  background: #1a1a1a;
-  color: #f7f5f0;
-  border-color: #1a1a1a;
+  gap: 0.375rem;
 }
 
 /* shared balance box */
@@ -55,10 +14,10 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  border: 1.5px solid #e2e0d8;
+  border: 1.5px solid var(--rule);
   border-radius: 8px;
   padding: 10px 16px;
-  background: #fffefb;
+  background: #faf9f6;
   width: fit-content;
   margin: 0 auto 14px;
 }
@@ -68,7 +27,7 @@
   font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
 }
 
 .balanceValue {
@@ -82,7 +41,7 @@
 .balanceGoal {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10px;
-  color: #9b9892;
+  color: var(--fade);
 }
 
 /* two transaction lanes */
@@ -99,25 +58,25 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 8px;
   padding: 10px 12px;
-  background: #fffefb;
+  background: #faf9f6;
   transition:
     border-color 0.16s ease,
     box-shadow 0.16s ease;
 }
 
 .laneActive {
-  border-color: #1a1a1a;
-  box-shadow: 0 0 0 1px #1a1a1a;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
 }
 
 .laneHead {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 13px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 .badge {
@@ -130,7 +89,7 @@
 .readLine {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
-  color: #4a4843;
+  color: var(--fade);
 }
 
 /* ordered interleaving script */
@@ -144,7 +103,7 @@
 .scriptLine {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
-  color: #6b6862;
+  color: var(--fade);
   padding: 4px 10px;
   border-left: 3px solid #d8d4cc;
   background: #faf9f6;
@@ -155,8 +114,8 @@
 }
 
 .scriptLineActive {
-  background: #f0ede6;
-  color: #1a1a1a;
+  background: #f4f2ec;
+  color: var(--ink);
   font-weight: 700;
 }
 
@@ -171,10 +130,10 @@
   text-align: center;
 }
 
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .balanceValue,
+  .lane,
+  .scriptLine {
+    transition: none;
+  }
 }

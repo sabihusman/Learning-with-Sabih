@@ -49,7 +49,7 @@
 
 .active {
   border-color: var(--accent);
-  background: #fcf3f1;
+  background: #fbecea;
 }
 
 .name {
@@ -73,5 +73,11 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame {
+    animation: none;
   }
 }

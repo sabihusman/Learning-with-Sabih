@@ -13,6 +13,7 @@ import {
   DEFAULT_MESSAGE,
   MAX_MESSAGE_LENGTH,
 } from './encryptionData'
+import shared from './vizShared.module.css'
 import styles from './EncryptionViz.module.css'
 
 // No animation in this figure: every transformation is applied instantly and
@@ -90,7 +91,7 @@ export default function EncryptionViz() {
           <span>Message</span>
           <input
             id="enc-message"
-            className={styles.msgInput}
+            className={`${shared.input} ${styles.msgInput}`}
             type="text"
             maxLength={MAX_MESSAGE_LENGTH}
             value={message}
@@ -123,13 +124,14 @@ export default function EncryptionViz() {
         <div className={styles.stepLabel}>
           1. Lock with a {lockKeyKind} key
         </div>
-        <div className={styles.btnRow}>
+        <div className={shared.group}>
           {PARTIES.map((p) => (
             <button
               key={p.id}
               type="button"
               data-testid={`lock-${p.id}`}
-              className={`${styles.keyBtn} ${lockParty === p.id ? styles.keyBtnActive : ''}`}
+              className={shared.btn}
+              data-active={lockParty === p.id ? 'true' : undefined}
               onClick={() => {
                 setLockParty(p.id)
                 setOpenParty(null)
@@ -152,13 +154,14 @@ export default function EncryptionViz() {
         <div className={styles.stepLabel}>
           2. Apply a {openKeyKind} key
         </div>
-        <div className={styles.btnRow}>
+        <div className={shared.group}>
           {PARTIES.map((p) => (
             <button
               key={p.id}
               type="button"
               data-testid={`open-${p.id}`}
-              className={`${styles.keyBtn} ${openParty === p.id ? styles.keyBtnActive : ''}`}
+              className={shared.btn}
+              data-active={openParty === p.id ? 'true' : undefined}
               onClick={() => setOpenParty(p.id)}
             >
               {p.name}&apos;s {openKeyKind} key
@@ -178,7 +181,7 @@ export default function EncryptionViz() {
         </div>
       </div>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The scrambling here is an illustrative keyed substitution, built only so the lock-and-key story is visible: it
         is not real encryption, and a real system could not work this way (here the &quot;public&quot; key&apos;s
         scramble is trivially reversible). Real public-key cryptography uses entirely different mathematics, where

@@ -10,10 +10,6 @@
 // lowest loss). It is not a hand-drawn boundary: the straight-vs-bent contrast and
 // the more-units-more-bends behaviour fall straight out of the maths.
 
-export const PAPER = '#f7f6f2'
-export const CLASS1 = '#2f6f8f' // inside the ring (blue)
-export const CLASS0 = '#c98a3b' // outside the ring (amber)
-
 // ── controls range ──────────────────────────────────────────────────────────────
 export const MIN_UNITS = 1
 export const MAX_UNITS = 8

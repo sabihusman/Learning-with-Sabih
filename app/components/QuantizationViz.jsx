@@ -12,19 +12,15 @@ import {
   bytesPerWeight,
   sevenBGb,
 } from './quantizationData'
+import { INK, FADE, ACCENT, OK, LINE, PANEL, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './QuantizationViz.module.css'
 
 // Static-on-change figure: every change of a control recomputes and redraws
 // synchronously from the data module. No timers, no animation, deliberately no
-// animation-speed control.
-
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b' // connectors (the visible error) and the outlier mark
-const OK = '#1f6f5c' // the snapped position on the grid
-const LINE = '#e2e0d8'
-const PANEL_BG = '#faf9f6'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+// animation-speed control. ACCENT marks connectors (the visible error) and the
+// outlier; OK marks the snapped grid position.
+const PANEL_BG = PANEL
 
 // ── SVG geometry ────────────────────────────────────────────────────────────────
 const VB_W = 460
@@ -83,36 +79,36 @@ export default function QuantizationViz() {
       readouts={readouts}
       tryThis="Start at INT8 and walk the bit width down: the grid thins from 255 levels to 3, and the red connectors, each weight's rounding error, grow from invisible to enormous. At INT4 switch the outlier on: one extreme weight stretches the shared scale and every ordinary weight's error jumps. Now switch to per-group: only the outlier's own group pays for it, and the other three groups get their tight grids back. Check the bytes-per-weight readout while you are there: the per-group rescue is not free, because every group's scale has to be stored."
     >
-      <div className={styles.controlRow}>
-        <span className={styles.controlLabel}>bit width</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>bit width</span>
         {BIT_WIDTHS.map((b) => (
           <button
             key={b}
             type="button"
             onClick={() => setBits(b)}
             aria-pressed={bits === b}
-            className={`${styles.toggle} ${bits === b ? styles.toggleOn : ''}`}
+            className={shared.btn}
           >
             {`INT${b}`}
           </button>
         ))}
       </div>
-      <div className={styles.controlRow}>
-        <span className={styles.controlLabel}>outlier</span>
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>outlier</span>
         <button
           type="button"
           onClick={() => setOutlier((o) => !o)}
           aria-pressed={outlier}
-          className={`${styles.toggle} ${outlier ? styles.toggleOn : ''}`}
+          className={shared.btn}
         >
           {outlier ? 'one extreme weight in' : 'off'}
         </button>
-        <span className={styles.controlLabel}>grouping</span>
+        <span className={shared.groupLabel}>grouping</span>
         <button
           type="button"
           onClick={() => setGrouped(false)}
           aria-pressed={!grouped}
-          className={`${styles.toggle} ${!grouped ? styles.toggleOn : ''}`}
+          className={shared.btn}
         >
           per-tensor
         </button>
@@ -120,13 +116,13 @@ export default function QuantizationViz() {
           type="button"
           onClick={() => setGrouped(true)}
           aria-pressed={grouped}
-          className={`${styles.toggle} ${grouped ? styles.toggleOn : ''}`}
+          className={shared.btn}
         >
           per-group
         </button>
       </div>
 
-      <div className={styles.scroll}>
+      <div className={shared.scroll}>
         <svg
           viewBox={`0 0 ${VB_W} ${VB_H}`}
           className={styles.svg}
@@ -213,7 +209,7 @@ export default function QuantizationViz() {
         </svg>
       </div>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The 120 weights are authored once (a fixed normal-shaped draw, frozen as
         literals) so the figure is identical on every load; the optional 121st is a
         single authored outlier at {OUTLIER}. Everything else is computed by a real

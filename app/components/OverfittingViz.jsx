@@ -3,15 +3,12 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { TRAIN, TEST, MIN_DEG, MAX_DEG, fitPolynomial, predict, mse, regime, truth } from './overfittingData'
+import { INK, FADE, ACCENT, BLUE, OK, LINE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './OverfittingViz.module.css'
 
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
-const TEAL = '#2f6f7e'
-const GREEN = '#1f6f5c'
-const PAPER = '#f7f6f2'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
+const TEAL = BLUE // training points and training-error curve
+const GREEN = OK // held-out test points and test-error curve
 
 // ── SVG geometry ──────────────────────────────────────────────────────────────
 const VB_W = 560
@@ -123,13 +120,14 @@ export default function OverfittingViz() {
       status={status}
       tryThis={`The blue dots are the training data: a true underlying curve (faint grey) plus random noise. The red curve is a polynomial fit; the slider sets its degree. At low complexity the fit is a straight line that misses the trend (underfitting). In the middle it follows the trend smoothly while ignoring the noise (a good fit). At high complexity it wiggles to chase the training points and fit the noise (overfitting). Watch the readouts: training error keeps dropping as complexity rises, but test error on the green held-out points drops then rises again. The minimum of test error is the best-generalizing model.`}
     >
-      <svg
+      <div className={shared.scroll}>
+      <svg role="img"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '0 auto', background: PAPER, borderRadius: 6 }}
+        className={styles.svg}
         aria-label="A scatter of training points with a polynomial fit. As the complexity slider increases, the fit goes from a straight line to a smooth curve to a wiggly overfit. A few held-out test points show where the fit fails to generalize."
       >
         {/* axes */}
-        <line x1={PAD_L} y1={yPx(0)} x2={PAD_L + PLOT_W} y2={yPx(0)} stroke="#d4d0c8" strokeWidth={1} strokeDasharray="2 3" />
+        <line x1={PAD_L} y1={yPx(0)} x2={PAD_L + PLOT_W} y2={yPx(0)} stroke={LINE} strokeWidth={1} strokeDasharray="2 3" />
         {yTicks.map((yv) => (
           <g key={`yt-${yv}`}>
             <text x={PAD_L - 6} y={yPx(yv) + 3} fontSize={11} fill={FADE} fontFamily={MONO} textAnchor="end">{yv}</text>
@@ -146,7 +144,7 @@ export default function OverfittingViz() {
             client-hydrated values match exactly: p.y comes from Math.sin/sqrt/log
             noise, whose last float digit can differ between Node and the browser. */}
         {TRAIN.map((p, i) => (
-          <circle key={`tr-${i}`} cx={xPx(p.x).toFixed(2)} cy={yPx(p.y).toFixed(2)} r={4} fill={TEAL} stroke="#fff" strokeWidth={1} />
+          <circle key={`tr-${i}`} cx={xPx(p.x).toFixed(2)} cy={yPx(p.y).toFixed(2)} r={4} fill={TEAL} stroke="#ffffff" strokeWidth={1} />
         ))}
 
         {/* test points (green, larger). Coords rounded for the same hydration reason. */}
@@ -162,11 +160,12 @@ export default function OverfittingViz() {
           <line x1={0} y1={47} x2={9} y2={47} stroke={FADE} strokeWidth={1.3} strokeDasharray="3 3" /><text x={14} y={50} fontSize={11.5} fill={INK} fontFamily={MONO}>true trend</text>
         </g>
       </svg>
+      </div>
 
-      <div className={styles.sliderRow}>
-        <span className={styles.sliderLabel}>model complexity</span>
+      <div className={`${shared.group} ${styles.sliderRow}`}>
+        <span className={shared.groupLabel}>model complexity</span>
         <input
-          className={styles.slider}
+          className={shared.slider}
           type="range"
           min={MIN_DEG}
           max={MAX_DEG}
@@ -183,15 +182,16 @@ export default function OverfittingViz() {
         <span>wiggly (chases the training points) →</span>
       </div>
 
-      <svg
+      <div className={shared.scroll}>
+      <svg role="img"
         viewBox={`0 0 ${VB_W} ${U_H}`}
-        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '14px auto 0', background: PAPER, borderRadius: 6 }}
+        className={`${styles.svg} ${styles.svgLower}`}
         aria-label="Training and test error plotted against polynomial degree. Training error falls as degree rises; test error falls then rises again in a U shape. Dots mark the current slider degree on both curves, and the test-error minimum is flagged as the best fit."
       >
         {/* log-scale error gridlines */}
         {ERR_TICKS.map((tv) => (
           <g key={`et-${tv}`}>
-            <line x1={U_PAD_L} y1={uyPx(tv)} x2={U_PAD_L + U_PLOT_W} y2={uyPx(tv)} stroke="#d4d0c8" strokeWidth={1} strokeDasharray="2 3" />
+            <line x1={U_PAD_L} y1={uyPx(tv)} x2={U_PAD_L + U_PLOT_W} y2={uyPx(tv)} stroke={LINE} strokeWidth={1} strokeDasharray="2 3" />
             <text x={U_PAD_L - 6} y={uyPx(tv) + 3} fontSize={11} fill={FADE} fontFamily={MONO} textAnchor="end">{tv}</text>
           </g>
         ))}
@@ -210,13 +210,14 @@ export default function OverfittingViz() {
         <path d={TRAIN_PATH} fill="none" stroke={TEAL} strokeWidth={2} />
         <path d={TEST_PATH} fill="none" stroke={GREEN} strokeWidth={2} />
 
-        {/* test-error minimum, flagged */}
+        {/* test-error minimum, flagged. The label sits above the marker, inside the
+            U, so it never lands on the degree tick labels below the axis. */}
         <circle cx={uxPx(BEST.degree)} cy={uyPx(BEST.test)} r={7} fill="none" stroke={GREEN} strokeWidth={1.4} strokeDasharray="2 2" />
-        <text x={uxPx(BEST.degree)} y={uyPx(BEST.test) + 22} fontSize={11} fill={GREEN} fontFamily={MONO} textAnchor="middle" fontWeight={700}>best (degree {BEST.degree})</text>
+        <text x={uxPx(BEST.degree)} y={uyPx(BEST.test) - 13} fontSize={11} fill={GREEN} fontFamily={MONO} textAnchor="middle" fontWeight={700}>best (degree {BEST.degree})</text>
 
         {/* dots marking the current slider degree on both curves */}
-        <circle data-testid="ucurve-train-dot" cx={uxPx(deg).toFixed(2)} cy={uyPx(trainErr).toFixed(2)} r={4.5} fill={TEAL} stroke="#fff" strokeWidth={1.2} />
-        <circle data-testid="ucurve-test-dot" cx={uxPx(deg).toFixed(2)} cy={uyPx(testErr).toFixed(2)} r={4.5} fill={GREEN} stroke="#fff" strokeWidth={1.2} />
+        <circle data-testid="ucurve-train-dot" cx={uxPx(deg).toFixed(2)} cy={uyPx(trainErr).toFixed(2)} r={4.5} fill={TEAL} stroke="#ffffff" strokeWidth={1.2} />
+        <circle data-testid="ucurve-test-dot" cx={uxPx(deg).toFixed(2)} cy={uyPx(testErr).toFixed(2)} r={4.5} fill={GREEN} stroke="#ffffff" strokeWidth={1.2} />
 
         {/* legend */}
         <g transform={`translate(${U_PAD_L + 8}, ${U_PAD_T + 6})`}>
@@ -224,8 +225,9 @@ export default function OverfittingViz() {
           <line x1={0} y1={18} x2={12} y2={18} stroke={GREEN} strokeWidth={2} /><text x={17} y={21} fontSize={11.5} fill={INK} fontFamily={MONO}>test error</text>
         </g>
       </svg>
+      </div>
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         Real polynomial least-squares fit over a fixed, seeded dataset (16 training + 6 held-out test points around a
         gentle sine curve plus noise). No ML library; the curve and both errors are recomputed from scratch on each
         slider tick. The lower panel runs the same fit at every degree and plots both errors on a log scale; the

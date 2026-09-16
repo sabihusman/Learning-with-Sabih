@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
+import { ACCENT, OK, LINE, CONTROL_BG } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './HashTableViz.module.css'
 
 const SIZE = 7 // a small prime, so the teaching hash spreads a little better
@@ -88,9 +90,9 @@ export default function HashTableViz() {
       readouts={readouts}
       tryThis="Add keys and watch each one hash into a bucket by the character-code-sum-mod-7 rule shown below. Add owl, then cod, then jay: all three sum to a bucket of 2 and form a chain. That is a collision, handled here by chaining. Watch the load factor, collision count, and longest chain climb from the real table contents."
     >
-      <div className={styles.presets} role="group" aria-label="Add a preset key">
+      <div className={shared.group} role="group" aria-label="Add a preset key">
         {PRESETS.map((k) => (
-          <button key={k} type="button" className={styles.presetBtn} disabled={has(k)} onClick={() => addKey(k)}>
+          <button key={k} type="button" className={shared.btn} disabled={has(k)} onClick={() => addKey(k)}>
             {k}
           </button>
         ))}
@@ -98,7 +100,7 @@ export default function HashTableViz() {
 
       <form className={styles.inputRow} onSubmit={onSubmit}>
         <input
-          className={styles.input}
+          className={`${shared.input} ${styles.keyInput}`}
           type="text"
           value={input}
           maxLength={12}
@@ -106,7 +108,7 @@ export default function HashTableViz() {
           aria-label="Custom key"
           onChange={(e) => setInput(e.target.value)}
         />
-        <button type="submit" className={styles.addBtn} disabled={!input.trim() || has(input.trim().toLowerCase())}>
+        <button type="submit" className={shared.btn} data-variant="primary" disabled={!input.trim() || has(input.trim().toLowerCase())}>
           Add
         </button>
       </form>
@@ -130,17 +132,17 @@ export default function HashTableViz() {
           <g key={b}>
             {/* chain spine behind the chips */}
             {chain.length > 0 && (
-              <line x1={centerX(b)} y1={HEADER_Y + HEADER_H} x2={centerX(b)} y2={CHIP_TOP + (chain.length - 1) * CHIP_PITCH + CHIP_H / 2} stroke="#cfcbc2" strokeWidth={2} />
+              <line x1={centerX(b)} y1={HEADER_Y + HEADER_H} x2={centerX(b)} y2={CHIP_TOP + (chain.length - 1) * CHIP_PITCH + CHIP_H / 2} stroke={LINE} strokeWidth={2} />
             )}
             {/* bucket header with its index */}
-            <rect x={colX(b)} y={HEADER_Y} width={COL_W} height={HEADER_H} rx={3} fill="#efece4" stroke="#d8d4cc" strokeWidth={1} />
+            <rect x={colX(b)} y={HEADER_Y} width={COL_W} height={HEADER_H} rx={3} fill={CONTROL_BG} stroke={LINE} strokeWidth={1} />
             <text x={centerX(b)} y={HEADER_Y + HEADER_H / 2 + 4} className={styles.idx} textAnchor="middle">{b}</text>
             {/* chained chips */}
             {chain.map((e, i) => {
               const isNewest = last && e.key === last.key
               return (
                 <g key={e.key} className={styles.chip}>
-                  <rect x={colX(b)} y={CHIP_TOP + i * CHIP_PITCH} width={COL_W} height={CHIP_H} rx={4} fill={isNewest ? '#c0392b' : '#3f7d68'} stroke="#ffffff" strokeWidth={1} />
+                  <rect x={colX(b)} y={CHIP_TOP + i * CHIP_PITCH} width={COL_W} height={CHIP_H} rx={4} fill={isNewest ? ACCENT : OK} stroke="#ffffff" strokeWidth={1} />
                   <text x={centerX(b)} y={CHIP_TOP + i * CHIP_PITCH + CHIP_H / 2 + 4} className={styles.chipText} fill="#ffffff" textAnchor="middle">{e.key}</text>
                 </g>
               )
@@ -149,7 +151,7 @@ export default function HashTableViz() {
         ))}
       </svg>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         The placement and all three readouts are computed live from the table. The hash here is a simple teaching
         function (sum of character codes, mod the table size); real hash functions are far more complex and designed to
         scatter keys much more evenly. The table is kept small so collisions are easy to see.

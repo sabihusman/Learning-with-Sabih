@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import Figure from './Figure'
+import { INK, ACCENT, FADE, LINE, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
+import styles from './ConfusionMatrixViz.module.css'
 
 // ─── data ──────────────────────────────────────────────────────────────────
 // A fixed, deterministic dataset. We seed a tiny PRNG (mulberry32) so the
@@ -85,10 +88,6 @@ const jitterFor = (id) => {
   return (h - 0.5) * 2 * JITTER
 }
 
-const INK = '#1a1a1a'
-const ACCENT = '#c0392b'
-const FADE = '#9b9892'
-
 // ─── component ───────────────────────────────────────────────────────────────
 export default function ConfusionMatrixViz() {
   const [threshold, setThreshold] = useState(0.5)
@@ -127,9 +126,10 @@ export default function ConfusionMatrixViz() {
       readouts={readouts}
       tryThis="Drag the threshold. Slide it left and recall climbs while precision drops (you catch more real positives but also wave through more false ones). Slide it right and the trade reverses. Push it past the highest score and precision reads n/a, because the model predicts no positives at all."
     >
-      <svg
+      <div className={shared.scroll}>
+      <svg role="img"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', maxWidth: 600, height: 'auto', display: 'block', margin: '0 auto' }}
+        className={styles.svg}
         aria-label="Example items plotted along a model-score axis from 0 to 1, split by a movable decision threshold into predicted-positive and predicted-negative regions"
       >
         {/* predicted-positive region (right of the threshold) */}
@@ -143,32 +143,32 @@ export default function ConfusionMatrixViz() {
         />
 
         {/* region labels */}
-        <text x={(PLOT_L + thrX) / 2} y={PAD.top - 14} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+        <text x={(PLOT_L + thrX) / 2} y={PAD.top - 14} fontSize={11} fill={FADE} textAnchor="middle" fontFamily={MONO}>
           predicted −
         </text>
-        <text x={(thrX + PLOT_R) / 2} y={PAD.top - 14} fontSize={11} fill={ACCENT} textAnchor="middle" fontFamily="ui-monospace,monospace">
+        <text x={(thrX + PLOT_R) / 2} y={PAD.top - 14} fontSize={11} fill={ACCENT} textAnchor="middle" fontFamily={MONO}>
           predicted +
         </text>
 
         {/* row labels */}
-        <text x={PLOT_L - 12} y={ROW_POS_Y + 3} fontSize={11} fill={FADE} textAnchor="end" fontFamily="ui-monospace,monospace">
+        <text x={PLOT_L - 12} y={ROW_POS_Y + 3} fontSize={11} fill={FADE} textAnchor="end" fontFamily={MONO}>
           actual +
         </text>
-        <text x={PLOT_L - 12} y={ROW_NEG_Y + 3} fontSize={11} fill={FADE} textAnchor="end" fontFamily="ui-monospace,monospace">
+        <text x={PLOT_L - 12} y={ROW_NEG_Y + 3} fontSize={11} fill={FADE} textAnchor="end" fontFamily={MONO}>
           actual −
         </text>
 
         {/* score axis */}
-        <line x1={PLOT_L} y1={AXIS_Y} x2={PLOT_R} y2={AXIS_Y} stroke="#c8c4bc" strokeWidth={1} />
+        <line x1={PLOT_L} y1={AXIS_Y} x2={PLOT_R} y2={AXIS_Y} stroke={LINE} strokeWidth={1} />
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
           <g key={t}>
-            <line x1={px(t)} y1={AXIS_Y} x2={px(t)} y2={AXIS_Y + 4} stroke="#c8c4bc" strokeWidth={0.8} />
-            <text x={px(t)} y={AXIS_Y + 15} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+            <line x1={px(t)} y1={AXIS_Y} x2={px(t)} y2={AXIS_Y + 4} stroke={LINE} strokeWidth={0.8} />
+            <text x={px(t)} y={AXIS_Y + 15} fontSize={11} fill={FADE} textAnchor="middle" fontFamily={MONO}>
               {t}
             </text>
           </g>
         ))}
-        <text x={(PLOT_L + PLOT_R) / 2} y={VB_H - 2} fontSize={11} fill={FADE} textAnchor="middle" fontFamily="ui-monospace,monospace">
+        <text x={(PLOT_L + PLOT_R) / 2} y={VB_H - 2} fontSize={11} fill={FADE} textAnchor="middle" fontFamily={MONO}>
           model score
         </text>
 
@@ -196,24 +196,24 @@ export default function ConfusionMatrixViz() {
         <line x1={thrX} y1={PAD.top - 6} x2={thrX} y2={AXIS_Y} stroke={ACCENT} strokeWidth={1.6} />
         <circle cx={thrX} cy={PAD.top - 6} r={3} fill={ACCENT} />
       </svg>
+      </div>
+
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: INK }} />
+          correct
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: ACCENT }} />
+          wrong
+        </span>
+      </div>
 
       {/* threshold slider — instant, no animation needed */}
-      <div style={{ maxWidth: 600, margin: '14px auto 4px', padding: '0 4px' }}>
-        <label
-          htmlFor="cm-threshold"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-            fontSize: 11,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: FADE,
-            marginBottom: 6,
-          }}
-        >
+      <div className={styles.sliderBlock}>
+        <label htmlFor="cm-threshold" className={styles.sliderLabel}>
           <span>Decision threshold</span>
-          <span style={{ color: INK }}>{threshold.toFixed(2)}</span>
+          <span className={styles.sliderValue}>{threshold.toFixed(2)}</span>
         </label>
         <input
           id="cm-threshold"
@@ -223,22 +223,14 @@ export default function ConfusionMatrixViz() {
           step={0.01}
           value={threshold}
           onChange={(e) => setThreshold(Number(e.target.value))}
-          style={{ width: '100%', accentColor: ACCENT, cursor: 'pointer' }}
+          className={shared.slider}
           aria-label="Decision threshold"
         />
       </div>
 
       {/* 2x2 confusion matrix */}
-      <div style={{ maxWidth: 420, margin: '18px auto 2px' }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '64px 1fr 1fr',
-            gridTemplateRows: 'auto auto auto',
-            gap: 1,
-            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-          }}
-        >
+      <div className={styles.matrixWrap}>
+        <div className={styles.matrix}>
           {/* header row */}
           <div />
           <MatrixHeader>predicted +</MatrixHeader>
@@ -261,60 +253,18 @@ export default function ConfusionMatrixViz() {
 
 // ─── matrix sub-parts (presentational) ───────────────────────────────────────
 function MatrixHeader({ children }) {
-  return (
-    <div
-      style={{
-        fontSize: 9,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase',
-        color: FADE,
-        textAlign: 'center',
-        padding: '4px 0',
-      }}
-    >
-      {children}
-    </div>
-  )
+  return <div className={styles.header}>{children}</div>
 }
 
 function MatrixRowLabel({ children }) {
-  return (
-    <div
-      style={{
-        fontSize: 9,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase',
-        color: FADE,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingRight: 8,
-      }}
-    >
-      {children}
-    </div>
-  )
+  return <div className={styles.rowLabel}>{children}</div>
 }
 
 function MatrixCell({ count, correct, name }) {
   return (
-    <div
-      style={{
-        background: correct ? 'rgba(26,26,26,0.05)' : 'rgba(192,57,43,0.08)',
-        border: `1px solid ${correct ? 'rgba(26,26,26,0.18)' : 'rgba(192,57,43,0.28)'}`,
-        padding: '12px 10px',
-        textAlign: 'center',
-        minHeight: 58,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        gap: 2,
-      }}
-    >
-      <div style={{ fontSize: 22, fontVariantNumeric: 'tabular-nums', color: correct ? INK : ACCENT }}>
-        {count}
-      </div>
-      <div style={{ fontSize: 9, letterSpacing: '0.12em', color: FADE }}>{name}</div>
+    <div className={`${styles.cell} ${correct ? styles.cellCorrect : styles.cellWrong}`}>
+      <div className={styles.count}>{count}</div>
+      <div className={styles.cellName}>{name}</div>
     </div>
   )
 }

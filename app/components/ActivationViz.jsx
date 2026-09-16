@@ -3,19 +3,12 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import styles from './ActivationViz.module.css'
-import {
-  DATA,
-  GRID_N,
-  MIN_UNITS,
-  MAX_UNITS,
-  DEFAULT_UNITS,
-  fitCached,
-  predictGrid,
-  accuracy,
-  PAPER,
-  CLASS0,
-  CLASS1,
-} from './activationData'
+import shared from './vizShared.module.css'
+import { PAPER, BLUE, AMBER, RULE, LINE } from './vizPalette'
+import { DATA, GRID_N, MIN_UNITS, MAX_UNITS, DEFAULT_UNITS, fitCached, predictGrid, accuracy } from './activationData'
+
+const CLASS1 = BLUE // inside the ring
+const CLASS0 = AMBER // outside the ring
 
 // ── task-panel geometry (a square plot over [-1, 1]^2) ────────────────────────────
 const T = 320
@@ -100,39 +93,37 @@ export default function ActivationViz() {
       readouts={readouts}
       tryThis="Turn the activation off: the boundary is a straight line and adding hidden units changes nothing, because a stack of linear layers is still just one linear layer. Turn ReLU on and the same boundary bends to wrap the inner ring. Then drag the hidden-units slider up and watch the boundary gain more bends and fit more tightly."
     >
-      <div className={styles.controls}>
-        <div className={styles.toggle} role="group" aria-label="Activation">
-          {[
-            [false, 'Activation off'],
-            [true, 'ReLU on'],
-          ].map(([val, label]) => (
-            <button
-              key={label}
-              type="button"
-              className={`${styles.toggleBtn} ${val === useRelu ? styles.toggleActive : ''}`}
-              aria-pressed={val === useRelu}
-              onClick={() => setUseRelu(val)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <span className={styles.slider}>
-          <label htmlFor="act-units" className={styles.sliderLabel}>
-            hidden units
-          </label>
-          <input
-            id="act-units"
-            className={styles.range}
-            type="range"
-            min={MIN_UNITS}
-            max={MAX_UNITS}
-            step={1}
-            value={units}
-            onChange={(e) => setUnits(Number(e.target.value))}
-          />
-          <span className={styles.sliderValue}>{units}</span>
-        </span>
+      <div className={shared.group} role="group" aria-label="Activation">
+        {[
+          [false, 'Activation off'],
+          [true, 'ReLU on'],
+        ].map(([val, label]) => (
+          <button
+            key={label}
+            type="button"
+            className={shared.btn}
+            aria-pressed={val === useRelu}
+            onClick={() => setUseRelu(val)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className={shared.group}>
+        <label htmlFor="act-units" className={shared.groupLabel}>
+          hidden units
+        </label>
+        <input
+          id="act-units"
+          className={shared.slider}
+          type="range"
+          min={MIN_UNITS}
+          max={MAX_UNITS}
+          step={1}
+          value={units}
+          onChange={(e) => setUnits(Number(e.target.value))}
+        />
+        <span className={styles.sliderValue}>{units}</span>
       </div>
 
       <div className={styles.plotWrap}>
@@ -142,14 +133,25 @@ export default function ActivationViz() {
           role="img"
           aria-label="Two classes of 2D points arranged as an inner disc inside an outer ring, with the network's current decision boundary shaded behind them."
         >
-          <rect x={PAD} y={PAD} width={PLOT} height={PLOT} fill={PAPER} stroke="#e2e0d8" strokeWidth={1} />
+          <rect x={PAD} y={PAD} width={PLOT} height={PLOT} fill={PAPER} stroke={RULE} strokeWidth={1} />
           {fieldEls}
           {pointEls}
-          <rect x={PAD} y={PAD} width={PLOT} height={PLOT} fill="none" stroke="#d4d0c8" strokeWidth={1} />
+          <rect x={PAD} y={PAD} width={PLOT} height={PLOT} fill="none" stroke={LINE} strokeWidth={1} />
         </svg>
       </div>
 
-      <p className={styles.caption}>
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: CLASS0 }} />
+          class 0
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: CLASS1 }} />
+          class 1
+        </span>
+      </div>
+
+      <p className={shared.caption}>
         The network is trained for real in the browser (a tiny two-input network, one hidden layer, seeded so the result
         is identical every time). The decision boundary shown is computed from that trained network, not drawn by hand.
         The point set is fixed and cannot be split by any straight line.

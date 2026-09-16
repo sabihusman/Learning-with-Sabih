@@ -3,7 +3,7 @@
    as Robot but running its own overridden behavior. */
 
 .loopBar {
-  background: #f0ede6;
+  background: #f4f2ec;
   border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
@@ -157,5 +157,15 @@
   100% {
     transform: translateY(-8px);
     opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .sweepDust,
+  .radarRing,
+  .heatWave {
+    animation: none;
+    transition: none;
   }
 }

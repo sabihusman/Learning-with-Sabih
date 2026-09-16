@@ -1,40 +1,11 @@
 /* RAG topic: retrieve -> augment -> generate, stepped. Mono labels, serif answers,
-   shared paper/ink/accent palette. */
-
-.queries {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 0.9rem;
-}
-
-.qBtn {
-  position: relative;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 0.8125rem;
-  text-align: left;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  background: #ffffff;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.qBtn:hover {
-  border-color: var(--fade);
-}
-
-.qActive {
-  border-color: var(--accent);
-  background: #fcf3f1;
-}
+   shared paper/ink/accent palette. The query buttons use the shared vizShared btn. */
 
 .payoff {
   display: inline-block;
   margin-left: 0.4rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.5rem;
+  font-size: 0.5625rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 700;
@@ -105,7 +76,7 @@
 
 .retrieved {
   border-color: var(--accent);
-  background: #fdf6f4;
+  background: #fbecea;
 }
 
 .dimmed {
@@ -152,7 +123,7 @@
 
 .retrievedBadge {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.5rem;
+  font-size: 0.5625rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 700;
@@ -164,7 +135,7 @@
 
 /* ── augment: prompt ──────────────────────────────────────────────────────── */
 .promptPanel {
-  background: #f0ede6;
+  background: #f4f2ec;
 }
 
 .prompt {
@@ -217,13 +188,13 @@
 }
 
 .bare {
-  border-color: #d8b58a;
-  box-shadow: 2px 2px 0 #efe2c7;
+  border-color: #caa24a;
+  box-shadow: 2px 2px 0 #f6e7c8;
 }
 
 .grounded {
   border-color: #1f6f5c;
-  box-shadow: 2px 2px 0 #d8e6d8;
+  box-shadow: 2px 2px 0 #e6f2ec;
 }
 
 .answerHead {
@@ -264,20 +235,18 @@
 }
 
 .bareBadge {
-  background: #f6ecda;
-  color: #9a6a1e;
+  background: #f6e7c8;
+  color: #b07a2e;
 }
 
 .groundedBadge {
-  background: #d8e6d8;
+  background: #e6f2ec;
   color: #1f6f5c;
 }
 
-/* ── caption ──────────────────────────────────────────────────────────────── */
-.caption {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--fade);
-  margin: 1rem 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .chunk,
+  .scoreFill {
+    transition: none;
+  }
 }

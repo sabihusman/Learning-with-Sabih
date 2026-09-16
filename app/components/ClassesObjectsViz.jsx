@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import Figure from './Figure'
 import RobotAvatar, { ROBOT_PALETTE } from './RobotAvatar'
+import { useAnimationSpeedRef } from './animationSpeed'
+import { prefersReducedMotion } from './motion'
+import shared from './vizShared.module.css'
 import styles from './ClassesObjectsViz.module.css'
 
 // Distinct identities for the stamped instances, so each object on the right is
@@ -25,25 +28,30 @@ export default function ClassesObjectsViz() {
   const cardRefs = useRef({})
   const animated = useRef(new Set())
 
+  // Stable ref to the shared animation-speed multiplier: the flourishes read it
+  // at fire time, so a speed change never replays one.
+  const speedRef = useAnimationSpeedRef()
+
   // Animate each newly stamped card in from the blueprint (scale + drop). The card's
-  // resting CSS is fully visible, so if this never runs (e.g. a backgrounded tab) the
-  // object is still shown; the animation is purely additive.
+  // resting CSS is fully visible, so if this never runs (e.g. a backgrounded tab or
+  // reduced motion) the object is still shown; the animation is purely additive.
   useEffect(() => {
     objects.forEach((o) => {
       if (animated.current.has(o.id)) return
       const node = cardRefs.current[o.id]
       if (node) {
+        animated.current.add(o.id)
+        if (prefersReducedMotion()) return
         animate(node, {
           opacity: [0, 1],
           scale: [0.6, 1],
           translateY: [-16, 0],
-          duration: 460,
+          duration: 460 / speedRef.current,
           ease: 'outBack',
         })
-        animated.current.add(o.id)
       }
     })
-  }, [objects])
+  }, [objects, speedRef])
 
   const stamp = () => {
     setObjects((objs) => {
@@ -68,8 +76,8 @@ export default function ClassesObjectsViz() {
     if (isPrivate) {
       setBlocked((b) => ({ id, key: (b?.key ?? 0) + 1 }))
       const node = cardRefs.current[id]
-      if (node) {
-        animate(node, { translateX: [0, -5, 5, -4, 4, 0], duration: 320, ease: 'outQuad' })
+      if (node && !prefersReducedMotion()) {
+        animate(node, { translateX: [0, -5, 5, -4, 4, 0], duration: 320 / speedRef.current, ease: 'outQuad' })
       }
       return
     }
@@ -145,6 +153,7 @@ export default function ClassesObjectsViz() {
             <div className={styles.stepper}>
               <button
                 type="button"
+                className={`${shared.btn} ${styles.stepperBtn}`}
                 onClick={() => setDefaultBattery((v) => clampBattery(v - 10))}
                 aria-label="Decrease default batteryLevel"
                 disabled={defaultBattery <= 0}
@@ -154,6 +163,7 @@ export default function ClassesObjectsViz() {
               <span className={styles.stepperValue}>{defaultBattery}%</span>
               <button
                 type="button"
+                className={`${shared.btn} ${styles.stepperBtn}`}
                 onClick={() => setDefaultBattery((v) => clampBattery(v + 10))}
                 aria-label="Increase default batteryLevel"
                 disabled={defaultBattery >= 100}
@@ -226,7 +236,8 @@ export default function ClassesObjectsViz() {
                       <span className={styles.actionLabel}>direct</span>
                       <button
                         type="button"
-                        className={`${styles.actBtn} ${styles.direct} ${isPrivate ? styles.blockedBtn : ''}`}
+                        className={`${shared.btn} ${styles.actBtn} ${isPrivate ? styles.blockedBtn : ''}`}
+                        data-variant="danger"
                         onClick={() => directWrite(o.id)}
                         title="External direct field write: r.batteryLevel -= 15"
                       >
@@ -235,10 +246,10 @@ export default function ClassesObjectsViz() {
                     </div>
                     <div className={styles.actionGroup}>
                       <span className={styles.actionLabel}>method</span>
-                      <button type="button" className={styles.actBtn} onClick={() => charge(o.id)} title="r.charge()">
+                      <button type="button" className={`${shared.btn} ${styles.actBtn}`} onClick={() => charge(o.id)} title="r.charge()">
                         charge()
                       </button>
-                      <button type="button" className={styles.actBtn} onClick={() => reportStatus(o.id)} title="r.reportStatus()">
+                      <button type="button" className={`${shared.btn} ${styles.actBtn}`} onClick={() => reportStatus(o.id)} title="r.reportStatus()">
                         reportStatus()
                       </button>
                     </div>

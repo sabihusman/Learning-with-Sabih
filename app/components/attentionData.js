@@ -4,10 +4,9 @@
 // to) and weak links elsewhere. Real attention is computed from learned query,
 // key, and value vectors across many heads; this is the idea, not the math.
 
-export const ACCENT = '#c0392b'
-export const INK = '#1a1a1a'
-export const FADE = '#9b9892'
-export const PAPER = '#f7f6f2'
+// Colour tokens re-exported for the sibling figures (transformerData,
+// encoderDecoderData) that read them from here; the values live in vizPalette.
+export { ACCENT, INK, FADE, PAPER } from './vizPalette'
 
 export const SENTENCE = ['the', 'animal', "didn't", 'cross', 'the', 'street', 'because', 'it', 'was', 'tired']
 

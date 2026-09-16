@@ -1,9 +1,12 @@
 /* The heatmap is sized to fit at 375px directly (viewBox ~370x370, capped at
-   380px wide); overflow-x: auto is a safety net only, not the primary
-   mobile strategy. */
+   380px wide); overflow-x: auto on .scroll is a safety net only, not the
+   primary mobile strategy. The shade legend uses the shared legend classes. */
 .wrap {
-  overflow-x: auto;
   margin-bottom: 14px;
+}
+
+.scroll {
+  overflow-x: auto;
 }
 
 .svg {
@@ -23,6 +26,6 @@
 }
 
 .rowHit:focus-visible {
-  outline: 2px solid #c0392b;
+  outline: 2px solid var(--accent);
   outline-offset: -2px;
 }

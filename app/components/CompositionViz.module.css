@@ -115,12 +115,12 @@
 }
 
 .method {
-  color: #2c6e7f;
+  color: #1f6f5c;
 }
 
 .dupMethod {
   color: #b07a2e;
-  background: #f6ecda;
+  background: #f6e7c8;
   padding: 0 0.2rem;
   border-radius: 2px;
 }
@@ -146,11 +146,11 @@
 
 .brokenBox {
   border-color: var(--accent);
-  background: #fbeeec;
+  background: #fbecea;
 }
 
 .affectedBox {
-  border-color: #d8b58a;
+  border-color: #caa24a;
 }
 
 /* ── composition side ────────────────────────────────────────────────────── */
@@ -238,48 +238,16 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.625rem;
   line-height: 1.4;
-  color: #2c6e7f;
+  color: #1f6f5c;
   text-align: center;
   margin: 0;
   max-width: 240px;
 }
 
-/* ── buttons ─────────────────────────────────────────────────────────────── */
+/* ── buttons (shared.btn; this is only the row layout) ───────────────────── */
 .btnRow {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-top: 0.7rem;
-}
-
-.addBtn,
-.dangerBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.625rem;
-  padding: 0.3rem 0.5rem;
-  border: 1px solid var(--rule);
-  background: #ffffff;
-  border-radius: 4px;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.addBtn:hover:not(:disabled),
-.dangerBtn:hover:not(:disabled) {
-  border-color: var(--ink);
-}
-
-.addBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.dangerBtn {
-  color: var(--accent);
-  border-color: #e6c9c4;
-}
-
-.dangerBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
 }

@@ -9,14 +9,14 @@
   font-size: 10.5px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
   margin-bottom: 8px;
 }
 
 /* ── encapsulation panel ── */
 .encapPanel {
   background: #faf9f6;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 10px 12px;
   margin-bottom: 14px;
@@ -24,8 +24,8 @@
 
 .rewriteBadge {
   display: inline-block;
-  background: #c0392b;
-  color: #f7f6f2;
+  background: var(--accent);
+  color: var(--paper);
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -44,15 +44,15 @@
 }
 
 .headerBox {
-  border: 1.5px solid #d4d0c8;
+  border: 1.5px solid #d8d4cc;
   border-radius: 5px;
   padding: 6px 8px;
   min-width: 0;
 }
 
 .l2Box {
-  background: #eef3f4;
-  border-color: #2f6f7e;
+  background: #eef3f7;
+  border-color: #2f6f8f;
   flex: 1;
 }
 
@@ -64,7 +64,7 @@
 
 .payloadBox {
   background: #f6e7c8;
-  border-color: #b8860b;
+  border-color: #b07a2e;
   margin-top: 6px;
 }
 
@@ -76,12 +76,12 @@
 
 .freshL2 {
   border-width: 2.5px;
-  border-color: #c0392b;
+  border-color: var(--accent);
   box-shadow: 0 0 0 3px #fbecea;
 }
 
 .reading {
-  outline: 3px solid #c0392b;
+  outline: 3px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -89,13 +89,13 @@
   font-size: 9.5px;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: #6b6862;
+  color: var(--fade);
   margin-bottom: 2px;
 }
 
 .headerFields {
   font-size: 12px;
-  color: #1a1a1a;
+  color: var(--ink);
   white-space: nowrap;
   overflow-x: auto;
 }
@@ -113,7 +113,7 @@
   flex: 1;
   min-width: 0;
   background: #faf9f6;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 8px;
 }
@@ -122,7 +122,7 @@
   font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
   margin-bottom: 6px;
 }
 
@@ -136,19 +136,19 @@
   position: relative;
   flex: 1;
   min-width: 0;
-  background: #f7f6f2;
-  border: 1.5px solid #d4d0c8;
+  background: var(--paper);
+  border: 1.5px solid #d8d4cc;
   border-radius: 5px;
   padding: 6px 8px;
 }
 
 .deviceActive {
-  border-color: #c0392b;
+  border-color: var(--accent);
   background: #fbecea;
 }
 
 .switchBox {
-  background: #eef3f4;
+  background: #eef3f7;
 }
 
 .routerBox {
@@ -160,13 +160,13 @@
 .deviceName {
   font-size: 12px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
   margin-bottom: 2px;
 }
 
 .addr {
   font-size: 10px;
-  color: #6b6862;
+  color: var(--fade);
   white-space: nowrap;
   overflow-x: auto;
 }
@@ -175,8 +175,8 @@
   position: absolute;
   top: -9px;
   right: -4px;
-  background: #c0392b;
-  color: #f7f6f2;
+  background: var(--accent);
+  color: var(--paper);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -185,60 +185,14 @@
   border-radius: 8px;
 }
 
-/* ── pickers ── */
+/* ── pickers (shared.group / shared.btn; only the label alignment is local) ── */
 .pickers {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.pickerGroup {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
 }
 
 .pickerLabel {
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
   min-width: 3.2rem;
-}
-
-.pickBtn {
-  font-family: inherit;
-  font-size: 12px;
-  color: #1a1a1a;
-  background: #f7f6f2;
-  border: 1px solid #d4d0c8;
-  border-radius: 4px;
-  padding: 4px 11px;
-  cursor: pointer;
-}
-
-.pickBtn:hover:enabled {
-  border-color: #9b9892;
-}
-
-.pickBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.pickBtnActive {
-  background: #1a1a1a;
-  color: #f7f6f2;
-  border-color: #1a1a1a;
-}
-
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
 }
 
 @media (max-width: 600px) {

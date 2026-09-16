@@ -3,6 +3,8 @@
 import { useReducer, useRef } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import { INK, PAPER, RULE, LINE } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './DecisionBoundaryViz.module.css'
 import {
   INITIAL_POINTS,
@@ -161,10 +163,10 @@ export default function DecisionBoundaryViz() {
           viewBox={`0 0 ${T} ${T}`}
           className={styles.svg}
           style={{ touchAction: 'none' }}
-          role="img"
+          role="group"
           aria-label="14 points in two classes on a 2D plane, with a logistic regression decision boundary line fit live by gradient descent. Points are draggable and the boundary refits as they move."
         >
-          <rect x={PAD} y={PAD} width={PLOT} height={PLOT} fill="#f7f6f2" stroke="#e2e0d8" strokeWidth={1} />
+          <rect x={PAD} y={PAD} width={PLOT} height={PLOT} fill={PAPER} stroke={RULE} strokeWidth={1} />
 
           {/* faint half-plane shading: which side is predicted class 0 vs class 1 */}
           {negPoly.length > 0 && <polygon points={toSvgPoints(negPoly)} fill={CLASS0} opacity={0.08} />}
@@ -177,7 +179,7 @@ export default function DecisionBoundaryViz() {
               y1={py(segment[0][1]).toFixed(1)}
               x2={px(segment[1][0]).toFixed(1)}
               y2={py(segment[1][1]).toFixed(1)}
-              stroke="#1a1a1a"
+              stroke={INK}
               strokeWidth={1.6}
             />
           )}
@@ -203,13 +205,24 @@ export default function DecisionBoundaryViz() {
             />
           ))}
 
-          <rect x={PAD} y={PAD} width={PLOT} height={PLOT} fill="none" stroke="#d4d0c8" strokeWidth={1} />
+          <rect x={PAD} y={PAD} width={PLOT} height={PLOT} fill="none" stroke={LINE} strokeWidth={1} />
         </svg>
+      </div>
+
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: CLASS0 }} />
+          class 0
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: CLASS1 }} />
+          class 1
+        </span>
       </div>
 
       <p className={styles.equation}>{equation}</p>
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         Fit live in the browser: binary cross-entropy loss, full-batch gradient descent, learning rate {LR}, {STEPS_PER_TICK} steps per tick, {TOTAL_ITERS} steps per run. Weights start at w1 = w2 = b = 0 every time the run restarts from Refit or Reset; moving a point restarts the timer but keeps the current weights, so the fit resumes instead of starting over.
       </p>
     </Figure>

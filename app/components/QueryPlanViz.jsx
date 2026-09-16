@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import styles from './QueryPlanViz.module.css'
+import shared from './vizShared.module.css'
 import {
   P1_N,
   P1_SCORES,
@@ -50,9 +51,9 @@ function Part1() {
     <div className={styles.part}>
       <pre className={styles.sql}>{`SELECT * FROM users WHERE score <= ${p1ThresholdFor(m)};`}</pre>
 
-      <div className={styles.controlLine}>
-        <span className={styles.label}>matches</span>
-        <input className={styles.range} type="range" min={1} max={P1_N} step={1} value={m} onChange={(e) => setM(Number(e.target.value))} aria-label="rows matching the filter" />
+      <div className={shared.group}>
+        <span className={shared.groupLabel}>matches</span>
+        <input className={shared.slider} type="range" min={1} max={P1_N} step={1} value={m} onChange={(e) => setM(Number(e.target.value))} aria-label="rows matching the filter" />
         <span className={styles.value}>
           {m} of {P1_N} rows ({pct}%)
         </span>
@@ -105,15 +106,13 @@ function Part2() {
         ))}
       </div>
 
-      <div className={styles.controlLine}>
-        <span className={styles.label}>join order</span>
-        <div className={styles.toggleGroup} role="group" aria-label="Join order">
-          {P2_ORDERS.map((o) => (
-            <button key={o.id} type="button" className={`${styles.toggleBtn} ${o.id === orderId ? styles.toggleActive : ''}`} aria-pressed={o.id === orderId} onClick={() => setOrderId(o.id)}>
-              {o.id === 'good' ? 'good order' : 'bad order'}
-            </button>
-          ))}
-        </div>
+      <div className={shared.group} role="group" aria-label="Join order">
+        <span className={shared.groupLabel}>join order</span>
+        {P2_ORDERS.map((o) => (
+          <button key={o.id} type="button" className={shared.btn} aria-pressed={o.id === orderId} onClick={() => setOrderId(o.id)}>
+            {o.id === 'good' ? 'good order' : 'bad order'}
+          </button>
+        ))}
       </div>
 
       {/* the selected order's intermediate results, step by step */}
@@ -153,18 +152,18 @@ export default function QueryPlanViz() {
       status={status}
       tryThis="Part 1, index vs scan: drag the matches slider. When only a few rows match, the index plan is cheaper and the planner picks it; as more rows match, the index cost climbs past the flat cost of just scanning the whole table, and the choice flips to Seq Scan. Part 2, join order: the same query joined in two orders. Joining the small filtered customers first keeps the middle result tiny; joining the two big tables first blows it up. Both costs come from one simple, transparent model, so the direction of each tradeoff is the real lesson, not the exact numbers."
     >
-      <div className={styles.partToggle} role="group" aria-label="Planner decision">
-        <button type="button" className={`${styles.partBtn} ${part === 'p1' ? styles.partActive : ''}`} aria-pressed={part === 'p1'} onClick={() => setPart('p1')}>
+      <div className={shared.group} role="group" aria-label="Planner decision">
+        <button type="button" className={shared.btn} aria-pressed={part === 'p1'} onClick={() => setPart('p1')}>
           1 &middot; index vs scan
         </button>
-        <button type="button" className={`${styles.partBtn} ${part === 'p2' ? styles.partActive : ''}`} aria-pressed={part === 'p2'} onClick={() => setPart('p2')}>
+        <button type="button" className={shared.btn} aria-pressed={part === 'p2'} onClick={() => setPart('p2')}>
           2 &middot; join order
         </button>
       </div>
 
       {part === 'p1' ? <Part1 /> : <Part2 />}
 
-      <p className={styles.note}>
+      <p className={shared.caption}>
         The costs and row counts come from one simplified, transparent model on fixed data. A real planner is far more
         complex, using table statistics, a detailed cost model, and many plan types, and real EXPLAIN output looks
         different. What is real here is the direction of each tradeoff: selectivity flips index versus scan, and join

@@ -3,12 +3,9 @@
 import { useState } from 'react'
 import Figure from './Figure'
 import { users, sessions } from './sqlData'
+import { INK, FADE, ACCENT, LINE, MUTED_BG, PANEL, MONO } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './JoinsViz.module.css'
-
-const INK = '#1a1a1a'
-const FADE = '#9b9892'
-const ACCENT = '#c0392b'
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace'
 
 // A small, readable slice of the shared dataset. Left = a few users (one with no
 // session), right = a few sessions (one whose user is not in the left slice), so
@@ -105,7 +102,7 @@ function Table({ x, top, cols, rows, getCell, rowClass, rowKey }) {
           {c.label}
         </text>
       ))}
-      <line x1={x} y1={top + HEAD_H} x2={x + totalW} y2={top + HEAD_H} stroke="#d4d0c8" strokeWidth={1} />
+      <line x1={x} y1={top + HEAD_H} x2={x + totalW} y2={top + HEAD_H} stroke={LINE} strokeWidth={1} />
       {/* rows */}
       {rows.map((row, ri) => (
         <g key={rowKey ? rowKey(row, ri) : ri} className={rowClass} style={rowClass ? { animationDelay: `${ri * 55}ms` } : undefined}>
@@ -114,8 +111,8 @@ function Table({ x, top, cols, rows, getCell, rowClass, rowKey }) {
             y={top + HEAD_H + ri * ROW_H}
             width={totalW}
             height={ROW_H}
-            fill={ri % 2 ? '#faf9f6' : '#ffffff'}
-            stroke="#eceae3"
+            fill={ri % 2 ? PANEL : '#ffffff'}
+            stroke={MUTED_BG}
             strokeWidth={0.5}
           />
           {cols.map((c, ci) => {
@@ -166,9 +163,10 @@ export default function JoinsViz() {
       readouts={readouts}
       tryThis="Switch the join type. INNER keeps only rows that match on user_id, so the user with no session and the session with no matching user both vanish. LEFT keeps every user (the session columns go NULL when there is none), RIGHT keeps every session, and FULL keeps both sides. Watch the row count: INNER is the smallest, FULL the largest, because the outer joins add back the unmatched rows as NULLs."
     >
+      <div className={shared.scroll}>
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        style={{ width: '100%', height: 'auto', display: 'block' }}
+        className={styles.svg}
         role="img"
         aria-label="A users table and a sessions table joined on user_id, with the result table below changing as the join type toggles."
       >
@@ -219,24 +217,10 @@ export default function JoinsViz() {
           }}
         />
       </svg>
+      </div>
 
       {/* the SQL for the selected join */}
-      <pre
-        style={{
-          marginTop: 14,
-          padding: '12px 14px',
-          background: '#f0ede6',
-          border: '1px solid #e2e0d8',
-          borderRadius: 6,
-          fontFamily: MONO,
-          fontSize: 12.5,
-          lineHeight: 1.5,
-          color: INK,
-          overflowX: 'auto',
-        }}
-      >
-        {SQL[joinType]}
-      </pre>
+      <pre className={styles.sql}>{SQL[joinType]}</pre>
     </Figure>
   )
 }

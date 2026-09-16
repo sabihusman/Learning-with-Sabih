@@ -2,77 +2,23 @@
    from the right, the shorter one padded with 1s on the left, each aligned pair marked
    compatible or the mismatch that fails, size-1 dimensions shown stretching, and the
    result shape (or a cannot-broadcast verdict) computed for real. State-driven per
-   selection; no clock. Project palette, with A in blue and B in mauve to tell them apart. */
+   selection; no clock. Project palette, with A in BLUE and B in PURPLE (vizPalette
+   identity colours) to tell them apart. The shape pickers are shared.btn groups. */
 
 .selectors {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin: 0 0 16px;
+  gap: 4px;
+  margin: 0 0 8px;
 }
 
-.selector {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.selLabel {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
-}
-
+/* the group label carries the operand's identity colour so it ties to its row */
 .selLabelA {
   color: #2f6f8f;
 }
 
 .selLabelB {
-  color: #9a5a86;
-}
-
-.segGroup {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.seg {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  padding: 6px 10px;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  background: #f4f2ec;
-  color: #1a1a1a;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.seg:hover {
-  background: #ece9e1;
-}
-
-.seg:focus-visible {
-  outline: 2px solid #2f6f8f;
-  outline-offset: 2px;
-}
-
-.segActiveA {
-  background: #2f6f8f;
-  color: #f7f5f0;
-  border-color: #2f6f8f;
-}
-
-.segActiveB {
-  background: #9a5a86;
-  color: #f7f5f0;
-  border-color: #9a5a86;
+  color: #8a5a83;
 }
 
 /* ── alignment grid ─────────────────────────────────────────────────────────────────── */
@@ -102,7 +48,7 @@
 }
 
 .rowLabelB {
-  color: #9a5a86;
+  color: #8a5a83;
 }
 
 .rowLabelR {
@@ -116,12 +62,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 7px;
-  background: #fffefb;
+  background: #faf9f6;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 15px;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 .cellA {
@@ -130,14 +76,14 @@
 }
 
 .cellB {
-  border-color: #d8bcd0;
-  color: #9a5a86;
+  border-color: rgba(138, 90, 131, 0.4);
+  color: #8a5a83;
 }
 
 /* a padded (missing) dimension, shown as 1 */
 .cellPad {
   background: #f4f2ec;
-  color: #9b9892;
+  color: var(--fade);
   border-style: dashed;
 }
 
@@ -145,7 +91,7 @@
   font-size: 8px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
 }
 
 /* a size-1 dimension that stretches up to the other operand */
@@ -157,15 +103,15 @@
 }
 
 .resultCell {
-  border-color: #cfcbc2;
-  background: #f6f8f6;
+  border-color: #d8d4cc;
+  background: #e6f2ec;
   font-weight: 700;
 }
 
 .resultFail {
   border-color: #e3b7b1;
-  background: #fdf3ee;
-  color: #c0392b;
+  background: #fbecea;
+  color: var(--accent);
 }
 
 /* the compatibility marker row between operands and result */
@@ -183,7 +129,7 @@
 }
 
 .markFail {
-  color: #c0392b;
+  color: var(--accent);
 }
 
 /* ── verdict ────────────────────────────────────────────────────────────────────────── */
@@ -200,14 +146,14 @@
 
 .verdictOk {
   border-color: #1f6f5c;
-  background: #eef6f2;
+  background: #e6f2ec;
   color: #1f6f5c;
 }
 
 .verdictFail {
-  border-color: #c0392b;
-  background: #fdf3ee;
-  color: #c0392b;
+  border-color: var(--accent);
+  background: #fbecea;
+  color: var(--accent);
 }
 
 .failDetail {
@@ -215,15 +161,6 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
   line-height: 1.5;
-  color: #c0392b;
-  text-align: center;
-}
-
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
+  color: var(--accent);
   text-align: center;
 }

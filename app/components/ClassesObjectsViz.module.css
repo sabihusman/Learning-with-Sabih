@@ -94,7 +94,7 @@
 }
 
 .methodName {
-  color: #2c6e7f;
+  color: #1f6f5c;
 }
 
 .privateMember .memberName {
@@ -127,29 +127,16 @@
   gap: 0.3rem;
 }
 
-.stepper button {
+/* size-only modifier over shared.btn: a compact square +/- control */
+.stepperBtn {
   width: 1.25rem;
   height: 1.25rem;
-  border: 1px solid var(--rule);
-  background: #faf9f6;
-  border-radius: 3px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  padding: 0;
   font-size: 0.8125rem;
   line-height: 1;
-  color: var(--ink);
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.stepper button:hover:not(:disabled) {
-  border-color: var(--ink);
-}
-
-.stepper button:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 .stepperValue {
@@ -333,24 +320,11 @@
   min-width: 3rem;
 }
 
+/* size-only modifier over shared.btn: the per-card action buttons stay small.
+   The direct field write uses shared.btn's danger variant for its accent tint. */
 .actBtn {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.625rem;
   padding: 0.2rem 0.4rem;
-  border: 1px solid var(--rule);
-  background: #ffffff;
-  border-radius: 3px;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.actBtn:hover {
-  border-color: var(--ink);
-}
-
-.direct {
-  color: var(--accent);
-  border-color: #e6c9c4;
 }
 
 .blockedBtn {
@@ -371,4 +345,12 @@
 .consoleHint {
   color: var(--fade);
   font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .batteryFill,
+  .blockedFlash {
+    animation: none;
+    transition: none;
+  }
 }

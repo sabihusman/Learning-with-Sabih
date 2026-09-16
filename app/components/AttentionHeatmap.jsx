@@ -4,10 +4,10 @@
 // exact weight source AttentionScene.jsx already uses (weightsFrom), so the
 // two views are always showing the same numbers, just two different ways.
 
-import { WORDS, weightsFrom, ACCENT, INK, FADE, PAPER } from './attentionData'
+import { WORDS, weightsFrom } from './attentionData'
+import { ACCENT, INK, FADE, PAPER, RULE, MONO } from './vizPalette'
 import styles from './AttentionHeatmap.module.css'
-
-const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+import shared from './vizShared.module.css'
 
 // interpolate between two hex colors by t in [0,1] (same approach as
 // AttentionScene's lerpColor, kept local so attentionData.js stays data-only)
@@ -69,6 +69,7 @@ export default function AttentionHeatmap({ selected, onSelect }) {
 
   return (
     <div className={styles.wrap}>
+      <div className={styles.scroll}>
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
@@ -120,7 +121,7 @@ export default function AttentionHeatmap({ selected, onSelect }) {
                       height={CELL}
                       rx={3}
                       fill={PAPER}
-                      stroke="#e2e0d8"
+                      stroke={RULE}
                       strokeWidth={0.75}
                     />
                   )
@@ -134,7 +135,7 @@ export default function AttentionHeatmap({ selected, onSelect }) {
                     height={CELL}
                     rx={3}
                     fill={lerpColor(w / max)}
-                    stroke="#e2e0d8"
+                    stroke={RULE}
                     strokeWidth={0.75}
                   >
                     <title>{`${rowWord.label} to ${WORDS[col].label}: ${w.toFixed(2)}`}</title>
@@ -175,6 +176,23 @@ export default function AttentionHeatmap({ selected, onSelect }) {
           )
         })}
       </svg>
+      </div>
+
+      {/* shade scale: weak to strong, the same ramp the cells use */}
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: lerpColor(0) }} />
+          weak
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: lerpColor(0.5) }} />
+          medium
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: lerpColor(1) }} />
+          strong
+        </span>
+      </div>
     </div>
   )
 }

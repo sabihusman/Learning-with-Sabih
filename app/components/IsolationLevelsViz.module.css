@@ -1,7 +1,8 @@
 /* Isolation levels: an isolation-level dial and a phenomenon selector drive a scripted
    two-transaction timeline (T1/T2 lanes plus an interleaved script), ending in an
    OCCURS/PREVENTED verdict. Stepping is timer-driven in the component; transitions here
-   are cosmetic. Project paper/ink/accent palette. */
+   are cosmetic. The segmented buttons, group labels, T1/T2 legend and caption come
+   from vizShared.module.css; the rest uses the shared palette's canonical values. */
 
 .dials {
   display: flex;
@@ -16,43 +17,10 @@
   gap: 6px;
 }
 
-.dialLabel {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9b9892;
-}
-
 .segGroup {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-}
-
-.seg {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  padding: 6px 12px;
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  background: #f4f2ec;
-  color: #1a1a1a;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.seg:hover {
-  background: #ece9e1;
-}
-
-.segActive {
-  background: #1a1a1a;
-  color: #f7f5f0;
-  border-color: #1a1a1a;
 }
 
 /* committed database state line */
@@ -61,9 +29,9 @@
   align-items: baseline;
   gap: 10px;
   padding: 8px 12px;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 8px;
-  background: #fffefb;
+  background: #faf9f6;
   margin: 0 0 12px;
 }
 
@@ -72,13 +40,13 @@
   font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #9b9892;
+  color: var(--fade);
 }
 
 .dbValue {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 13px;
-  color: #1a1a1a;
+  color: var(--ink);
 }
 
 /* two transaction lanes */
@@ -95,18 +63,18 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  border: 1px solid #e2e0d8;
+  border: 1px solid var(--rule);
   border-radius: 8px;
   padding: 8px 12px;
-  background: #fffefb;
+  background: #faf9f6;
   transition:
     border-color 0.16s ease,
     box-shadow 0.16s ease;
 }
 
 .laneActive {
-  border-color: #1a1a1a;
-  box-shadow: 0 0 0 1px #1a1a1a;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
 }
 
 .laneHead {
@@ -133,7 +101,7 @@
 .scriptLine {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
-  color: #6b6862;
+  color: var(--fade);
   padding: 4px 10px;
   border-left: 3px solid #d8d4cc;
   background: #faf9f6;
@@ -145,8 +113,8 @@
 }
 
 .scriptLineActive {
-  background: #f0ede6;
-  color: #1a1a1a;
+  background: #f4f2ec;
+  color: var(--ink);
   font-weight: 700;
 }
 
@@ -164,19 +132,18 @@
 .deviation {
   margin-top: 10px;
   padding: 8px 12px;
-  border: 1px solid #c0392b;
+  border: 1px solid var(--accent);
   border-radius: 6px;
-  background: #fdf3ee;
-  color: #c0392b;
+  background: #fbecea;
+  color: var(--accent);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
   text-align: center;
 }
 
-.note {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #9b9892;
-  margin: 14px 0 0;
+@media (prefers-reduced-motion: reduce) {
+  .lane,
+  .scriptLine {
+    transition: none;
+  }
 }

@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react'
 import Figure from './Figure'
 import { usePacedInterval } from './usePacedInterval'
+import { ACCENT, BLUE, OK, OK_SOFT, RULE } from './vizPalette'
+import shared from './vizShared.module.css'
 import styles from './SortingViz.module.css'
 
 // Fixed, deterministic shuffled start: a permutation of 1..14, hardcoded (never
@@ -122,7 +124,7 @@ const PITCH = (VB_W - 2 * PAD) / N
 const BAR_W = PITCH - 7
 const MAX_VAL = N
 
-const COLOR = { base: '#6b7f9e', compare: '#c0392b', settled: '#9cc3ab', done: '#2f8f63' }
+const COLOR = { base: BLUE, compare: ACCENT, settled: OK_SOFT, done: OK }
 
 function barColor(i, f) {
   if (f.done) return COLOR.done
@@ -195,12 +197,12 @@ export default function SortingViz() {
       readouts={readouts}
       tryThis="Pick an algorithm and step or play through it. Watch the compared bars light up and the array settle into order. The teaching move: run Bubble sort to the end and note its comparisons, then switch to Merge sort (same starting bars) and compare. The slow sort does far more comparisons than the fast one on identical input."
     >
-      <div className={styles.toggle} role="group" aria-label="Sorting algorithm">
+      <div className={shared.group} role="group" aria-label="Sorting algorithm">
         {ALGOS.map((a) => (
           <button
             key={a.key}
             type="button"
-            className={`${styles.toggleBtn} ${a.key === algoKey ? styles.toggleActive : ''}`}
+            className={shared.btn}
             aria-pressed={a.key === algoKey}
             onClick={() => selectAlgo(a.key)}
           >
@@ -210,7 +212,7 @@ export default function SortingViz() {
       </div>
 
       <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className={styles.svg} role="img" aria-label={`${algoName} on a fixed array of ${N} bars`}>
-        {mergeBand && <rect x={mergeBand.x} y={PLOT_TOP - 4} width={mergeBand.w} height={PLOT_H + 8} rx={3} fill="rgba(192,57,43,0.08)" />}
+        {mergeBand && <rect x={mergeBand.x} y={PLOT_TOP - 4} width={mergeBand.w} height={PLOT_H + 8} rx={3} fill={ACCENT} fillOpacity={0.08} />}
         {f.arr.map((v, i) => (
           <rect
             key={i}
@@ -224,8 +226,23 @@ export default function SortingViz() {
             style={{ transform: `scaleY(${v / MAX_VAL})` }}
           />
         ))}
-        <line x1={PAD} y1={BASE_Y} x2={VB_W - PAD} y2={BASE_Y} stroke="#e2e0d8" strokeWidth={1} />
+        <line x1={PAD} y1={BASE_Y} x2={VB_W - PAD} y2={BASE_Y} stroke={RULE} strokeWidth={1} />
       </svg>
+
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: COLOR.compare }} />
+          comparing
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: COLOR.settled }} />
+          settled
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: COLOR.done }} />
+          done
+        </span>
+      </div>
 
       {lastRun && (
         <p className={styles.lastRun}>
@@ -234,7 +251,7 @@ export default function SortingViz() {
         </p>
       )}
 
-      <p className={styles.caption}>
+      <p className={shared.caption}>
         All three sorts are real implementations running on the same fixed array, and every counter is computed live as
         the algorithm runs. The array is kept small for clarity; real datasets are far larger, where the gap between a
         slow sort and a fast one is enormous.

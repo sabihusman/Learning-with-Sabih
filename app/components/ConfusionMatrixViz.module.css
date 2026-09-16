@@ -1,0 +1,108 @@
+/* Confusion matrix: a score-axis dot plot split by a movable threshold, the
+   threshold slider, and the 2x2 matrix beneath. Correct predictions read in ink,
+   wrong ones in accent, in the plot and in the matrix alike. Layout only; the
+   slider and caption voice come from vizShared. */
+
+/* 600-unit viewBox with 11px labels: 382px keeps the smallest label >= 7px on a
+   phone, with the shared scroll wrapper taking the overflow. */
+.svg {
+  width: 100%;
+  min-width: 382px;
+  max-width: 600px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.sliderBlock {
+  max-width: 600px;
+  margin: 14px auto 4px;
+  padding: 0 4px;
+}
+
+.sliderLabel {
+  display: flex;
+  justify-content: space-between;
+  max-width: 220px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 6px;
+}
+
+.sliderValue {
+  color: var(--ink);
+}
+
+/* ── 2x2 matrix ─────────────────────────────────────────────────────────── */
+.matrixWrap {
+  max-width: 420px;
+  margin: 18px auto 2px;
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: 64px 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 1px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.header,
+.rowLabel {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.header {
+  text-align: center;
+  padding: 4px 0;
+}
+
+.rowLabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.cell {
+  padding: 12px 10px;
+  text-align: center;
+  min-height: 58px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+/* light fills: the ink and accent tokens at low opacity */
+.cellCorrect {
+  background: rgba(26, 26, 26, 0.05);
+  border: 1px solid rgba(26, 26, 26, 0.18);
+}
+
+.cellWrong {
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.28);
+}
+
+.count {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.cellWrong .count {
+  color: var(--accent);
+}
+
+.cellName {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--fade);
+}
