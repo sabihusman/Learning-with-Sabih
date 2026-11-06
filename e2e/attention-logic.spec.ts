@@ -22,7 +22,7 @@ test.describe('attention logic', () => {
   test('rows still sum to 1 under any nudge the figure allows, on any key', () => {
     for (const q of WORDS) {
       for (const k of WORDS) {
-        for (let nudge = -3; nudge <= 3; nudge += 0.5) {
+        for (let nudge = -5; nudge <= 5; nudge += 0.5) {
           const { weights } = attentionRow(q.id, { adjust: { [k.id]: nudge } })
           expect(Math.abs(sum(weights) - 1)).toBeLessThan(EPS)
         }
@@ -65,6 +65,19 @@ test.describe('attention logic', () => {
     expect(attentionRow(7).weights[1]).toBeGreaterThan(0.4)
   })
 
+  test('the Try this is doable: "street" can overtake "animal" in the "it" row within the slider range', () => {
+    const w = attentionRow(7, { adjust: { 5: 5 } }).weights
+    expect(w[5]).toBeGreaterThan(w[1])
+    expect(Math.abs(sum(w) - 1)).toBeLessThan(EPS)
+  })
+
+  test('the flattest row belongs to "the"', () => {
+    const entropy = (w: number[]) => -w.reduce((s, x) => s + x * Math.log(x), 0)
+    const ranked = WORDS.map((w) => ({ label: w.label, h: entropy(attentionRow(w.id).weights) })).sort((a, b) => b.h - a.h)
+    expect(ranked[0].label).toBe('the')
+    expect(ranked[1].label).toBe('the')
+  })
+
   test('turning off the square-root scaling makes a row sharper', () => {
     const maxOf = (scaled: boolean) => Math.max(...attentionRow(7, { scaled }).weights)
     expect(maxOf(false)).toBeGreaterThan(maxOf(true))
@@ -87,10 +100,10 @@ test.describe('attention figure', () => {
   test('nudging a score re-normalizes the row: weights change, the sum stays 1.00', async ({ page }) => {
     const animalRow = page.getByTestId('lab-row').nth(1)
     const before = Number(await animalRow.getAttribute('data-weight'))
-    // keyboard, as a reader without a mouse would: End jumps to the +3 maximum
+    // keyboard, as a reader without a mouse would: End jumps to the +5 maximum
     await page.getByTestId('nudge').focus()
     await page.keyboard.press('End')
-    await expect(page.getByTestId('nudge')).toHaveValue('3')
+    await expect(page.getByTestId('nudge')).toHaveValue('5')
     await expect(page.getByTestId('lab-sum')).toHaveText('1.00')
     const after = Number(await animalRow.getAttribute('data-weight'))
     expect(after).toBeLessThan(before)

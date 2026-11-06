@@ -20,27 +20,17 @@ should I focus on each of the other words? The answer is a set of weights, one p
 word, showing how much focus each word gets. A high weight means "this other word is
 important for me right now," a low weight means "I can mostly ignore it."
 
-Crucially, every word does this for every other word, in both directions and all
-at once. That is what lets a model link "it" to "animal" even though several words
-sit between them. Distance in the sentence does not matter; only the learned
-relationship does.
+Crucially, every word does this for every other word, all at once, in a single step. That is what lets a model link "it" to "animal" even though several words sit between them. Distance in the sentence does not matter; only the match between the words does. In the figure below the matches are computed, not drawn in: each word carries a small query vector and a small key vector, the figure scores every pair, and softmax turns the scores into the weights you see. The vectors here are hand-written so the pattern is visible; a real model learns its vectors from data.
 
 <AttentionViz />
 
 ## Reading the figure
 
-Click a word to see its attention as links to the rest of the sentence. Thicker,
-brighter links mean stronger attention. Click "it" and the strongest link snaps
-back to "animal," with only a faint link to "street." That is the model resolving
-what "it" stands for. Try "cross" and you will see it lean on "street" and
-"animal," the words that say what is being crossed and who is crossing.
+The figure has two views of the same numbers. The Softmax Lab shows one word's row in full: its raw match scores against every word, the scores after scaling, and the weights softmax produces from them, with the row's total shown as 1.00. Pick "it" and its weight lands mostly on "animal" (0.41), with the next word far behind (0.08): that is the model resolving what "it" stands for, arrived at by arithmetic rather than placed there. Nudge any word's score up and watch the weights shift: the raised word gains, every other word in the row loses a little, and the total never leaves 1.00. Switch the scaling off and the weights sharpen toward the top match, which is why the scaling step exists.
 
-The weights here are hand-set to make the lesson clear. A real model is not told
-that "it" means "animal." It learns weights like these from data, and it computes
-them on the fly from each word using learned query, key, and value vectors,
-usually across many attention heads at once, each head watching for a different
-kind of relationship. In the grid above, each cell's shade is the relative
-strength of one word attending to another, brightest for the strongest link.
+The grid below the lab shows every word's row at once, with a sum column reading 1.00 on every row. Read across a row to see where that word's focus goes: "cross" leans on "street" and then "animal", and "tired" leans on "it".
+
+A real model is not told that "it" means "animal". It learns its query, key, and value vectors from data, computes these weights on the fly for every sentence, and usually runs many attention heads at once, each head watching for a different kind of relationship.
 
 ## Why it matters
 
@@ -53,14 +43,11 @@ something.
 
 ## What the demo shows
 
-Each point is a word of the example sentence. Drag to orbit, scroll to zoom, and
-click a word to draw its attention links to the others, weighted by strength. The
-"it" to "animal" link is the headline case, hand-set so the idea of attention
-resolving a reference is easy to see.
+The demo computes attention for the example sentence. The Softmax Lab and the grid run the real mechanism on small hand-written query and key vectors: dot product, scaling, softmax. The 3D scene draws the same weights as links between the words; drag to orbit it, and click a word to highlight its links. Nothing in any of the three views is hand-set: change a score in the lab and the grid and the scene change with it.
 
 ## Query, key, and value
 
-So far you have seen that words attend to each other with different strengths, but not where those strengths come from. The mechanism is query, key, and value. Each word starts with its embedding and produces three vectors from it: a Query, representing what this word is looking for, a Key, representing what it offers to other words, and a Value, the information it passes along if another word attends to it.
+The mechanism you just ran in the lab is query, key, and value. Each word starts with its embedding and produces three vectors from it: a Query, representing what this word is looking for, a Key, representing what it offers to other words, and a Value, the information it passes along if another word attends to it.
 
 To decide how much one word attends to another, the model compares the first word's Query against the second word's Key. It does this with a dot product, which is just a single number measuring how well the two vectors line up. A bigger number means a closer match.
 

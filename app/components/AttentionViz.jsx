@@ -34,8 +34,10 @@ const AttentionScene = dynamic(() => import('./AttentionScene'), {
 })
 
 const DEFAULT_QUERY = 7 // "it", the coreference case
-const NUDGE_MIN = -3
-const NUDGE_MAX = 3
+// Wide enough that "street" can overtake "animal" in the "it" row (needs about
+// +4.7), which the Try this asks the reader to do.
+const NUDGE_MIN = -5
+const NUDGE_MAX = 5
 
 const labelOf = (id) => WORDS.find((w) => w.id === id)?.label ?? id
 const fmt = (x) => (Math.abs(x) < 0.005 ? '0.00' : x.toFixed(2))
@@ -90,7 +92,7 @@ export default function AttentionViz() {
       status={status}
       readouts={readouts}
       tryThis={
-        'Pick "it" and see most of its weight land on "animal". Then nudge the raw score for "street" up: every weight in the row shifts, "animal" gives some up, and the row still adds up to exactly 1.00. Turn the square-root scaling off and watch the same scores make a sharper, more lopsided row. The grid below shows every word\'s row at once; each one sums to 1.'
+        'In the Softmax Lab, pick "it", then drag the "street" score up until its weight passes "animal", and watch every other weight in the row fall to keep the total at 1.00. Then switch scaling off and compare how much sharper the row becomes. Finally, find the word whose row is the flattest, the one spreading its attention most evenly, and say why that makes sense for that word\'s job in the sentence.'
       }
     >
       <div className={styles.lab} data-testid="softmax-lab">
@@ -180,10 +182,8 @@ export default function AttentionViz() {
       <AttentionScene selected={selected} row={row ? row.weights : null} onSelect={(id) => (id == null ? setSelected(null) : selectQuery(id))} />
 
       <p className={shared.caption}>
-        Every weight here is computed: each word&apos;s Query is compared with every word&apos;s Key by a dot product,
-        divided by the square root of the vector size ({DIMS}), and turned into weights by softmax, so each row sums
-        to 1. The Query and Key vectors are hand-authored, six readable features per word, chosen so the
-        sentence&apos;s relationships fall out of the arithmetic; a real model learns them, and runs many heads at once.
+        Attention for the example sentence, computed live: dot products of hand-written query and key vectors,
+        scaled, then softmax. Every row sums to 1.00. In a trained model the vectors are learned, not written.
       </p>
     </Figure>
   )
