@@ -110,12 +110,12 @@ export async function issueCertificate(subject, publicKey, issuer, issuerSigning
 }
 
 export async function fingerprint(spkiHex) {
-  const bytes = Uint8Array.from(spkiHex.match(/../g), (h) => parseInt(h, 16))
+  const bytes = Uint8Array.from(spkiHex.match(/../g), (h) => Number.parseInt(h, 16))
   return toHex(await subtle().digest('SHA-256', bytes))
 }
 
 export async function importCertificateKey(cert) {
-  const bytes = Uint8Array.from(cert.publicKeySpki.match(/../g), (h) => parseInt(h, 16))
+  const bytes = Uint8Array.from(cert.publicKeySpki.match(/../g), (h) => Number.parseInt(h, 16))
   return subtle().importKey('spki', bytes, RSA_OAEP, true, ['wrapKey'])
 }
 

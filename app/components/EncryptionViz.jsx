@@ -91,8 +91,8 @@ function Value({ children, tone, testId }) {
 
 function Choice({ label, options, value, onChange, testPrefix }) {
   return (
-    <div className={shared.group} role="group" aria-label={label}>
-      <span className={shared.groupLabel}>{label}</span>
+    <fieldset className={`${shared.group} ${styles.fieldset}`}>
+      <legend className={shared.groupLabel}>{label}</legend>
       {options.map((o) => (
         <button
           key={o.id}
@@ -105,8 +105,19 @@ function Choice({ label, options, value, onChange, testPrefix }) {
           {o.label}
         </button>
       ))}
-    </div>
+    </fieldset>
   )
+}
+
+const ENVELOPE_FAILURE = {
+  unwrap: 'Rejected: this private key cannot unwrap the session key, so nothing comes out.',
+  decrypt: 'Rejected: the authentication tag does not match, so decryption refuses to return anything.',
+}
+
+function envelopeOutcome(opened) {
+  if (opened.ok) return { result: 'recovered', status: "Bob's private key unwrapped the session key and the tag checked out." }
+  if (opened.stage === 'unwrap') return { result: 'rejected: wrong key', status: "Only Bob's private key can unwrap a key wrapped with Bob's public key." }
+  return { result: 'rejected: tampered', status: 'Changing even one bit in transit makes the authentication tag fail.' }
 }
 
 function Toggle({ label, on, onChange, testId }) {
@@ -152,19 +163,9 @@ function EnvelopeView({ v, message, receiver, setReceiver, tamper, setTamper, re
           onChange={setReceiver}
           testPrefix="receiver"
         />
-        {opened.ok ? (
-          <Value tone="good" testId="envelope-result">
-            Recovered: {opened.message}
-          </Value>
-        ) : opened.stage === 'unwrap' ? (
-          <Value tone="bad" testId="envelope-result">
-            Rejected: this private key cannot unwrap the session key, so nothing comes out.
-          </Value>
-        ) : (
-          <Value tone="bad" testId="envelope-result">
-            Rejected: the authentication tag does not match, so decryption refuses to return anything.
-          </Value>
-        )}
+        <Value tone={opened.ok ? 'good' : 'bad'} testId="envelope-result">
+          {opened.ok ? `Recovered: ${opened.message}` : ENVELOPE_FAILURE[opened.stage]}
+        </Value>
       </Step>
     </ol>
   )
@@ -272,12 +273,17 @@ export default function EncryptionViz() {
   const [scenario, setScenario] = useState('genuine')
   const [nonce, setNonce] = useState(0)
   const [view, setView] = useState(null)
+  const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     let live = true
-    makeKeys().then((k) => {
-      if (live) setKeys(k)
-    })
+    makeKeys()
+      .then((k) => {
+        if (live) setKeys(k)
+      })
+      .catch(() => {
+        if (live) setFailed(true)
+      })
     return () => {
       live = false
     }
@@ -288,9 +294,13 @@ export default function EncryptionViz() {
     let live = true
     const inputs = { keys, message, receiver, tamper, signer, scenario }
     if (mode === 'sign') inputs.tamper = tamperMessage
-    COMPUTE[mode](inputs).then((result) => {
-      if (live) setView({ mode, ...result })
-    })
+    COMPUTE[mode](inputs)
+      .then((result) => {
+        if (live) setView({ mode, ...result })
+      })
+      .catch(() => {
+        if (live) setFailed(true)
+      })
     return () => {
       live = false
     }
@@ -301,20 +311,19 @@ export default function EncryptionViz() {
 
   const controls = MODES.map((m) => ({ label: m.label, onClick: () => setMode(m.id), active: mode === m.id }))
 
-  let status = 'Generating fresh keys in your browser…'
+  const pendingText = failed
+    ? 'This browser could not run the WebCrypto operations this figure needs.'
+    : 'Generating fresh keys in your browser…'
+  let status = pendingText
   let readouts = []
   if (v && mode === 'envelope') {
-    const result = v.opened.ok ? 'recovered' : v.opened.stage === 'unwrap' ? 'rejected: wrong key' : 'rejected: tampered'
-    status = v.opened.ok
-      ? "Bob's private key unwrapped the session key and the tag checked out."
-      : v.opened.stage === 'unwrap'
-        ? "Only Bob's private key can unwrap a key wrapped with Bob's public key."
-        : 'Changing even one bit in transit makes the authentication tag fail.'
+    const outcome = envelopeOutcome(v.opened)
+    status = outcome.status
     readouts = [
       { label: 'message', value: `${utf8Length(message)} bytes` },
       { label: 'ciphertext', value: `${byteLength(v.sent.ciphertext)} bytes` },
       { label: 'wrapped key', value: `${byteLength(v.envelope.wrappedKey)} bytes` },
-      { label: 'result', value: result },
+      { label: 'result', value: outcome.result },
     ]
   } else if (v && mode === 'sign') {
     status = v.valid
@@ -359,7 +368,7 @@ export default function EncryptionViz() {
           />
         </label>
 
-        {!v && <div className={styles.pending}>{keys ? 'Computing…' : 'Generating fresh keys in your browser…'}</div>}
+        {!v && <div className={styles.pending}>{keys && !failed ? 'Computing…' : pendingText}</div>}
         {v && mode === 'envelope' && (
           <EnvelopeView
             v={v}
