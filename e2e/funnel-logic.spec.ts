@@ -120,9 +120,19 @@ test.describe('funnel figure', () => {
     await expect(page.getByTestId('sql')).toContainText("INTERVAL '1 minutes'")
   })
 
+  test('the old counting is always labelled incorrect and always carries its warning', async ({ page }) => {
+    await expect(page.getByTestId('old-way-warning')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Old way (incorrect): each step alone', exact: true }).click()
+    // clean data: totals match the ordered funnel, but the warning still shows
+    await expect(page.getByTestId('old-way-warning')).toContainText('Old way, incorrect')
+    await expect(page.locator('figure').first()).toContainText('they are not a funnel')
+    await page.getByTestId('messy').click()
+    await expect(page.getByTestId('old-way-warning')).toContainText('2 sessions counted at a later step never opened a topic')
+  })
+
   test('the common mistake counts sessions that never opened a topic', async ({ page }) => {
     await page.getByTestId('messy').click()
-    await page.getByRole('button', { name: 'Each step on its own', exact: true }).click()
+    await page.getByRole('button', { name: 'Old way (incorrect): each step alone', exact: true }).click()
     await expect(page.getByTestId('step-2')).toHaveText('50')
     await expect(page.locator('figure').first()).toContainText('2 sessions counted at a later step never opened a topic')
     await page.getByRole('button', { name: 'Ordered funnel', exact: true }).click()

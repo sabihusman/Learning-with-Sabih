@@ -25,7 +25,7 @@ export const WINDOWS = [
 
 export const MODES = [
   { id: 'ordered', label: 'Ordered funnel' },
-  { id: 'independent', label: 'Each step on its own' },
+  { id: 'independent', label: 'Old way (incorrect): each step alone' },
 ]
 
 // A single cohort dimension at a time: all users, plan, or signup month.

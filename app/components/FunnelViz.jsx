@@ -69,10 +69,14 @@ export default function FunnelViz() {
     { label: 'topic_completed', value: steps[2].count },
     { label: 'completion (of openers)', value: fmtPct(completion) },
   ]
-  const status =
-    outsideBase > 0
-      ? `${outsideBase} session${outsideBase === 1 ? '' : 's'} counted at a later step never opened a topic: this count is not a funnel`
-      : `${steps[2].count} of the ${base} sessions that opened a topic completed it (${fmtPct(completion)})`
+  const neverOpened = `${outsideBase} session${outsideBase === 1 ? '' : 's'} counted at a later step never opened a topic`
+  let status = `${steps[2].count} of the ${base} sessions that opened a topic completed it (${fmtPct(completion)})`
+  if (!ordered) {
+    status =
+      outsideBase > 0
+        ? `${neverOpened}: this count is not a funnel`
+        : 'Old counting: these totals ignore order and the window, so they are not a funnel even where they match'
+  }
 
   return (
     <Figure
@@ -81,7 +85,7 @@ export default function FunnelViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Start with the ordered funnel and shrink the window: at 2 minutes some completions fall outside it, at 1 minute most of them do. Then add the messy sessions and switch to Each step on its own: the later steps grow, and some of the sessions they count never opened a topic at all, which an ordered funnel can never do. Every percentage is a share of the sessions that opened a topic, so the steps are always comparable."
+      tryThis="Set the window to 1 minute and note which step loses the most sessions. Then add the messy sessions, switch to the old counting, and find the exact moment the completion count rises from 45 to 50. Those 5 extra completions are the bug this topic exists to warn about: which sessions are they, and what did each of them actually do?"
     >
       <div className={shared.scroll}>
         <svg
@@ -170,7 +174,13 @@ export default function FunnelViz() {
           <span className={styles.base} data-testid="base">{`denominator: ${base} sessions that opened a topic`}</span>
         </div>
         {!ordered && (
-          <p className={styles.note}>The window does not apply here: counting each step on its own ignores order and time.</p>
+          <p className={styles.note} role="alert" data-testid="old-way-warning">
+            {`Old way, incorrect: each step is counted on its own, ignoring order and the window. ${
+              outsideBase > 0
+                ? `${neverOpened}.`
+                : 'On this data the totals happen to match the ordered funnel; add the messy sessions to see them diverge.'
+            }`}
+          </p>
         )}
       </div>
 
@@ -189,9 +199,9 @@ export default function FunnelViz() {
       )}
 
       <p className={shared.caption}>
-        Counts come from the shared events table, run through exactly the SQL shown. The five messy sessions are
-        hand-written examples of how real event data goes wrong; they exist only in this figure, because the shared
-        data happens to fire every step in order.
+        Every percentage on this page divides by the same base: the sessions that opened a topic (143 in the full
+        cohort). The messy sessions are five hand-written sessions added on request; the shared dataset itself fires
+        every step in order.
       </p>
     </Figure>
   )
