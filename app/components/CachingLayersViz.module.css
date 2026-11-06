@@ -1,17 +1,171 @@
-/* "Reads fall through the stack": a fixed read stream at the top, then four
-   layers stacked closest-first (BROWSER, CDN, REDIS, DATABASE). Same Systems
-   and Networking vocabulary as the Caching figure: reads are small labeled
-   tokens, layers are service boxes with mono headers. Colors stay in the site
-   family: ink / fade / accent, ok-green, and the amber fetched tone. */
+/* Who keeps a copy: the reader-side HTTP caches (two browsers, the shared CDN)
+   above the application's Redis and the database. Each box shows its rule, its
+   lookup-cost label, its live entries, and what happened to the current read. */
 
-/* The stream renders as two rows of 12 tokens and the stack below is tall, so
-   keep a min-width floor for label legibility and let the shared scroll wrapper
-   scroll on a phone instead of shrinking the SVG. */
-.svg {
-  width: 100%;
-  min-width: 400px;
-  max-width: 600px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
+.policies {
+  margin-bottom: 10px;
+}
+
+.policyNote {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  color: var(--fade);
+  margin: 0;
+}
+
+.stream {
+  list-style: none;
+  margin: 14px 0 4px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.token {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10.5px;
+  padding: 2px 5px;
+  border: 1px solid #d8d4cc;
+  border-radius: 3px;
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.past {
+  color: var(--fade);
+  background: #faf9f6;
+}
+
+.token[data-served='database'] {
+  border-color: var(--accent);
+}
+
+.current {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #ffffff;
+}
+
+.clock {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  color: var(--fade);
+  margin-bottom: 12px;
+}
+
+.stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.box {
+  border: 1px solid #d8d4cc;
+  border-radius: 6px;
+  background: #faf9f6;
+  padding: 8px 10px;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+/* the browsers sit side by side; every other layer spans the row */
+.cdn,
+.redis,
+.database {
+  grid-column: 1 / -1;
+}
+
+.boxHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.boxTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.latency {
+  font-size: 11px;
+  color: var(--fade);
+  white-space: nowrap;
+}
+
+.rule {
+  font-size: 10.5px;
+  color: var(--fade);
+  margin-top: 2px;
+}
+
+.entries {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  font-size: 11.5px;
+  color: var(--ink);
+}
+
+.entries li {
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  color: var(--fade);
+  font-style: italic;
+}
+
+.ttl {
+  color: var(--fade);
+}
+
+.mark {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.served {
+  border-color: #1f6f5c;
+  background: #e6f2ec;
+}
+
+.served .mark {
+  color: #1f6f5c;
+}
+
+.stored {
+  border-color: #2f6f8f;
+  background: #eef3f7;
+}
+
+.stored .mark {
+  color: #2f6f8f;
+}
+
+.refused .mark {
+  color: #b07a2e;
+}
+
+.leak {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+@media (max-width: 480px) {
+  .stack {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .box {
+    transition: none;
+  }
 }

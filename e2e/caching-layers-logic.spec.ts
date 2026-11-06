@@ -1,98 +1,145 @@
 import { test, expect } from '@playwright/test'
 import {
-  LAYERS,
   DB_ID,
+  DEFAULT_POLICIES,
+  HTTP_MAX_AGE_S,
+  LATENCY_LABEL,
+  LATENCY_RANGE_MS,
+  POLICIES,
+  REDIS_TTL_S,
+  RESOURCES,
   STREAM,
-  LAST_STEP,
-  STATES,
-  hitRate,
+  httpStorers,
+  simulate,
 } from '../app/components/cachingLayersData'
 
-// Pure-logic correctness for the Caching Layers figure. No page, no browser:
-// asserts on the same STATES the component renders. To avoid simply re-running
-// the module's own code, the expected outcome of every read is recomputed here
-// with an independent array-based LRU simulation (most recent first) and
-// compared frame by frame: which layer served, all four counts, and every
-// layer's exact contents after copy-back.
+// Invariants for the Where Caches Live figure. The headline one: browsers and
+// the CDN store a response only when its Cache-Control header allows it, and a
+// Redis hit never fills them by itself.
 
-type Sim = { id: string; capacity: number; keys: string[] }
+type Policies = Record<string, string>
+const ALL_POLICIES: Policies[] = []
+for (const a of POLICIES) for (const b of POLICIES) for (const c of POLICIES) ALL_POLICIES.push({ logo: a.id, profile: b.id, prices: c.id })
+const perReader = Object.fromEntries(RESOURCES.map((r) => [r.id, r.perReader]))
 
-function touch(sim: Sim, key: string) {
-  const at = sim.keys.indexOf(key)
-  let evicted: string | null = null
-  if (at !== -1) sim.keys.splice(at, 1)
-  else if (sim.keys.length >= sim.capacity) evicted = sim.keys.pop() as string
-  sim.keys.unshift(key)
-  return evicted
+// An independent re-simulation: plain objects with absolute expiry times,
+// written without reference to simulate()'s code.
+function resimulate(policies: Policies) {
+  const http: Record<string, number> = {} // `${cache}|${res}` -> expires
+  const redis: Record<string, number> = {}
+  return STREAM.map(({ reader, res, t }) => {
+    const live = (exp: number | undefined) => exp !== undefined && t < exp
+    const p = policies[res]
+    const browserKey = `b-${reader}|${res}`
+    const cdnKey = `cdn|${res}`
+    if (live(http[browserKey])) return 'browser'
+    if (live(http[cdnKey])) {
+      if (p === 'public' || p === 'private') http[browserKey] = http[cdnKey]
+      return 'cdn'
+    }
+    const rk = perReader[res] ? `${res}/${reader}` : res
+    let source = 'redis'
+    if (!live(redis[rk])) {
+      source = 'database'
+      redis[rk] = t + REDIS_TTL_S
+    }
+    if (p === 'public' || p === 'private') http[browserKey] = t + HTTP_MAX_AGE_S
+    if (p === 'public') http[cdnKey] = t + HTTP_MAX_AGE_S
+    return source
+  })
 }
 
-test('step 0 is the all-empty cold start', () => {
-  const s0 = STATES[0]
-  expect(s0.step).toBe(0)
-  expect(s0.servedBy).toBeNull()
-  expect(s0.counts).toEqual({ browser: 0, cdn: 0, redis: 0, database: 0 })
-  expect(s0.cacheServed).toBe(0)
-  expect(hitRate(s0)).toBe(0)
-  for (const layer of LAYERS) expect(s0.orders[layer.id]).toEqual([])
-})
+test.describe('caching layers logic', () => {
+  test('every read matches an independent re-simulation, for all 27 header combinations', () => {
+    for (const policies of ALL_POLICIES) {
+      expect(simulate(policies).slice(1).map((s) => s.servedBy), JSON.stringify(policies)).toEqual(resimulate(policies))
+    }
+  })
 
-test('every frame: serving layer, counts, and contents match an independent LRU simulation', () => {
-  const sims: Sim[] = LAYERS.map((l) => ({ id: l.id, capacity: l.capacity, keys: [] }))
-  const counts: Record<string, number> = { browser: 0, cdn: 0, redis: 0, database: 0 }
-
-  expect(STATES).toHaveLength(LAST_STEP + 1)
-
-  STREAM.forEach((key, index) => {
-    // Which layer serves: the closest sim already holding the key, else the DB.
-    const holder = sims.find((sim) => sim.keys.includes(key))
-    const expectServedBy = holder ? holder.id : DB_ID
-    counts[expectServedBy] += 1
-
-    // The serving cache refreshes recency; every closer layer receives a copy.
-    const expectEvicted: Record<string, string> = {}
-    const expectCopied: string[] = []
-    for (const sim of sims) {
-      if (sim.id === expectServedBy) {
-        touch(sim, key) // refresh recency, never evicts (key already present)
-        break
+  test('HTTP caches store a response only as its header allows, whether Redis or the database answered', () => {
+    for (const policies of ALL_POLICIES) {
+      for (const s of simulate(policies).slice(1)) {
+        if (s.servedBy !== 'redis' && s.servedBy !== DB_ID) continue
+        const storedHttp = s.stored.filter((l) => l !== 'redis').sort()
+        expect(storedHttp, JSON.stringify({ policies, step: s.step })).toEqual([...httpStorers(s.policy, s.read.reader)].sort())
       }
-      const out = touch(sim, key)
-      expectCopied.push(sim.id)
-      if (out !== null) expectEvicted[sim.id] = out
     }
+  })
 
-    const frame = STATES[index + 1]
-    expect(frame.step, `step at read ${index + 1}`).toBe(index + 1)
-    expect(frame.key, `key at read ${index + 1}`).toBe(key)
-    expect(frame.servedBy, `servedBy at read ${index + 1} (${key})`).toBe(expectServedBy)
-    expect(frame.copiedInto, `copiedInto at read ${index + 1} (${key})`).toEqual(expectCopied)
-    expect(frame.evicted, `evicted at read ${index + 1} (${key})`).toEqual(expectEvicted)
-    expect(frame.counts, `counts at read ${index + 1}`).toEqual(counts)
-    for (const sim of sims) {
-      expect(frame.orders[sim.id], `${sim.id} contents after read ${index + 1}`).toEqual(sim.keys)
+  test('a Redis hit puts nothing in a browser or the CDN by itself', () => {
+    for (const s of simulate(DEFAULT_POLICIES).slice(1)) {
+      if (s.servedBy === 'redis' && s.policy === 'no-store') expect(s.stored).toEqual([])
     }
-    expect(frame.cacheServed, `cacheServed at read ${index + 1}`).toBe(
-      counts.browser + counts.cdn + counts.redis,
-    )
+    const redisHits = simulate(DEFAULT_POLICIES).filter((s) => s.servedBy === 'redis')
+    expect(redisHits.length).toBeGreaterThan(0)
+  })
+
+  test('the CDN never holds a private or no-store response', () => {
+    for (const policies of ALL_POLICIES) {
+      for (const s of simulate(policies)) {
+        for (const e of s.contents.cdn) expect(policies[e.key], JSON.stringify(policies)).toBe('public')
+      }
+    }
+  })
+
+  test('Redis is written only when the database answered', () => {
+    for (const policies of ALL_POLICIES) {
+      for (const s of simulate(policies).slice(1)) expect(s.stored.includes('redis')).toBe(s.servedBy === DB_ID)
+    }
+  })
+
+  test('cached copies expire: a 60-second response cached at t=0 is gone by t=60', () => {
+    const states = simulate(DEFAULT_POLICIES)
+    const logoReadAt = (t: number) => states.find((s) => s.read?.res === 'logo' && s.t === t)!
+    expect(logoReadAt(15).servedBy).toBe('cdn')
+    expect(logoReadAt(70).servedBy).toBe(DB_ID)
+  })
+
+  test('per-reader data leaks only when marked public', () => {
+    for (const policies of ALL_POLICIES) {
+      const leaks = simulate(policies).at(-1)!.leaks
+      if (policies.profile === 'public') expect(leaks).toBeGreaterThan(0)
+      else expect(leaks).toBe(0)
+    }
+  })
+
+  test('latency labels: Redis is never slower than the CDN', () => {
+    expect(LATENCY_RANGE_MS.redis[1]).toBeLessThan(LATENCY_RANGE_MS.cdn[0])
+    for (const [layer, [lo, hi]] of Object.entries(LATENCY_RANGE_MS)) {
+      const label = LATENCY_LABEL[layer as keyof typeof LATENCY_LABEL]
+      expect(label).toBe(lo === hi ? `~${lo} ms` : `~${lo}-${hi} ms`)
+    }
   })
 })
 
-test('final totals: all reads accounted for, hit rate consistent, caches warmed', () => {
-  const final = STATES[LAST_STEP]
-  const { browser, cdn, redis, database } = final.counts
-  expect(browser + cdn + redis + database).toBe(LAST_STEP)
-  expect(final.cacheServed).toBe(browser + cdn + redis)
-  expect(hitRate(final)).toBe(Math.round((final.cacheServed / LAST_STEP) * 100))
+test.describe('caching layers figure', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/topics/caching-layers/')
+    await expect(page.getByTestId('box-cdn')).toBeVisible()
+  })
 
-  // The stream is authored so warming is emergent: every layer serves at least
-  // one read, and the second half of the stream leans on the database less than
-  // the first half.
-  expect(browser).toBeGreaterThan(0)
-  expect(cdn).toBeGreaterThan(0)
-  expect(redis).toBeGreaterThan(0)
-  expect(database).toBeGreaterThan(0)
-  const dbServes = (frames: typeof STATES) =>
-    frames.filter((f) => f.servedBy === DB_ID).length
-  const half = LAST_STEP / 2
-  expect(dbServes(STATES.slice(1, half + 1))).toBeGreaterThan(dbServes(STATES.slice(half + 1)))
+  const stepTo = async (page, n: number) => {
+    for (let i = 0; i < n; i += 1) await page.getByRole('button', { name: 'Step', exact: true }).click()
+  }
+
+  test('read 5: Redis serves a no-store response and neither the CDN nor the browser stores it', async ({ page }) => {
+    await stepTo(page, 5)
+    await expect(page.getByTestId('box-redis')).toHaveAttribute('data-mark', 'served')
+    await expect(page.getByTestId('box-cdn')).toHaveAttribute('data-mark', 'refused')
+    await expect(page.getByTestId('box-browser:ben')).toHaveAttribute('data-mark', 'refused')
+    await expect(page.getByTestId('entries-cdn')).not.toContainText('/api/prices')
+  })
+
+  test('setting /api/prices to public lets the CDN serve it instead of Redis', async ({ page }) => {
+    await page.getByTestId('policy-prices-public').click()
+    await stepTo(page, 5)
+    await expect(page.getByTestId('box-cdn')).toHaveAttribute('data-mark', 'served')
+  })
+
+  test('marking per-reader data public leaks it through the shared CDN', async ({ page }) => {
+    await page.getByTestId('policy-profile-public').click()
+    await stepTo(page, 7)
+    await expect(page.getByTestId('box-cdn')).toContainText("served Ana's private data to Ben")
+    await expect(page.locator('figure').first()).toContainText("That copy is Ana's data")
+  })
 })
