@@ -2,11 +2,11 @@
    total visibly "builds" as your eye moves down the rows. Bars are rendered from
    state at full width by default; this animation is purely additive, so a bar is
    never left invisible even if the animation does not run (e.g. a backgrounded
-   tab). The bar key includes the partition state, so React remounts the bars and
-   the build replays whenever PARTITION BY is toggled. */
+   tab). The bar key includes the query choices, so React remounts the bars and
+   the build replays whenever ORDER BY, the frame or PARTITION BY changes. */
 .svg {
   width: 100%;
-  max-width: 620px;
+  max-width: 712px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -27,19 +27,9 @@
   }
 }
 
-/* PARTITION BY toggle row: shared.btn handles the button itself */
-.partitionRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 14px;
-  flex-wrap: wrap;
-}
-
-.partitionHint {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  color: var(--fade);
+/* the three query choices, above the table */
+.choices {
+  margin-bottom: 12px;
 }
 
 .sql {
@@ -53,6 +43,13 @@
   line-height: 1.5;
   color: var(--ink);
   overflow-x: auto;
+}
+
+/* the active function's line(s) */
+.sqlActive {
+  color: var(--accent);
+  font-weight: 700;
+  background: rgba(192, 57, 43, 0.06);
 }
 
 @media (prefers-reduced-motion: reduce) {
