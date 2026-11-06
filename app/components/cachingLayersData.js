@@ -1,142 +1,186 @@
-// Deterministic data for the Caching Layers topic (Systems and Networking).
+// Deterministic simulation for the Where Caches Live topic (Systems).
 //
-// A read falls through four layers, closest first: BROWSER, CDN, REDIS, then the
-// DATABASE, which always has the answer. The read is served at the first layer
-// that holds the key. Whichever layer serves, every layer closer to the reader
-// receives a copy on the way back up (cache-aside with copy-back), so the next
-// read for the same key can stop sooner. All three cache layers start empty:
-// there is no warm-up switch, the caches warm up on their own as the stream
-// plays.
+// Two kinds of cache sit between a reader and the database, and they fill in
+// different ways:
+// - HTTP caches (each reader's browser, and the CDN shared by every reader)
+//   store a RESPONSE, and only when the response's Cache-Control header allows
+//   it: `public` may be stored by both, `private` only by that reader's
+//   browser, `no-store` by neither. Where the origin got the data from (Redis or
+//   the database) makes no difference to them.
+// - Redis is the application's cache. The app checks it before the database and
+//   writes into it after a database read (cache-aside), with a TTL the app
+//   chooses. HTTP headers have nothing to do with it.
+// Every entry expires: a stored copy is served only while it is fresh.
 //
-// The read stream is hand-authored to be instructive (one hot key, a few medium
-// keys, some one-offs), but every outcome below (which layer serves each read,
-// every count, every cache's contents) is computed by running real LRU caches
-// over the stream in buildStates(), never typed in per read.
-
-// Explicit .js extension so a plain Node harness can resolve this import too.
-import { LRUCache } from './cachingData.js'
-
-// Capacities are deliberately small and staggered so eviction happens at every
-// layer: the browser forgets fastest, Redis remembers longest.
-export const LAYERS = [
-  { id: 'browser', label: 'BROWSER', capacity: 2 },
-  { id: 'cdn', label: 'CDN', capacity: 3 },
-  { id: 'redis', label: 'REDIS', capacity: 4 },
-]
+// The read stream and the resources are hand-authored; every outcome (who
+// serves each read, what each layer stores, every count) is computed by
+// simulate(), never typed in per read.
 
 export const DB_ID = 'database'
+export const READERS = ['ana', 'ben']
+export const READER_NAME = { ana: 'Ana', ben: 'Ben' }
 
-// Latency figures are authored illustration for the labels only (typical orders
-// of magnitude); nothing in the figure computes timing from them.
+// Per-layer lookup cost, as labels (typical orders of magnitude, not measured).
+// Redis in the same region is always faster than a CDN round trip.
 export const LATENCY_LABEL = {
   browser: '~0 ms',
   cdn: '~5-30 ms',
   redis: '~0.2-2 ms',
   database: '~5-50 ms',
 }
+export const LATENCY_RANGE_MS = { browser: [0, 0], cdn: [5, 30], redis: [0.2, 2], database: [5, 50] }
 
-// A is hot, B and C are medium, D, X, Y, Z are one-offs. 24 reads, arranged so
-// the early reads mostly fall through to the database and the later reads are
-// mostly absorbed by the warmed caches.
-export const STREAM = [
-  'A', 'B', 'A', 'C', 'A', 'B', 'D', 'A', 'A', 'C', 'B', 'X',
-  'A', 'B', 'A', 'C', 'A', 'Y', 'A', 'B', 'C', 'Z', 'A', 'A',
+export const HTTP_MAX_AGE_S = 60 // max-age on cacheable responses
+export const REDIS_TTL_S = 30 // TTL the app sets on Redis entries
+export const READ_GAP_S = 5 // seconds between reads in the stream
+
+export const POLICIES = [
+  { id: 'public', label: 'public', header: `public, max-age=${HTTP_MAX_AGE_S}` },
+  { id: 'private', label: 'private', header: `private, max-age=${HTTP_MAX_AGE_S}` },
+  { id: 'no-store', label: 'no-store', header: 'no-store' },
 ]
+export const headerFor = (policy) => POLICIES.find((p) => p.id === policy).header
 
+// Three resources, each with a sensible default header. `perReader` marks data
+// that differs per reader (the app keys it in Redis by reader too).
+export const RESOURCES = [
+  { id: 'logo', path: '/logo.png', perReader: false, defaultPolicy: 'public' },
+  { id: 'profile', path: '/api/me', perReader: true, defaultPolicy: 'private' },
+  { id: 'prices', path: '/api/prices', perReader: false, defaultPolicy: 'no-store' },
+]
+export const DEFAULT_POLICIES = Object.fromEntries(RESOURCES.map((r) => [r.id, r.defaultPolicy]))
+const resource = (id) => RESOURCES.find((r) => r.id === id)
+
+// 24 reads, READ_GAP_S apart, alternating readers so the shared CDN and the
+// per-reader browsers both get exercised.
+export const STREAM = [
+  ['ana', 'logo'], ['ana', 'profile'], ['ana', 'prices'], ['ben', 'logo'],
+  ['ben', 'prices'], ['ana', 'logo'], ['ben', 'profile'], ['ana', 'prices'],
+  ['ben', 'logo'], ['ana', 'profile'], ['ben', 'prices'], ['ana', 'logo'],
+  ['ben', 'profile'], ['ana', 'prices'], ['ben', 'logo'], ['ana', 'profile'],
+  ['ben', 'prices'], ['ana', 'logo'], ['ben', 'profile'], ['ana', 'prices'],
+  ['ben', 'logo'], ['ana', 'profile'], ['ben', 'prices'], ['ana', 'logo'],
+].map(([reader, res], i) => ({ reader, res, t: i * READ_GAP_S }))
 export const LAST_STEP = STREAM.length
 
-// Run real LRU caches (one per layer) over the stream once, snapshotting a frame
-// after each read. STATES[0] is the initial all-empty state; STATES[k] is the
-// state after read k-1.
-function buildStates() {
-  const caches = new Map(LAYERS.map((l) => [l.id, new LRUCache(l.capacity)]))
+// The HTTP cache key is the URL (plus the reader, for a browser, since each
+// reader has their own). Redis keys add the reader for per-reader data.
+const redisKey = (reader, res) => (resource(res).perReader ? `${res}:${reader}` : res)
+
+const fresh = (entry, t) => entry != null && t < entry.expires
+
+// Which HTTP caches may store a response with this policy, for this reader.
+export function httpStorers(policy, reader) {
+  if (policy === 'public') return [`browser:${reader}`, 'cdn']
+  if (policy === 'private') return [`browser:${reader}`]
+  return []
+}
+
+export function simulate(policies = DEFAULT_POLICIES) {
+  const caches = { 'browser:ana': new Map(), 'browser:ben': new Map(), cdn: new Map(), redis: new Map() }
   const counts = { browser: 0, cdn: 0, redis: 0, database: 0 }
+  const snapshot = (t) =>
+    Object.fromEntries(
+      Object.entries(caches).map(([layer, map]) => [
+        layer,
+        [...map.entries()]
+          .filter(([, e]) => fresh(e, t))
+          .map(([key, e]) => ({ key, secondsLeft: e.expires - t }))
+          .sort((a, b) => a.key.localeCompare(b.key)),
+      ]),
+    )
 
-  const snapshotOrders = () => {
-    const orders = {}
-    LAYERS.forEach((l) => {
-      orders[l.id] = caches.get(l.id).order()
-    })
-    return orders
-  }
+  const states = [{ step: 0, read: null, servedBy: null, stored: [], refused: [], leakedFrom: null, leaks: 0, counts: { ...counts }, contents: snapshot(0), t: 0 }]
+  let leaks = 0
 
-  const states = [
-    {
-      step: 0,
-      index: -1,
-      key: null,
-      servedBy: null,
-      copiedInto: [],
-      evicted: {},
-      counts: { ...counts },
-      cacheServed: 0,
-      orders: snapshotOrders(),
-    },
-  ]
+  for (const read of STREAM) {
+    const { reader, res, t } = read
+    const policy = policies[res]
+    const browser = `browser:${reader}`
+    let servedBy
+    let originSource = null
+    let leakedFrom = null
+    const stored = []
+    // a cached response remembers whose data it is, for per-reader resources
+    const owner = resource(res).perReader ? reader : null
 
-  STREAM.forEach((key, index) => {
-    // Check each cache layer closest-first; the first layer holding the key
-    // serves the read (get() refreshes its recency there). The database is the
-    // fallback that always serves.
-    let servedBy = DB_ID
-    for (const layer of LAYERS) {
-      if (caches.get(layer.id).has(key)) {
-        servedBy = layer.id
-        caches.get(layer.id).get(key)
-        break
+    if (fresh(caches[browser].get(res), t)) {
+      servedBy = 'browser'
+    } else if (fresh(caches.cdn.get(res), t)) {
+      servedBy = 'cdn'
+      const copy = caches.cdn.get(res)
+      // the CDN keys by URL, so a per-reader response marked public is handed
+      // to whoever asks next: another reader's data
+      if (copy.owner && copy.owner !== reader) {
+        leakedFrom = copy.owner
+        leaks += 1
+      }
+      // the CDN's copy travels down to the reader as an HTTP response
+      if (httpStorers(policy, reader).includes(browser)) {
+        caches[browser].set(res, { expires: copy.expires, owner: copy.owner })
+        stored.push(browser)
+      }
+    } else {
+      // the request reaches the origin; the app checks Redis, then the database
+      const rk = redisKey(reader, res)
+      if (fresh(caches.redis.get(rk), t)) {
+        servedBy = 'redis'
+        originSource = 'redis'
+      } else {
+        servedBy = DB_ID
+        originSource = DB_ID
+        caches.redis.set(rk, { expires: t + REDIS_TTL_S })
+        stored.push('redis')
+      }
+      // the response goes back up through the CDN and into the browser; each
+      // HTTP cache stores it only if the response's own header allows
+      for (const layer of httpStorers(policy, reader)) {
+        caches[layer].set(res, { expires: t + HTTP_MAX_AGE_S, owner })
+        stored.push(layer)
       }
     }
+
+    const passedThrough = servedBy === 'browser' ? [] : servedBy === 'cdn' ? [browser] : [browser, 'cdn']
+    const refused = passedThrough.filter((layer) => !stored.includes(layer))
     counts[servedBy] += 1
-
-    // Copy-back: every layer closer than the serving layer receives a copy on
-    // the way up. If the database served, that is all three cache layers.
-    const copiedInto = []
-    const evicted = {}
-    for (const layer of LAYERS) {
-      if (layer.id === servedBy) break
-      const out = caches.get(layer.id).put(key, 1)
-      copiedInto.push(layer.id)
-      if (out !== null) evicted[layer.id] = out
-    }
-
     states.push({
-      step: index + 1,
-      index,
-      key,
+      step: states.length,
+      read,
+      policy,
       servedBy,
-      copiedInto,
-      evicted,
+      originSource,
+      stored,
+      refused,
+      leakedFrom,
+      leaks,
       counts: { ...counts },
-      cacheServed: counts.browser + counts.cdn + counts.redis,
-      orders: snapshotOrders(),
+      contents: snapshot(t),
+      t,
     })
-  })
-
+  }
   return states
 }
 
-export const STATES = buildStates()
-
-// Cache hit rate as a whole-number percentage: reads served by any cache layer
-// out of all reads so far.
 export function hitRate(state) {
   if (state.step === 0) return 0
-  return Math.round((state.cacheServed / state.step) * 100)
+  return Math.round(((state.step - state.counts.database) / state.step) * 100)
 }
 
-const LAYER_NAME = { browser: 'the browser cache', cdn: 'the CDN', redis: 'Redis', database: 'the database' }
+const LAYER_NAME = { browser: "the reader's browser", cdn: 'the CDN', redis: 'Redis', database: 'the database' }
+const layerName = (layer) => (layer.startsWith('browser:') ? `${READER_NAME[layer.split(':')[1]]}'s browser` : LAYER_NAME[layer])
 
 export function statusFor(state) {
-  if (state.step === 0) {
-    return 'Press Step to send the first read. All three caches start empty, so it must fall through to the database.'
-  }
-  if (state.servedBy === DB_ID) {
-    return `${state.key} missed every cache: the database serves it, and a copy is written into Redis, the CDN, and the browser on the way up.`
-  }
-  const copies = state.copiedInto.length
-  if (copies === 0) {
-    return `${state.key} is served by ${LAYER_NAME[state.servedBy]} instantly.`
-  }
-  const into = state.copiedInto.map((id) => LAYER_NAME[id]).join(' and ')
-  return `${state.key} is served by ${LAYER_NAME[state.servedBy]}, and a copy moves up into ${into}.`
+  if (state.step === 0) return 'Press Step to send the first read. Every cache starts empty.'
+  const { reader, res } = state.read
+  const who = READER_NAME[reader]
+  const path = resource(res).path
+  const served = state.servedBy === 'browser' ? `${who}'s browser` : LAYER_NAME[state.servedBy]
+  const storedHttp = state.stored.filter((l) => l !== 'redis').map(layerName)
+  const parts = [`${who} reads ${path}: served by ${served}.`]
+  if (state.leakedFrom) parts.push(`That copy is ${READER_NAME[state.leakedFrom]}'s data: a per-reader response marked public was shared by the CDN.`)
+  if (state.stored.includes('redis')) parts.push('The app writes the result into Redis.')
+  if (state.servedBy === 'redis') parts.push('A Redis hit does not copy anything upward by itself.')
+  if (storedHttp.length) parts.push(`${storedHttp.join(' and ')} stored the response (${headerFor(state.policy)}).`)
+  else if (state.refused.length) parts.push(`No HTTP cache stored it (${headerFor(state.policy)}).`)
+  return parts.join(' ')
 }
