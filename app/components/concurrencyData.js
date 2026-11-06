@@ -21,43 +21,25 @@ export const INC = 50
 export const CORRECT = START + 2 * INC
 export const TXS = ['T1', 'T2']
 
-// Each statement: the SQL shown, and what it does (kind).
+// Each statement: what it does (kind) and the SQL shown. Defined once and
+// shared by the modes that use it.
+const SQL = {
+  'select': 'SELECT balance FROM accounts WHERE id = 1;',
+  'select-for-update': 'SELECT balance FROM accounts WHERE id = 1 FOR UPDATE;',
+  'select-versioned': 'SELECT balance, version FROM accounts WHERE id = 1;',
+  'update-literal': 'UPDATE accounts SET balance = :balance + 50 WHERE id = 1;',
+  'update-relative': 'UPDATE accounts SET balance = balance + 50 WHERE id = 1;',
+  'update-versioned': 'UPDATE accounts SET balance = :balance + 50, version = :version + 1\n  WHERE id = 1 AND version = :version;',
+  'commit': 'COMMIT;',
+  'commit-or-retry': '-- 1 row: COMMIT;   0 rows: ROLLBACK; and start again',
+}
+const script = (...kinds) => kinds.map((kind) => ({ kind, sql: SQL[kind] }))
+
 export const MODES = [
-  {
-    id: 'naive',
-    label: 'read, then write',
-    script: [
-      { kind: 'select', sql: 'SELECT balance FROM accounts WHERE id = 1;' },
-      { kind: 'update-literal', sql: 'UPDATE accounts SET balance = :balance + 50 WHERE id = 1;' },
-      { kind: 'commit', sql: 'COMMIT;' },
-    ],
-  },
-  {
-    id: 'forupdate',
-    label: 'SELECT ... FOR UPDATE',
-    script: [
-      { kind: 'select-for-update', sql: 'SELECT balance FROM accounts WHERE id = 1 FOR UPDATE;' },
-      { kind: 'update-literal', sql: 'UPDATE accounts SET balance = :balance + 50 WHERE id = 1;' },
-      { kind: 'commit', sql: 'COMMIT;' },
-    ],
-  },
-  {
-    id: 'atomic',
-    label: 'one UPDATE statement',
-    script: [
-      { kind: 'update-relative', sql: 'UPDATE accounts SET balance = balance + 50 WHERE id = 1;' },
-      { kind: 'commit', sql: 'COMMIT;' },
-    ],
-  },
-  {
-    id: 'optimistic',
-    label: 'version check',
-    script: [
-      { kind: 'select-versioned', sql: 'SELECT balance, version FROM accounts WHERE id = 1;' },
-      { kind: 'update-versioned', sql: 'UPDATE accounts SET balance = :balance + 50, version = :version + 1\n  WHERE id = 1 AND version = :version;' },
-      { kind: 'commit-or-retry', sql: '-- 1 row: COMMIT;   0 rows: ROLLBACK; and start again' },
-    ],
-  },
+  { id: 'naive', label: 'read, then write', script: script('select', 'update-literal', 'commit') },
+  { id: 'forupdate', label: 'SELECT ... FOR UPDATE', script: script('select-for-update', 'update-literal', 'commit') },
+  { id: 'atomic', label: 'one UPDATE statement', script: script('update-relative', 'commit') },
+  { id: 'optimistic', label: 'version check', script: script('select-versioned', 'update-versioned', 'commit-or-retry') },
 ]
 export const modeOf = (id) => MODES.find((m) => m.id === id)
 
