@@ -10,7 +10,7 @@ export const metadata = {
 
 The summary numbers per group come from aggregate functions. `COUNT` counts how many rows are in each group. `SUM` adds up a numeric column inside the group. `AVG` computes the average. You typically select the group key plus one or more aggregates.
 
-A common source of mistakes is `COUNT(*)` versus `COUNT(DISTINCT col)`. `COUNT(*)` counts all rows in the group, including several sessions from the same user. `COUNT(DISTINCT user_id)` counts unique users. If you ask "how many users" but write `COUNT(*)`, you may accidentally count sessions instead of people.
+A common source of mistakes is `COUNT(*)` versus `COUNT(DISTINCT col)`. `COUNT(*)` counts all rows in the group, including several sessions from the same user. One more trap: `COUNT(col)`, `SUM` and `AVG` quietly skip rows where the value is NULL. `COUNT(*)` is the only form that counts every row, NULLs included. `COUNT(DISTINCT user_id)` counts unique users. If you ask "how many users" but write `COUNT(*)`, you may accidentally count sessions instead of people.
 
 Filtering happens in two stages, which SQL splits into `WHERE` and `HAVING`. `WHERE` filters individual rows before grouping, like keeping only events from one week. `HAVING` filters whole groups after aggregation, like keeping only groups with `COUNT(*) > 10`. Putting an aggregate like `COUNT(*) > 10` in `WHERE` is an error, because the count does not exist until after grouping.
 

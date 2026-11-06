@@ -30,6 +30,8 @@ An INNER JOIN keeps only rows that match on both sides. A user with no session
 disappears, and so does a session whose user is missing. It is the strictest join
 and returns the fewest rows.
 
+This orphan can only exist because this demo leaves foreign-key enforcement off; with enforcement on, the database would have rejected the row when it was inserted.
+
 The outer joins keep unmatched rows instead of dropping them, filling the missing
 side with NULL, which is SQL's marker for "no value here." A LEFT JOIN keeps every
 row from the left table, so every user appears even if they have no session. A

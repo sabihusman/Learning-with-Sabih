@@ -41,8 +41,8 @@ Databases and SQL|33|SELECT, WHERE and CASE|Choose columns, filter rows live, an
 Databases and SQL|34|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
 Databases and SQL|35|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
 Databases and SQL|36|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
-Databases and SQL|37|Indexes|Run the same query with the index off then on, and watch rows examined collapse from the whole table to a handful|indexes
-Databases and SQL|38|Normalization|Watch one wide table that stores each fact many times step into first normal form, hit an update anomaly, then split into three linked tables so every fact lives in exactly one place|normalization
+Databases and SQL|37|Normalization|Watch one wide table that stores each fact many times step into first normal form, hit an update anomaly, then split into three linked tables so every fact lives in exactly one place|normalization
+Databases and SQL|38|Indexes|Run the same query with the index off then on, and watch rows examined collapse from the whole table to a handful|indexes
 Databases and SQL|39|Query Planning|Slide selectivity to watch the planner flip between an index and a full scan, then compare a good and a bad join order|query-planning
 Databases and SQL|40|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
 Databases and SQL|41|SQL vs NoSQL Modeling|Model the same users, plans, and orders as normalized tables and as one document per user, then run three queries and watch which shape touches fewer places as the access pattern changes|sql-vs-nosql-modeling

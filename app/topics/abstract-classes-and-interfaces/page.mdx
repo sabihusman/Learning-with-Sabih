@@ -12,7 +12,7 @@ An abstract class is a partial class. It can hold real state, like a `battery` f
 
 An interface strips the contract down further. It names the methods an implementer must provide and, in its pure form, nothing else. It carries no instance state, so there is no `battery` that each robot carries around. An interface says only "whatever you are, you can do this."
 
-That thinness is what buys the interface its superpower. A class can extend only one class, abstract or not, because inheriting state and behavior from two parents creates conflicts. But a class can implement any number of interfaces, because promising to provide methods conflicts with nothing. In the figure, `GuardBot` can take `Alarmed` alongside `Robot`, but only in interface mode.
+That thinness is what buys the interface its superpower. A class can extend only one class, abstract or not, because inheriting state and behavior from two parents creates conflicts. But a class can implement any number of interfaces, because a promise to provide methods creates no conflict over state. Since Java 8 there is one exception: if two interfaces give the same method a default body, the class will not compile until it overrides that method and picks a winner. In the figure, `GuardBot` can take `Alarmed` alongside `Robot`, but only in interface mode.
 
 The line has blurred in one place. Since Java 8, interfaces can carry default methods, implemented behavior that implementers inherit unless they override it. Turn on the `charge()` body and watch the contract: in abstract class mode the method is written plainly, and in interface mode the same method needs the `default` keyword. That keyword is the marker that says implementers get this body for free.
 

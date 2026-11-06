@@ -156,7 +156,7 @@ export default function RelationalModelViz() {
           <span className={`${styles.badge} ${styles.pk}`}>PK</span>primary key: uniquely identifies a row
         </span>
         <span>
-          <span className={`${styles.badge} ${styles.fk}`}>FK</span>foreign key: points to a primary key in another table
+          <span className={`${styles.badge} ${styles.fk}`}>FK</span>foreign key: points to a unique key in another table
         </span>
       </div>
 

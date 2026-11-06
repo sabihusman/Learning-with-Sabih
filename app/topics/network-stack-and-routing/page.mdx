@@ -33,9 +33,7 @@ its own block of addresses. One router sits between them, with a foot in each
 network and a separate address on each side.
 
 Send from Host A to Host B and the packet never reaches the router. Both hosts
-sit in the same network, so the switch alone can finish the job. It reads the
-layer 2 header, sees the destination is one of its own, and forwards the
-frame. The layer 3 header is present the whole time and nobody looks at it.
+sit in the same network, so the switch alone can finish the job. It reads the layer 2 header, looks the destination up in its forwarding table, and forwards the frame out of the port for that host. The layer 3 header is present the whole time and nobody looks at it.
 
 That is the whole job of a switch. It moves traffic inside one network and it
 never needs to know that any other network exists.
@@ -65,7 +63,7 @@ did, and Host C strips both headers and reads the payload.
 
 ## Why it is built this way
 
-The layer 2 address only has to be unique and meaningful on one link. It gets
+A layer 2 (MAC) address is globally administered, assigned by the hardware maker so it is unique worldwide. It is only used on one link, though, because the router rewrites it at every hop. It gets
 thrown away the moment the packet leaves that link, so nobody has to coordinate
 those addresses across the whole internet.
 

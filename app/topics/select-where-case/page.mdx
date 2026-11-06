@@ -14,6 +14,8 @@ export const metadata = {
 
 `CASE` creates a new derived column by labeling or bucketing rows with conditions. The pattern is `CASE WHEN ... THEN ... ELSE ... END`. For example, you can compute a label called `tier`: return `'paid'` when `plan = 'pro'`, otherwise `'free'`. Or you can bucket a number into `'low'`, `'medium'`, or `'high'`. `CASE` does not change the stored data; it computes a value on the fly for the result.
 
+One habit to avoid: the ELSE here labels anything that is not 'pro' as 'free', including a NULL plan or a typo like 'Pro'. A safer pattern ends with ELSE 'unknown', so bad data shows up as unknown instead of silently joining a real bucket.
+
 These three show up in everyday SQL. Most queries start by choosing columns with `SELECT`, filtering rows with `WHERE`, and sometimes adding a `CASE` label, before any joining or grouping happens.
 
 ## Filtering rows live
