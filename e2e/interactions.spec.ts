@@ -36,7 +36,10 @@ test('attention: the heatmap has 10 rows, and clicking a row updates the shared 
   await page.goto('/topics/attention/')
   const selectedReadout = readoutValue(page, 'selected')
   const topLinksReadout = readoutValue(page, 'top links')
-  await expect(selectedReadout).toHaveText('—')
+  // the figure opens on "it", the coreference case
+  await expect(selectedReadout).toHaveText('it')
+  await page.getByRole('button', { name: 'Show outgoing attention from "cross"' }).click()
+  await expect(selectedReadout).toHaveText('cross')
 
   // One row-hit target per word, exposed as a button (the heatmap's rows are
   // SVG rects with an explicit role, not native <button> elements).

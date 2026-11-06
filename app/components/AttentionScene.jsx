@@ -8,7 +8,7 @@
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Text, Billboard, Line } from '@react-three/drei'
-import { WORDS, SENTENCE, weightsFrom } from './attentionData'
+import { WORDS, SENTENCE } from './attentionData'
 import { ACCENT, INK, FADE, PAPER } from './vizPalette'
 
 const byId = (id) => WORDS.find((w) => w.id === id)
@@ -20,7 +20,7 @@ const LABEL_GAP = 0.34
 const labelSide = (id) => (id % 2 === 0 ? 1 : -1)
 
 // interpolate between two hex colors by t in [0,1]
-const hexToRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]
+const hexToRgb = (h) => [Number.parseInt(h.slice(1, 3), 16), Number.parseInt(h.slice(3, 5), 16), Number.parseInt(h.slice(5, 7), 16)]
 const FADE_RGB = hexToRgb(FADE)
 const ACCENT_RGB = hexToRgb(ACCENT)
 const lerpColor = (t) => {
@@ -90,9 +90,12 @@ function WordPoint({ word, selected, weight, anySelected, onSelect, onHover }) {
   )
 }
 
-export default function AttentionScene({ selected, onSelect }) {
+// row: the selected word's softmax weights (one per word). Visual strength is
+// scaled by the row's largest weight, because real weights rarely reach 1.
+export default function AttentionScene({ selected, row, onSelect }) {
   const sel = selected != null ? byId(selected) : null
-  const weights = selected != null ? weightsFrom(selected) : {}
+  const rowMax = row ? Math.max(...row) : 1
+  const weights = selected != null && row ? Object.fromEntries(row.map((w, j) => [j, w / rowMax])) : {}
   // Hover state lives here so the pointer cursor is scoped to this container
   // rather than written onto document.body.
   const [hovering, setHovering] = useState(false)

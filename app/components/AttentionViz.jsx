@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import Figure from './Figure'
-import { WORDS, SENTENCE, topLinks } from './attentionData'
+import { WORDS, SENTENCE, DIMS, attentionRow } from './attentionData'
 import { FADE, MONO } from './vizPalette'
 import AttentionHeatmap from './AttentionHeatmap'
+import shared from './vizShared.module.css'
+import styles from './AttentionViz.module.css'
 
 // three.js / R3F load ONLY here, client-side, on this route. ssr:false keeps the
 // 3D scene out of the static export and out of every other page's bundle. The
@@ -31,25 +33,54 @@ const AttentionScene = dynamic(() => import('./AttentionScene'), {
   ),
 })
 
+const DEFAULT_QUERY = 7 // "it", the coreference case
+const NUDGE_MIN = -3
+const NUDGE_MAX = 3
+
 const labelOf = (id) => WORDS.find((w) => w.id === id)?.label ?? id
+const fmt = (x) => (Math.abs(x) < 0.005 ? '0.00' : x.toFixed(2))
 
 export default function AttentionViz() {
-  const [selected, setSelected] = useState(null)
+  const [selected, setSelected] = useState(DEFAULT_QUERY)
+  const [scaled, setScaled] = useState(true)
+  const [nudgeKey, setNudgeKey] = useState(5) // "street", the word "it" should NOT pick
+  const [nudge, setNudge] = useState(0)
 
-  const links = selected != null ? topLinks(selected, 3) : []
+  // A nudge belongs to the selected query's row only; picking another query
+  // starts it fresh.
+  const selectQuery = (id) => {
+    setSelected(id)
+    setNudge(0)
+  }
+  const adjustFor = (queryId) => (queryId === selected && nudge !== 0 ? { [nudgeKey]: nudge } : {})
 
-  const controls = [{ label: 'Clear selection', onClick: () => setSelected(null), disabled: selected == null }]
+  const matrix = WORDS.map((w) => attentionRow(w.id, { scaled, adjust: adjustFor(w.id) }).weights)
+  const row = selected == null ? null : attentionRow(selected, { scaled, adjust: adjustFor(selected) })
+  const rowSum = row ? row.weights.reduce((a, b) => a + b, 0) : null
+  const top = row
+    ? row.weights
+        .map((weight, id) => ({ id, weight }))
+        .filter((l) => l.id !== selected)
+        .sort((a, b) => b.weight - a.weight)
+        .slice(0, 3)
+    : []
+  const maxWeight = row ? Math.max(...row.weights) : 1
 
-  const readouts = [
-    { label: 'words', value: WORDS.length },
-    { label: 'selected', value: selected != null ? labelOf(selected) : '—' },
-    {
-      label: 'top links',
-      value: selected != null ? links.map((l) => `${labelOf(l.id)} ${l.weight.toFixed(2)}`).join(', ') : '—',
-    },
+  const controls = [
+    { label: scaled ? 'Divide by √d: on' : 'Divide by √d: off', onClick: () => setScaled((s) => !s), active: scaled },
+    { label: 'Reset nudge', onClick: () => setNudge(0), disabled: nudge === 0 },
   ]
 
-  const status = selected != null ? `Attention from "${labelOf(selected)}"` : 'Click a word to see what it attends to'
+  const readouts = [
+    { label: 'selected', value: selected != null ? labelOf(selected) : '—' },
+    { label: 'top links', value: top.length ? top.map((l) => `${labelOf(l.id)} ${l.weight.toFixed(2)}`).join(', ') : '—' },
+    { label: 'row sum', value: rowSum != null ? rowSum.toFixed(2) : '—' },
+  ]
+
+  const status =
+    selected == null
+      ? 'Pick a word to see its row of attention'
+      : `Softmax over "${labelOf(selected)}"'s ${WORDS.length} scores: the weights always add up to 1.00`
 
   return (
     <Figure
@@ -59,11 +90,101 @@ export default function AttentionViz() {
       status={status}
       readouts={readouts}
       tryThis={
-        'Drag to orbit the sentence and scroll to zoom. Click a word to draw its attention links to the rest; thicker and brighter links mean stronger attention. Click "it" and watch the strongest link reach back to "animal", the thing "it" refers to. These weights are hand-set to show the idea, not computed.'
+        'Pick "it" and see most of its weight land on "animal". Then nudge the raw score for "street" up: every weight in the row shifts, "animal" gives some up, and the row still adds up to exactly 1.00. Turn the square-root scaling off and watch the same scores make a sharper, more lopsided row. The grid below shows every word\'s row at once; each one sums to 1.'
       }
     >
-      <AttentionHeatmap selected={selected} onSelect={setSelected} />
-      <AttentionScene selected={selected} onSelect={setSelected} />
+      <div className={styles.lab} data-testid="softmax-lab">
+        <fieldset className={`${shared.group} ${styles.fieldset}`}>
+          <legend className={shared.groupLabel}>query word</legend>
+          {WORDS.map((w) => (
+            <button
+              key={w.id}
+              type="button"
+              className={shared.btn}
+              aria-pressed={selected === w.id}
+              data-testid={`query-${w.id}`}
+              onClick={() => selectQuery(w.id)}
+            >
+              {w.label}
+            </button>
+          ))}
+        </fieldset>
+
+        {row && (
+          <>
+            <div className={styles.headRow} aria-hidden="true">
+              <span>key word</span>
+              <span>Q·K</span>
+              <span>{scaled ? `÷√${DIMS}` : 'unscaled'}</span>
+              <span>softmax weight</span>
+            </div>
+            <ol className={styles.rows} aria-label={`Attention from "${labelOf(selected)}" to each word`}>
+              {WORDS.map((w, j) => (
+                <li key={w.id} className={styles.row} data-testid="lab-row" data-weight={row.weights[j]}>
+                  <span className={styles.word}>{w.label}</span>
+                  <span className={styles.num}>{fmt(row.raw[j])}</span>
+                  <span className={styles.num}>{fmt(row.scores[j])}</span>
+                  <span className={styles.barCell}>
+                    <span className={styles.bar} style={{ width: `${(row.weights[j] / maxWeight) * 100}%` }} />
+                    <span className={styles.weight}>{row.weights[j].toFixed(2)}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <div className={styles.sumRow}>
+              <span>sum of weights</span>
+              <span data-testid="lab-sum">{rowSum.toFixed(2)}</span>
+            </div>
+
+            <div className={styles.nudge}>
+              <label className={shared.groupLabel} htmlFor="attn-nudge-key">
+                nudge the raw score of
+              </label>
+              <select
+                id="attn-nudge-key"
+                className={shared.select}
+                value={nudgeKey}
+                onChange={(e) => {
+                  setNudgeKey(Number(e.target.value))
+                  setNudge(0)
+                }}
+              >
+                {WORDS.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.label}
+                    {w.label === 'the' ? ` (${w.id + 1})` : ''}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="range"
+                className={shared.slider}
+                min={NUDGE_MIN}
+                max={NUDGE_MAX}
+                step={0.1}
+                value={nudge}
+                onChange={(e) => setNudge(Number(e.target.value))}
+                aria-label={`Add to the raw score of "${labelOf(nudgeKey)}"`}
+                data-testid="nudge"
+              />
+              <span className={styles.nudgeValue}>
+                {nudge > 0 ? '+' : ''}
+                {nudge.toFixed(1)}
+              </span>
+            </div>
+          </>
+        )}
+      </div>
+
+      <AttentionHeatmap matrix={matrix} selected={selected} onSelect={selectQuery} />
+      <AttentionScene selected={selected} row={row ? row.weights : null} onSelect={(id) => (id == null ? setSelected(null) : selectQuery(id))} />
+
+      <p className={shared.caption}>
+        Every weight here is computed: each word&apos;s Query is compared with every word&apos;s Key by a dot product,
+        divided by the square root of the vector size ({DIMS}), and turned into weights by softmax, so each row sums
+        to 1. The Query and Key vectors are hand-authored, six readable features per word, chosen so the
+        sentence&apos;s relationships fall out of the arithmetic; a real model learns them, and runs many heads at once.
+      </p>
     </Figure>
   )
 }
