@@ -17,30 +17,32 @@ sealed envelopes, and meetings in person.
 
 Public-key cryptography removes the shared secret. Each person holds a pair of
 keys that are mathematically linked: a public key they hand out freely, and a
-private key they never share. What one key locks, only its partner unlocks.
+private key they never share. The pair is linked by mathematics, not by a shared secret: what the public key encrypts, only the private key can decrypt, and the private key can also produce signatures that the public key verifies. Those are two different operations, and this topic keeps them separate on purpose.
 
-To send Bob a message, you lock it with Bob's public key. Anyone can have that
-key; it only locks. From that moment the message is ciphertext, and the only
-key that opens it is Bob's private key, which has never left Bob. Lock with the
-wrong person's public key and their partner key opens it instead; apply the
-wrong private key and you get garbage, not the message.
+To send Bob a message, you encrypt it so that only Bob's private key can recover it, using Bob's public key, which anyone may have. In practice the public key almost never encrypts the message itself. Your software generates a fresh random symmetric key, encrypts the message with that (symmetric encryption is fast), and uses Bob's public key to encrypt only the small session key. Bob's private key unwraps the session key, and the session key opens the message. This is envelope encryption, also called hybrid encryption, and it is what the figure's first mode does. Use the wrong private key, or let one byte of the ciphertext change in transit, and modern schemes do not hand you garbage: they refuse, with an integrity error. That refusal is a feature. It is how Bob knows the message was tampered with.
 
-## Flipping the keys: signatures
+## The other operation: signatures
 
-The pair works in both directions, and the reverse direction solves a
-different problem: proving who wrote a message. Lock a message with your
-private key and anyone holding your public key can open it. That sounds
-useless for secrecy, everyone has your public key, but that is the point. If
-your public key opens it, only your private key could have locked it, and only
-you hold that. The message is not hidden; it is signed.
+A key pair supports a second operation that is not encryption run backwards: signing. Signing starts by hashing the message. A hash turns any message into a short, fixed-length fingerprint; change one character and the fingerprint changes completely. The signer runs the signing operation on that fingerprint with their private key, producing a signature that travels attached to the message, which stays fully readable.
+
+Anyone holding the signer's public key can verify. The verifier hashes the received message themselves, then checks the signature against that hash and the public key. The answer is yes or no. Nothing is opened and nothing is decrypted, because nothing was encrypted: the message travelled in plain sight, and the signature's job is proof, not secrecy. A yes proves two things: the holder of the private key signed it, and the message has not changed since. Sign with the wrong key, or change one character after signing, and verification fails.
+
+One warning about a common shorthand. You will hear signing described as encrypting the hash with the private key. That loosely describes how one older algorithm, RSA, is built internally. It is not what signing is, and several modern signature schemes, such as Ed25519 and ECDSA, have no encryption-like operation at all. Keep the operations separate: encrypt for secrecy, sign for proof.
+
+## Whose key is it anyway? Certificates
+
+Both operations assume you are holding the right person's public key. On an open channel that is not guaranteed: an attacker in the middle can hand you their own public key while claiming to be Bob. You would encrypt to the attacker, or accept the attacker's signatures as Bob's, and nothing in the mathematics so far would warn you.
+
+Certificates close that hole. A certificate is a small signed statement from a certificate authority (CA), an organisation that browsers and operating systems are configured to trust, saying: this public key belongs to this name. The CA signs the certificate with its own private key, so anyone can check it with the CA's widely distributed public key, and a forged certificate fails that check, as the figure's third mode shows. When your browser shows a padlock for a website, this chain is what it verified. The cryptography proves that keys match messages; certificates are how you know whose key you are holding.
 
 ## What the demo shows
 
-Type a message and choose whose public key locks it, then try each private key
-on the ciphertext: the matching one recovers the message and the other
-produces garbage. The Sign toggle swaps the roles, lock with a private key,
-verify with the matching public key. The scrambling itself is a toy, see the
-note below the figure, but the lock-and-key logic it acts out is the real
-idea.
+The figure runs real cryptography in your browser, through the WebCrypto API, with fresh keys generated on every visit and nothing stored. It has three modes.
+
+Send a secret is envelope encryption: a random session key encrypts your message, and the recipient's public key wraps only that key. Try the wrong private key, or flip a byte of the ciphertext, and the unwrap or the integrity check refuses, rather than showing garbage.
+
+Sign and verify hashes your message and signs the fingerprint. Verification answers yes or no against the signer's public key; try a signature from the wrong key, or edit the message after signing, and it fails.
+
+Check the key is the certificate mode. A demo CA has signed a certificate for the real Bob. The attacker's forged certificate fails the CA signature check, and the attacker's own genuine certificate fails the name check, because it certifies the attacker's name, not Bob's.
 
 <EncryptionViz />
