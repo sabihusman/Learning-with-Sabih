@@ -1,14 +1,14 @@
 import EncoderDecoderViz from '@/app/components/EncoderDecoderViz'
 
 export const metadata = {
-  title: 'Encoders and decoders - Learning with Sabih',
+  title: 'Encoders and decoders - Learn with Sabih',
 }
 
 # Encoders and decoders
 
 A transformer can be built to do one of two jobs, and the difference comes down to what each word is allowed to look at.
 
-An encoder reads a whole sentence at once. Every word can look at every other word, including the ones that come after it. This is good for understanding, because to know what a word means you often need the words around it, on both sides. Models that classify text or answer questions about a passage are usually encoders.
+An encoder reads a whole sentence at once. Every word can look at every other word, including the ones that come after it. This is good for understanding, because to know what a word means you often need the words around it, on both sides. Models that classify text are usually encoders. Answering questions about a passage used to be encoder work too; in 2026 it is mostly done by decoder-only LLMs, while encoder-decoder models survive mainly in translation and specialised pipelines.
 
 A decoder generates text one word at a time, left to right. When it is producing a word, the words after it do not exist yet, they have not been written. So each word can only look at itself and the words before it, never ahead. This backward-only rule is called causal masking. Models that write text, like the GPT family, are decoders.
 

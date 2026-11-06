@@ -56,7 +56,7 @@ export default function TokenizerViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis={`Edit the sentence and watch the tokens change. Common words like "the" and "apple" stay as a single token, but longer or rarer words split into subword pieces, like un / break / able. Each block is one token with an integer ID; a model reads this stream of IDs, not the letters. That is why models stumble on spelling or counting letters: try the spelling example and notice "strawberry" is a single token, so the model never sees its individual r's. This splitter is a simplified illustration, not a real model's tokenizer.`}
+      tryThis={`Edit the sentence and watch the tokens change. Common words like "the" and "apple" stay as a single token, but longer or rarer words split into subword pieces, like un / break / able. Each block is one token with an integer ID; a model reads this stream of IDs, not the letters. That is why models stumble on spelling or counting letters: in this demo's tokenizer, "strawberry" is a single token, so the model never sees its individual r's. Real tokenizers vary: many split a word like this into pieces, and byte-level tokenizers keep a path back to the letters, which softens the problem without removing it. This splitter is a simplified illustration, not a real model's tokenizer.`}
     >
       <input
         className={shared.input}

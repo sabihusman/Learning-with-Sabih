@@ -30,9 +30,9 @@ export const DB_ID = 'database'
 // of magnitude); nothing in the figure computes timing from them.
 export const LATENCY_LABEL = {
   browser: '~0 ms',
-  cdn: '~20 ms',
-  redis: '~50 ms',
-  database: '~200 ms',
+  cdn: '~5-30 ms',
+  redis: '~0.2-2 ms',
+  database: '~5-50 ms',
 }
 
 // A is hot, B and C are medium, D, X, Y, Z are one-offs. 24 reads, arranged so

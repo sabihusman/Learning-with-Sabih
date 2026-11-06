@@ -5,7 +5,7 @@ import { colorForSection, sectionSlug, SECTION_BLURBS } from './sectionColors'
 import FontSizeControl from './components/FontSizeControl'
 
 export const metadata = {
-  title: 'Learning with Sabih',
+  title: 'Learn with Sabih',
 }
 
 export default function ContentsPage() {
@@ -21,7 +21,7 @@ export default function ContentsPage() {
       <header className={styles.hero}>
         <span className={styles.circleLarge} aria-hidden="true" />
         <span className={styles.circleSmall} aria-hidden="true" />
-        <p className={styles.eyebrow}>Learning with Sabih</p>
+        <p className={styles.eyebrow}>Learn with Sabih</p>
         <h1 className={styles.headline}>Computer Science, an interactive study guide</h1>
         <p className={styles.subline}>
           {topicCount} hands-on topics across {chapterCount} chapters. Every one is a live demo, drag, slide and break things until they make sense.

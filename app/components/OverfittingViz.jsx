@@ -231,7 +231,8 @@ export default function OverfittingViz() {
         Real polynomial least-squares fit over a fixed, seeded dataset (16 training + 6 held-out test points around a
         gentle sine curve plus noise). No ML library; the curve and both errors are recomputed from scratch on each
         slider tick. The lower panel runs the same fit at every degree and plots both errors on a log scale; the
-        flagged minimum is computed, not hand-picked.
+        flagged minimum is computed, not hand-picked. At the flagged degree the test error (0.007) sits below the
+        training error (0.034); with only 6 held-out points that ordering is noise, not a sign of a better model.
       </p>
     </Figure>
   )

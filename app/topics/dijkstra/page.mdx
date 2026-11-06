@@ -1,12 +1,12 @@
 import DijkstraViz from '@/app/components/DijkstraViz'
 
 export const metadata = {
-  title: "Dijkstra's shortest path - Learning with Sabih",
+  title: "Dijkstra's shortest path - Learn with Sabih",
 }
 
 # Dijkstra's shortest path
 
-In the previous topic, a graph edge was just a connection. The shortest path meant the path with the fewest hops. That works for some problems, but real connections often have costs. Roads have distances. Networks have delays. Routes have prices. In those cases, the shortest path means the cheapest total cost, not the fewest steps. A path with fewer hops can still be more expensive than a path with more hops.
+Two topics back, in Graph Traversal, a graph edge was just a connection. The shortest path meant the path with the fewest hops. That works for some problems, but real connections often have costs. Roads have distances. Networks have delays. Routes have prices. In those cases, the shortest path means the cheapest total cost, not the fewest steps. A path with fewer hops can still be more expensive than a path with more hops.
 
 Plain breadth-first search is not enough for this job. BFS counts how many edges you cross. It does not add up the cost written on each edge. If every edge costs the same, that is fine. Once edges have different weights, BFS can choose a route that looks short by step count but is not actually cheapest. We need a method that tracks total cost.
 

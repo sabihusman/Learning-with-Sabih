@@ -206,7 +206,7 @@ export default function PositionalEncodingViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis={`Click through the positions and watch the encoding row change. Notice position 0 is all zeros and ones, the simplest pattern. Watch the similarity shading: positions near the one you picked stay close, distant ones drift apart. Then look at the waves below, and see that a position's encoding is just those waves read off at that one spot. The fast waves separate nearby positions; the slow waves separate far ones.`}
+      tryThis={`Click through the positions and watch the encoding row change. Notice position 0 is all zeros and ones, the simplest pattern. Watch the similarity shading: similarity fades as positions separate, but it does not fade forever. It oscillates, and distant positions can look similar again. That banding is real, and it is why models need more than this encoding alone to judge distance. Then look at the waves below, and see that a position's encoding is just those waves read off at that one spot. The fast waves separate nearby positions; the slow waves separate far ones.`}
     >
       <svg role="img"
         viewBox={`0 0 ${VB_W} ${VB_H}`}

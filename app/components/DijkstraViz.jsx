@@ -203,8 +203,7 @@ export default function DijkstraViz() {
       </svg>
 
       <p className={shared.caption}>
-        Every tentative distance, the growing finalized set, and the final path are computed for real by Dijkstra on the
-        same graph from the previous topic, now using its edge weights. The graph is kept small for clarity; real graphs,
+        Every tentative distance, the growing finalized set, and the final path are computed for real by Dijkstra on the same graph from Graph Traversal, now using its edge weights. The graph is kept small for clarity; real graphs,
         like road networks, are far larger.
       </p>
     </Figure>

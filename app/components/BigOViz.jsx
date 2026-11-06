@@ -35,7 +35,7 @@ const LANES = [
   { key: 'O(n)', label: 'O(n)', algo: 'Linear scan', color: CATEGORICAL[2], f: (n) => n },
   { key: 'O(n log n)', label: 'O(n log n)', algo: 'Merge sort', color: CATEGORICAL[3], f: (n) => n * Math.max(1, Math.log2(n)) },
   { key: 'O(n^2)', label: 'O(n²)', algo: 'Bubble sort', color: CATEGORICAL[4], f: (n) => n * n },
-  { key: 'O(2^n)', label: 'O(2ⁿ)', algo: 'Naive Fibonacci', color: CATEGORICAL[5], f: (n) => fibCalls(n) },
+  { key: 'O(2^n)', label: 'Θ(φⁿ)', algo: 'Naive Fibonacci ≈ O(2ⁿ)', color: CATEGORICAL[5], f: (n) => fibCalls(n) },
 ]
 const TICK_MS = 40
 
@@ -146,7 +146,7 @@ export default function BigOViz() {
     : 'Press Start to race the six classes, then slide n'
   const readouts = [
     { label: 'input size', value: `n = ${n}` },
-    { label: 'O(2ⁿ) at n', value: fmtTime(totals['O(2^n)'] / OPS_PER_SECOND) },
+    { label: 'Θ(φⁿ) at n', value: fmtTime(totals['O(2^n)'] / OPS_PER_SECOND) },
   ]
 
   // curve paths, recomputed only when geometry constants change (not per n)

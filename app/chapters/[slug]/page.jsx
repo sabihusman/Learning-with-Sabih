@@ -21,7 +21,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params
   const section = findSection(slug)
   if (!section) return {}
-  return { title: `${section.name} - Learning with Sabih` }
+  return { title: `${section.name} - Learn with Sabih` }
 }
 
 export default async function ChapterPage({ params }) {

@@ -1,7 +1,7 @@
 import SimilarRowsViz from '@/app/components/SimilarRowsViz'
 
 export const metadata = {
-  title: 'Finding similar rows - Learning with Sabih',
+  title: 'Finding similar rows - Learn with Sabih',
 }
 
 # Finding similar rows
@@ -45,3 +45,5 @@ The reason this approach exists is where it runs. Once each row has a position, 
 IBM ships a version of this in Db2 for z/OS, called SQL Data Insights, which trains on your tables and adds functions like AI_SIMILARITY that you call in ordinary SQL. Other databases have taken a different route, storing vectors produced elsewhere in a dedicated column type and comparing them in the query.
 
 The table here is written by hand so the groups are visible. Everything after that is computed from it: the buckets, the counts, the weights, the positions, and every ranking. The step this figure simplifies is the one that produces the token positions. Real systems train a small neural network to learn them. This figure counts co-occurrence and weights it, which reaches a similar shape of answer by a much cruder route.
+
+Related: [Embeddings](/topics/embeddings/), the topic that builds the vectors this one searches.

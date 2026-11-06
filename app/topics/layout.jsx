@@ -14,7 +14,7 @@ export default function TopicsLayout({ children }) {
         </Link>
         <div className={styles.navRight}>
           <FontSizeControl />
-          <span className={styles.brand}>Learning with Sabih</span>
+          <span className={styles.brand}>Learn with Sabih</span>
         </div>
       </nav>
       <div className={styles.container}>

@@ -13,10 +13,10 @@ AI and ML|05|Decision Boundary|Drag a point and watch a real logistic regression
 AI and ML|06|Confusion Matrix|Precision, recall, and the threshold that trades one for the other|confusion-matrix
 AI and ML|07|Tokenization|How text is split into tokens, each with an integer ID, before a model ever sees it|tokenization
 AI and ML|08|Why Models Struggle with Math|See one side compute the right answer step by step while a model predicts answer tokens and lands on a plausible but wrong one|why-models-struggle-with-math
-AI and ML|09|Embeddings|Words as points in space, where closeness means similar meaning|embeddings
-AI and ML|10|Attention|How a transformer decides which words to focus on, like "it" reaching back to "animal"|attention
-AI and ML|11|Tensors|Climb the dimensionality ladder from a scalar to a batch of images, watching the shape and index math build up rank by rank|tensors
-AI and ML|12|Broadcasting|Pick two array shapes and watch them align from the right, stretching size-1 dimensions to see whether they combine and what result shape they make|broadcasting
+AI and ML|09|Tensors|Climb the dimensionality ladder from a scalar to a batch of images, watching the shape and index math build up rank by rank|tensors
+AI and ML|10|Broadcasting|Pick two array shapes and watch them align from the right, stretching size-1 dimensions to see whether they combine and what result shape they make|broadcasting
+AI and ML|11|Embeddings|Words as points in space, where closeness means similar meaning|embeddings
+AI and ML|12|Attention|How a transformer decides which words to focus on, like "it" reaching back to "animal"|attention
 AI and ML|13|Positional Encoding|Attention ignores word order, so each token gets a sine and cosine fingerprint of its position; pick a position and watch its pattern shift|positional-encoding
 AI and ML|14|Transformers and Multi-Head Attention|Many attention heads in parallel, each head watching a different relationship over the same sentence|transformers
 AI and ML|15|Encoders and Decoders|An encoder sees the whole sentence at once; a decoder can only look back. Toggle the attention mask and watch which words each word is allowed to see|encoders-and-decoders
@@ -33,40 +33,40 @@ Algorithms and Data Structures|25|Linked List vs Array|Run the same operation on
 Algorithms and Data Structures|26|Hash Tables|Hash keys into buckets by a visible character-code rule, watch collisions chain up, and track load factor live|hash-tables
 Algorithms and Data Structures|27|Binary Search Trees|Insert and search values down a tree, then watch a sorted insert order collapse it into a slow straight line|binary-search-trees
 Algorithms and Data Structures|28|Graph Traversal (BFS and DFS)|Walk one graph two ways and watch the only real difference, a queue versus a stack, reorder the visits|graph-traversal
-Algorithms and Data Structures|29|Dijkstra's Shortest Path|Lock in the nearest node and relax its edges until every shortest distance from a source is found, then trace any path|dijkstra
-Algorithms and Data Structures|30|Heaps and Priority Queues|An array that is secretly a tree, and how it hands you the largest item every time|heaps-and-priority-queues
+Algorithms and Data Structures|29|Heaps and Priority Queues|An array that is secretly a tree, and how it hands you the largest item every time|heaps-and-priority-queues
+Algorithms and Data Structures|30|Dijkstra's Shortest Path|Lock in the nearest node and relax its edges until every shortest distance from a source is found, then trace any path|dijkstra
 Algorithms and Data Structures|31|Dynamic Programming|Compute Fibonacci naively and watch the call tree explode with repeated work, then memoize and see it collapse|dynamic-programming
 Databases and SQL|32|Tables and the Relational Model|Data split across tables and linked by keys: hover a row to see the primary-to-foreign-key link|relational-model
 Databases and SQL|33|SELECT, WHERE and CASE|Choose columns, filter rows live, and bucket them with a CASE expression|select-where-case
 Databases and SQL|34|Joins|Match rows across tables, and watch INNER, LEFT, RIGHT, and FULL change the result|joins
 Databases and SQL|35|GROUP BY and Aggregation|Collapse rows into one summary per group, and see how COUNT, DISTINCT, and HAVING behave|group-by
 Databases and SQL|36|Window Functions|Rank, number, and total across rows without collapsing them, and see how ties split the ranks|window-functions
-Databases and SQL|37|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
+Databases and SQL|37|Normalization|Watch one wide table that stores each fact many times step into first normal form, hit an update anomaly, then split into three linked tables so every fact lives in exactly one place|normalization
 Databases and SQL|38|Indexes|Run the same query with the index off then on, and watch rows examined collapse from the whole table to a handful|indexes
 Databases and SQL|39|Query Planning|Slide selectivity to watch the planner flip between an index and a full scan, then compare a good and a bad join order|query-planning
-Databases and SQL|40|Normalization|Watch one wide table that stores each fact many times step into first normal form, hit an update anomaly, then split into three linked tables so every fact lives in exactly one place|normalization
+Databases and SQL|40|Funnel Analysis|Count distinct sessions through each step and watch where users drop off|funnel-analysis
 Databases and SQL|41|SQL vs NoSQL Modeling|Model the same users, plans, and orders as normalized tables and as one document per user, then run three queries and watch which shape touches fewer places as the access pattern changes|sql-vs-nosql-modeling
 Databases and SQL|42|Atomicity|Transfer money between two accounts as one transaction, trigger a failure between the debit and the credit, and watch the rollback restore the balances so the total never changes|atomicity
 Databases and SQL|43|Concurrency|Run two transactions that both add to one balance, watch a stale read make an update vanish, then switch on locking so the second waits and the total comes out right|concurrency
 Databases and SQL|44|Isolation Levels|Turn the isolation dial and pick a concurrency phenomenon, then watch a two-transaction timeline show whether PostgreSQL lets it happen or prevents it|isolation-levels
 Databases and SQL|45|Finding Similar Rows|Turn each row into a bag of values and ask which rows sit closest|finding-similar-rows
-Systems and Networking|46|Caching|Feed a fixed request stream through a real least-recently-used cache of three slots and watch hits skip the slow origin while each miss fetches a key and evicts the one used longest ago|caching
-Systems and Networking|47|Caching Layers|Watch reads fall through a browser cache, a CDN, and Redis before the database answers, each answer copied back up the stack until the warmed layers catch almost everything|caching-layers
-Systems and Networking|48|Percentiles and Tail Latency|Drag a percentile handle across a fixed sample of 60 request latencies and watch the mean sit far below p99, because a handful of slow tail requests drag the average up while most requests never see them|percentiles-and-tail-latency
-Systems and Networking|49|Load Balancing|Send one fixed request stream through a balancer to three servers and watch round robin pile long requests onto one server while least connections keeps them level, then kill a server mid-run and see which policy copes|load-balancing
-Systems and Networking|50|CAP Theorem|Replicate one key across two nodes, cut the network between them, and choose: refuse writes to stay consistent or serve both sides and let the copies diverge, the tradeoff a partition forces|cap-theorem
-Systems and Networking|51|Sharding|Pick a partition key and watch rows hash into shards, then see a low-cardinality key pile most rows onto one hot shard|sharding
-Systems and Networking|52|Consistent Hashing|Place keys on a hash ring, then add a node and watch only a small slice of keys move, while plain hash-mod-N would reshuffle almost everything|consistent-hashing
-Systems and Networking|53|Race Conditions and Locks|Step two threads through a shared balance by hand or on auto-play, watch a bad interleaving lose an update, then turn on a lock and try to break it again|race-conditions
-Systems and Networking|54|Deadlock|Two threads, two locks, grabbed in opposite orders, and watch the wait-for graph close into a circular deadlock, then switch to one lock order and see it become impossible|deadlock
-Systems and Networking|55|TCP and UDP|Send the same 8 packets across an identical lossy channel and watch UDP finish fast with permanent gaps while TCP detects each drop, resends it, and holds arrivals out of order until the gap behind them fills in|tcp-and-udp
-Systems and Networking|56|DNS|Resolve a name through root, TLD, and authoritative servers, watching each one hand back a referral instead of an answer, then look it up again and watch the cached answer skip the whole chain|dns
-Systems and Networking|57|Encryption and Public Keys|Lock a message with someone's public key and see that only their private key opens it, then flip the keys to sign|encryption-and-public-keys
-Systems and Networking|58|Streaming and Buffering|Watch a playback buffer fill from a variable network and drain at a steady rate, then drop the network speed and see the stall coming before it happens|streaming-and-buffering
-Systems and Networking|59|Network Stack and Routing|Walk a packet through two switched networks joined by a router and watch the layer 2 header get rewritten at the crossing while the layer 3 addresses ride through unchanged|network-stack-and-routing
-Systems and Networking|60|Replication|One primary, two lagging replicas, and what a failover loses|replication
+Systems and Networking|46|Network Stack and Routing|Walk a packet through two switched networks joined by a router and watch the layer 2 header get rewritten at the crossing while the layer 3 addresses ride through unchanged|network-stack-and-routing
+Systems and Networking|47|Replication|One primary, two lagging replicas, and what a failover loses|replication
+Systems and Networking|48|Caching|Feed a fixed request stream through a real least-recently-used cache of three slots and watch hits skip the slow origin while each miss fetches a key and evicts the one used longest ago|caching
+Systems and Networking|49|Where Caches Live: Browser to Database|Watch reads fall through a browser cache, a CDN, and Redis before the database answers, each answer copied back up the stack until the warmed layers catch almost everything|caching-layers
+Systems and Networking|50|Percentiles and Tail Latency|Drag a percentile handle across a fixed sample of 60 request latencies and watch the mean sit far below p99, because a handful of slow tail requests drag the average up while most requests never see them|percentiles-and-tail-latency
+Systems and Networking|51|Load Balancing|Send one fixed request stream through a balancer to three servers and watch round robin pile long requests onto one server while least connections keeps them level, then kill a server mid-run and see which policy copes|load-balancing
+Systems and Networking|52|CAP Theorem|Replicate one key across two nodes, cut the network between them, and choose: refuse writes to stay consistent or serve both sides and let the copies diverge, the tradeoff a partition forces|cap-theorem
+Systems and Networking|53|Sharding|Pick a partition key and watch rows hash into shards, then see a low-cardinality key pile most rows onto one hot shard|sharding
+Systems and Networking|54|Consistent Hashing|Place keys on a hash ring, then add a node and watch only a small slice of keys move, while plain hash-mod-N would reshuffle almost everything|consistent-hashing
+Systems and Networking|55|Race Conditions and Locks|Step two threads through a shared balance by hand or on auto-play, watch a bad interleaving lose an update, then turn on a lock and try to break it again|race-conditions
+Systems and Networking|56|Deadlock|Two threads, two locks, grabbed in opposite orders, and watch the wait-for graph close into a circular deadlock, then switch to one lock order and see it become impossible|deadlock
+Systems and Networking|57|TCP and UDP|Send the same 8 packets across an identical lossy channel and watch UDP finish fast with permanent gaps while TCP detects each drop, resends it, and holds arrivals out of order until the gap behind them fills in|tcp-and-udp
+Systems and Networking|58|DNS|Resolve a name through root, TLD, and authoritative servers, watching each one hand back a referral instead of an answer, then look it up again and watch the cached answer skip the whole chain|dns
+Systems and Networking|59|Encryption and Public Keys|Lock a message with someone's public key and see that only their private key opens it, then flip the keys to sign|encryption-and-public-keys
+Systems and Networking|60|Streaming and Buffering|Watch a playback buffer fill from a variable network and drain at a steady rate, then drop the network speed and see the stall coming before it happens|streaming-and-buffering
 Object-Oriented Programming|61|Classes and Objects|Stamp objects off a class blueprint, give each its own state, then lock a field down with encapsulation|classes-and-objects
-Object-Oriented Programming|62|Constructors and the Heap|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
+Object-Oriented Programming|62|References, the Heap, and Aliasing|Trace new step by step as it allocates a Dog on the heap, then copy the reference and watch two names change one object|constructors-and-the-heap
 Object-Oriented Programming|63|Encapsulation|Give a bank account one rule, break it through a public field, then make the field private so the object can refuse the writes that would violate it|encapsulation
 Object-Oriented Programming|64|Inheritance|Build a robot family tree and watch method lookup climb the chain until an override wins|inheritance
 Object-Oriented Programming|65|Polymorphism|Send one activate() call to robots all typed as Robot and watch each run its own behavior|polymorphism

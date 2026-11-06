@@ -2,7 +2,7 @@ import RlhfViz from '@/app/components/RlhfViz'
 import FineTuningViz from '@/app/components/FineTuningViz'
 
 export const metadata = {
-  title: 'RLHF - Learning with Sabih',
+  title: 'RLHF - Learn with Sabih',
 }
 
 # RLHF
@@ -25,7 +25,7 @@ The figure below is a simplified stand-in. It uses a few hidden trait scores (he
 
 RLHF is one example of a broader technique called fine-tuning. Fine-tuning takes a model that has already been trained on a huge, general corpus and trains it a little further on a smaller, specialized dataset. The goal is to shift the model's behavior toward a particular style, domain, or set of preferences, without starting over from scratch.
 
-The starting point is what makes this work. The base model already knows grammar, facts, and how to follow instructions from its original training. Fine-tuning does not rebuild any of that; it nudges the model on top of what it already knows, which is why it needs far less data and compute than training a model from the beginning. RLHF fits this pattern exactly: the specialized dataset is human preference comparisons, and the further training pushes the model toward responses people prefer.
+The starting point is what makes this work. The base model already knows grammar and facts from its original training. Following instructions is not part of that: it is taught afterwards, first by supervised fine-tuning (SFT) on example instructions with good answers. The full pipeline for an assistant is SFT, then a reward model trained on human comparisons, then RLHF, which starts from the SFT model, not the raw base model. Fine-tuning does not rebuild any of that; it nudges the model on top of what it already knows, which is why it needs far less data and compute than training a model from the beginning. RLHF fits this pattern exactly: the specialized dataset is human preference comparisons, and the further training pushes the model toward responses people prefer.
 
 A common use of fine-tuning is teaching a general assistant a specific domain, like a company's support style. You collect a small set of example questions and good answers, then train on them. Afterward the model answers domain questions in the specialized way, while keeping its general knowledge intact. Done carefully, specializing behavior does not erase what the base model already knew.
 
