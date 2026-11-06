@@ -1,17 +1,18 @@
 'use client'
 
-// Plain SVG/DOM only: no three.js, no dynamic() wrapper needed. Reuses the
-// exact weight source AttentionScene.jsx already uses (weightsFrom), so the
-// two views are always showing the same numbers, just two different ways.
+// Plain SVG/DOM only: no three.js, no dynamic() wrapper needed. Draws the
+// matrix it is given (softmax rows from attentionData), so it always shows the
+// same numbers as the rest of the figure, including any score the reader has
+// adjusted. Every row sums to 1, and the sum column says so.
 
-import { WORDS, weightsFrom } from './attentionData'
+import { WORDS } from './attentionData'
 import { ACCENT, INK, FADE, PAPER, RULE, MONO } from './vizPalette'
 import styles from './AttentionHeatmap.module.css'
 import shared from './vizShared.module.css'
 
 // interpolate between two hex colors by t in [0,1] (same approach as
 // AttentionScene's lerpColor, kept local so attentionData.js stays data-only)
-const hexToRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]
+const hexToRgb = (h) => [Number.parseInt(h.slice(1, 3), 16), Number.parseInt(h.slice(3, 5), 16), Number.parseInt(h.slice(5, 7), 16)]
 const PAPER_RGB = hexToRgb(PAPER)
 const ACCENT_RGB = hexToRgb(ACCENT)
 const lerpColor = (t) => {
@@ -30,32 +31,18 @@ const PAD = 8
 const GRID_SIZE = N * PITCH - GAP
 const GRID_X = ROW_LABEL_W + PAD
 const GRID_Y = COL_LABEL_H + PAD
-const VB_W = GRID_X + GRID_SIZE + PAD
+const SUM_W = 40
+const VB_W = GRID_X + GRID_SIZE + SUM_W + PAD
 const VB_H = GRID_Y + GRID_SIZE + PAD
 
 const cellX = (col) => GRID_X + col * PITCH
 const cellY = (row) => GRID_Y + row * PITCH
 
-// The full N x N matrix, source word (row) -> target word (column). The
-// diagonal is never in weightsFrom's output (a word has no outgoing weight
-// to itself), so it is kept as a distinct "not applicable" cell rather than
-// treated as a measured zero.
-function buildMatrix() {
-  let max = 0
-  const rows = WORDS.map((rowWord) => {
-    const weights = weightsFrom(rowWord.id)
-    return WORDS.map((colWord) => {
-      if (colWord.id === rowWord.id) return null
-      const w = weights[colWord.id] ?? 0
-      if (w > max) max = w
-      return w
-    })
-  })
-  return { rows, max: max || 1 }
-}
+const rowSum = (row) => row.reduce((a, b) => a + b, 0)
 
-export default function AttentionHeatmap({ selected, onSelect }) {
-  const { rows, max } = buildMatrix()
+export default function AttentionHeatmap({ matrix, selected, onSelect }) {
+  const rows = matrix
+  const max = Math.max(...rows.flat()) || 1
 
   const toggleRow = (id) => {
     onSelect(id)
@@ -69,15 +56,12 @@ export default function AttentionHeatmap({ selected, onSelect }) {
 
   return (
     <div className={styles.wrap}>
-      <p className={`${shared.caption} ${styles.disclosure}`}>
-        The numbers are hand-set to make the lesson clear and do not add up to 1 the way a real model&apos;s would.
-      </p>
       <div className={styles.scroll}>
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className={styles.svg}
         role="img"
-        aria-label={`Attention weight heatmap: ${N} rows and ${N} columns, one per word in the sentence, in reading order. Each cell shows how strongly the row word attends to the column word, shaded relative to the strongest weight in the grid; these are hand-set relative strengths, not probabilities, and diagonal cells are not applicable. ${selected != null ? `Row "${WORDS.find((w) => w.id === selected)?.label}" is selected.` : 'No row is selected.'}`}
+        aria-label={`Attention weight heatmap: ${N} rows and ${N} columns, one per word in the sentence, in reading order. Each cell is the softmax weight from the row word to the column word, shaded relative to the strongest weight in the grid; every row sums to 1. ${selected != null ? `Row "${WORDS.find((w) => w.id === selected)?.label}" is selected.` : 'No row is selected.'}`}
       >
         {/* column labels, rotated so 10 words fit in narrow columns */}
         {WORDS.map((colWord, col) => (
@@ -95,7 +79,11 @@ export default function AttentionHeatmap({ selected, onSelect }) {
           </text>
         ))}
 
-        {/* rows: label + cells + one invisible full-row hit target */}
+        <text x={GRID_X + GRID_SIZE + SUM_W / 2} y={GRID_Y - 8} fontSize={10.5} fill={FADE} fontFamily={MONO} textAnchor="middle">
+          sum
+        </text>
+
+        {/* rows: label + cells + row sum + one invisible full-row hit target */}
         {WORDS.map((rowWord, row) => {
           const isSelected = selected === rowWord.id
           return (
@@ -112,39 +100,35 @@ export default function AttentionHeatmap({ selected, onSelect }) {
                 {rowWord.label}
               </text>
 
-              {rows[row].map((w, col) => {
-                if (w == null) {
-                  // diagonal: not applicable, not a measured zero
-                  return (
-                    <rect
-                      key={col}
-                      x={cellX(col)}
-                      y={cellY(row)}
-                      width={CELL}
-                      height={CELL}
-                      rx={3}
-                      fill={PAPER}
-                      stroke={RULE}
-                      strokeWidth={0.75}
-                    />
-                  )
-                }
-                return (
-                  <rect
-                    key={col}
-                    x={cellX(col)}
-                    y={cellY(row)}
-                    width={CELL}
-                    height={CELL}
-                    rx={3}
-                    fill={lerpColor(w / max)}
-                    stroke={RULE}
-                    strokeWidth={0.75}
-                  >
-                    <title>{`${rowWord.label} to ${WORDS[col].label}: ${w.toFixed(2)}`}</title>
-                  </rect>
-                )
-              })}
+              {rows[row].map((w, col) => (
+                <rect
+                  key={col}
+                  x={cellX(col)}
+                  y={cellY(row)}
+                  width={CELL}
+                  height={CELL}
+                  rx={3}
+                  fill={lerpColor(w / max)}
+                  stroke={RULE}
+                  strokeWidth={0.75}
+                  data-testid="cell"
+                  data-weight={w}
+                >
+                  <title>{`${rowWord.label} to ${WORDS[col].label}: ${w.toFixed(2)}`}</title>
+                </rect>
+              ))}
+
+              <text
+                x={GRID_X + GRID_SIZE + SUM_W / 2}
+                y={cellY(row) + CELL / 2 + 4}
+                fontSize={10.5}
+                fill={INK}
+                fontFamily={MONO}
+                textAnchor="middle"
+                data-testid="row-sum"
+              >
+                {rowSum(rows[row]).toFixed(2)}
+              </text>
 
               {/* full-row hit target: clicking the label OR any cell in the row selects it */}
               <rect
