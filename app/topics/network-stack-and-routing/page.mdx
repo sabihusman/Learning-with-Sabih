@@ -63,9 +63,7 @@ did, and Host C strips both headers and reads the payload.
 
 ## Why it is built this way
 
-A layer 2 (MAC) address is globally administered, assigned by the hardware maker so it is unique worldwide. It is only used on one link, though, because the router rewrites it at every hop. It gets
-thrown away the moment the packet leaves that link, so nobody has to coordinate
-those addresses across the whole internet.
+A layer 2 (MAC) address is globally administered, assigned by the hardware maker so it is unique worldwide. It is only used on one link, though, because the router rewrites it at every hop. It gets thrown away the moment the packet leaves that link, and the worldwide uniqueness costs the networks nothing: it was arranged once, by the manufacturer, and each link only ever has to tell its own devices apart.
 
 The layer 3 address does the opposite. It stays fixed end to end, which means a
 sender only needs to know one address for a destination that might be twenty

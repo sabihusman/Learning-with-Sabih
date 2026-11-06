@@ -44,6 +44,22 @@ test('plan produces a hot shard at n=3 and n=4', () => {
   }
 })
 
+// The prose claims a two-value key lands on at most two shards, one per value,
+// however many shards there are, and that every other shard stays empty. Checked
+// at the figure's own shard counts (3 and 4) and beyond them.
+test('plan rows land on at most two shards, one per plan value, at any shard count', () => {
+  const values = [...new Set(ROWS.map((r) => r.plan))]
+  expect(values.sort()).toEqual(['free', 'pro'])
+  for (const n of [3, 4, 5, 6, 8, 16]) {
+    const target = new Set(values.map((v) => shardOf(v, n)))
+    for (const row of ROWS) expect(target.has(shardOf(row.plan, n))).toBe(true)
+    const counts = shardCounts('plan', n)
+    const used = counts.map((c, i) => (c > 0 ? i : -1)).filter((i) => i >= 0)
+    expect(used.length).toBeLessThanOrEqual(2)
+    expect(new Set(used)).toEqual(target)
+  }
+})
+
 test('country stays mild, not hot, at n=3 and n=4', () => {
   for (const n of [3, 4]) {
     const counts = shardCounts('country', n)
