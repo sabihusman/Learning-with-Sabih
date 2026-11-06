@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Figure from './Figure'
+import ChoiceGroup from './ChoiceGroup'
 import {
   CA_NAME,
   CERT_SCENARIOS,
@@ -89,26 +90,6 @@ function Value({ children, tone, testId }) {
   )
 }
 
-function Choice({ label, options, value, onChange, testPrefix }) {
-  return (
-    <fieldset className={`${shared.group} ${styles.fieldset}`}>
-      <legend className={shared.groupLabel}>{label}</legend>
-      {options.map((o) => (
-        <button
-          key={o.id}
-          type="button"
-          className={shared.btn}
-          aria-pressed={value === o.id}
-          data-testid={`${testPrefix}-${o.id}`}
-          onClick={() => onChange(o.id)}
-        >
-          {o.label}
-        </button>
-      ))}
-    </fieldset>
-  )
-}
-
 const ENVELOPE_FAILURE = {
   unwrap: 'Rejected: this private key cannot unwrap the session key, so nothing comes out.',
   decrypt: 'Rejected: the authentication tag does not match, so decryption refuses to return anything.',
@@ -153,7 +134,7 @@ function EnvelopeView({ v, message, receiver, setReceiver, tamper, setTamper, re
         <Toggle label="Tamper with the ciphertext in transit" on={tamper} onChange={setTamper} testId="tamper" />
       </Step>
       <Step n={6} label="The receiver tries to open it">
-        <Choice
+        <ChoiceGroup
           label="private key used"
           options={[
             { id: 'bob', label: "Bob's private key" },
@@ -182,7 +163,7 @@ function SignView({ v, message, signer, setSigner, tamper, setTamper }) {
         <Value testId="digest">{v.digest}</Value>
       </Step>
       <Step n={3} label="A signature over that digest">
-        <Choice
+        <ChoiceGroup
           label="signed with"
           options={[
             { id: 'alice', label: "Alice's private key" },
@@ -226,7 +207,7 @@ function CertView({ v, scenario, setScenario }) {
   return (
     <ol className={styles.pipeline}>
       <Step n={1} label="Alice wants to send to Bob, so she needs Bob's public key">
-        <Choice label="what arrives" options={CERT_SCENARIOS} value={scenario} onChange={setScenario} testPrefix="cert" />
+        <ChoiceGroup label="what arrives" options={CERT_SCENARIOS} value={scenario} onChange={setScenario} testPrefix="cert" />
       </Step>
       <Step n={2} label="The certificate it comes in">
         <Value testId="certificate">

@@ -11,6 +11,20 @@
   margin-bottom: 0.75rem;
 }
 
+/* a <fieldset> that looks like .group (pair the two classes) */
+.fieldset {
+  border: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.fieldset legend {
+  float: left;
+  padding: 0;
+}
+
 .groupLabel {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.5625rem;
