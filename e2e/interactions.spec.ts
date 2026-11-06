@@ -238,18 +238,19 @@ test('group-by: switching the grouping column and aggregate updates the result',
 
 test('window-functions: switching the ranking function updates the view and SQL', async ({ page }) => {
   await page.goto('/topics/window-functions/')
-  // The table shows row_number, rank, and dense_rank side by side; the controls
-  // choose the active function, which updates the "view" readout and the SQL rather
-  // than the values themselves.
+  // The table shows every window column side by side and the SQL selects all of
+  // them; the controls choose the active function, which updates the "view"
+  // readout and which SQL line is highlighted, not the values themselves.
   const view = readoutValue(page, 'view')
-  const sql = page.locator('figure pre')
+  const activeLine = page.locator('figure pre [data-active="true"]')
   await expect(view).toBeVisible()
   const viewBefore = (await view.textContent())?.trim() ?? ''
-  const sqlBefore = (await sql.textContent())?.trim() ?? ''
+  await expect(activeLine.first()).toContainText('ROW_NUMBER()')
 
   await page.getByRole('button', { name: 'RANK', exact: true }).click()
   await expect(view).not.toHaveText(viewBefore)
-  await expect(sql).not.toHaveText(sqlBefore)
+  await expect(activeLine.first()).toContainText('RANK()')
+  await expect(activeLine.first()).not.toContainText('DENSE_RANK')
 })
 
 test('percentiles: the handle is fully keyboard operable', async ({ page }) => {
