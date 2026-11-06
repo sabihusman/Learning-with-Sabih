@@ -1,8 +1,12 @@
 import './globals.css'
+import { SITE_NAME, SITE_URL } from './site'
 
 export const metadata = {
-  title: 'Learning with Sabih',
+  metadataBase: new URL(SITE_URL),
+  title: SITE_NAME,
   description: 'Interactive study guide for computer science concepts',
+  alternates: { canonical: './' },
+  openGraph: { siteName: SITE_NAME, type: 'website', url: './' },
 }
 
 // Applies the saved reading-size before first paint so there is no flash of the

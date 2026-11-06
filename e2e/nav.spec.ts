@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 // Bottom-of-page prev/next topic navigation. Neighbors come from the shared ordered
 // list; these expectations follow the current order (Tokenization, Why Models Struggle
-// with Math, Embeddings ... around the middle; Gradient Descent first, Entropy and
+// with Math, Tensors ... around the middle; Gradient Descent first, Entropy and
 // Compression last).
 const topicNav = (page) => page.getByRole('navigation', { name: 'Topic navigation' })
 
@@ -16,12 +16,12 @@ test('middle topic shows previous and next with correct neighbor names', async (
 
   await expect(prev).toContainText('Tokenization')
   await expect(prev).toHaveAttribute('href', /\/topics\/tokenization\/?$/)
-  await expect(next).toContainText('Embeddings')
-  await expect(next).toHaveAttribute('href', /\/topics\/embeddings\/?$/)
+  await expect(next).toContainText('Tensors')
+  await expect(next).toHaveAttribute('href', /\/topics\/tensors\/?$/)
 
   // clicking Next navigates to that topic
   await next.click()
-  await expect(page).toHaveURL(/\/topics\/embeddings\/?$/)
+  await expect(page).toHaveURL(/\/topics\/tensors\/?$/)
 })
 
 test('first topic has no previous', async ({ page }) => {

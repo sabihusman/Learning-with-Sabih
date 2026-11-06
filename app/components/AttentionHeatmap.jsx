@@ -69,6 +69,9 @@ export default function AttentionHeatmap({ selected, onSelect }) {
 
   return (
     <div className={styles.wrap}>
+      <p className={`${shared.caption} ${styles.disclosure}`}>
+        The numbers are hand-set to make the lesson clear and do not add up to 1 the way a real model&apos;s would.
+      </p>
       <div className={styles.scroll}>
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
