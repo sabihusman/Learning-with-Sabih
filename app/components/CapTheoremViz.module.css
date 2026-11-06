@@ -1,8 +1,8 @@
-/* "Two copies, one truth": two replicas with a network link between them and two
-   clients below. Reuses the Systems section vocabulary (service boxes, request
-   tokens, timer-driven steps). Palette stays in the site family: ink / fade /
-   accent, plus the ok-green already used elsewhere. The partition and choice
-   toggles are shared.btn pills (real buttons, keyboard reachable). */
+/* Copies of one value on two or three nodes, the links between them, and one
+   client per node below. A partition is drawn as one cut between the two sides;
+   each side is labelled with how many nodes it holds and whether that is a
+   majority. The cluster, partition and choice controls are shared.btn pills
+   (real buttons, keyboard reachable). */
 
 /* 460-unit viewBox with 8px labels: 403px keeps the smallest label >= 7px on a
    phone, with the shared scroll wrapper taking the overflow. */
@@ -13,4 +13,12 @@
   height: auto;
   display: block;
   margin: 0 auto;
+}
+
+/* the consistency rule for the current cluster size, under the controls */
+.rule {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  color: var(--fade);
+  margin: 2px 0 10px;
 }
