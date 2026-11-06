@@ -13,7 +13,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fade);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 /* layout only; the field itself is the shared in-card input */
@@ -22,104 +22,104 @@
   min-width: 0;
 }
 
-.parties {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.party {
-  flex: 1;
+/* a fieldset that looks like the shared button group */
+.fieldset {
+  border: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
   min-width: 0;
-  background: var(--paper);
-  border: 1px solid #d8d4cc;
-  border-radius: 6px;
-  padding: 8px 10px;
 }
 
-.partyName {
+.fieldset legend {
+  float: left;
+  padding: 0;
+}
+
+.pending {
   font-size: 12px;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-
-.keyRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.key {
-  font-size: 10.5px;
-  padding: 1px 7px;
-  border-radius: 3px;
-  white-space: nowrap;
-}
-
-.publicKey {
-  background: #e6f2ec;
-  color: #1f6f5c;
-}
-
-.privateKey {
-  background: #fbecea;
-  color: var(--accent);
-}
-
-.keyNote {
-  font-size: 9.5px;
   color: var(--fade);
+  padding: 24px 0;
+  text-align: center;
+}
+
+.pipeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* each step hangs off a thin rail so the pipeline reads top to bottom */
+.step {
+  position: relative;
+  padding: 0 0 10px 30px;
+  border-left: 1px solid #e2e0d8;
+  margin-left: 10px;
+}
+
+.step:last-child {
+  border-left-color: transparent;
 }
 
 .stepLabel {
   font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fade);
-  margin: 10px 0 6px;
-}
-
-.stage {
-  margin-top: 10px;
-}
-
-.stageLabel {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fade);
-  margin-bottom: 3px;
-}
-
-.cipher {
-  font-size: 14px;
+  line-height: 1.45;
   color: var(--ink);
-  background: var(--paper);
+  margin-bottom: 6px;
+}
+
+.stepNum {
+  position: absolute;
+  left: -11px;
+  top: -1px;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #d8d4cc;
+  font-size: 10px;
+  line-height: 19px;
+  text-align: center;
+  color: var(--fade);
+}
+
+.value {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: #faf9f6;
   border: 1px solid #d8d4cc;
   border-radius: 4px;
-  padding: 8px 10px;
-  min-height: 1.4em;
-  overflow-x: auto;
-  white-space: pre;
+  padding: 7px 10px;
+  margin: 6px 0;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  white-space: pre-wrap;
 }
 
-.recovered {
+.good {
   border-color: #1f6f5c;
   background: #e6f2ec;
   color: #1f6f5c;
+  word-break: normal;
 }
 
-.garbage {
+.bad {
   border-color: var(--accent);
   background: #fbecea;
   color: var(--accent);
+  word-break: normal;
 }
 
-@media (max-width: 600px) {
-  .parties {
-    flex-direction: column;
-  }
+.field {
+  display: inline-block;
+  min-width: 5.5em;
+  color: var(--fade);
+}
+
+.aside {
+  color: var(--fade);
 }
