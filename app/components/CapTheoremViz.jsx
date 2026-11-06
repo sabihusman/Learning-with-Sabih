@@ -149,7 +149,7 @@ export default function CapTheoremViz() {
       speedControl
       status={statusFor(state, conflict)}
       readouts={readouts}
-      tryThis="Start with 2 nodes. Partition the network, prefer consistency and step: every operation is refused, because a majority of 2 is 2 and each side has only 1. Now switch to 3 nodes and run it again: Node C is cut off alone, but A and B are 2 of 3, a majority, so they keep serving while C refuses. Heal the network and C simply catches up. Then rerun with availability preferred: nothing is refused, C drifts to its own value, and healing leaves a conflict."
+      tryThis="Run the two-node partition both ways and read the two prices. Then switch to three nodes, cut one node off, and run it consistent: watch the majority keep serving while the lone node refuses and falls behind, then heal and watch it catch up without a conflict. Run the same cut under availability and a conflict appears instead. Who accepted writes during the partition is the whole difference."
     >
       <ChoiceGroup
         label="cluster"
@@ -345,10 +345,10 @@ export default function CapTheoremViz() {
       </div>
 
       <p className={shared.caption}>
-        A small model: one key x, copied on every node, and a write reaches every node it can while the network allows.
-        Preferring consistency here means a majority rule: only a side holding more than half the nodes may serve, so at
-        most one side ever does. Real systems add asynchronous replication, leader election and finer consistency
-        levels, and must resolve the conflict two serving sides leave behind. Every count above is read from the
+        A deliberately small model: one key x, synchronous replication while the link is healthy, in clusters of two and
+        three nodes. Consistency here means the nodes never disagree (stricter than the ACID consistency of the Isolation
+        Levels topic). Real systems use larger quorums, asynchronous replication, and finer-grained levels, and must
+        resolve the conflict a healed availability partition leaves behind. Every count above is read from the
         simulation, not typed in.
       </p>
     </Figure>
