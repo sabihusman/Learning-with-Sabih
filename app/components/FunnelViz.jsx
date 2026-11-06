@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Figure from './Figure'
+import ChoiceGroup from './ChoiceGroup'
 import { STEP_EVENTS, COHORTS, WINDOWS, MODES, MESSY_SESSIONS, computeFunnel, fmtPct, buildSql } from './funnelData'
 import { INK, ACCENT, BLUE, BLUE_SOFT, BLUE_BG, LINE, MONO } from './vizPalette'
 import shared from './vizShared.module.css'
@@ -23,26 +24,6 @@ const MAX_BAR_W = 440
 
 const barTop = (i) => TOP + i * (BAR_H + GAP)
 const VB_H = barTop(STEP_EVENTS.length - 1) + BAR_H + 26
-
-function Choice({ label, options, value, onChange, testPrefix }) {
-  return (
-    <fieldset className={`${shared.group} ${styles.fieldset}`}>
-      <legend className={shared.groupLabel}>{label}</legend>
-      {options.map((o) => (
-        <button
-          key={o.id}
-          type="button"
-          className={shared.btn}
-          aria-pressed={value === o.id}
-          data-testid={`${testPrefix}-${o.id}`}
-          onClick={() => onChange(o.id)}
-        >
-          {o.label}
-        </button>
-      ))}
-    </fieldset>
-  )
-}
 
 export default function FunnelViz() {
   const [showDropoff, setShowDropoff] = useState(false)
@@ -153,14 +134,14 @@ export default function FunnelViz() {
       </div>
 
       <div className={styles.controls}>
-        <Choice
+        <ChoiceGroup
           label="window from first open"
           options={WINDOWS}
           value={windowId}
           onChange={setWindowId}
           testPrefix="window"
         />
-        <Choice label="cohort" options={COHORTS} value={cohortId} onChange={setCohortId} testPrefix="cohort" />
+        <ChoiceGroup label="cohort" options={COHORTS} value={cohortId} onChange={setCohortId} testPrefix="cohort" />
         <div className={shared.group}>
           <button
             type="button"
