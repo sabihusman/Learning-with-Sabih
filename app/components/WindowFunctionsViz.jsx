@@ -100,7 +100,7 @@ export default function WindowFunctionsViz() {
       controls={controls}
       status={statusFor(rows, opts, activeFn)}
       readouts={readouts}
-      tryThis="Events 2 and 3 happen at the same second. With ORDER BY occurred_at alone, row_number reads 2 or 3 on both: SQL never said which comes first. Switch the SUM frame to ROWS and the running total on those rows splits the same way; switch back to RANGE and both get 4, because RANGE takes in every peer at once. Then add event_id to the ORDER BY: the tie is gone, every value is fixed, and rank now matches row_number. Finally turn on PARTITION BY session_id and watch everything restart at session 2."
+      tryThis="Find the tied pair, events 2 and 3. Under RANGE their running totals are equal. Under ROWS they split, and which one is smaller is an order the SQL does not fix. Add the tie-break and watch the split disappear. Finally, turn on PARTITION BY and see every calculation restart for session 2."
     >
       <div className={styles.choices}>
         <ChoiceGroup label="ORDER BY" options={ORDERS} value={order} onChange={setOrder} testPrefix="wf-order" />
@@ -240,9 +240,8 @@ export default function WindowFunctionsViz() {
       </pre>
 
       <p className={shared.caption}>
-        The table is the result of the query under it, run over every event of sessions 1 and 2 in the shared events
-        table; value is an illustrative weight the query defines. Where the SQL leaves an answer open, the cell shows
-        every value a database may return instead of picking one.
+        The printed SQL is the literal query behind the table, verified against a real SQL engine. A cell shown as &apos;a or
+        b&apos; is a value the SQL genuinely leaves open. It is not a rounding.
       </p>
     </Figure>
   )
