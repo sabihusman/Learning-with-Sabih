@@ -352,7 +352,7 @@ export default function EncryptionViz() {
       controls={controls}
       status={status}
       readouts={readouts}
-      tryThis="Send a secret: switch the receiver to Eve and the session key will not unwrap at all; turn on tampering and the authentication tag refuses the ciphertext. Sign and verify: change one letter of the message and almost every digit of the digest changes; switch the signer to Mallory and the check fails, because only Alice's private key makes signatures her public key accepts. Check the key: send Mallory's forgery, then Mallory's own certificate, and see which check catches each."
+      tryThis="In Send a secret, encrypt a message to Bob, then try opening it with Eve's private key and watch it refuse; then flip one byte of the ciphertext and watch the integrity check refuse as well. In Sign and verify, sign a message and verify it, then change a single character and verify again. In Check the key, compare the attacker's two certificates: they fail for two different reasons, and the difference is the lesson."
     >
       <div className={styles.wrap}>
         <label className={styles.msgLabel} htmlFor="enc-message">
@@ -387,10 +387,8 @@ export default function EncryptionViz() {
       </div>
 
       <p className={shared.caption}>
-        Everything here is real cryptography running in your browser: AES-256-GCM, RSA-OAEP (2048-bit, SHA-256),
-        ECDSA P-256 with SHA-256, and SHA-256, with fresh keys made each time the page loads. The certificate is
-        simplified: a real one is an X.509 document checked against a chain that ends at a root your browser already
-        ships with. These keys exist only for this demo.
+        Every key here is generated fresh in your browser when the page loads, and every operation is the real
+        algorithm, run locally by the WebCrypto API. No keys or messages leave your device.
       </p>
     </Figure>
   )
