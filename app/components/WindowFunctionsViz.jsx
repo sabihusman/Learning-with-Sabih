@@ -220,7 +220,7 @@ export default function WindowFunctionsViz() {
         </svg>
       </div>
 
-      <div className={shared.legend}>
+      <div className={`${shared.legend} ${styles.legendRow}`}>
         <span className={shared.legendItem}>
           <span className={shared.swatch} style={{ background: AMBER_BG }} />
           peers: equal on the ORDER BY key

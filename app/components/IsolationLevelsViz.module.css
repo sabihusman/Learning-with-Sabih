@@ -147,3 +147,11 @@
     transition: none;
   }
 }
+
+/* Wide screens: the two transaction lanes fill the card, matching the width of
+   the script beneath them instead of a 500px pair centred in empty space. */
+@media (min-width: 1280px) {
+  .lane {
+    max-width: none;
+  }
+}
