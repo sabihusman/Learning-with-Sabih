@@ -92,3 +92,12 @@
   background: #fbecea;
   color: var(--accent);
 }
+
+/* Wide screens: each panel needs about 456px to show its longest line, so
+   below that width the two panels stack (full width each) instead of sitting
+   side by side behind a scrollbar. Tablet and mobile are unchanged. */
+@media (min-width: 1280px) {
+  .code {
+    flex-basis: 460px;
+  }
+}
