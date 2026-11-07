@@ -111,18 +111,18 @@ export function search({ queryId, operator = 'l2', k = 5, index = 'none' }) {
   const q = EMBEDDINGS[queryId]
   const probes = INDEXES.find((i) => i.id === index).probes
   let lists = null
-  let reach = () => true
   let assign = null
   if (probes) {
     const ivf = buildIvf(operator)
     assign = ivf.assign
     lists = probedLists(ivf, q, probes)
-    reach = (id) => lists.includes(ivf.assign[id])
   }
+  // with no index every row is reachable; with one, only rows in a probed list
+  const isReachable = (id) => lists === null || lists.includes(assign[id])
   const rows = CUSTOMERS.filter((c) => c.id !== queryId).map((c) => ({
     id: c.id,
     distance: dist(q, c.embedding),
-    reachable: reach(c.id),
+    reachable: isReachable(c.id),
     list: assign ? assign[c.id] : null,
   }))
   const order = (a, b) => a.distance - b.distance || a.id.localeCompare(b.id)
@@ -137,18 +137,17 @@ export function sqlFor({ queryId, operator = 'l2', k = 5, index = 'none' }) {
   const o = OPERATORS.find((x) => x.id === operator)
   const probes = INDEXES.find((i) => i.id === index).probes
   const q = `(SELECT embedding FROM customers WHERE id = '${queryId}')`
-  const lines = []
-  if (probes) {
-    lines.push(`CREATE INDEX ON customers USING ivfflat (embedding ${o.opclass}) WITH (lists = ${LISTS});`)
-    lines.push(`SET ivfflat.probes = ${probes};`)
-    lines.push('')
-  }
-  lines.push(`SELECT id, embedding ${o.op} ${q} AS distance`)
-  lines.push('FROM customers')
-  lines.push(`WHERE id <> '${queryId}'`)
-  lines.push(`ORDER BY embedding ${o.op} ${q}`)
-  lines.push(`LIMIT ${k};`)
-  return lines.join('\n')
+  const setup = probes
+    ? [`CREATE INDEX ON customers USING ivfflat (embedding ${o.opclass}) WITH (lists = ${LISTS});`, `SET ivfflat.probes = ${probes};`, '']
+    : []
+  const query = [
+    `SELECT id, embedding ${o.op} ${q} AS distance`,
+    'FROM customers',
+    `WHERE id <> '${queryId}'`,
+    `ORDER BY embedding ${o.op} ${q}`,
+    `LIMIT ${k};`,
+  ]
+  return [...setup, ...query].join('\n')
 }
 
 export const fmtVec = (v) => `[${v.map((x) => x.toFixed(2)).join(', ')}]`

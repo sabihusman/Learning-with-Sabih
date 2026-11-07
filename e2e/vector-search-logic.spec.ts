@@ -70,7 +70,7 @@ test.describe('vector search logic', () => {
         const s = search({ queryId: q, operator: 'l2', k: 5, index: idx.id })
         const reachable = new Set(s.rows.filter((r) => r.reachable).map((r) => r.id))
         for (const id of s.results) expect(reachable.has(id), `${q} ${idx.id} ${id}`).toBe(true)
-        expect(s.lists.length).toBe(idx.probes)
+        expect(s.lists).toHaveLength(idx.probes)
         expect(s.recall).toBe(s.results.filter((id) => s.exact.includes(id)).length / 5)
         expect(s.recall).toBeGreaterThanOrEqual(prev)
         prev = s.recall

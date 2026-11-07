@@ -15,6 +15,12 @@ const ROW_INDEX = Object.fromEntries(CUSTOMERS.map((c, i) => [c.id, i]))
 
 const fmtD = (d) => d.toFixed(3)
 
+function distanceText(isQuery, r) {
+  if (isQuery) return 'query'
+  if (!r.reachable) return 'not searched'
+  return fmtD(r.distance)
+}
+
 export default function SimilarRowsViz() {
   const [queryId, setQueryId] = useState('C04')
   const [operator, setOperator] = useState('l2')
@@ -49,6 +55,8 @@ export default function SimilarRowsViz() {
   }
 
   const ppmiTop = PPMI.rankings[ROW_INDEX[queryId]].slice(0, 3)
+  const ppmiBag = bagOf(CUSTOMERS[ROW_INDEX[queryId]], [...MODEL_COLUMNS]).join(', ')
+  const ppmiList = ppmiTop.map((e) => `${e.id} (cosine ${e.cos.toFixed(3)})`).join(', ')
 
   return (
     <Figure
@@ -99,7 +107,7 @@ export default function SimilarRowsViz() {
                   <td className={styles.num}>{c.tenure}</td>
                   <td className={styles.vec}>{fmtVec(c.embedding)}</td>
                   {usingIndex && <td className={styles.num}>{isQuery ? res.queryList + 1 : r.list + 1}</td>}
-                  <td className={styles.num}>{isQuery ? 'query' : unreachable ? 'not searched' : fmtD(r.distance)}</td>
+                  <td className={styles.num}>{distanceText(isQuery, r)}</td>
                   <td className={styles.num}>{rank ? `#${rank}` : ''}</td>
                 </tr>
               )
@@ -134,7 +142,7 @@ export default function SimilarRowsViz() {
       <section className={styles.bridge} data-testid="vec-bridge">
         <div className={styles.indexHead}>How it worked before embeddings</div>
         <p>
-          {`Without a model, ${queryId} becomes a bag of its own values (${bagOf(CUSTOMERS[ROW_INDEX[queryId]], [...MODEL_COLUMNS]).join(', ')}), counted against how often values share a row and weighted with PPMI. Its three nearest that way: ${ppmiTop.map((e) => `${e.id} (cosine ${e.cos.toFixed(3)})`).join(', ')}.`}
+          {`Without a model, ${queryId} becomes a bag of its own values (${ppmiBag}), counted against how often values share a row and weighted with PPMI. Its three nearest that way: ${ppmiList}.`}
         </p>
       </section>
 
