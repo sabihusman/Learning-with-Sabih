@@ -217,7 +217,7 @@ export default function SqlNoSqlViz() {
       speedControl
       status={status}
       readouts={readouts}
-      tryThis="Step through each operation to see where each shape has to look. Then use the workload sliders: with mostly single-user reads the document shape opens fewer places per operation; raise the share of price changes or cross-user queries and find the point where the relational shape takes over. Neither shape wins in general; the workload decides."
+      tryThis="Set fetches to zero and watch the document side lose: with no single-user reads to win, its copies and cross-user digging are pure cost. Then raise fetches slowly and find the exact mix where the winner flips, and check it against the rule: documents win when twice the fetch share beats the price share plus twice the cross-user share."
     >
       {/* operation picker (in-body segmented control, keyboard-reachable buttons) */}
       <div className={shared.group}>
@@ -350,11 +350,10 @@ export default function SqlNoSqlViz() {
       </section>
 
       <p className={shared.caption}>
-        A place is a container an operation has to open: a table on the left, one document on the right. Each
-        operation&apos;s count is worked out by running it over the data as drawn, and the workload score is the average
-        over the mix you set. Copies written counts the documents a price change must rewrite to keep one fact in
-        step. Places are not a timing: they ignore indexes, row counts and document size, and the claims are about
-        these two layouts, not about any particular database.
+        The same data in two shapes, with each operation&apos;s cost computed by running it over the data: fetch one
+        user 3 vs 1 places, change the plan price 1 vs 2 places with 2 copies rewritten, cross-user orders 1 vs 3. The
+        workload sliders average those prices over a mix you choose; at the default 60/10/30 mix the averages are 2.20
+        relational and 1.70 document. Neither score means anything without its mix.
       </p>
     </Figure>
   )
