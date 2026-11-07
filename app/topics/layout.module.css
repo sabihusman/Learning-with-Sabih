@@ -136,3 +136,42 @@
   border-top: 1px solid var(--rule);
   margin: 2.5rem 0;
 }
+
+/* Wide screens only: the column grows into at most half of the empty side
+   space, i.e. container <= (viewport + 720) / 2, stepped at three breakpoints
+   (values sit a little under the limit to allow for a scrollbar). Below 1280
+   nothing changes. Figures, cards, code and tables take the full width; prose
+   blocks keep a readable measure of 41em (656px at the default text size,
+   about 88 characters a line, the same as before) and sit centred, so lines
+   never stretch wall to wall. em keeps the measure in step with the text-size
+   control. */
+@media (min-width: 1280px) {
+  .container {
+    max-width: 960px;
+  }
+
+  .prose > :where(p, h1, h2, h3, h4, blockquote, hr) {
+    max-width: 41em;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .prose > :where(ul, ol) {
+    max-width: 41em;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1060px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1300px;
+  }
+}
