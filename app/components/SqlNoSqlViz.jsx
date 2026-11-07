@@ -17,6 +17,8 @@ import {
   DEFAULT_MIX,
   scoreWorkload,
   cheaperShape,
+  sharePercent,
+  verdictFor,
 } from './sqlNoSqlData'
 import { INK, FADE, ACCENT, OK, MONO, AMBER_BG, OK_BG, ERR_BG, CONTROL_BG, RULE, MUTED_BG } from './vizPalette'
 import shared from './vizShared.module.css'
@@ -314,7 +316,7 @@ export default function SqlNoSqlViz() {
                   onChange={(e) => setMix((m) => ({ ...m, [q.id]: Number(e.target.value) }))}
                   className={shared.slider}
                 />
-                <span className={styles.mixShare}>{score ? `${Math.round(score.share[q.id] * 100)}%` : '0%'}</span>
+                <span className={styles.mixShare}>{score ? `${sharePercent(score, q.id)}%` : '0%'}</span>
                 <span className={styles.mixCost}>{`places: relational ${c.relational}, document ${c.document}`}</span>
               </div>
             )
@@ -324,7 +326,7 @@ export default function SqlNoSqlViz() {
           <div className={styles.bars}>
             {['relational', 'document'].map((shape) => (
               <div key={shape} className={styles.barRow} data-testid={`score-${shape}`}>
-                <span className={styles.barLabel}>{shape}</span>
+                <span className={styles.barLabel}>{`${shape[0].toUpperCase()}${shape.slice(1)} ${fmt(score[shape].places)}`}</span>
                 <span className={styles.barTrack}>
                   <span
                     className={`${styles.barFill} ${cheaper === shape ? styles.barFillLow : ''}`}
@@ -332,19 +334,17 @@ export default function SqlNoSqlViz() {
                   />
                 </span>
                 <span className={styles.barValue}>
-                  {`${fmt(score[shape].places)} places per operation, ${fmt(score[shape].writes)} copies written`}
+                  {`places opened per operation; ${fmt(score[shape].writes)} copies written`}
                 </span>
               </div>
             ))}
             <p className={styles.verdict} data-testid="workload-verdict">
-              {cheaper === 'tie'
-                ? 'For this mix the two shapes open the same number of places per operation.'
-                : `For this mix the ${cheaper} shape opens fewer places per operation.`}
+              {verdictFor(mix)}
             </p>
           </div>
         ) : (
           <p className={styles.verdict} data-testid="workload-verdict">
-            Every operation is at zero. Raise at least one slider.
+            {verdictFor(mix)}
           </p>
         )}
       </section>

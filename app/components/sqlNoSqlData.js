@@ -167,3 +167,22 @@ export function cheaperShape(score) {
   if (Math.abs(d) < 1e-9) return 'tie'
   return d > 0 ? 'document' : 'relational'
 }
+
+// The share of one operation as the sliders display it (whole percent).
+export const sharePercent = (score, id) => Math.round(score.share[id] * 100)
+
+const MIX_NAMES = { 'fetch-user': 'fetch one user', 'change-price': 'change the plan price', 'orders-over-25': 'query orders across users' }
+const avg = (n) => n.toFixed(2)
+
+// The verdict sentence: always names the mix and both averages, never a bare winner.
+export function verdictFor(mix) {
+  const score = scoreWorkload(mix)
+  if (!score) return 'Every operation is at zero. Raise at least one slider.'
+  const mixText = QUERIES.map((q) => `${sharePercent(score, q.id)}% ${MIX_NAMES[q.id]}`).join(', ')
+  const r = avg(score.relational.places)
+  const d = avg(score.document.places)
+  const cheaper = cheaperShape(score)
+  if (cheaper === 'document') return `At this mix (${mixText}), the document shape opens fewer places per operation: document ${d}, relational ${r}.`
+  if (cheaper === 'relational') return `At this mix (${mixText}), the relational shape opens fewer places per operation: relational ${r}, document ${d}.`
+  return `At this mix (${mixText}), the two shapes tie on places opened per operation: ${r} each. Watch the copies count.`
+}
