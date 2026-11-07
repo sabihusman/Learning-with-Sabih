@@ -47,7 +47,7 @@ export const QUERIES = [
     id: 'fetch-user',
     label: 'Fetch everything about one user',
     frames: [
-      { rel: [{ table: 'users', order_id: null, match: { user_id: 1 } }], doc: [{ docId: 1, kind: 'whole' }] },
+      { rel: [{ table: 'users', match: { user_id: 1 } }], doc: [{ docId: 1, kind: 'whole' }] },
       { rel: [{ table: 'plans', match: { plan: 'pro' } }], doc: [] },
       { rel: [{ table: 'orders', match: { order_id: 101 } }, { table: 'orders', match: { order_id: 102 } }], doc: [] },
     ],
@@ -108,10 +108,62 @@ export function placesTouched(id, step) {
   }
 }
 
-// The shape that reaches the data in fewer containers once the query is fully traced.
-export function winnerOf(id) {
-  const pt = placesTouched(id, framesCount(id))
-  if (pt.relational < pt.document) return 'relational'
-  if (pt.document < pt.relational) return 'document'
-  return 'tie'
+// ── operation costs, computed by running each operation over both shapes ─────────
+// A "place" is a container one operation has to open: a table on the relational
+// side, one document on the document side. Each function below works the answer
+// out from the data itself; the tests check the results against the traced
+// highlight frames above, so the trace and the scores cannot disagree.
+const FETCH_USER = 1
+const PRICE_PLAN = 'pro'
+const ORDER_THRESHOLD = 25
+
+function fetchUserCost() {
+  const user = USERS.find((u) => u.user_id === FETCH_USER)
+  const tables = new Set(['users'])
+  if (PLANS.some((p) => p.plan === user.plan)) tables.add('plans')
+  if (ORDERS.some((o) => o.user_id === FETCH_USER)) tables.add('orders')
+  const docs = DOCS.filter((d) => d.user_id === FETCH_USER)
+  return { relational: tables.size, document: docs.length, relationalWrites: 0, documentWrites: 0 }
+}
+
+function changePriceCost() {
+  // relational: the price lives once, in one plans row
+  const rows = PLANS.filter((p) => p.plan === PRICE_PLAN).length
+  // document: a copy lives in every document whose plan is embedded
+  const copies = DOCS.filter((d) => d.plan.name === PRICE_PLAN).length
+  return { relational: 1, document: copies, relationalWrites: rows, documentWrites: copies }
+}
+
+function ordersOverCost() {
+  // relational: every order is in the one orders table
+  // document: orders are nested per user, so every document must be opened to check
+  const matches = ORDERS.filter((o) => o.order_total > ORDER_THRESHOLD).length
+  return { relational: 1, document: DOCS.length, relationalWrites: 0, documentWrites: 0, matches }
+}
+
+const COST_FNS = { 'fetch-user': fetchUserCost, 'change-price': changePriceCost, 'orders-over-25': ordersOverCost }
+export const costOf = (id) => COST_FNS[id]()
+
+// Workload mix: a relative weight per operation (any non-negative numbers).
+export const DEFAULT_MIX = { 'fetch-user': 6, 'change-price': 1, 'orders-over-25': 3 }
+
+// Score both shapes for a mix: average places opened per operation, and copies
+// written per operation (the update anomaly's price: every copy must be kept in step).
+export function scoreWorkload(mix) {
+  const total = QUERIES.reduce((s, q) => s + (mix[q.id] || 0), 0)
+  if (total === 0) return null
+  const share = Object.fromEntries(QUERIES.map((q) => [q.id, (mix[q.id] || 0) / total]))
+  const sum = (key) => QUERIES.reduce((s, q) => s + share[q.id] * costOf(q.id)[key], 0)
+  return {
+    share,
+    relational: { places: sum('relational'), writes: sum('relationalWrites') },
+    document: { places: sum('document'), writes: sum('documentWrites') },
+  }
+}
+
+export function cheaperShape(score) {
+  if (!score) return null
+  const d = score.relational.places - score.document.places
+  if (Math.abs(d) < 1e-9) return 'tie'
+  return d > 0 ? 'document' : 'relational'
 }
