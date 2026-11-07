@@ -1,186 +1,145 @@
-/* "From a churn table to ranked similar rows": a five-stage pipeline over one
-   authored 16-row table. HTML table and lists rather than SVG (same family as
-   the RAG and SQL figures); column toggles and row pickers use the shared
-   in-card button dialect (vizShared.module.css). Static on change: no timers,
-   no animation. */
+/* Finding similar rows with pgvector: query controls, the customers table with
+   its embedding column and computed distances, the SQL being run, the two
+   index options, and a short bridge panel on the pre-embedding method. */
+
+.choices {
+  margin-bottom: 10px;
+}
 
 .table {
-  width: 100%;
-  min-width: 430px;
   border-collapse: collapse;
+  width: 100%;
+  min-width: 560px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11.5px;
+  color: var(--ink);
+}
+
+.tableCaption {
+  caption-side: top;
+  text-align: left;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--fade);
+  padding-bottom: 6px;
 }
 
 .table th {
   text-align: left;
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 10.5px;
   color: var(--fade);
-  border-bottom: 1px solid #d8d4cc;
-  padding: 4px 8px 4px 4px;
-  vertical-align: top;
-}
-
-.kind {
-  display: block;
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: 9px;
-  color: #1f6f5c;
-  margin-top: 1px;
-}
-
-.kindExcluded {
-  color: var(--accent);
+  border-bottom: 1px solid var(--rule);
+  padding: 4px 8px;
+  white-space: nowrap;
 }
 
 .table td {
+  padding: 3px 8px;
   border-bottom: 1px solid #ece9e1;
-  padding: 3px 8px 3px 4px;
-  color: var(--ink);
   white-space: nowrap;
 }
 
-.colExcluded {
-  opacity: 0.38;
+.num {
+  text-align: right;
 }
 
-.trSelected td {
-  background: #f6e7c8;
+.vec {
+  color: #2f6f8f;
 }
 
-.token {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-  font-size: 10.5px;
-  border: 1px solid #d8d4cc;
-  border-radius: 999px;
-  padding: 1px 8px;
+.rowBtn {
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
   background: #ffffff;
-  white-space: nowrap;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1px 6px;
+  cursor: pointer;
 }
 
-.tokenShared {
+.rowBtn:hover {
+  border-color: var(--ink);
+}
+
+.rowBtn[aria-pressed='true'] {
+  background: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+
+.query td {
+  background: #f4f2ec;
+}
+
+.hit td {
   background: #e6f2ec;
-  border-color: #1f6f5c;
 }
 
-.rawValue {
+.hit td:last-child {
+  color: #1f6f5c;
+  font-weight: 700;
+}
+
+.unreached td {
   color: var(--fade);
-  font-size: 9px;
+  opacity: 0.6;
 }
 
-.binLegend {
+.sql {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f4f2ec;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10.5px;
-  line-height: 1.55;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--ink);
-  background: #faf9f6;
+  overflow-x: auto;
+}
+
+.indexes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+@media (max-width: 600px) {
+  .indexes {
+    grid-template-columns: 1fr;
+  }
+}
+
+.indexCard,
+.bridge {
   border: 1px solid var(--rule);
   border-radius: 8px;
-  padding: 8px 10px;
-  margin: 10px 0 0;
+  background: #faf9f6;
+  padding: 10px 12px;
 }
 
-.bags {
-  list-style: none;
+.indexCard p,
+.bridge p {
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-.bagRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.bagTokens {
-  display: inline-flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
-.ranking {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-.anchorRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #d8d4cc;
-  margin-bottom: 8px;
-}
-
-.anchorLabel {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fade);
-}
-
-.neighbours {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.neighbourRow {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
-  opacity: 0.62;
-}
-
-.topThree {
-  opacity: 1;
-}
-
-.rank {
-  width: 16px;
-  text-align: right;
-  font-size: 10px;
-  color: var(--fade);
-}
-
-.cosBarWrap {
-  width: 90px;
-  height: 7px;
-  border-radius: 4px;
-  background: #ece9e1;
-  overflow: hidden;
-  flex: none;
-}
-
-.cosBar {
-  display: block;
-  height: 100%;
-  background: #1f6f5c;
-}
-
-.cosNum {
-  font-size: 10.5px;
-  width: 40px;
+  font-size: 11px;
+  line-height: 1.55;
   color: var(--ink);
 }
 
-.legendNote {
+.indexHead {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 9.5px;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--fade);
-  margin: 8px 0 0;
+  margin-bottom: 6px;
+}
+
+.bridge {
+  margin-top: 10px;
+  border-style: dashed;
 }
