@@ -95,6 +95,7 @@ export default function AttentionViz() {
         'In the Softmax Lab, pick "it", then drag the "street" score up until its weight passes "animal", and watch every other weight in the row fall to keep the total at 1.00. Then switch scaling off and compare how much sharper the row becomes. Finally, find the word whose row is the flattest, the one spreading its attention most evenly, and say why that makes sense for that word\'s job in the sentence.'
       }
     >
+      <div className={styles.pair}>
       <div className={styles.lab} data-testid="softmax-lab">
         <fieldset className={`${shared.group} ${styles.fieldset}`}>
           <legend className={shared.groupLabel}>query word</legend>
@@ -179,6 +180,7 @@ export default function AttentionViz() {
       </div>
 
       <AttentionHeatmap matrix={matrix} selected={selected} onSelect={selectQuery} />
+      </div>
       <AttentionScene selected={selected} row={row ? row.weights : null} onSelect={(id) => (id == null ? setSelected(null) : selectQuery(id))} />
 
       <p className={shared.caption}>

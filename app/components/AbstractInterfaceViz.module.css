@@ -93,11 +93,14 @@
   color: var(--accent);
 }
 
-/* Wide screens: each panel needs about 456px to show its longest line, so
-   below that width the two panels stack (full width each) instead of sitting
-   side by side behind a scrollbar. Tablet and mobile are unchanged. */
+/* Wide screens: each panel is sized to its own content (its longest line, in
+   whatever monospace font the reader's system supplies), never narrower. The
+   short implementer panel gives its spare width to the long contract panel,
+   and if the two cannot fit side by side they stack, so no line is ever
+   clipped behind a scrollbar. Tablet and mobile are unchanged. */
 @media (min-width: 1280px) {
   .code {
-    flex-basis: 460px;
+    flex: 1 1 max-content;
+    min-width: min(100%, max-content);
   }
 }

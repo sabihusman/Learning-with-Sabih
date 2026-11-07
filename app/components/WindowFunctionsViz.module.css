@@ -57,3 +57,16 @@
     animation: none;
   }
 }
+
+/* Wide screens: the result table has a natural cap (712px); the legend and the
+   SQL beneath it take the same width and centre with it, so the three stop
+   stepping in and out. (.sql is doubled to outrank the article's
+   `.prose pre` margin rule.) */
+@media (min-width: 1280px) {
+  .sql.sql,
+  .legendRow {
+    max-width: 712px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

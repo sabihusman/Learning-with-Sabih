@@ -22,3 +22,13 @@
   color: var(--fade);
   margin: 2px 0 10px;
 }
+
+/* Wide screens: the diagram scales up toward the card's inner width
+   (uniformly, from its viewBox, so proportions and label spacing are kept),
+   up to 2x its 460-unit drawing (920px). Past that the labels turn
+   poster-sized, so at 1920 it stops at 920px, centred. */
+@media (min-width: 1280px) {
+  .svg {
+    max-width: 920px;
+  }
+}
