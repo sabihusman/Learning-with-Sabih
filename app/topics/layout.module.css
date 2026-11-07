@@ -140,17 +140,18 @@
 /* Wide screens only: the column grows into at most half of the empty side
    space, i.e. container <= (viewport + 720) / 2, stepped at three breakpoints
    (values sit a little under the limit to allow for a scrollbar). Below 1280
-   nothing changes. Figures, cards, code and tables take the full width; prose
-   blocks keep a readable measure of 41em (656px at the default text size,
-   about 88 characters a line, the same as before) and sit centred, so lines
-   never stretch wall to wall. em keeps the measure in step with the text-size
-   control. */
+   nothing changes.
+   Exactly two left edges: the OUTER edge (headings, figure cards, prev/next
+   nav) and the PROSE inset (paragraphs and lists, capped at 41em, 656px at the
+   default text size, about 88 characters a line, and centred). Text inside a
+   figure card is capped at the same measure (41rem; figures reset their font
+   size to 1rem) and stays left-aligned at the card's inner edge. */
 @media (min-width: 1280px) {
   .container {
     max-width: 960px;
   }
 
-  .prose > :where(p, h1, h2, h3, h4, blockquote, hr) {
+  .prose > :where(p, blockquote) {
     max-width: 41em;
     margin-left: auto;
     margin-right: auto;
@@ -161,6 +162,10 @@
     margin-left: auto;
     margin-right: auto;
     padding-left: 1.5rem;
+  }
+
+  .prose figure p {
+    max-width: 41rem;
   }
 }
 

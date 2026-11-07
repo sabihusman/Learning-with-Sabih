@@ -158,3 +158,19 @@
   font-weight: 700;
   vertical-align: middle;
 }
+
+/* Wide screens (topic column widened from 1280px): keep the footer status next
+   to its controls instead of pushing it to the far edge, and cap in-card text
+   at the prose measure (41rem). The Try this box stays full width; right
+   padding caps its text (percent padding resolves against the figure's width).
+   Below 1280 nothing changes. */
+@media (min-width: 1280px) {
+  .status {
+    margin-left: 0.75rem;
+    max-width: 41rem;
+  }
+
+  .tryThis {
+    padding-right: max(1rem, calc(100% - 42rem));
+  }
+}
