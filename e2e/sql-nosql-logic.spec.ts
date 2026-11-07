@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { DEFAULT_MIX, QUERIES, cheaperShape, costOf, framesCount, placesTouched, scoreWorkload } from '../app/components/sqlNoSqlData'
+import { DEFAULT_MIX, QUERIES, cheaperShape, costOf, framesCount, placesTouched, scoreWorkload, sharePercent, verdictFor } from '../app/components/sqlNoSqlData'
 
 // Invariants for the SQL vs NoSQL figure: per-operation costs are computed from
 // the data and agree with the traced highlights, and the workload score (not a
@@ -45,6 +45,31 @@ test.describe('sql vs nosql logic', () => {
     }
   })
 
+  test('the verdict always carries its mix (all three percentages) and both averages', () => {
+    expect(verdictFor(DEFAULT_MIX)).toBe(
+      'At this mix (60% fetch one user, 10% change the plan price, 30% query orders across users), the document shape opens fewer places per operation: document 1.70, relational 2.20.',
+    )
+    for (let f = 0; f <= 10; f++) {
+      for (let u = 0; u <= 10; u++) {
+        for (let c = 0; c <= 10; c++) {
+          const mix = { 'fetch-user': f, 'change-price': u, 'orders-over-25': c }
+          const s = scoreWorkload(mix)
+          const v = verdictFor(mix)
+          if (!s) {
+            expect(v).toBe('Every operation is at zero. Raise at least one slider.')
+            continue
+          }
+          for (const q of QUERIES) expect(v, JSON.stringify(mix)).toContain(`${sharePercent(s, q.id)}%`)
+          expect(v).toContain(s.relational.places.toFixed(2))
+          expect(v).toContain(s.document.places.toFixed(2))
+          const winner = cheaperShape(s)
+          if (winner === 'tie') expect(v).toContain('tie on places opened per operation')
+          else expect(v).toContain(`the ${winner} shape opens fewer places per operation: ${winner} `)
+        }
+      }
+    }
+  })
+
   test('a single-operation workload reproduces each operation on its own', () => {
     expect(cheaperShape(scoreWorkload({ 'fetch-user': 1, 'change-price': 0, 'orders-over-25': 0 }))).toBe('document')
     expect(cheaperShape(scoreWorkload({ 'fetch-user': 0, 'change-price': 1, 'orders-over-25': 0 }))).toBe('relational')
@@ -56,12 +81,18 @@ test.describe('sql vs nosql figure', () => {
   test('moving the sliders changes which shape the workload favours', async ({ page }) => {
     await page.goto('/topics/sql-vs-nosql-modeling/')
     const verdict = page.getByTestId('workload-verdict')
-    await expect(verdict).toContainText('document shape opens fewer places')
+    await expect(verdict).toHaveText(
+      'At this mix (60% fetch one user, 10% change the plan price, 30% query orders across users), the document shape opens fewer places per operation: document 1.70, relational 2.20.',
+    )
+    await expect(page.getByTestId('score-document')).toContainText('Document 1.70')
+    await expect(page.getByTestId('score-relational')).toContainText('Relational 2.20')
 
-    // no single-user reads at all: the relational shape takes over
+    // no single-user reads at all: the relational shape takes over (10/40 = 25%, 30/40 = 75%)
     await page.getByTestId('mix-fetch-user').focus()
     await page.keyboard.press('Home')
-    await expect(verdict).toContainText('relational shape opens fewer places')
+    await expect(verdict).toHaveText(
+      'At this mix (0% fetch one user, 25% change the plan price, 75% query orders across users), the relational shape opens fewer places per operation: relational 1.00, document 2.75.',
+    )
 
     // all operations at zero: the figure asks for a mix instead of scoring
     for (const id of ['change-price', 'orders-over-25']) {
