@@ -131,7 +131,7 @@ export default function ConcurrencyViz() {
       speedControl
       status={status}
       readouts={readouts}
-      tryThis="In read, then write, press Step T1, Step T2, Step T1, Step T2 and keep going: both read 100, T2's write has to wait for T1's lock, and still the balance ends at 150, because T2 computed its write from the 100 it read earlier. Now try the same order with SELECT ... FOR UPDATE (T2 cannot even read until T1 commits), with one UPDATE statement (the read and the write happen together under the lock), and with the version check (T2's update matches 0 rows, so it rolls back and tries again). Every one of them ends at 200."
+      tryThis="Run the unprotected mode and find the exact step where the loss becomes inevitable: it is the second read, not the second write. Then run the version check and watch the second write match zero rows. The bug was born at the stale read; every fix is a way of closing that gap."
     >
       <ChoiceGroup label="each transaction adds 50 by" options={MODES} value={state.mode} onChange={restart} testPrefix="cc-mode" />
       <ChoiceGroup
@@ -168,10 +168,10 @@ export default function ConcurrencyViz() {
       )}
 
       <p className={shared.caption}>
-        The SQL in each lane is what the figure runs, one statement per step, in the order you choose. The rules are
-        PostgreSQL&apos;s at its default isolation level, READ COMMITTED: a plain SELECT sees only committed data,
-        UPDATE and SELECT ... FOR UPDATE hold the row lock until COMMIT, and a waiting UPDATE re-checks its WHERE
-        clause once it gets the lock. :balance and :version are values the application read and sends back.
+        Real arithmetic on fixed numbers (start 100, each transaction adds 50, correct total 200). You pick the
+        interleaving: run the transactions one after the other and every mode lands on 200; overlap them, both reading
+        before either writes, and read, then write lands on 150 while the three fixes land on 200. In real systems the
+        overlap is timing-dependent and does not always occur, which is exactly what makes the bug dangerous.
       </p>
     </Figure>
   )
