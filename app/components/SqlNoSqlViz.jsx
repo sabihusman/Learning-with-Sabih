@@ -13,7 +13,10 @@ import {
   framesCount,
   highlightsAt,
   placesTouched,
-  winnerOf,
+  costOf,
+  DEFAULT_MIX,
+  scoreWorkload,
+  cheaperShape,
 } from './sqlNoSqlData'
 import { INK, FADE, ACCENT, OK, MONO, AMBER_BG, OK_BG, ERR_BG, CONTROL_BG, RULE, MUTED_BG } from './vizPalette'
 import shared from './vizShared.module.css'
@@ -67,6 +70,7 @@ export default function SqlNoSqlViz() {
   const [queryId, setQueryId] = useState(QUERIES[0].id)
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const [mix, setMix] = useState(DEFAULT_MIX)
 
   const lastStep = framesCount(queryId)
   const done = step >= lastStep
@@ -91,7 +95,8 @@ export default function SqlNoSqlViz() {
   const query = queryById(queryId)
   const { rel, doc } = highlightsAt(queryId, step)
   const pt = placesTouched(queryId, step)
-  const winner = winnerOf(queryId)
+  const score = scoreWorkload(mix)
+  const cheaper = cheaperShape(score)
 
   // ── relational highlight lookups ──
   const relTone = queryId === 'change-price' ? 'clean' : 'touch'
@@ -194,14 +199,15 @@ export default function SqlNoSqlViz() {
     { label: isPlaying ? 'Pause' : 'Play', onClick: () => setPlaying((p) => !p), disabled: done },
     { label: 'Reset', onClick: reset, disabled: step === 0 },
   ]
+  const fmt = (n) => n.toFixed(2)
   const readouts = [
-    { label: 'relational places', value: pt.relational },
-    { label: 'document places', value: pt.document },
+    { label: 'relational places (this operation)', value: pt.relational },
+    { label: 'document places (this operation)', value: pt.document },
+    { label: 'relational, per operation in the mix', value: score ? fmt(score.relational.places) : '-' },
+    { label: 'document, per operation in the mix', value: score ? fmt(score.document.places) : '-' },
   ]
-  const status =
-    step === 0
-      ? `Query: ${query.label}. Press Step to trace where each shape has to look.`
-      : `${query.status}${done ? ` Fewer places wins here: ${winner}.` : ''}`
+  const status = step === 0 ? `Operation: ${query.label}. Press Step to trace where each shape has to look.` : query.status
+  const maxPlaces = Math.max(...QUERIES.flatMap((q) => [costOf(q.id).relational, costOf(q.id).document]))
 
   return (
     <Figure
@@ -211,11 +217,11 @@ export default function SqlNoSqlViz() {
       speedControl
       status={status}
       readouts={readouts}
-      tryThis="Run the first query, then the second, and watch the winner flip. Fetching everything about one user is cheaper in the document shape, because the data that is read together is stored together. Changing a shared fact is cheaper in the relational shape, because it is stored once instead of copied into every document. Neither shape is better in general; the right one depends on how you read and write the data."
+      tryThis="Step through each operation to see where each shape has to look. Then use the workload sliders: with mostly single-user reads the document shape opens fewer places per operation; raise the share of price changes or cross-user queries and find the point where the relational shape takes over. Neither shape wins in general; the workload decides."
     >
-      {/* query picker (in-body segmented control, keyboard-reachable buttons) */}
+      {/* operation picker (in-body segmented control, keyboard-reachable buttons) */}
       <div className={shared.group}>
-        <span className={shared.groupLabel}>query</span>
+        <span className={shared.groupLabel}>trace one operation</span>
         {QUERIES.map((q, i) => (
           <button
             key={q.id}
@@ -285,11 +291,70 @@ export default function SqlNoSqlViz() {
         </div>
       </div>
 
+
+      {/* WORKLOAD: a mix of the three operations, scored for both shapes */}
+      <section className={styles.workload} aria-label="Workload mix" data-testid="workload">
+        <div className={styles.workloadHead}>workload: how often each operation runs</div>
+        <div className={styles.mixRows}>
+          {QUERIES.map((q) => {
+            const c = costOf(q.id)
+            return (
+              <div key={q.id} className={styles.mixRow}>
+                <label className={styles.mixLabel} htmlFor={`mix-${q.id}`}>
+                  {q.label}
+                </label>
+                <input
+                  id={`mix-${q.id}`}
+                  data-testid={`mix-${q.id}`}
+                  type="range"
+                  min={0}
+                  max={10}
+                  step={1}
+                  value={mix[q.id]}
+                  onChange={(e) => setMix((m) => ({ ...m, [q.id]: Number(e.target.value) }))}
+                  className={shared.slider}
+                />
+                <span className={styles.mixShare}>{score ? `${Math.round(score.share[q.id] * 100)}%` : '0%'}</span>
+                <span className={styles.mixCost}>{`places: relational ${c.relational}, document ${c.document}`}</span>
+              </div>
+            )
+          })}
+        </div>
+        {score ? (
+          <div className={styles.bars}>
+            {['relational', 'document'].map((shape) => (
+              <div key={shape} className={styles.barRow} data-testid={`score-${shape}`}>
+                <span className={styles.barLabel}>{shape}</span>
+                <span className={styles.barTrack}>
+                  <span
+                    className={`${styles.barFill} ${cheaper === shape ? styles.barFillLow : ''}`}
+                    style={{ width: `${(score[shape].places / maxPlaces) * 100}%` }}
+                  />
+                </span>
+                <span className={styles.barValue}>
+                  {`${fmt(score[shape].places)} places per operation, ${fmt(score[shape].writes)} copies written`}
+                </span>
+              </div>
+            ))}
+            <p className={styles.verdict} data-testid="workload-verdict">
+              {cheaper === 'tie'
+                ? 'For this mix the two shapes open the same number of places per operation.'
+                : `For this mix the ${cheaper} shape opens fewer places per operation.`}
+            </p>
+          </div>
+        ) : (
+          <p className={styles.verdict} data-testid="workload-verdict">
+            Every operation is at zero. Raise at least one slider.
+          </p>
+        )}
+      </section>
+
       <p className={shared.caption}>
-        Places touched counts the distinct containers each shape must open for the query,
-        the tables on the left and the documents on the right, counted from what lights up,
-        not typed in. The data is a fixed, deterministic excerpt, and the claims are about
-        these two layouts as drawn, not about any particular database.
+        A place is a container an operation has to open: a table on the left, one document on the right. Each
+        operation&apos;s count is worked out by running it over the data as drawn, and the workload score is the average
+        over the mix you set. Copies written counts the documents a price change must rewrite to keep one fact in
+        step. Places are not a timing: they ignore indexes, row counts and document size, and the claims are about
+        these two layouts, not about any particular database.
       </p>
     </Figure>
   )
