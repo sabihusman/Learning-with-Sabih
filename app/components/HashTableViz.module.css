@@ -1,6 +1,6 @@
 /* Hash tables: preset key buttons and a free-form input, a visible hash computation
-   line, a row of indexed buckets with chained chips, and an honesty caption. Newly
-   added chips drop in via a CSS keyframe (flourish only). Project palette. */
+   line, indexed buckets in bands of 7 with chained chips (bucket b + 7 under bucket b), and an honesty caption. Newly
+   added chips drop in via a CSS keyframe and rehashed chips slide to their new cell (flourish only). Project palette. */
 
 .inputRow {
   display: flex;
@@ -70,8 +70,17 @@
   }
 }
 
+/* a rehashed key slides from its old cell to its new one */
+.chipPos {
+  transition: transform 0.4s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chip {
     animation: none;
+  }
+
+  .chipPos {
+    transition: none;
   }
 }
