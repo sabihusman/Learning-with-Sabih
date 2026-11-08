@@ -70,3 +70,123 @@
     transition: none;
   }
 }
+
+/* Build-the-tree and encode/decode panels (item 31): presentation only. */
+.panel {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.panelHead {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 8px;
+}
+
+.stage {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 8px 0;
+}
+
+.treeSvg {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.nodeText {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.leafProb,
+.edgeBit {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  fill: var(--fade);
+}
+
+.edgeBit {
+  font-weight: 700;
+  fill: #2f6f8f;
+}
+
+.message {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.seg {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3px 4px;
+  border-radius: 3px;
+  background: #eef3f7;
+}
+
+.seg[data-alt='true'] {
+  background: #f4f2ec;
+}
+
+.segSym {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.seg[data-done='true'] .segSym {
+  color: #c0392b;
+}
+
+.segBits {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.bit {
+  color: var(--fade);
+}
+
+.bit[data-read='true'] {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.bit[data-next='true'] {
+  text-decoration: underline;
+  text-decoration-color: #c0392b;
+  text-decoration-thickness: 2px;
+}
+
+.decoded {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  margin: 6px 0 12px;
+}
+
+.decodedLabel,
+.decodedCount {
+  color: var(--fade);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.decodedCount {
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 6px;
+}
