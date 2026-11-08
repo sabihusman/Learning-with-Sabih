@@ -112,19 +112,3 @@
     gap: 5px;
   }
 }
-
-/* Wide screens: the Softmax Lab and the heatmap sit side by side, so together
-   they fill the card instead of two narrow columns centred in empty space. */
-@media (min-width: 1280px) {
-  .pair {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 28px;
-    align-items: start;
-  }
-
-  .pair .lab {
-    max-width: none;
-    margin: 0 0 18px;
-  }
-}

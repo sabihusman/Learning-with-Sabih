@@ -29,10 +29,3 @@
   outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
-
-/* Wide screens: the heatmap fills its half of the card (see AttentionViz .pair). */
-@media (min-width: 1280px) {
-  .svg {
-    max-width: 100%;
-  }
-}

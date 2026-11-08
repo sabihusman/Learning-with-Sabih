@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
+import { zoomSafeEvents } from './r3fZoomSafeEvents'
 import { OrbitControls, Text, Billboard, Line } from '@react-three/drei'
 import { WORDS, CLUSTERS } from './embeddingsData'
 import { ACCENT, INK, FADE, PAPER } from './vizPalette'
@@ -99,6 +100,10 @@ export default function EmbeddingsScene({ selected, neighborIds, onSelect }) {
       <Canvas
         camera={{ position: [7, 4.5, 12], fov: 45 }}
         dpr={[1, 2]}
+        // measure layout pixels, not getBoundingClientRect, so the canvas is not
+        // double-scaled when the topic column is zoomed on wide screens
+        resize={{ offsetSize: true }}
+        events={zoomSafeEvents}
         onPointerMissed={() => onSelect(null)}
       >
         <color attach="background" args={[PAPER]} />

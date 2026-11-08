@@ -102,6 +102,8 @@ export default function WindowFunctionsViz() {
       readouts={readouts}
       tryThis="Find the tied pair, events 2 and 3. Under RANGE their running totals are equal. Under ROWS they split, and which one is smaller is an order the SQL does not fix. Add the tie-break and watch the split disappear. Finally, turn on PARTITION BY and see every calculation restart for session 2."
     >
+      {/* content wider than the 656px column: break out on wide screens (topics/layout.module.css) */}
+      <span hidden data-figure-wide />
       <div className={styles.choices}>
         <ChoiceGroup label="ORDER BY" options={ORDERS} value={order} onChange={setOrder} testPrefix="wf-order" />
         <ChoiceGroup label="SUM frame" options={FRAMES} value={frame} onChange={setFrame} testPrefix="wf-frame" />

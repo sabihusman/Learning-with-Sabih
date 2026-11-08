@@ -123,6 +123,8 @@ export default function RecursionViz() {
       readouts={readouts}
       tryThis="Step through the solve. Each move is one disk; watch the call stack on the right grow as the recursion descends to move a small disk, then shrink as those calls return so a larger disk can move. The deepest the stack ever gets equals the disk count, and the total number of moves is exactly two to the power of the disks, minus one."
     >
+      {/* content wider than the 656px column: break out on wide screens (topics/layout.module.css) */}
+      <span hidden data-figure-wide />
       <div className={styles.layout}>
         <div className={styles.board}>
           <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className={styles.svg} role="img" aria-label={`Towers of Hanoi with ${disks} disks across three pegs`}>

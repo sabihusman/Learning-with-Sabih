@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
+import { zoomSafeEvents } from './r3fZoomSafeEvents'
 import { OrbitControls, Text, Billboard, Line } from '@react-three/drei'
 import { WORDS, SENTENCE } from './attentionData'
 import { ACCENT, INK, FADE, PAPER } from './vizPalette'
@@ -108,7 +109,9 @@ export default function AttentionScene({ selected, row, onSelect }) {
 
   return (
     <div style={{ height: 440, width: '100%', cursor: hovering ? 'pointer' : 'auto' }} role="img" aria-label={ariaLabel}>
-      <Canvas camera={{ position: [0, 2.2, 15], fov: 45 }} dpr={[1, 2]} onPointerMissed={() => onSelect(null)}>
+      {/* offsetSize: measure layout pixels, not getBoundingClientRect, so the canvas
+          is not double-scaled when the topic column is zoomed on wide screens */}
+      <Canvas camera={{ position: [0, 2.2, 15], fov: 45 }} dpr={[1, 2]} resize={{ offsetSize: true }} events={zoomSafeEvents} onPointerMissed={() => onSelect(null)}>
         <color attach="background" args={[PAPER]} />
         <ambientLight intensity={0.9} />
         <directionalLight position={[5, 9, 7]} intensity={0.7} />
