@@ -26,7 +26,7 @@ export const BAND = 7 // buckets drawn per band, so bucket b + 7 sits under buck
 export const PRESETS = ['cat', 'dog', 'owl', 'ant', 'hen', 'ram', 'fox', 'cod', 'jay', 'god', 'act']
 
 export function charCodes(key) {
-  return [...key].map((ch) => ({ ch, code: ch.charCodeAt(0) }))
+  return [...key].map((ch) => ({ ch, code: ch.codePointAt(0) }))
 }
 
 export function sumOf(key) {
@@ -35,7 +35,8 @@ export function sumOf(key) {
 
 export const bucketOf = (key, buckets) => sumOf(key) % buckets
 
-const letters = (key) => [...key].sort().join('')
+// sorted by code point, so two keys with the same letters give the same string
+const letters = (key) => [...key].sort((a, b) => a.codePointAt(0) - b.codePointAt(0)).join('')
 
 // Other keys in the table made of exactly the same letters.
 export function anagramsOf(key, keys) {
@@ -172,6 +173,10 @@ export function stats(state) {
 // Every anagram group of two or more keys currently in the table.
 export function anagramGroups(keys) {
   const groups = {}
-  keys.forEach((k) => (groups[letters(k)] ??= []).push(k))
+  for (const k of keys) {
+    const id = letters(k)
+    if (!groups[id]) groups[id] = []
+    groups[id].push(k)
+  }
   return Object.values(groups).filter((g) => g.length > 1)
 }

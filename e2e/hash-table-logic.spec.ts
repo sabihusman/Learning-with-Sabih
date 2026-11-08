@@ -65,7 +65,7 @@ test.describe('hash table logic', () => {
     // step one key at a time: the count is conserved throughout
     while (s.resize) {
       s = rehashStep(s)
-      expect(allKeys(s).length).toBe(6)
+      expect(allKeys(s)).toHaveLength(6)
       const ev = s.event
       expect(ev.bucket).toBe(sumOf(ev.key) % 14)
       expect([before[ev.key], before[ev.key] + 7]).toContain(ev.bucket)
@@ -98,7 +98,7 @@ test.describe('hash table logic', () => {
     expect(insert(s, 'cat')).toBe(s) // duplicate
     const words = Array.from({ length: 40 }, (_, i) => `k${i}`)
     const full = addAll(words)
-    expect(allKeys(full).length).toBe(MAX_KEYS)
+    expect(allKeys(full)).toHaveLength(MAX_KEYS)
     expect(full.buckets).toBe(28)
     expect(START_BUCKETS).toBe(7)
   })
