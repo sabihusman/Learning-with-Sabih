@@ -159,20 +159,11 @@
   vertical-align: middle;
 }
 
-/* Wide screens (topic column widened from 1280px): keep the footer status next
-   to its controls instead of pushing it to the far edge, and cap in-card text
-   at the prose measure, --measure from the topic container (41rem times the
-   S/M/L reading scale), so it scales with the prose. The Try this box stays
-   full width; its text is a bare text node, so right padding caps it at the
-   same measure (percent padding resolves against the figure's width).
-   Below 1280 nothing changes. */
+/* Wide screens (from 1280px): keep the footer status next to its controls
+   instead of pushing it to the far edge of the bar. Below 1280 nothing
+   changes. */
 @media (min-width: 1280px) {
   .status {
     margin-left: 0.75rem;
-    max-width: var(--measure, 41rem);
-  }
-
-  .tryThis {
-    padding-right: max(1rem, calc(100% - var(--measure, 41rem) - 1rem));
   }
 }

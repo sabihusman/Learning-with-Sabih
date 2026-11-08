@@ -137,63 +137,52 @@
   margin: 2.5rem 0;
 }
 
-/* Wide screens only: the column grows into at most half of the empty side
-   space, i.e. container <= (viewport + 720) / 2, stepped at five breakpoints
-   up to 2560px and no further (values sit a little under the limit to allow
-   for a scrollbar). Below 1280 nothing changes.
-   One left line: headings, prose, figure cards and the prev/next nav all start
-   at the container's edge. Prose blocks (paragraphs, quotes, lists and the
-   formula/code strips) are capped at one reading measure, --measure: 41em of
-   the prose text, which is 41rem times the S/M/L reading scale (656px at M).
-   Text inside a figure card uses the same --measure, so it scales with the
-   prose under the S/M/L control even though figure text itself is fixed. */
-.container {
-  --measure: calc(41rem * var(--read-scale, 1));
-}
-
+/* Wide screens: the whole topic column scales up as one piece. The column
+   keeps its 720px design (prose and figure cards share one 656px width, so
+   their edges always match, and lines stay at the ~88-character measure), and
+   CSS zoom enlarges it, text, figures and drawings together, in steps:
+   1.125x from 1280, 1.25x from 1440, 1.375x from 1920, 1.5x from 2560.
+   Below 1280 nothing changes. The S/M/L reading control still applies on top.
+   A few figures whose content genuinely needs more than 656px (long SQL, a
+   wide tree) mark themselves with a [data-figure-wide] element and break out,
+   centred on the column, to a width that keeps the whole page within half of
+   the empty side space ((viewport + 720) / 2, in zoomed pixels). */
 @media (min-width: 1280px) {
   .container {
-    max-width: 960px;
+    zoom: 1.125;
   }
 
-  .prose > :where(p, blockquote, pre) {
-    max-width: var(--measure);
-    margin-left: 0;
-    margin-right: auto;
-  }
-
-  .prose > :where(ul, ol) {
-    max-width: var(--measure);
-    margin-left: 0;
-    margin-right: auto;
-    padding-left: 1.5rem;
-  }
-
-  .prose figure p {
-    max-width: var(--measure);
+  .prose figure:has([data-figure-wide]) {
+    width: 880px;
+    max-width: none;
+    margin-left: calc((100% - 880px) / 2);
   }
 }
 
 @media (min-width: 1440px) {
   .container {
-    max-width: 1060px;
+    zoom: 1.25;
+  }
+
+  .prose figure:has([data-figure-wide]) {
+    width: 860px;
+    margin-left: calc((100% - 860px) / 2);
   }
 }
 
 @media (min-width: 1920px) {
   .container {
-    max-width: 1300px;
+    zoom: 1.375;
   }
-}
 
-@media (min-width: 2200px) {
-  .container {
-    max-width: 1450px;
+  .prose figure:has([data-figure-wide]) {
+    width: 960px;
+    margin-left: calc((100% - 960px) / 2);
   }
 }
 
 @media (min-width: 2560px) {
   .container {
-    max-width: 1630px;
+    zoom: 1.5;
   }
 }

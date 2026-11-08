@@ -66,6 +66,8 @@ export default function SimilarRowsViz() {
       readouts={readouts}
       tryThis="Click a row to make it the query and watch the ranking re-sort by distance. Query C06 and switch the operator: under <-> the long vector C09 is too far away to make the list, under <=> it comes first, because cosine distance ignores length. Then add an IVFFlat index with probes = 1 and query C11: the search reaches only one list, and recall drops. Raise probes until it matches the exact scan."
     >
+      {/* content wider than the 656px column: break out on wide screens (topics/layout.module.css) */}
+      <span hidden data-figure-wide />
       <div className={styles.choices}>
         <ChoiceGroup label="operator" options={OPERATORS} value={operator} onChange={setOperator} testPrefix="vec-op" />
         <ChoiceGroup label="LIMIT" options={LIMITS.map((n) => ({ id: String(n), label: String(n) }))} value={String(k)} onChange={(v) => setK(Number(v))} testPrefix="vec-k" />
