@@ -10,33 +10,53 @@ SQL is built on exact matching. Where the contract is month to month, where the 
 
 The figure works through one way to answer that. The table is small enough to check by eye, so you can judge whether the answer it gives is the answer you would have given.
 
-## Every value becomes a token
+## Rows as points
 
-Start by deciding what each column is. Some hold categories, some hold numbers, and some are just identifiers. The customer id is dropped, since a unique value that appears once tells you nothing about which values go together.
+The modern way to answer "which rows look like this one" starts by giving every row a position: a short list of numbers, called an embedding, that captures what the row is like. Rows that resemble each other get nearby positions. Finding similar rows then stops being a judgement call and becomes arithmetic: measure the distance between positions and take the smallest.
 
-Categories are easy. Each one becomes a token. Numbers are harder, because a charge and a slightly different charge are different values but nearly the same thing. Left alone, they would be as unrelated as a charge and a payment method. So the numbers are sorted and cut into buckets, and the bucket becomes the token.
+The embeddings here are four numbers per customer, set by hand so the groups are visible: month-to-month customers cluster in one corner of the space, two-year customers in another, one-year customers between them. A real embedding is produced by a model trained on the data, and it usually runs to hundreds of numbers rather than four. The Embeddings topic covers where those numbers come from. This topic is about what you do once a table has them.
 
-That step throws information away on purpose. Two customers with different charges can land in the same bucket, and once they do, the model cannot tell them apart. You can see this happen. Some pairs in this table score a perfect match despite having different numbers, because after bucketing their bags of tokens are identical. Nothing is broken. The model only knows what the tokens preserved.
+Postgres stores them in a column type called vector, added by an extension named pgvector. That is the whole trick, and it is a good one: similarity search becomes an ordinary query against an ordinary table, with the database doing the measuring.
 
-## Values that travel together
+## Asking the question in SQL
 
-Now each row is an unordered bag of tokens, and the column order stops mattering. Count how often each pair of tokens appears in the same row across the whole table, and a pattern falls out. Certain values keep showing up together.
+The figure runs the query underneath the table. It takes the embedding of one customer, C04, and orders every other customer by distance from it. Two details in that query carry the topic.
 
-Weighting those counts gives each token a position. A token that appears alongside a particular other token far more often than chance would predict is pulled toward it. Average the tokens in a row and the row itself has a position. Rows made of values that travel together end up near each other.
+The first is the operator between the vectors. `<->` measures straight-line distance, called L2: how far apart the points sit. `<=>` measures cosine distance: the angle between the vectors, ignoring how long they are. They answer different questions, and a later section shows a case where they flatly disagree.
 
-Pick a row and the figure ranks the rest by how close they sit.
+The second is the shape of the query itself: order by the distance, then LIMIT. Nothing is filtered by equality first. The database ranks the entire table by closeness and hands back the top of the ranking, which is exactly the shape of the question "which rows look like this one".
 
 <SimilarRowsViz />
 
-## The model only knows what you feed it
+## Reading the result
 
-Switch a column off and watch the ranking move. This is the part worth spending time on.
+The default view asks for C04's five nearest neighbours by straight-line distance, and the answer is worth reading slowly: C03 at 0.067, C01 at 0.081, C05 at 0.132, C02 at 0.153, C14 at 0.385. The first four are all month-to-month customers, like C04. The two-year customers mostly sit far down the list, past 1.2; the one exception is C16, sixth at 0.679, a two-year customer whose vector sits between the groups. The geometry is doing what it was built to do: the group C04 belongs to is the group nearest to it.
 
-Turn off tenure and something sharp happens. A whole group of rows becomes identical, every one of them scoring a perfect match against the others. Tenure was the only column separating them. Without it their bags contain exactly the same tokens, so the model has no way to tell one from another. One column was carrying all the difference.
+Distance is not a score with a passing mark. It only means anything relative to the other distances in the same query: 0.067 is near because the far rows are at 1.4, not because 0.067 is small in itself. A different table, or vectors of a different length, would put the same relationships at completely different numbers.
 
-Other columns behave differently. Drop the contract and some rows switch sides entirely, joining a group they were not close to before. The rows never changed. The question changed.
+One more habit from exact SQL does not survive the move: there is no "no match". Ask for five neighbours and you always get five rows back, even if the fifth is barely related to the query row. C14 makes the default list at 0.385, roughly six times farther than C03. Whether it counts as similar is a decision the query leaves to you.
 
-This is the honest limit of the method. It has no idea what a contract or a charge means. It only knows which values occur together in the rows you gave it, and the answer it returns is a direct consequence of that choice.
+## Two ways to measure, and when the ranking lies
+
+Switch the operator and the distances change meaning. Straight-line distance cares about length: a vector that points the same way as the query but runs much longer is far away by `<->`. Cosine distance ignores length entirely and compares only direction.
+
+Query with C06 and both operators. Under `<->`, the long vector C09 sits seventh, outside the LIMIT 5 list, at a distance of 0.640. Under `<=>`, C09 comes first, at 0.001: its direction from the origin is almost exactly C06's, and cosine notices nothing else. Neither answer is wrong. They are answers to "how far" and "which way" respectively, and picking the operator is picking which of those your word "similar" means.
+
+This is also why the numbers from the two operators can never be compared with each other. A cosine distance of 0.001 and an L2 distance of 0.067 are not two measurements of one thing. Only rankings within one operator, on one query, mean anything.
+
+## Indexes: exact answers, then fast ones
+
+With no index, the database computes the distance to every row and sorts: an exact scan. On sixteen rows that is nothing. On millions of rows with hundreds of numbers per vector, doing it for every query gets expensive, and that is the problem the index modes solve. They trade a little accuracy for a lot of speed.
+
+IVFFlat splits the vectors into groups when the index is built, using k-means clustering. A query then searches only the groups nearest to it: the probes setting is how many. With probes set to 1 and C11 as the query, the search reaches a single group and misses neighbours sitting in the next one, so the footer reports recall below 100 percent: the share of the true nearest neighbours the search actually found. Raise the probes and recall climbs back to an exact match, at the cost of searching more of the table. That dial, speed against recall, is the real control an approximate index gives you.
+
+HNSW, the other index pgvector offers, builds a layered graph of neighbour links instead and walks it toward the query. It usually wins on both speed and recall, with no training step, and pays for it in build time and memory. The figure names it rather than simulating it; the trade-off sentence is the part to keep.
+
+## The embedding only knows what it was fed
+
+There is an older version of this page's figure still on it, in the panel titled "How it worked before embeddings", and it is worth comparing the two answers. The old method turned C04 into a bag of its own values and weighted how often values share a row. Its three nearest neighbours were C01, C02 and C05, all tied at a cosine of 0.925: close, and too coarse to separate. The embedding ranking puts the same three in its top four but in a definite order, with C03 ahead of all of them. Same table, same question, sharper instrument.
+
+The limit did not move, though; it only changed address. The old method's answer was fixed by which columns you turned into tokens. The embedding's answer is fixed by whatever the model was trained to notice. If the embedding was built from contract and tenure, it cannot rank by anything else, and a column it never saw might as well not exist. Similarity is never a property of the rows alone. It is a property of the rows as represented, and the representation is a choice someone made.
 
 ## Doing it in the database
 
@@ -44,6 +64,6 @@ The reason this approach exists is where it runs. Once each row has a position, 
 
 IBM ships a version of this in Db2 for z/OS, called SQL Data Insights, which trains on your tables and adds functions like AI_SIMILARITY that you call in ordinary SQL. Other databases have taken a different route, storing vectors produced elsewhere in a dedicated column type and comparing them in the query.
 
-The table here is written by hand so the groups are visible. Everything after that is computed from it: the buckets, the counts, the weights, the positions, and every ranking. The step this figure simplifies is the one that produces the token positions. Real systems train a small neural network to learn them. This figure counts co-occurrence and weights it, which reaches a similar shape of answer by a much cruder route.
+The figure's embeddings are four numbers set by hand, standing in for a model's output, and the honesty note under the figure says so. Everything downstream of them is real: the distances, the rankings, the index behaviour and the SQL are computed exactly as pgvector computes them. What changes at real scale is not the method but the stakes of the choices: hundreds of dimensions instead of four, millions of rows instead of sixteen, and an approximate index that stops being optional.
 
 Related: [Embeddings](/topics/embeddings/), the topic that builds the vectors this one searches.
