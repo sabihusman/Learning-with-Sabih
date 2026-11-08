@@ -22,7 +22,7 @@ Postgres stores them in a column type called vector, added by an extension named
 
 The figure runs the query underneath the table. It takes the embedding of one customer, C04, and orders every other customer by distance from it. Two details in that query carry the topic.
 
-The first is the operator between the vectors. `<->` measures straight-line distance, called L2: how far apart the points sit. `<=>` measures cosine distance: the angle between the vectors, ignoring how long they are. They answer different questions, and section 4 shows a case where they flatly disagree.
+The first is the operator between the vectors. `<->` measures straight-line distance, called L2: how far apart the points sit. `<=>` measures cosine distance: the angle between the vectors, ignoring how long they are. They answer different questions, and a later section shows a case where they flatly disagree.
 
 The second is the shape of the query itself: order by the distance, then LIMIT. Nothing is filtered by equality first. The database ranks the entire table by closeness and hands back the top of the ranking, which is exactly the shape of the question "which rows look like this one".
 
@@ -30,7 +30,7 @@ The second is the shape of the query itself: order by the distance, then LIMIT. 
 
 ## Reading the result
 
-The default view asks for C04's five nearest neighbours by straight-line distance, and the answer is worth reading slowly: C03 at 0.067, C01 at 0.081, C05 at 0.132, C02 at 0.153, C14 at 0.385. The first four are all month-to-month customers, like C04. The two-year customers sit far down the list, past 1.2. The geometry is doing what it was built to do: the group C04 belongs to is the group nearest to it.
+The default view asks for C04's five nearest neighbours by straight-line distance, and the answer is worth reading slowly: C03 at 0.067, C01 at 0.081, C05 at 0.132, C02 at 0.153, C14 at 0.385. The first four are all month-to-month customers, like C04. The two-year customers mostly sit far down the list, past 1.2; the one exception is C16, sixth at 0.679, a two-year customer whose vector sits between the groups. The geometry is doing what it was built to do: the group C04 belongs to is the group nearest to it.
 
 Distance is not a score with a passing mark. It only means anything relative to the other distances in the same query: 0.067 is near because the far rows are at 1.4, not because 0.067 is small in itself. A different table, or vectors of a different length, would put the same relationships at completely different numbers.
 
