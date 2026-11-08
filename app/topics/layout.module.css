@@ -138,34 +138,39 @@
 }
 
 /* Wide screens only: the column grows into at most half of the empty side
-   space, i.e. container <= (viewport + 720) / 2, stepped at three breakpoints
-   (values sit a little under the limit to allow for a scrollbar). Below 1280
-   nothing changes.
-   Exactly two left edges: the OUTER edge (headings, figure cards, prev/next
-   nav) and the PROSE inset (paragraphs and lists, capped at 41em, 656px at the
-   default text size, about 88 characters a line, and centred). Text inside a
-   figure card is capped at the same measure (41rem; figures reset their font
-   size to 1rem) and stays left-aligned at the card's inner edge. */
+   space, i.e. container <= (viewport + 720) / 2, stepped at five breakpoints
+   up to 2560px and no further (values sit a little under the limit to allow
+   for a scrollbar). Below 1280 nothing changes.
+   One left line: headings, prose, figure cards and the prev/next nav all start
+   at the container's edge. Prose blocks (paragraphs, quotes, lists and the
+   formula/code strips) are capped at one reading measure, --measure: 41em of
+   the prose text, which is 41rem times the S/M/L reading scale (656px at M).
+   Text inside a figure card uses the same --measure, so it scales with the
+   prose under the S/M/L control even though figure text itself is fixed. */
+.container {
+  --measure: calc(41rem * var(--read-scale, 1));
+}
+
 @media (min-width: 1280px) {
   .container {
     max-width: 960px;
   }
 
-  .prose > :where(p, blockquote) {
-    max-width: 41em;
-    margin-left: auto;
+  .prose > :where(p, blockquote, pre) {
+    max-width: var(--measure);
+    margin-left: 0;
     margin-right: auto;
   }
 
   .prose > :where(ul, ol) {
-    max-width: 41em;
-    margin-left: auto;
+    max-width: var(--measure);
+    margin-left: 0;
     margin-right: auto;
     padding-left: 1.5rem;
   }
 
   .prose figure p {
-    max-width: 41rem;
+    max-width: var(--measure);
   }
 }
 
@@ -178,5 +183,17 @@
 @media (min-width: 1920px) {
   .container {
     max-width: 1300px;
+  }
+}
+
+@media (min-width: 2200px) {
+  .container {
+    max-width: 1450px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .container {
+    max-width: 1630px;
   }
 }
