@@ -1,98 +1,163 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import Figure from './Figure'
-import { ACCENT, OK, LINE, CONTROL_BG } from './vizPalette'
+import { ACCENT, AMBER, OK, LINE, CONTROL_BG, FADE, CARD } from './vizPalette'
 import shared from './vizShared.module.css'
 import styles from './HashTableViz.module.css'
+import {
+  BAND,
+  MAX_KEYS,
+  MAX_LOAD,
+  PRESETS,
+  allKeys,
+  anagramGroups,
+  canInsert,
+  charCodes,
+  finishRehash,
+  initialState,
+  insert,
+  layout,
+  rehashStep,
+  stats,
+} from './hashTableData'
 
-const SIZE = 7 // a small prime, so the teaching hash spreads a little better
-const PRESETS = ['cat', 'dog', 'owl', 'ant', 'hen', 'ram', 'fox', 'cod', 'jay']
-
-// The deliberately simple TEACHING hash: sum of character codes, mod the table size.
-// Real and deterministic so placement is reproducible, but not a production hash.
-function charCodes(key) {
-  return [...key].map((ch) => ({ ch, code: ch.charCodeAt(0) }))
-}
-function hashOf(key) {
-  const codes = charCodes(key)
-  const sum = codes.reduce((a, c) => a + c.code, 0)
-  return { codes, sum, bucket: sum % SIZE }
-}
-
-// ── geometry ───────────────────────────────────────────────────────────────────────
+// ── geometry: buckets drawn in bands of 7, so bucket b + 7 sits under bucket b ──
 const VB_W = 560
 const MARGIN = 12
-const COL_PITCH = (VB_W - 2 * MARGIN) / SIZE
+const COL_PITCH = (VB_W - 2 * MARGIN) / BAND
 const COL_W = 62
-const HEADER_Y = 10
-const HEADER_H = 26
-const CHIP_TOP = 50
-const CHIP_H = 26
-const CHIP_PITCH = 32
-const centerX = (b) => MARGIN + b * COL_PITCH + COL_PITCH / 2
-const colX = (b) => centerX(b) - COL_W / 2
+const HEADER_H = 24
+const CHIP_GAP = 8 // header to first chip
+const CHIP_H = 24
+const CHIP_PITCH = 29
+const BAND_GAP = 14
+const centerX = (col) => MARGIN + col * COL_PITCH + COL_PITCH / 2
+const colX = (col) => centerX(col) - COL_W / 2
+
+const fmt2 = (x) => x.toFixed(2)
+const quoted = (k) => `"${k}"`
+const listOf = (ks) => ks.map(quoted).join(', ')
+
+function bandGeometry(cells) {
+  const bands = []
+  let top = 4
+  for (let start = 0; start < cells.length; start += BAND) {
+    const band = cells.slice(start, start + BAND)
+    const minRows = cells.length === BAND ? 3 : 1
+    const rows = Math.max(minRows, ...band.map((c) => c.length))
+    bands.push({ start, top, rows })
+    top += HEADER_H + CHIP_GAP + rows * CHIP_PITCH + BAND_GAP
+  }
+  return { bands, height: top - BAND_GAP + 4 }
+}
+
+function chipStroke(anagram, waiting) {
+  if (anagram) return AMBER
+  return waiting ? FADE : CARD
+}
+
+function sumLine(key) {
+  return charCodes(key).map((c, i) => (
+    <span key={i}>
+      {i > 0 ? ' + ' : ''}
+      {c.ch}
+      <span className={styles.code}>({c.code})</span>
+    </span>
+  ))
+}
+
+function anagramNote(anagrams, sum) {
+  if (!anagrams.length) return ''
+  return ` Same letters as ${listOf(anagrams)}, so the same sum (${sum}): under this hash, anagrams share a bucket at every table size.`
+}
+
+function statusFor(state, st) {
+  const e = state.event
+  if (!e) return `Empty table, ${st.buckets} buckets. Add a key to hash it into a bucket.`
+  if (e.kind === 'insert' && e.resized) {
+    const r = e.resized
+    return `Added ${quoted(e.key)} to bucket ${e.bucket}. ${r.count} keys / ${r.from} buckets = ${fmt2(r.load)}, over ${MAX_LOAD}: the table doubles to ${r.to} buckets and all ${r.count} keys must be rehashed. Step through the rehash.`
+  }
+  if (e.kind === 'insert') {
+    const collision = e.chain > 1 ? ` (collision, chain length ${e.chain})` : ''
+    const full = st.count >= MAX_KEYS ? ` The figure stops at ${MAX_KEYS} keys: one more would double the table to ${st.buckets * 2} buckets.` : ''
+    return `Added ${quoted(e.key)} to bucket ${e.bucket}${collision}.${anagramNote(e.anagrams, e.sum)}${full}`
+  }
+  if (e.done) {
+    const moved = e.movedAll.length
+    const which = moved ? ` (${listOf(e.movedAll)})` : ''
+    return `Rehash finished: ${e.count} keys / ${e.to} buckets = ${fmt2(e.count / e.to)}. ${moved} of ${e.count} keys moved to a new bucket number${which}; the rest kept theirs.`
+  }
+  const where = e.moved ? `moves from bucket ${e.oldBucket} to bucket ${e.bucket}` : `stays in bucket ${e.bucket}`
+  return `Rehashed ${quoted(e.key)}: it ${where}.${anagramNote(e.anagrams, e.sum)} ${e.remaining} ${e.remaining === 1 ? 'key' : 'keys'} still waiting in the old table.`
+}
 
 export default function HashTableViz() {
-  const [entries, setEntries] = useState([]) // { key, sum, bucket } in add order
+  const [state, setState] = useState(initialState)
   const [input, setInput] = useState('')
 
-  const has = (key) => entries.some((e) => e.key === key)
+  const st = stats(state)
+  const cells = layout(state)
+  const keys = allKeys(state)
+  const anagramKeys = new Set(anagramGroups(keys).flat())
+  const e = state.event
+  const resizing = Boolean(state.resize)
+  const { bands, height } = bandGeometry(cells)
 
-  const addKey = (raw) => {
-    const key = raw.trim().toLowerCase()
-    if (!key || has(key)) return
-    const { sum, bucket } = hashOf(key)
-    setEntries((es) => [...es, { key, sum, bucket }])
-  }
-  const reset = () => setEntries([])
-
-  const onSubmit = (e) => {
-    e.preventDefault()
-    addKey(input)
+  const add = (raw) => setState((s) => insert(s, raw))
+  const onSubmit = (ev) => {
+    ev.preventDefault()
+    add(input)
     setInput('')
   }
 
-  // everything below is derived from the real table state
-  const buckets = useMemo(() => {
-    const b = Array.from({ length: SIZE }, () => [])
-    entries.forEach((e) => b[e.bucket].push(e))
-    return b
-  }, [entries])
-
-  const count = entries.length
-  const collisions = buckets.reduce((a, ch) => a + Math.max(0, ch.length - 1), 0)
-  const longest = buckets.reduce((a, ch) => Math.max(a, ch.length), 0)
-  const last = entries[entries.length - 1] || null
-  const lastComp = last ? hashOf(last.key) : null
-
-  const rows = Math.max(3, longest)
-  const VB_H = CHIP_TOP + rows * CHIP_PITCH + 8
-
-  const controls = [{ label: 'Reset', onClick: reset, disabled: count === 0 }]
-
-  const status = last
-    ? `Added "${last.key}" to bucket ${last.bucket}${buckets[last.bucket].length > 1 ? ` (collision, chain length ${buckets[last.bucket].length})` : ''}`
-    : 'Empty table. Add a key to hash it into a bucket.'
-
-  const readouts = [
-    { label: 'load factor', value: `${count} / ${SIZE} (${(count / SIZE).toFixed(2)})` },
-    { label: 'collisions', value: collisions },
-    { label: 'longest chain', value: longest },
+  const controls = [
+    ...(resizing
+      ? [
+          {
+            label: 'Rehash next key',
+            onClick: () => setState(rehashStep),
+            variant: 'primary',
+          },
+          { label: 'Finish rehash', onClick: () => setState(finishRehash) },
+        ]
+      : []),
+    { label: 'Reset', onClick: () => setState(initialState()), disabled: !e },
   ]
+
+  const loadValue = resizing
+    ? `${st.count} / ${state.resize.from} = ${fmt2(st.count / state.resize.from)} → ${st.count} / ${st.buckets} = ${fmt2(st.load)}`
+    : `${st.count} / ${st.buckets} = ${fmt2(st.load)}`
+  const perKey = st.count ? ` (${fmt2(st.placements / st.count)} per key)` : ''
+  const readouts = [
+    { label: 'load factor (keys / buckets)', value: loadValue },
+    { label: 'collisions', value: st.collisions },
+    { label: 'longest chain', value: st.longest },
+    { label: 'resizes', value: st.resizes },
+    {
+      label: 'key placements (inserts + rehashes)',
+      value: `${st.inserts} + ${st.rehashed} = ${st.placements}${perKey}`,
+    },
+  ]
+
+  const inputCheck = canInsert(state, input)
+  // after Finish, the status line sums up the whole rehash; no single key is highlighted
+  const showKey = e && e.kind !== 'finish'
+  const lastKey = showKey ? e.key : null
 
   return (
     <Figure
       eyebrow="Data structures"
       title="Hash tables"
       controls={controls}
-      status={status}
+      status={statusFor(state, st)}
       readouts={readouts}
-      tryThis="Add keys and watch each one hash into a bucket by the character-code-sum-mod-7 rule shown below. Add owl, then cod, then jay: all three sum to a bucket of 2 and form a chain. That is a collision, handled here by chaining. Watch the load factor, collision count, and longest chain climb from the real table contents."
+      tryThis="Add owl, then cod, then jay: all three sum to a bucket of 2 and form a chain, a collision handled by chaining. Keep adding keys. The sixth takes the load factor to 6 / 7 = 0.86, over 0.75, and the table doubles to 14 buckets. Step the rehash: each key either keeps its bucket number or drops to the band below, because bucket b can only become b or b + 7. Then add dog and god. Same letters, same sum, so they share a bucket, and no resize ever separates them."
     >
       <div className={shared.group} role="group" aria-label="Add a preset key">
         {PRESETS.map((k) => (
-          <button key={k} type="button" className={shared.btn} disabled={has(k)} onClick={() => addKey(k)}>
+          <button key={k} type="button" className={shared.btn} disabled={!canInsert(state, k).ok} onClick={() => add(k)} data-testid={`hash-add-${k}`}>
             {k}
           </button>
         ))}
@@ -106,55 +171,129 @@ export default function HashTableViz() {
           maxLength={12}
           placeholder="type a key"
           aria-label="Custom key"
-          onChange={(e) => setInput(e.target.value)}
+          disabled={resizing}
+          onChange={(ev) => setInput(ev.target.value)}
         />
-        <button type="submit" className={shared.btn} data-variant="primary" disabled={!input.trim() || has(input.trim().toLowerCase())}>
+        <button type="submit" className={shared.btn} data-variant="primary" disabled={!inputCheck.ok}>
           Add
         </button>
       </form>
 
-      {lastComp && (
-        <p className={styles.compute}>
-          <span className={styles.computeKey}>&quot;{last.key}&quot;</span>{' '}
-          {lastComp.codes.map((c, i) => (
-            <span key={i}>
-              {i > 0 ? ' + ' : ''}
-              {c.ch}
-              <span className={styles.code}>({c.code})</span>
-            </span>
-          ))}{' '}
-          = {lastComp.sum} &nbsp;&rarr;&nbsp; {lastComp.sum} mod {SIZE} = {lastComp.bucket} &nbsp;&rarr;&nbsp; bucket {lastComp.bucket}
+      {showKey && (
+        <p className={styles.compute} data-testid="hash-compute">
+          <span className={styles.computeKey}>&quot;{e.key}&quot;</span> {sumLine(e.key)} = {e.sum}
+          {e.kind === 'insert' && (
+            <>
+              {' '}
+              &rarr; {e.sum} mod {e.buckets} = {e.bucket} &rarr; bucket {e.bucket}
+            </>
+          )}
+          {e.kind === 'rehash' && (
+            <>
+              {' '}
+              &rarr; {e.sum} mod {e.to} = {e.bucket} (was {e.sum} mod {e.from} = {e.oldBucket}) &rarr;{' '}
+              {e.moved ? `moves to bucket ${e.bucket}` : `stays in bucket ${e.bucket}`}
+            </>
+          )}
         </p>
       )}
 
-      <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className={styles.svg} role="img" aria-label={`Hash table with ${SIZE} buckets and ${count} keys`}>
-        {buckets.map((chain, b) => (
-          <g key={b}>
-            {/* chain spine behind the chips */}
-            {chain.length > 0 && (
-              <line x1={centerX(b)} y1={HEADER_Y + HEADER_H} x2={centerX(b)} y2={CHIP_TOP + (chain.length - 1) * CHIP_PITCH + CHIP_H / 2} stroke={LINE} strokeWidth={2} />
-            )}
-            {/* bucket header with its index */}
-            <rect x={colX(b)} y={HEADER_Y} width={COL_W} height={HEADER_H} rx={3} fill={CONTROL_BG} stroke={LINE} strokeWidth={1} />
-            <text x={centerX(b)} y={HEADER_Y + HEADER_H / 2 + 4} className={styles.idx} textAnchor="middle">{b}</text>
-            {/* chained chips */}
-            {chain.map((e, i) => {
-              const isNewest = last && e.key === last.key
-              return (
-                <g key={e.key} className={styles.chip}>
-                  <rect x={colX(b)} y={CHIP_TOP + i * CHIP_PITCH} width={COL_W} height={CHIP_H} rx={4} fill={isNewest ? ACCENT : OK} stroke="#ffffff" strokeWidth={1} />
-                  <text x={centerX(b)} y={CHIP_TOP + i * CHIP_PITCH + CHIP_H / 2 + 4} className={styles.chipText} fill="#ffffff" textAnchor="middle">{e.key}</text>
-                </g>
-              )
-            })}
-          </g>
-        ))}
+      <svg
+        viewBox={`0 0 ${VB_W} ${height}`}
+        className={styles.svg}
+        role="img"
+        aria-label={`Hash table with ${st.buckets} buckets and ${st.count} keys`}
+        data-testid="hash-svg"
+        data-buckets={st.buckets}
+      >
+        {bands.map(({ start, top }) =>
+          cells.slice(start, start + BAND).map((cell, col) => {
+            const b = start + col
+            const chipTop = top + HEADER_H + CHIP_GAP
+            return (
+              <g key={b} data-testid={`hash-bucket-${b}`} data-keys={cell.map((c) => c.key).join(' ')}>
+                {cell.length > 0 && (
+                  <line
+                    x1={centerX(col)}
+                    y1={top + HEADER_H}
+                    x2={centerX(col)}
+                    y2={chipTop + (cell.length - 1) * CHIP_PITCH + CHIP_H / 2}
+                    stroke={LINE}
+                    strokeWidth={2}
+                  />
+                )}
+                <rect x={colX(col)} y={top} width={COL_W} height={HEADER_H} rx={3} fill={CONTROL_BG} stroke={LINE} strokeWidth={1} />
+                <text x={centerX(col)} y={top + HEADER_H / 2 + 4} className={styles.idx} textAnchor="middle">
+                  {b}
+                </text>
+              </g>
+            )
+          }),
+        )}
+
+        {/* chips are keyed by key, so a rehashed key slides from its old cell to its new one */}
+        <g>
+          {bands.flatMap(({ start, top }) =>
+            cells.slice(start, start + BAND).flatMap((cell, col) =>
+              cell.map(({ key, waiting }, i) => {
+                const x = colX(col)
+                const y = top + HEADER_H + CHIP_GAP + i * CHIP_PITCH
+                const isLast = key === lastKey
+                let fill = OK
+                if (waiting) fill = CARD
+                else if (isLast) fill = ACCENT
+                const anagram = anagramKeys.has(key)
+                return (
+                  <g
+                    key={key}
+                    className={styles.chipPos}
+                    style={{ transform: `translate(${x}px, ${y}px)` }}
+                    data-testid={`hash-key-${key}`}
+                    data-waiting={waiting}
+                  >
+                    <g className={styles.chip}>
+                      <rect
+                        width={COL_W}
+                        height={CHIP_H}
+                        rx={4}
+                        fill={fill}
+                        stroke={chipStroke(anagram, waiting)}
+                        strokeWidth={anagram ? 3 : 1}
+                        strokeDasharray={waiting ? '4 3' : undefined}
+                      />
+                      <text x={COL_W / 2} y={CHIP_H / 2 + 4} className={styles.chipText} fill={waiting ? FADE : CARD} textAnchor="middle">
+                        {key}
+                      </text>
+                    </g>
+                  </g>
+                )
+              }),
+            ),
+          )}
+        </g>
       </svg>
 
+      <div className={shared.legend}>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: OK }} /> key in the table
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: ACCENT }} /> last key added or rehashed
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: CARD, border: `1px dashed ${FADE}` }} /> waiting in the old table
+        </span>
+        <span className={shared.legendItem}>
+          <span className={shared.swatch} style={{ background: CARD, border: `3px solid ${AMBER}` }} /> anagram of another key
+        </span>
+      </div>
+
       <p className={shared.caption}>
-        The placement and all three readouts are computed live from the table. The hash here is a simple teaching
-        function (sum of character codes, mod the table size); real hash functions are far more complex and designed to
-        scatter keys much more evenly. The table is kept small so collisions are easy to see.
+        The placement, the resize and every readout are computed live from the table. The hash is a simple teaching function (sum of character codes, mod the
+        number of buckets), which is why anagrams always collide; real hash functions are far more complex and scatter keys much more evenly. The table starts
+        at 7 buckets and doubles to 14, then 28, when the load factor goes over 0.75, the rule Java&apos;s HashMap uses. Real tables rehash every key inside the
+        insert that triggers the resize; the figure lets you step through it, and a key waiting in the old table is drawn in the cell of its old bucket number.
+        The figure stops at {MAX_KEYS} keys.
       </p>
     </Figure>
   )
